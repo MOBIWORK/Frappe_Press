@@ -268,9 +268,9 @@ class Team(Document):
 		self.update_draft_invoice_payment_mode()
 		self.validate_partnership_date()
 
-		if not self.is_new() and self.billing_name and not frappe.conf.allow_tests:
-			if self.has_value_changed("billing_name"):
-				self.update_billing_details_on_frappeio()
+#		if not self.is_new() and self.billing_name and not frappe.conf.allow_tests:
+#			if self.has_value_changed("billing_name"):
+#				self.update_billing_details_on_frappeio()
 
 	def validate_partnership_date(self):
 		if self.erpnext_partner:
@@ -480,7 +480,7 @@ class Team(Document):
 		self.reload()
 
 		self.update_billing_details_on_stripe(address_doc)
-		self.update_billing_details_on_frappeio()
+#		self.update_billing_details_on_frappeio()
 		self.update_billing_details_on_draft_invoices()
 
 	def update_billing_details_on_draft_invoices(self):
