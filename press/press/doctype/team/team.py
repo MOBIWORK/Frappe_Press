@@ -27,7 +27,7 @@ from press.utils.telemetry import capture
 
 
 class Team(Document):
-	whitelisted_fields = [
+	whitelisted_methods = [
 		"enabled",
 		"team_title",
 		"user",
@@ -43,13 +43,6 @@ class Team(Document):
 	]
 
 	def get_doc(self, doc):
-		if (
-			frappe.session.data.user_type != "System User"
-			and self.user != frappe.session.user
-			and self.user not in self.get_user_list()
-		):
-			frappe.throw("You are not allowed to access this document")
-
 		user = frappe.db.get_value(
 			"User",
 			self.user,
@@ -57,7 +50,9 @@ class Team(Document):
 			as_dict=True,
 		)
 		doc.balance = self.get_balance()
+		doc.user = user
 		doc.is_desk_user = user.user_type == "System User"
+		return doc
 
 	def onload(self):
 		load_address_and_contact(self)
@@ -435,13 +430,20 @@ class Team(Document):
 			return False
 
 		try:
-			last_invoice = frappe.get_last_doc(
-				"Invoice", filters={"docstatus": 0, "team": self.name}
+			unpaid_invoices = frappe.get_all(
+				"Invoice",
+				{
+					"status": "Unpaid",
+					"team": self.name,
+					"docstatus": ("<", 2),
+					"type": "Subscription",
+				},
+				pluck="name",
 			)
 		except frappe.DoesNotExistError:
 			return False
 
-		return last_invoice.status == "Unpaid"
+		return unpaid_invoices
 
 	def create_stripe_customer(self):
 		if not self.stripe_customer_id:
