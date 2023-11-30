@@ -1,101 +1,236 @@
 <template>
-	<LoginBox
-		v-if="!$resources.validateRequestKey.loading && email"
-		:title="
-			!isInvitation
-				? 'Set up your account'
-				: `Invitation to join team: ${invitationToTeam}`
-		"
-	>
-		<form
-			class="flex flex-col"
-			@submit.prevent="$resources.setupAccount.submit()"
-		>
-			<div class="space-y-4">
-				<FormControl
-					v-if="oauthSignup == 0"
-					label="Email"
-					type="text"
-					:modelValue="email"
-					disabled
-				/>
-				<template v-if="oauthSignup == 0">
-					<FormControl
-						label="First Name"
-						type="text"
-						v-model="firstName"
-						name="fname"
-						autocomplete="given-name"
-						required
-					/>
-					<FormControl
-						label="Last Name"
-						type="text"
-						v-model="lastName"
-						name="lname"
-						autocomplete="family-name"
-						required
-					/>
-					<FormControl
-						label="Password"
-						type="password"
-						v-model="password"
-						name="password"
-						autocomplete="new-password"
-						required
-					/>
-				</template>
+	<LoginBox>
+		<div v-if="!dashboardRoute">
+			<div class="mb-4 w-36">
 				<FormControl
 					type="select"
-					:options="countries"
-					v-if="!isInvitation"
-					label="Country"
-					v-model="country"
-					required
-				/>
-				<Form
-					v-if="signupFields.length > 0"
-					:fields="signupFields"
-					v-model="signupValues"
-				/>
-				<div class="mt-4 flex items-start">
-					<label class="text-base text-gray-900">
-						<FormControl type="checkbox" v-model="termsAccepted" />
-						By clicking on
-						<span>{{ isInvitation ? 'Accept' : 'Submit' }}</span
-						>, you accept our
-						<Link href="https://frappecloud.com/terms" target="_blank"
-							>Terms of Service </Link
-						>,
-						<Link href="https://frappecloud.com/privacy" target="_blank">
-							Privacy Policy
-						</Link>
-						&#38;
-						<Link href="https://frappecloud.com/cookie-policy" target="_blank">
-							Cookie Policy
-						</Link>
-					</label>
-				</div>
+					:options="[
+						{
+							label: 'Tiếng Việt',
+							value: 'vi'
+						}
+					]"
+					size="md"
+					variant="outline"
+					placeholder="Placeholder"
+					:disabled="false"
+					label=""
+					modelValue="vi"
+				>
+					<template #prefix>
+						<img
+							v-if="iconCheck"
+							src="../../assets/icon_flag_vi.svg"
+							alt="Eye Icon"
+						/>
+					</template>
+				</FormControl>
 			</div>
-			<ErrorMessage class="mt-4" :message="$resources.setupAccount.error" />
-			<Button
-				class="mt-4"
-				variant="solid"
-				:loading="$resources.setupAccount.loading"
+			<div v-if="!$resources.validateRequestKey.loading && email">
+				<div class="mb-4 text-3xl font-[500] text-gray-900">
+					<div v-if="!isInvitation">Đăng ký tài khoản</div>
+					<div v-else>Lời mời tham gia nhóm: {{ invitationToTeam }}</div>
+				</div>
+				<div class="mb-10">
+					<div class="text-base font-medium">
+						<span>Đã có tài khoản? </span>
+						<router-link
+							class="text-base font-medium"
+							:to="{
+								name: $route.name == 'Login' ? 'Signup' : 'Login',
+								query: { ...$route.query, forgot: undefined }
+							}"
+						>
+							<span class="font-[600] text-red-600">Đăng nhập.</span>
+						</router-link>
+					</div>
+				</div>
+				<form
+					class="flex flex-col"
+					@submit.prevent="$resources.setupAccount.submit()"
+				>
+					<div>
+						<div>
+							<div class="mb-2 mt-4">
+								<label class="text-base" for="email">Email</label>
+							</div>
+							<FormControl
+								id="email"
+								size="lg"
+								variant="outline"
+								v-if="oauthSignup == 0"
+								label=""
+								type="text"
+								:modelValue="email"
+								disabled
+							/>
+						</div>
+						<template v-if="oauthSignup == 0">
+							<div>
+								<div class="mb-2 mt-4">
+									<label class="text-base" for="lname">Họ</label>
+								</div>
+								<FormControl
+									id="lname"
+									size="lg"
+									variant="outline"
+									placeholder="---"
+									label=""
+									type="text"
+									v-model="lastName"
+									name="lname"
+									autocomplete="family-name"
+									required
+								/>
+							</div>
+							<div>
+								<div class="mb-2 mt-4">
+									<label class="text-base" for="fname">Tên</label>
+								</div>
+								<FormControl
+									id="fname"
+									size="lg"
+									variant="outline"
+									placeholder="---"
+									label=""
+									type="text"
+									v-model="firstName"
+									name="fname"
+									autocomplete="given-name"
+									required
+								/>
+							</div>
+							<div class="relative">
+								<div class="mb-2 mt-4">
+									<label class="text-base" for="password">Mật khẩu</label>
+								</div>
+								<FormControl
+									id="password"
+									size="lg"
+									variant="outline"
+									placeholder="••••••••"
+									label=""
+									:type="iconCheck ? 'password' : 'text'"
+									v-model="password"
+									name="password"
+									autocomplete="new-password"
+									required
+								/>
+								<span
+									class="absolute right-4 top-[60%]"
+									v-on:click="changeIconEye"
+								>
+									<img
+										v-if="iconCheck"
+										src="../../assets/icon_eye.svg"
+										alt="Eye Icon"
+									/>
+									<img
+										v-if="iconCheck == false"
+										src="../../assets/icon_eye_slash.svg"
+										alt="Eye Icon Slash"
+									/>
+								</span>
+							</div>
+						</template>
+						<div>
+							<div class="mb-2 mt-4">
+								<label class="text-base" for="country">Đất nước</label>
+							</div>
+							<FormControl
+								id="country"
+								type="select"
+								size="lg"
+								variant="outline"
+								placeholder="---"
+								label=""
+								:options="countries"
+								v-if="!isInvitation"
+								v-model="country"
+								required
+							/>
+						</div>
+						<Form
+							v-if="signupFields.length > 0"
+							:fields="signupFields"
+							v-model="signupValues"
+						/>
+						<div class="mt-4 flex items-start">
+							<label class="text-base text-gray-900">
+								<FormControl
+									size="lg"
+									type="checkbox"
+									v-model="termsAccepted"
+								/>
+								<!-- By clicking on
+								<span>{{ isInvitation ? 'Accept' : 'Submit' }}</span
+								>, you accept our -->
+								Tôi đã đọc và đồng ý với
+								<Link class="border-none" href="#" target="_blank"
+									><span class="text-blue-500 hover:text-blue-700"
+										>Điều khoản dịch vụ
+									</span></Link
+								>
+								và
+								<Link class="border-none" href="#" target="_blank"
+									><span class="text-blue-500 hover:text-blue-700">
+										Chính sách quyền riêng tư
+									</span></Link
+								>
+								<!-- &#38;
+								<Link href="https://frappecloud.com/cookie-policy" target="_blank">
+									Cookie Policy
+								</Link> -->
+							</label>
+						</div>
+					</div>
+					<ErrorMessage class="mt-4" :message="$resources.setupAccount.error" />
+					<Button
+						class="my-6 h-9 bg-red-600 text-base font-[700] text-white hover:bg-red-700"
+						variant="solid"
+						:loading="$resources.setupAccount.loading"
+					>
+						{{ isInvitation ? 'Chấp nhận' : 'Đăng ký' }}
+					</Button>
+				</form>
+			</div>
+			<div
+				class="text-center"
+				v-else-if="!$resources.validateRequestKey.loading && !email"
 			>
-				{{ isInvitation ? 'Accept' : 'Create account' }}
-			</Button>
-		</form>
+				Liên kết xác minh không hợp lệ hoặc đã hết hạn.
+				<Link to="/signup"
+					><span class="font-[600] text-red-600 hover:text-red-700"
+						>Đăng ký</span
+					></Link
+				>
+				một tài khoản mới.
+			</div>
+			<div v-else></div>
+		</div>
+		<div v-else>
+			<div class="text-center">
+				<div class="mb-12 text-center">
+					<div class="mb-10 flex justify-center">
+						<img src="../../assets/icon_tick.svg" alt="Key Icon" />
+					</div>
+					<div class="text-3xl">Đăng ký thành công</div>
+					<div class="mt-2 text-lg font-[400] text-gray-600">
+						Tài khoản của bạn đã được tạo thành công, đăng nhập để trải nghiệm
+						dịch vụ của chúng tôi.
+					</div>
+				</div>
+				<router-link :to="dashboardRoute">
+					<Button
+						class="my-6 h-9 w-full bg-red-600 text-base font-[700] text-white hover:bg-red-700"
+						variant="solid"
+					>
+						Trở về trang đăng nhập
+					</Button>
+				</router-link>
+			</div>
+		</div>
 	</LoginBox>
-	<div
-		class="mt-20 px-6 text-center"
-		v-else-if="!$resources.validateRequestKey.loading && !email"
-	>
-		Verification link is invalid or expired.
-		<Link to="/signup">Sign up</Link>
-		for a new account.
-	</div>
-	<div v-else></div>
 </template>
 
 <script>
@@ -113,6 +248,8 @@ export default {
 	props: ['requestKey', 'joinRequest'],
 	data() {
 		return {
+			iconCheck: true,
+			dashboardRoute: null,
 			email: null,
 			firstName: null,
 			lastName: null,
@@ -176,7 +313,8 @@ export default {
 				},
 				onSuccess(res) {
 					if (res) {
-						this.$router.push(res.dashboard_route || '/');
+						this.dashboardRoute = res.dashboard_route || '/';
+						// this.$router.push(res.dashboard_route || '/');
 					}
 					window.location.reload();
 				}
@@ -189,6 +327,10 @@ export default {
 			show = !this.userExists;
 			show = this.oauthSignup == 0;
 			return show;
+		},
+
+		changeIconEye() {
+			this.iconCheck = !this.iconCheck;
 		}
 	},
 	computed: {

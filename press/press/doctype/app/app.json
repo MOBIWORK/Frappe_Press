@@ -126,10 +126,11 @@
   }
  ],
  "links": [],
- "modified": "2021-02-15 10:11:04.324983",
+ "modified": "2023-11-27 16:41:46.516585",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "App",
+ "naming_rule": "Set by user",
  "owner": "Administrator",
  "permissions": [
   {
@@ -157,6 +158,7 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "title_field": "title",
  "track_changes": 1
 }

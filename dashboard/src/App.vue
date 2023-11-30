@@ -4,13 +4,13 @@
 			<div
 				class="flex flex-1 overflow-y-auto"
 				:class="{
-					'sm:bg-gray-50':
+					'bg-gray-50':
 						$route.meta.isLoginPage && $route.fullPath.indexOf('/checkout') < 0
 				}"
 			>
 				<div class="flex-1">
 					<Navbar class="sm:hidden" v-if="!$route.meta.isLoginPage" />
-					<div class="mx-auto flex flex-row justify-start">
+					<div class="mx-auto flex h-full flex-row justify-start">
 						<Sidebar
 							class="sticky top-0 hidden w-64 flex-shrink-0 sm:flex"
 							v-if="$auth.isLoggedIn && !$route.meta.hideSidebar"

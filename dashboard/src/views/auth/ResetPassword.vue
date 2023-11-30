@@ -1,48 +1,117 @@
 <template>
-	<LoginBox
-		v-if="!$resources.validateResetKey.loading && email"
-		title="Set a new password for your account"
-	>
-		<form
-			class="flex flex-col"
-			@submit.prevent="$resources.resetPassword.submit()"
-		>
-			<div class="space-y-4">
-				<FormControl
-					label="Email"
-					class="pointer-events-none"
-					:modelValue="email"
-					name="email"
-					autocomplete="off"
-					disabled
-				/>
-				<FormControl
-					label="Password"
-					type="password"
-					v-model="password"
-					name="password"
-					autocomplete="new-password"
-					required
-				/>
+	<LoginBox>
+		<div v-if="resetSuccess">
+			<div class="text-center">
+				<div class="mb-12 text-center">
+					<div class="mb-10 flex justify-center">
+						<img src="../../assets/icon_tick.svg" alt="Key Icon" />
+					</div>
+					<div class="text-3xl">Cập nhật mật khẩu thành công</div>
+					<div class="mt-2 text-lg font-[400] text-gray-600">
+						Mật khẩu mới đã được thay đổi, giờ bạn có thể đăng nhập vào tài
+						khoản của mình.
+					</div>
+				</div>
+				<router-link to="/login">
+					<Button
+						class="my-6 h-9 w-full bg-red-600 text-base font-[700] text-white hover:bg-red-700"
+						variant="solid"
+					>
+						Trở về trang đăng nhập
+					</Button>
+				</router-link>
 			</div>
-			<ErrorMessage class="mt-6" :message="$resources.resetPassword.error" />
-			<Button
-				class="mt-6"
-				variant="solid"
-				:disabled="!password"
-				:loading="$resources.resetPassword.loading"
+		</div>
+		<div v-else>
+			<div v-if="!$resources.validateResetKey.loading && email">
+				<div class="my-4 text-3xl font-[500] text-gray-900">
+					<div>Đặt lại mật khẩu</div>
+				</div>
+				<form
+					class="flex flex-col"
+					@submit.prevent="$resources.resetPassword.submit()"
+				>
+					<div>
+						<div>
+							<div class="mb-2 mt-5">
+								<label class="text-base" for="email">Email</label>
+							</div>
+							<FormControl
+								id="email"
+								size="lg"
+								variant="outline"
+								label=""
+								:modelValue="email"
+								name="email"
+								autocomplete="off"
+								disabled
+							/>
+						</div>
+						<div class="relative">
+							<div class="mb-2 mt-5">
+								<label class="text-base" for="password">Mật khẩu</label>
+							</div>
+							<FormControl
+								id="password"
+								size="lg"
+								variant="outline"
+								label=""
+								placeholder="••••••••"
+								:type="iconCheck ? 'password' : 'text'"
+								v-model="password"
+								name="password"
+								autocomplete="new-password"
+								required
+							/>
+							<span
+								class="absolute right-4 top-[60%]"
+								v-on:click="changeIconEye"
+							>
+								<img
+									v-if="iconCheck"
+									src="../../assets/icon_eye.svg"
+									alt="Eye Icon"
+								/>
+								<img
+									v-if="iconCheck == false"
+									src="../../assets/icon_eye_slash.svg"
+									alt="Eye Icon Slash"
+								/>
+							</span>
+						</div>
+					</div>
+					<ErrorMessage
+						class="mt-6"
+						:message="$resources.resetPassword.error"
+					/>
+					<Button
+						:class="
+							password
+								? 'my-6 h-9 bg-red-600 text-base font-[700] text-white hover:bg-red-700'
+								: 'my-6 h-9 bg-[#DFE3E8] text-base font-[700] text-white'
+						"
+						variant="solid"
+						:disabled="!password"
+						:loading="$resources.resetPassword.loading"
+					>
+						Đặt lại mật khẩu
+					</Button>
+				</form>
+			</div>
+			<div
+				class="text-center"
+				v-else-if="!$resources.validateResetKey.loading && !email"
 			>
-				Submit
-			</Button>
-		</form>
+				Khóa tài khoản <strong>{{ requestKey }}</strong> không hợp lệ hoặc hết
+				hạn. Quay trở lại
+				<router-link class="underline" to="/login"
+					><span class="font-[600] text-red-600 hover:text-red-700"
+						>Đăng nhập</span
+					></router-link
+				>.
+			</div>
+		</div>
 	</LoginBox>
-	<div
-		class="mt-20 px-6 text-center"
-		v-else-if="!$resources.validateResetKey.loading && !email"
-	>
-		Account Key <strong>{{ requestKey }}</strong> is invalid or expired. Go back
-		to <router-link class="underline" to="/login">login</router-link>.
-	</div>
 </template>
 
 <script>
@@ -56,6 +125,8 @@ export default {
 	props: ['requestKey'],
 	data() {
 		return {
+			iconCheck: true,
+			resetSuccess: false,
 			email: null,
 			password: null
 		};
@@ -69,6 +140,7 @@ export default {
 				},
 				onSuccess(email) {
 					this.email = email || null;
+					// this.email = null;
 				},
 				auto: true
 			};
@@ -81,9 +153,15 @@ export default {
 					password: this.password
 				},
 				onSuccess() {
-					window.location.reload();
+					this.resetSuccess = true;
+					// window.location.reload();
 				}
 			};
+		}
+	},
+	methods: {
+		changeIconEye() {
+			this.iconCheck = !this.iconCheck;
 		}
 	}
 };

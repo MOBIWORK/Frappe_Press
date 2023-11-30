@@ -1,0 +1,680 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"B6XaaHHcIe\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\"><b>MBW Press</b></span>\",\"col\":12}},{\"id\":\"KTEVJ8nOkp\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span><span class=\\\"h4\\\"><b>Quick Link</b></span>\",\"col\":12}},{\"id\":\"ls1rijmzNs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Server\",\"col\":3}},{\"id\":\"7nV1sYtrMa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Database Server\",\"col\":3}},{\"id\":\"tm4ht10Bnw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Proxy Server\",\"col\":3}},{\"id\":\"4t_rpRElc4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bench\",\"col\":3}},{\"id\":\"E5BMvheB-t\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site\",\"col\":3}},{\"id\":\"Uo8A59hjiB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monitor Server\",\"col\":3}},{\"id\":\"9NDvRy9C0n\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Log Server\",\"col\":3}},{\"id\":\"5mt1wKTLoc\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Error Log\",\"col\":3}},{\"id\":\"F3nkqOytio\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Self Hosted Server\",\"col\":3}},{\"id\":\"EQWxEZgRvt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Invoice\",\"col\":3}},{\"id\":\"ZNgZ3tQJtn\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance Transaction\",\"col\":3}},{\"id\":\"wnnYjGyqcb\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Elements</b></span>\",\"col\":12}},{\"id\":\"-CGPqwUb0h\",\"type\":\"card\",\"data\":{\"card_name\":\"Site\",\"col\":4}},{\"id\":\"SitxAu69yT\",\"type\":\"card\",\"data\":{\"card_name\":\"Apps\",\"col\":4}},{\"id\":\"NWpMLgUgOv\",\"type\":\"card\",\"data\":{\"card_name\":\"Infrastructure\",\"col\":4}},{\"id\":\"K-vMKGB4IP\",\"type\":\"card\",\"data\":{\"card_name\":\"Payment\",\"col\":4}},{\"id\":\"C7_rV78r5c\",\"type\":\"card\",\"data\":{\"card_name\":\"Report\",\"col\":4}},{\"id\":\"eAtDEvOt9_\",\"type\":\"card\",\"data\":{\"card_name\":\"Setting\",\"col\":4}},{\"id\":\"k18w5NAoGa\",\"type\":\"card\",\"data\":{\"card_name\":\"Team\",\"col\":4}},{\"id\":\"iVgJ7YD33e\",\"type\":\"card\",\"data\":{\"card_name\":\"Updates\",\"col\":4}},{\"id\":\"DEWLVStc9-\",\"type\":\"card\",\"data\":{\"card_name\":\"Self Hosted Server\",\"col\":4}}]",
+ "creation": "2023-11-24 11:39:11.235669",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "unhide",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "MBW Press",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site",
+   "link_count": 6,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site",
+   "link_count": 0,
+   "link_to": "Site",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site Activity",
+   "link_count": 0,
+   "link_to": "Site Activity",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site Update",
+   "link_count": 0,
+   "link_to": "Site Update",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site Backup",
+   "link_count": 0,
+   "link_to": "Site Backup",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site Domain",
+   "link_count": 0,
+   "link_to": "Site Domain",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site Usage",
+   "link_count": 0,
+   "link_to": "Site Usage",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Infrastructure",
+   "link_count": 12,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cluster",
+   "link_count": 0,
+   "link_to": "Cluster",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "App server",
+   "link_count": 0,
+   "link_to": "Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Database Server",
+   "link_count": 0,
+   "link_to": "Database Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Proxy Server",
+   "link_count": 0,
+   "link_to": "Proxy Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bench",
+   "link_count": 0,
+   "link_to": "Bench",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site",
+   "link_count": 0,
+   "link_to": "Site",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Monitor Server",
+   "link_count": 0,
+   "link_to": "Monitor Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Log Server",
+   "link_count": 0,
+   "link_to": "Log Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Analytics Server",
+   "link_count": 0,
+   "link_to": "Analytics Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Trace Server",
+   "link_count": 0,
+   "link_to": "Trace Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Registry Server",
+   "link_count": 0,
+   "link_to": "Registry Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Code Server",
+   "link_count": 0,
+   "link_to": "Code Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payment",
+   "link_count": 6,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Invoice",
+   "link_count": 0,
+   "link_to": "Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Plan",
+   "link_count": 0,
+   "link_to": "Plan",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Marketplace App Payment",
+   "link_count": 0,
+   "link_to": "Marketplace App Payment",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Stripe Payment Method",
+   "link_count": 0,
+   "link_to": "Stripe Payment Method",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Payout Order",
+   "link_count": 0,
+   "link_to": "Payout Order",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Balance Transaction",
+   "link_count": 0,
+   "link_to": "Balance Transaction",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Report",
+   "link_count": 9,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AWS Instance Pricing",
+   "link_count": 0,
+   "link_to": "AWS Instance Pricing",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "MariaDB Process List",
+   "link_count": 0,
+   "link_to": "MariaDB Process List",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Binary Log Browser",
+   "link_count": 0,
+   "link_to": "Binary Log Browser",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "MariaDB Slow Queries",
+   "link_count": 0,
+   "link_to": "MariaDB Slow Queries",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "MariaDB Deadlock Browser",
+   "link_count": 0,
+   "link_to": "MariaDB Deadlock Browser",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Shared App Server Stats",
+   "link_count": 0,
+   "link_to": "Shared App Server Stats",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Audit System Hooks",
+   "link_count": 0,
+   "link_to": "Audit System Hooks",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Server Stats",
+   "link_count": 0,
+   "link_to": "Server Stats",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Agent Versions",
+   "link_count": 0,
+   "link_to": "Agent Versions",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setting",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Press Settings",
+   "link_count": 0,
+   "link_to": "Press Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cloud Region",
+   "link_count": 0,
+   "link_to": "Cloud Region",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Error Log",
+   "link_count": 0,
+   "link_to": "Error Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Team",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Team",
+   "link_count": 0,
+   "link_to": "Team",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Account Request",
+   "link_count": 0,
+   "link_to": "Account Request",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "User",
+   "link_count": 0,
+   "link_to": "User",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Updates",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Deploy",
+   "link_count": 0,
+   "link_to": "Deploy",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Deploy Candidate",
+   "link_count": 0,
+   "link_to": "Deploy Candidate",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Self Hosted Server",
+   "link_count": 1,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Self Hosted Server",
+   "link_count": 0,
+   "link_to": "Self Hosted Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Apps",
+   "link_count": 7,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "App",
+   "link_count": 0,
+   "link_to": "App",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "App Source",
+   "link_count": 0,
+   "link_to": "App Source",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "App Release",
+   "link_count": 0,
+   "link_to": "App Release",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "App Tag",
+   "link_count": 0,
+   "link_to": "App Tag",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Marketplace App",
+   "link_count": 0,
+   "link_to": "Marketplace App",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Release Group",
+   "link_count": 0,
+   "link_to": "Release Group",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "GitHub Webhook Log",
+   "link_count": 0,
+   "link_to": "GitHub Webhook Log",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2023-11-27 16:39:38.049476",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW Press",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 1.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "App Server",
+   "link_to": "Server",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Database Server",
+   "link_to": "Database Server",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Proxy Server",
+   "link_to": "Proxy Server",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Bench",
+   "link_to": "Bench",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Site",
+   "link_to": "Site",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Monitor Server",
+   "link_to": "Monitor Server",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Log Server",
+   "link_to": "Log Server",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Error Log",
+   "link_to": "Error Log",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Self Hosted Server",
+   "link_to": "Self Hosted Server",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Invoice",
+   "link_to": "Invoice",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Balance Transaction",
+   "link_to": "Balance Transaction",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
+ "title": "MBW Press"
+}

@@ -1,92 +1,222 @@
 <template>
 	<div>
 		<LoginBox :class="{ 'pointer-events-none': $resources.signup.loading }">
-			<div v-if="!(signupEmailSent || resetPasswordEmailSent)">
+			<div>
 				<div
-					v-if="hasForgotPassword || saasProduct"
-					class="mb-8 text-center text-p-base text-gray-900"
+					class="mb-4 w-36"
+					v-if="
+						!(signupEmailSent || resetPasswordEmailSent || hasForgotPassword)
+					"
 				>
-					<div v-if="hasForgotPassword">Reset password</div>
+					<FormControl
+						type="select"
+						:options="[
+							{
+								label: 'Tiếng Việt',
+								value: 'vi'
+							}
+						]"
+						size="md"
+						variant="outline"
+						placeholder="Placeholder"
+						:disabled="false"
+						label=""
+						modelValue="vi"
+					>
+						<template #prefix>
+							<img
+								v-if="iconCheck"
+								src="../../assets/icon_flag_vi.svg"
+								alt="Eye Icon"
+							/>
+						</template>
+					</FormControl>
+				</div>
+
+				<div
+					v-if="hasForgotPassword || saasProduct || isLogin"
+					class="mb-4 text-3xl font-[500] text-gray-900"
+				>
+					<div class="text-center" v-if="hasForgotPassword">
+						<div class="mb-10 flex justify-center">
+							<img
+								v-if="iconCheck"
+								src="../../assets/icon_key.svg"
+								alt="Key Icon"
+							/>
+						</div>
+						<div>Quên mật khẩu</div>
+					</div>
 					<div v-else-if="saasProduct">
 						Sign in to Frappe Cloud to start using
 						<span class="font-semibold">{{ saasProduct.title }}</span>
 					</div>
+					<div v-else-if="isLogin">Đăng nhập</div>
+					<div v-else>Đăng ký</div>
+				</div>
+
+				<div v-else class="mb-4 text-3xl font-[500] text-gray-900">
+					<div>Đăng ký</div>
+				</div>
+
+				<div
+					class="mb-10"
+					v-if="
+						!(signupEmailSent || resetPasswordEmailSent || hasForgotPassword)
+					"
+				>
+					<div class="text-base font-medium">
+						<span v-if="$route.name == 'Login'"> Chưa có tài khoản? </span>
+						<span v-else>Đã có tài khoản? </span>
+						<router-link
+							class="text-base font-medium"
+							:to="{
+								name: $route.name == 'Login' ? 'Signup' : 'Login',
+								query: { ...$route.query, forgot: undefined }
+							}"
+						>
+							<span
+								class="font-[600] text-red-600"
+								v-if="$route.name == 'Login'"
+							>
+								Đăng ký ngay
+							</span>
+							<span class="font-[600] text-red-600" v-else>Đăng nhập.</span>
+						</router-link>
+					</div>
+				</div>
+				<div
+					class="text-center text-lg font-[400] text-gray-600"
+					v-if="hasForgotPassword"
+				>
+					Một liên kết đặt lại mật khẩu sẽ được gửi đến email của bạn để đặt lại
+					mật khẩu của bạn. Nếu bạn không nhận được một email trong vòng vài
+					phút, vui lòng thử lại.
 				</div>
 				<form class="flex flex-col" @submit.prevent="submitForm">
 					<template v-if="hasForgotPassword">
+						<label class="mb-2 mt-5 text-base" for="email">Email</label>
 						<FormControl
-							label="Email"
+							id="email"
+							size="lg"
+							variant="outline"
+							label=""
 							type="email"
-							placeholder="johndoe@mail.com"
+							placeholder="abc@mail.com"
 							autocomplete="email"
 							v-model="email"
 							required
 						/>
+						<Button
+							:class="
+								email
+									? 'my-6 h-9 bg-red-600 text-base font-[700] text-white hover:bg-red-700'
+									: 'my-6 h-9 bg-[#DFE3E8] text-base font-[700] text-white'
+							"
+							variant="solid"
+							:loading="$resources.resetPassword.loading"
+							:disabled="!email"
+						>
+							Gửi liên kết
+						</Button>
 						<router-link
-							class="mt-2 text-sm"
+							class="mb-2 text-base"
 							v-if="hasForgotPassword"
 							:to="{
 								name: 'Login',
 								query: { ...$route.query, forgot: undefined }
 							}"
 						>
-							I remember my password
+							<div class="flex justify-center">
+								<img
+									v-if="iconCheck"
+									src="../../assets/icon_left.svg"
+									alt="Eye Icon"
+								/>
+								<span class="font-[600]"> Trở về trang đăng nhập</span>
+							</div>
 						</router-link>
-						<Button
-							class="mt-4"
-							:loading="$resources.resetPassword.loading"
-							variant="solid"
-						>
-							Reset Password
-						</Button>
 					</template>
 					<template v-else-if="isLogin">
+						<label class="mb-2 text-base" for="email">Email</label>
 						<FormControl
-							label="Email"
-							placeholder="johndoe@mail.com"
+							id="email"
+							size="lg"
+							variant="outline"
+							label=""
+							placeholder="abc@mail.com"
 							autocomplete="email"
 							v-model="email"
 							required
 						/>
-						<FormControl
-							class="mt-4"
-							label="Password"
-							type="password"
-							placeholder="•••••"
-							v-model="password"
-							name="password"
-							autocomplete="current-password"
-							required
-						/>
+						<div class="relative mt-4">
+							<label class="mb-2 text-base" for="password">Mật khẩu</label>
+							<FormControl
+								id="password"
+								size="lg"
+								variant="outline"
+								label=""
+								:type="iconCheck ? 'password' : 'text'"
+								placeholder="••••••••"
+								v-model="password"
+								name="password"
+								autocomplete="current-password"
+								required
+							/>
+							<span
+								class="absolute right-4 top-[60%]"
+								v-on:click="changeIconEye"
+							>
+								<img
+									v-if="iconCheck"
+									src="../../assets/icon_eye.svg"
+									alt="Eye Icon"
+								/>
+								<img
+									v-if="iconCheck == false"
+									src="../../assets/icon_eye_slash.svg"
+									alt="Eye Icon Slash"
+								/>
+							</span>
+						</div>
 						<div class="mt-2" v-if="isLogin">
 							<router-link
-								class="text-sm"
+								class="text-base"
 								:to="{
 									name: 'Login',
 									query: { ...$route.query, forgot: 1 }
 								}"
 							>
-								Forgot Password?
+								<span class="font-[600] text-red-600"> Quên mật khẩu?</span>
 							</router-link>
 						</div>
-						<Button class="mt-4" variant="solid"> Log in with email </Button>
+						<Button
+							class="mt-4 h-9 bg-red-600 text-base font-[700] hover:bg-red-700"
+							variant="solid"
+						>
+							Đăng nhập
+						</Button>
 						<ErrorMessage class="mt-2" :message="loginError" />
 					</template>
 					<template v-else>
+						<label class="mb-2 text-base" for="email">Email</label>
 						<FormControl
-							label="Email"
+							id="email"
+							size="lg"
+							variant="outline"
+							label=""
 							type="email"
-							placeholder="johndoe@mail.com"
+							placeholder="abc@mail.com"
 							autocomplete="email"
 							v-model="email"
 							required
 						/>
 						<Button
-							class="mt-2"
+							class="mt-4 h-9 bg-red-600 text-base font-[700] hover:bg-red-700"
 							:loading="$resources.signup.loading"
 							variant="solid"
 						>
-							Sign up with email
+							Đăng ký
 						</Button>
 					</template>
 					<ErrorMessage class="mt-2" :message="$resources.signup.error" />
@@ -95,56 +225,62 @@
 					<div class="-mb-2 mt-6 border-t text-center">
 						<div class="-translate-y-1/2 transform">
 							<span
-								class="relative bg-white px-2 text-sm font-medium leading-8 text-gray-800"
+								class="font-sm relative bg-white px-2 text-base leading-8 text-gray-600"
 							>
-								Or continue with
+								{{ isLogin ? 'Hoặc đăng nhập bằng' : 'Hoặc tiếp tục bằng' }}
 							</span>
 						</div>
 					</div>
-					<Button
-						variant="solid"
-						v-if="$resources.signupSettings.data?.enable_google_oauth === 1"
-						:loading="$resources.googleLogin.loading"
-						@click="$resources.googleLogin.submit()"
-					>
-						<div class="flex items-center">
-							<GoogleIconSolid class="w-4" />
-							<span class="ml-2">Google</span>
-						</div>
-					</Button>
+					<div class="flex justify-center">
+						<Button
+							v-if="$resources.signupSettings.data?.enable_google_oauth === 1"
+							class="rounded-[57px] px-4 py-5"
+							variant="outline"
+							:loading="$resources.googleLogin.loading"
+							@click="$resources.googleLogin.submit()"
+						>
+							<div>
+								<div class="flex items-center">
+									<img src="../../assets/google_logo.svg" alt="Google Logo" />
+									<span class="ml-2 text-base font-[500] text-gray-600"
+										>Google</span
+									>
+								</div>
+							</div>
+						</Button>
+					</div>
 				</div>
-			</div>
-			<div class="text-p-base text-gray-700" v-else>
-				<p v-if="signupEmailSent">
-					We have sent an email to
-					<span class="font-semibold">{{ email }}</span
-					>. Please click on the link received to verify your email and set up
-					your account.
-				</p>
-				<p v-if="resetPasswordEmailSent">
-					We have sent an email to <span class="font-semibold">{{ email }}</span
-					>. Please click on the link received to reset your password.
-				</p>
+
+				<Dialog v-model="resetPasswordEmailSent">
+					<template #body-title>
+						<h3 class="text-xl font-[500] text-gray-900">
+							Xác thực thành công
+						</h3>
+					</template>
+					<template #body-content>
+						<div class="text-center text-base text-gray-600">
+							Chúng tôi đã gửi hướng dẫn thay đổi mật khẩu vào
+							<span class="text-gray-900">{{ email }}</span
+							>, vui lòng kiểm tra hộp thư cũng như thư rác của bạn.
+						</div>
+					</template>
+				</Dialog>
+
+				<Dialog v-model="signupEmailSent">
+					<template #body-title>
+						<h3 class="text-xl font-[500] text-gray-900">Xác thực đăng ký</h3>
+					</template>
+					<template #body-content>
+						<div class="text-center text-base text-gray-600">
+							Chúng tôi đã gửi email tới
+							<span class="text-gray-900">{{ email }}</span
+							>. Vui lòng nhấp vào liên kết nhận được để xác minh email và thiết
+							lập tài khoản của bạn.
+						</div>
+					</template>
+				</Dialog>
 			</div>
 		</LoginBox>
-		<div
-			class="text-center"
-			v-if="!(signupEmailSent || resetPasswordEmailSent)"
-		>
-			<router-link
-				class="text-center text-base font-medium"
-				:to="{
-					name: $route.name == 'Login' ? 'Signup' : 'Login',
-					query: { ...$route.query, forgot: undefined }
-				}"
-			>
-				{{
-					$route.name == 'Login'
-						? 'New member? Create a new account.'
-						: 'Already have an account? Log in.'
-				}}
-			</router-link>
-		</div>
 	</div>
 </template>
 
@@ -160,6 +296,7 @@ export default {
 	},
 	data() {
 		return {
+			iconCheck: true,
 			email: null,
 			password: null,
 			signupEmailSent: false,
@@ -211,6 +348,10 @@ export default {
 		}
 	},
 	methods: {
+		changeIconEye() {
+			this.iconCheck = !this.iconCheck;
+		},
+
 		async submitForm() {
 			if (this.isLogin) {
 				if (this.email && this.password) {
