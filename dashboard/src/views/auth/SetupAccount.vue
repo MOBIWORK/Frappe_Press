@@ -18,11 +18,7 @@
 					modelValue="vi"
 				>
 					<template #prefix>
-						<img
-							v-if="iconCheck"
-							src="../../assets/icon_flag_vi.svg"
-							alt="Eye Icon"
-						/>
+						<img src="../../assets/icon_flag_vi.svg" alt="Eye Icon" />
 					</template>
 				</FormControl>
 			</div>

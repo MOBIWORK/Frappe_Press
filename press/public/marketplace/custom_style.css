@@ -8,7 +8,7 @@ body {
 
 a.active {
 	--tw-text-opacity: 1;
-	color: rgb(224 54 54 / var(--tw-text-opacity));
+	color: rgb(204 41 41 / var(--tw-text-opacity));
 }
 
 .group-dropdown-sub {
@@ -43,10 +43,6 @@ a.active {
 
 .header-body {
 	background-color: #f4f6f8;
-}
-
-.section-footer {
-	background: #192734;
 }
 
 .btn-register {
@@ -307,4 +303,34 @@ a.active {
 .text-gray-400 {
 	--tw-text-opacity: 1;
 	color: rgb(199 199 199 / var(--tw-text-opacity));
+}
+
+.bg-\[\#192734\] {
+	--tw-bg-opacity: 1;
+	background-color: rgb(25 39 52 / var(--tw-bg-opacity));
+}
+
+.bg-\[\#0A1722\] {
+	--tw-bg-opacity: 1;
+	background-color: rgb(10 23 34 / var(--tw-bg-opacity));
+}
+
+.text-\[\#C4C4C4\] {
+	--tw-text-opacity: 1;
+	color: rgb(196 196 196 / var(--tw-text-opacity));
+}
+
+.space-x-5 > :not([hidden]) ~ :not([hidden]) {
+	--tw-space-x-reverse: 0;
+	margin-right: calc(1.25rem /* 20px */ * var(--tw-space-x-reverse));
+	margin-left: calc(1.25rem /* 20px */ * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.border-\[\#A2A2A2\] {
+	--tw-border-opacity: 1;
+	border-color: rgb(162 162 162 / var(--tw-border-opacity));
+}
+
+.underline {
+	text-decoration-line: underline;
 }
