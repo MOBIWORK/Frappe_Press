@@ -4,9 +4,7 @@
 			<div>
 				<div
 					class="mb-4 w-36"
-					v-if="
-						!(signupEmailSent || resetPasswordEmailSent || hasForgotPassword)
-					"
+					v-if="!(resetPasswordEmailSent || hasForgotPassword)"
 				>
 					<FormControl
 						type="select"
@@ -57,9 +55,7 @@
 
 				<div
 					class="mb-10"
-					v-if="
-						!(signupEmailSent || resetPasswordEmailSent || hasForgotPassword)
-					"
+					v-if="!(resetPasswordEmailSent || hasForgotPassword)"
 				>
 					<div class="text-base font-medium">
 						<span v-if="$route.name == 'Login'"> Chưa có tài khoản? </span>
@@ -146,7 +142,9 @@
 							required
 						/>
 						<div class="relative mt-4">
-							<label class="mb-2 text-base" for="password">Mật khẩu</label>
+							<div class="mb-2">
+								<label class="text-base" for="password">Mật khẩu</label>
+							</div>
 							<FormControl
 								id="password"
 								size="lg"

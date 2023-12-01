@@ -1,28 +1,28 @@
 <template>
 	<LoginBox>
 		<div v-if="!dashboardRoute">
-			<div class="mb-4 w-36">
-				<FormControl
-					type="select"
-					:options="[
-						{
-							label: 'Tiếng Việt',
-							value: 'vi'
-						}
-					]"
-					size="md"
-					variant="outline"
-					placeholder="Placeholder"
-					:disabled="false"
-					label=""
-					modelValue="vi"
-				>
-					<template #prefix>
-						<img src="../../assets/icon_flag_vi.svg" alt="Eye Icon" />
-					</template>
-				</FormControl>
-			</div>
 			<div v-if="!$resources.validateRequestKey.loading && email">
+				<div class="mb-4 w-36">
+					<FormControl
+						type="select"
+						:options="[
+							{
+								label: 'Tiếng Việt',
+								value: 'vi'
+							}
+						]"
+						size="md"
+						variant="outline"
+						placeholder="Placeholder"
+						:disabled="false"
+						label=""
+						modelValue="vi"
+					>
+						<template #prefix>
+							<img src="../../assets/icon_flag_vi.svg" alt="Eye Icon" />
+						</template>
+					</FormControl>
+				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div v-if="!isInvitation">Đăng ký tài khoản</div>
 					<div v-else>Lời mời tham gia nhóm: {{ invitationToTeam }}</div>
@@ -131,7 +131,7 @@
 						</template>
 						<div>
 							<div class="mb-2 mt-4">
-								<label class="text-base" for="country">Đất nước</label>
+								<label class="text-base" for="country">Quốc gia</label>
 							</div>
 							<FormControl
 								id="country"
