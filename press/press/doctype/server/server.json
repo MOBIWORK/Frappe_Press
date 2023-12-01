@@ -176,8 +176,7 @@
    "default": "0",
    "fieldname": "use_for_new_benches",
    "fieldtype": "Check",
-   "label": "Use For New Benches",
-   "read_only": 1
+   "label": "Use For New Benches"
   },
   {
    "fieldname": "hostname",
@@ -433,7 +432,7 @@
   }
  ],
  "links": [],
- "modified": "2023-10-20 14:02:26.796669",
+ "modified": "2023-12-01 10:45:46.997473",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Server",
