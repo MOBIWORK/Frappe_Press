@@ -4,6 +4,16 @@ const allAppCardNodes = document.getElementsByClassName('app-card');
 const searchInput = document.getElementById('app-search-input');
 const noResultsMessage = document.getElementById('no-results-message');
 
+function debounce(func, timeout = 800) {
+	let timer;
+	return (...args) => {
+		clearTimeout(timer);
+		timer = setTimeout(() => {
+			func.apply(this, args);
+		}, timeout);
+	};
+}
+
 const appList = [];
 for (let node of allAppCardNodes) {
 	appList.push({
@@ -23,17 +33,70 @@ const options = {
 };
 const fuse = new Fuse(appList, options);
 
-searchInput.addEventListener('input', (e) => {
-	// TODO: Debounce/Throttle
+function saveInput(e) {
 	const searchText = e.target.value;
-	if (!searchText) {
-		displayAllApps();
-		return;
+	var str_search = window.location.search;
+	var arr_search = str_search.split('&');
+	var new_str_search = '';
+
+	if (arr_search[0].includes('?')) {
+		var check_text_search = 0;
+		for (const x in arr_search) {
+			if (arr_search[x].includes('text_search')) {
+				arr_search[x] = `text_search=${searchText}`;
+				check_text_search += 1;
+			}
+		}
+		if (check_text_search == 0) {
+			arr_search[arr_search.length] = `text_search=${searchText}`;
+		}
+
+		new_str_search = arr_search.join('&');
+	} else {
+		new_str_search = `?text_search=${searchText}`;
 	}
 
-	const results = fuse.search(searchText);
-	updateAppList(results);
-});
+	location.href = '/marketplace/' + new_str_search;
+}
+const processChange = debounce((e) => saveInput(e));
+
+searchInput.addEventListener('keyup', (e) => processChange(e));
+
+// searchInput.addEventListener('input', (e) => {
+// 	// TODO: Debounce/Throttle
+// 	const searchText = e.target.value;
+// 	var str_search = window.location.search;
+// 	var arr_search = str_search.split('&');
+// 	var new_str_search = '';
+
+// 	if (arr_search[0].includes('?')) {
+// 		var check_text_search = 0;
+// 		for (const x in arr_search) {
+// 			if (arr_search[x].includes('text_search')) {
+// 				arr_search[x] = `text_search=${searchText}`;
+// 				check_text_search += 1;
+// 			}
+// 		}
+// 		if (check_text_search == 0) {
+// 			arr_search[arr_search.length] = `text_search=${searchText}`;
+// 		}
+
+// 		new_str_search = arr_search.join('&');
+// 	} else {
+// 		new_str_search = `?text_search=${searchText}`;
+// 	}
+
+// 	location.href = '/marketplace/' + new_str_search;
+
+// 	// const searchText = e.target.value;
+// 	// if (!searchText) {
+// 	// 	displayAllApps();
+// 	// 	return;
+// 	// }
+
+// 	// const results = fuse.search(searchText);
+// 	// updateAppList(results);
+// });
 
 function updateAppList(results) {
 	for (let node of allAppCardNodes) {
@@ -67,16 +130,16 @@ btns.forEach((btn) => {
 	btn.addEventListener('click', (e) => {
 		const category = e.target.value;
 		window.location.replace(
-			location.origin + location.pathname + `?category=${category}`,
+			location.origin + location.pathname + `?category=${category}`
 		);
 	});
 });
 
-const removeCategoryBtn = document.getElementById('remove-category');
-removeCategoryBtn.addEventListener('click', (e) => {
-	removeCategoryBtn.classList.add('hidden');
-	window.location.replace(location.origin + location.pathname);
-});
+// const removeCategoryBtn = document.getElementById('remove-category');
+// removeCategoryBtn.addEventListener('click', (e) => {
+// 	removeCategoryBtn.classList.add('hidden');
+// 	window.location.replace(location.origin + location.pathname);
+// });
 
 function updateCategories(category) {
 	let set = 0;
@@ -98,16 +161,23 @@ function updateCategories(category) {
 	}
 
 	var button = document.querySelector(`button[value="${category}"]`);
-	if (button) {
-		button.classList.add('bg-gray-200');
-		removeCategoryBtn.classList.remove('hidden');
-		document.getElementById('remove-category-name').innerText = category;
+	if (category) {
+		if (button) {
+			button.classList.add('text-[#212B36]', 'font-[600]');
+			// removeCategoryBtn.classList.remove('hidden');
+			// removeCategoryBtn.classList.add('flex');
+			// document.getElementById('remove-category-name').innerText = category;
+		}
+	} else {
+		if (button) {
+			button.classList.add('text-[#212B36]', 'font-[600]');
+		}
 	}
 }
 
 var category = new URLSearchParams(window.location.search).get('category');
 if (category != null && category.length > 0) {
 	updateCategories(category);
-} else if (category == null) {
+} else if (category == null || category == '') {
 	updateCategories('');
 }

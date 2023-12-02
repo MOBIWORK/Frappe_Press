@@ -32,7 +32,7 @@
 						</svg>
 					</button>
 
-					<ul class="hidden lg:flex">
+					<ul class="nav hidden lg:flex">
 						<li class="inline-block">
 							<a
 								href="/dashboard"
@@ -232,22 +232,18 @@
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 		// Lấy tất cả các thẻ a trên trang
-		var links = document.getElementsByTagName('a');
+		var navLinks = document.querySelectorAll('.nav>li>a');
 
 		// Lặp qua từng thẻ a để kiểm tra href
-		for (var i = 0; i < links.length; i++) {
-			// Kiểm tra xem href có trùng với location.pathname không
-			if (links[i].getAttribute('href') === window.location.pathname) {
-				// Nếu trùng, thêm lớp 'active'
-				links[i].classList.add('active');
+		navLinks.forEach(function (link) {
+			// So sánh href của thẻ <a> với location.href
+			if (window.location.pathname.includes(link.getAttribute('href'))) {
+				// Nếu giống, thêm class 'active'
+				link.classList.add('active');
 			} else {
-				links[i].classList.remove('active');
+				link.classList.remove('active');
 			}
-		}
-
-		// tagA.forEach((el) => {
-		// 	console.log(el);
-		// });
+		});
 
 		var mobileMenuBtn = document.getElementById('mobile-menu-btn');
 		var mobileMenu = document.getElementById('mobile-menu');

@@ -14,9 +14,20 @@
 			<div class="w-80 block mt-5">
 				<h2 class="text-xl text-gray-800 font-semibold">Phân loại</h2>
 				<div class="flex flex-col mt-4">
+					<div
+						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-700 rounded-lg"
+					>
+						<button
+							id="category-button"
+							class="w-full text-left rounded py-1 pl-2"
+							value=""
+						>
+							Tất cả
+						</button>
+					</div>
 					{%- for category in categories -%}
 					<div
-						class="relative -left-2 mr-8 text-base transition hover:bg-gray-50 text-gray-700 rounded-lg"
+						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-700 rounded-lg"
 					>
 						<button
 							id="category-button"
@@ -35,7 +46,8 @@
 					<div class="flex flex-col sm:flex-row sm:justify-between">
 						<h2 class="text-xl font-bold text-gray-800 mb-4">Ứng dụng</h2>
 						<div class="flex flex-row">
-							<button
+							<!-- <button
+								style="max-height: 32px;"
 								id="remove-category"
 								class="hidden bg-gray-100 border-gray-700 text-sm text-gray-700 items-center px-2 mx-2 rounded-lg transition hover:shadow"
 							>
@@ -58,7 +70,7 @@
 									<line x1="18" y1="6" x2="6" y2="18"></line>
 									<line x1="6" y1="6" x2="18" y2="18"></line>
 								</svg>
-							</button>
+							</button> -->
 							<input
 								type="text"
 								class="placeholder-gray-500 rounded-md border-0 bg-gray-100 py-1 px-2 text-base leading-5 focus:bg-gray-200 focus:shadow-none focus:ring-0 block w-full sm:mt-0 sm:w-60 h-8"
@@ -78,22 +90,27 @@
 							data-title="{{ app.title }}"
 							data-description="{{ app.description }}"
 							data-categories="{{ app.categories }}"
-							class="app-card flex flex-col justify-between p-6 border border-gray-100 rounded-lg shadow cursor-pointer transition hover:shadow-lg focus:outline-none focus:border-gray-500 focus:shadow-outline"
+							class="app-card flex flex-col justify-between p-6 box-shadow-custom cursor-pointer transition hover:shadow-lg focus:outline-none focus:border-gray-500 focus:shadow-outline"
 						>
 							<div>
-								<img
-									alt="{{app.title}} Logo"
-									src="{{ app.image }}"
-									class="w-10 h-10 border border-gray-200 rounded-lg"
-								/>
-								<h3 class="mt-4 font-semibold">{{ app.title }}</h3>
-								<p class="mt-2 text-base text-gray-600 line-clamp">
+								<div class="flex items-center">
+									<img
+										alt="{{app.title}} Logo"
+										src="{{ app.image }}"
+										class="w-10 h-10 border border-gray-200 rounded-lg"
+									/>
+									<h3 class="ml-3 font-semibold">{{ app.title }}</h3>
+								</div>
+								<p class="mt-4 text-base text-gray-500 line-clamp">
 									{{ app.description }}
 								</p>
 							</div>
-							<span class="flex flex-row text-sm mt-2 text-gray-600">
-								<i class="w-4 h-4 mr-2" data-feather="download"></i>
-								<span
+							<span
+								class="flex flex-row items-center text-sm mt-3 text-gray-600"
+							>
+								<!-- <i class="w-4 h-4 mr-2" data-feather="download"></i> -->
+								<img src="/assets/press/images/icon_download.svg" />
+								<span class="ml-1"
 									>{{ app.total_installs | number_k_format }} {{ 'install' if
 									app.total_installs == 1 else 'installs' }}</span
 								>
@@ -101,10 +118,75 @@
 						</a>
 						{%- endfor -%}
 					</div>
+					{%- if pagination.total_page -%}
+					<div class="mt-8 flex justify-end">
+						<div class="flex items-center justify-center">
+							<ul class="page flex list-none">
+								{%- if pagination.page_curren == 1 -%}
+								<li class="mr-2">
+									<a class="opacity p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_skipprevious.svg"
+									/></a>
+								</li>
+								<li class="mr-2">
+									<a class="opacity p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_arrowleft.svg"
+									/></a>
+								</li>
+								{%- else -%}
+								<li class="mr-2">
+									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}" class="p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_skipprevious.svg"
+									/></a>
+								</li>
+								<li class="mr-2">
+									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren - 1 }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_arrowleft.svg"
+									/></a>
+								</li>
+								{%- endif -%}
 
-					<div id="no-results-message" style="display: none">
+								{%- for i in range(1,pagination.total_page + 1) -%}
+
+								<li class="mr-2">
+									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ i }}&page_size={{ pagination.page_size }}" class="{{ "active" if i == pagination.page_curren }} p-2 bg-gray-300 text-gray-700"
+										>{{ i }}</a
+									>
+								</li>
+								{%- endfor -%}
+								{%- if pagination.page_curren == pagination.total_page -%}
+								<li class="mr-2">
+									<a class="opacity p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_arrowright.svg"
+									/></a>
+								</li>
+								<li class="mr-2">
+									<a class="opacity p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_skipnext.svg"
+									/></a>
+								</li>
+								{%- else -%}
+								<li class="mr-2">
+									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren + 1 }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_arrowright.svg"
+									/></a>
+								</li>
+								<li class="mr-2">
+									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.total_page }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
+										><img src="/assets/press/images/icon_skipnext.svg"
+									/></a>
+								</li>
+								{%- endif -%}
+								<!-- Thêm các liên kết khác tương ứng với số trang -->
+							</ul>
+						</div>
+					</div>
+					{%- else -%}
+					<div id="no-results-message">
 						<p class="text-gray-700">Không tìm thấy ứng dụng nào.</p>
 					</div>
+					{%- endif -%}
+
 				</div>
 			</div>
 		</div>
