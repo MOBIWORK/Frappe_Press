@@ -74,6 +74,7 @@
 								class="placeholder-gray-500 rounded-md border-0 bg-gray-100 py-1 px-2 text-base leading-5 focus:bg-gray-200 focus:shadow-none focus:ring-0 block w-full sm:mt-0 sm:w-60 h-8"
 								id="app-search-input"
 								placeholder="Search for apps"
+								value="{{ text_search }}"
 							/>
 						</div>
 					</div>
@@ -117,67 +118,83 @@
 						{%- endfor -%}
 					</div>
 					{%- if pagination.total_page -%}
-					<div class="mt-8 flex justify-end">
-						<div class="flex items-center justify-center">
-							<ul class="page flex list-none">
-								{%- if pagination.page_curren == 1 -%}
-								<li class="mr-2">
-									<a class="opacity p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_skipprevious.svg"
-									/></a>
-								</li>
-								<li class="mr-2">
-									<a class="opacity p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_arrowleft.svg"
-									/></a>
-								</li>
-								{%- else -%}
-								<li class="mr-2">
-									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}" class="p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_skipprevious.svg"
-									/></a>
-								</li>
-								<li class="mr-2">
-									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren - 1 }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_arrowleft.svg"
-									/></a>
-								</li>
-								{%- endif -%}
+					<div class="mt-8">
+						<ul class="page flex flex-wrap list-none justify-end overflow-x-auto">
+							{%- if pagination.page_curren == 1 -%}
+							<li class="mr-2">
+								<a class="opacity p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_skipprevious.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a class="opacity p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_arrowleft.svg"
+								/></a>
+							</li>
+							{%- else -%}
+							<li class="mr-2">
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}" class="p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_skipprevious.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren - 1 }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_arrowleft.svg"
+								/></a>
+							</li>
+							{%- endif -%}
 
-								{%- for i in range(1,pagination.total_page + 1) -%}
-
+							{%- if pagination.total_page > 5 -%}
+								{%- for x in pagination.pagination_list -%}
+								{%- if x == "..." -%}
 								<li class="mr-2">
-									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ i }}&page_size={{ pagination.page_size }}" class="{{ "active" if i == pagination.page_curren }} p-2 bg-gray-300 text-gray-700"
-										>{{ i }}</a
+									<a class="{{ "active" if x == pagination.page_curren }} p-2 bg-gray-300 text-gray-700"
+										>{{ x }}</a
 									>
 								</li>
-								{%- endfor -%}
-								{%- if pagination.page_curren == pagination.total_page -%}
-								<li class="mr-2">
-									<a class="opacity p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_arrowright.svg"
-									/></a>
-								</li>
-								<li class="mr-2">
-									<a class="opacity p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_skipnext.svg"
-									/></a>
-								</li>
 								{%- else -%}
 								<li class="mr-2">
-									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren + 1 }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_arrowright.svg"
-									/></a>
-								</li>
-								<li class="mr-2">
-									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.total_page }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
-										><img src="/assets/press/images/icon_skipnext.svg"
-									/></a>
+									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ x }}&page_size={{ pagination.page_size }}" class="{{ "active" if x == pagination.page_curren }} p-2 bg-gray-300 text-gray-700"
+										>{{ x }}</a
+									>
 								</li>
 								{%- endif -%}
-								<!-- Thêm các liên kết khác tương ứng với số trang -->
-							</ul>
-						</div>
+								{%- endfor -%}
+							{%- else -%}
+							{%- for i in range(1,pagination.total_page + 1) -%}
+							<li class="mr-2">
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ i }}&page_size={{ pagination.page_size }}" class="{{ "active" if i == pagination.page_curren }} p-2 bg-gray-300 text-gray-700"
+									>{{ i }}</a
+								>
+							</li>
+							{%- endfor -%}
+							{%- endif -%}
+
+							{%- if pagination.page_curren == pagination.total_page -%}
+							<li class="mr-2">
+								<a class="opacity p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_arrowright.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a class="opacity p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_skipnext.svg"
+								/></a>
+							</li>
+							{%- else -%}
+							<li class="mr-2">
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren + 1 }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_arrowright.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.total_page }}&page_size={{ pagination.page_size }}" class="p-2 bg-gray-300 text-gray-700"
+									><img src="/assets/press/images/icon_skipnext.svg"
+								/></a>
+							</li>
+							{%- endif -%}
+							<!-- Thêm các liên kết khác tương ứng với số trang -->
+						</ul>
 					</div>
 					{%- else -%}
 					<div id="no-results-message">

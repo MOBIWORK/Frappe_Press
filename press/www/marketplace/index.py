@@ -5,6 +5,32 @@ import frappe
 import math
 
 
+def generate_pagination(current_page, total_pages):
+    visible_pages = 3  # Số lượng trang muốn hiển thị
+
+    # Tính toán khoảng trang cần hiển thị
+    start_page = max(1, current_page - (visible_pages // 2))
+    end_page = min(total_pages, start_page + visible_pages - 1)
+
+    # Đảm bảo có đủ số trang hiển thị
+    if end_page - start_page + 1 < visible_pages:
+        start_page = max(1, end_page - visible_pages + 1)
+
+    # Tạo danh sách chứa các trang cần hiển thị
+    pagination_list = list(range(start_page, end_page + 1))
+    if 1 not in pagination_list and 2 not in pagination_list:
+        pagination_list = [1, "..."] + pagination_list
+    elif 1 not in pagination_list:
+        pagination_list.insert(0, 1)
+
+    if total_pages not in pagination_list and total_pages-1 not in pagination_list:
+        pagination_list = pagination_list + ["...", total_pages]
+    elif total_pages not in pagination_list:
+        pagination_list.extend([total_pages])
+
+    return pagination_list
+
+
 def get_context(context):
     # TODO: Caching, Pagination, Filtering, Sorting
     args = frappe.request.args
@@ -60,11 +86,25 @@ def get_context(context):
     else:
         totalPage = 0
 
+    pagination_list = generate_pagination(int(pageCurren), totalPage)
+
     context.pagination = {
         "total_page": totalPage,
         "page_curren": int(pageCurren),
         "page_size": int(pageSize),
+        "pagination_list": pagination_list
     }
+
+    # totalPage = 10
+    # pageCurren = 5
+    # pagination_list = generate_pagination(pageCurren, totalPage)
+    # print(pagination_list)
+    # context.pagination = {
+    #     "total_page": totalPage,
+    #     "page_curren": int(pageCurren),
+    #     "page_size": int(pageSize),
+    #     "pagination_list": pagination_list
+    # }
 
     str_query = """
     SELECT
