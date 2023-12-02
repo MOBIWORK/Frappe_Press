@@ -125,7 +125,8 @@ function displayAllApps() {
 	}
 }
 
-const btns = document.querySelectorAll('#category-button');
+const btns = document.querySelectorAll('.category-button');
+console.log(btns);
 btns.forEach((btn) => {
 	btn.addEventListener('click', (e) => {
 		const category = e.target.value;
