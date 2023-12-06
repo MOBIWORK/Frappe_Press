@@ -796,7 +796,7 @@ badge_gray, badge_green, five_star_rating -%} {%- block title -%}
 
 {% endmacro %} {% macro app_image(app, class='') %}
 <div class="w-24 h-24 lg:w-36 lg:h-36 {{ class }}">
-	{%- if not app.image -%}
+	{%- if app.image -%}
 	<img
 		class="object-cover rounded-lg w-full h-full"
 		src="{{ app.image }}"
