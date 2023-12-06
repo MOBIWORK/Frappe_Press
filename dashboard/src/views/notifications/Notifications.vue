@@ -8,7 +8,10 @@
 			>
 				<template #actions>
 					<TabButtons
-						:buttons="[{ label: 'Chưa đọc', active: true }, { label: 'Đọc' }]"
+						:buttons="[
+							{ label: 'Chưa đọc', active: true },
+							{ label: 'Đã đọc' }
+						]"
 						v-model="activeTab"
 					/>
 				</template>
@@ -73,7 +76,7 @@ export default {
 			};
 		},
 		readNotifications() {
-			if (this.activeTab !== 'Đọc') return;
+			if (this.activeTab !== 'Đã đọc') return;
 			return {
 				url: 'press.api.notifications.get_notifications',
 				params: {

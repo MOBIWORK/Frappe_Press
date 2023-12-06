@@ -23,10 +23,10 @@
 		<div id="modals"></div>
 		<div id="popovers"></div>
 
-		<script>
-			'{% for key in boot %}';
+		<script type="text/jinja">
+			{% for key in boot %}
 			window['{{ key }}'] = '{{ boot[key] | tojson }}';
-			('{% endfor %}');
+			{% endfor %}
 		</script>
 
 		<script type="module" src="/src/main.js"></script>
