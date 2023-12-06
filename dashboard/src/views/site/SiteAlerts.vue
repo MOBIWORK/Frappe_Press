@@ -121,7 +121,7 @@ const marketplacePromotionalBanners = createResource({
 					@click="showBillingDialog = true"
 					variant="solid"
 				>
-					Add Billing Information
+					Thêm thông tin thanh toán
 				</Button>
 			</template>
 		</Alert>
@@ -192,7 +192,7 @@ const marketplacePromotionalBanners = createResource({
 			v-model="showPromotionalDialog"
 			@close="e => (clickedPromotion = null)"
 			:options="{
-				title: 'Frappe Cloud Marketplace',
+				title: 'MBW Cloud Marketplace',
 				actions: [
 					{
 						variant: 'solid',

@@ -3,7 +3,7 @@
 		<Header>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Sites', route: '/sites' },
+					{ label: 'Trang web', route: '/sites' },
 					{ label: 'New Site', route: '/sites/new' }
 				]"
 			/>

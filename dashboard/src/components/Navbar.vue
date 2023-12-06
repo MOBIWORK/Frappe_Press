@@ -104,7 +104,7 @@ export default {
 		items() {
 			return [
 				{
-					label: 'Sites',
+					label: 'Trang Web',
 					route: '/sites',
 					highlight: () => {
 						return this.$route.fullPath.endsWith('/sites');

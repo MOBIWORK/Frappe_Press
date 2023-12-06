@@ -18,7 +18,7 @@
 						<router-view v-slot="{ Component }" class="w-full sm:mr-0">
 							<keep-alive
 								:include="[
-									'Sites',
+									// 'Sites',
 									'Benches',
 									'Servers',
 									'Site',

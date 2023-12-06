@@ -42,7 +42,7 @@
 						<div>Quên mật khẩu</div>
 					</div>
 					<div v-else-if="saasProduct">
-						Sign in to Frappe Cloud to start using
+						Đăng nhập vào MBW Cloud để bắt đầu sử dụng
 						<span class="font-semibold">{{ saasProduct.title }}</span>
 					</div>
 					<div v-else-if="isLogin">Đăng nhập</div>

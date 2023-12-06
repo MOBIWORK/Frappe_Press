@@ -5,7 +5,7 @@
 		>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Sites', route: { name: 'Sites' } },
+					{ label: 'Trang Web', route: { name: 'Sites' } },
 					{
 						label: site?.host_name || site?.name,
 						route: { name: 'SiteOverview', params: { siteName: site?.name } }
@@ -172,7 +172,7 @@ export default {
 	name: 'Site',
 	pageMeta() {
 		return {
-			title: `Site - ${this.siteName} - Frappe Cloud`
+			title: `Trang Web - ${this.siteName} - MBW Cloud`
 		};
 	},
 	props: ['siteName'],

@@ -4,13 +4,15 @@
 			<header
 				class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 			>
-				<Breadcrumbs :items="[{ label: 'Sites', route: { name: 'Sites' } }]">
+				<Breadcrumbs
+					:items="[{ label: 'Trang Web', route: { name: 'Sites' } }]"
+				>
 					<template v-if="this.$account.team.enabled" #actions>
 						<Button
 							variant="solid"
 							icon-left="plus"
 							class="ml-2"
-							label="Create"
+							label="Tạo mới"
 							@click="showBillingDialog"
 						>
 						</Button>
@@ -20,11 +22,11 @@
 
 			<div class="my-5 space-y-2 px-5">
 				<div v-if="!$account.team.enabled">
-					<Alert title="Your account is disabled">
-						Enable your account to start creating sites
+					<Alert title="Tài khoản của bạn đã bị vô hiệu hóa">
+						Cho phép tài khoản của bạn bắt đầu tạo trang web
 						<template #actions>
 							<Button variant="solid" route="/settings/profile">
-								Enable Account
+								Kích hoạt Tài khoản
 							</Button>
 						</template>
 					</Alert>
@@ -33,28 +35,31 @@
 				<template v-if="showUnpaidInvoiceAlert">
 					<Alert
 						v-if="latestUnpaidInvoice.payment_mode === 'Prepaid Credits'"
-						title="Your last invoice payment has failed."
+						title="Việc thanh toán hóa đơn cuối cùng của bạn không thành công."
 					>
-						Please add
+						Vui lòng thêm
 						<strong>
 							{{ latestUnpaidInvoice.currency }}
 							{{ latestUnpaidInvoice.amount_due }}
 						</strong>
-						more in credits.
+						vào số tín dụng.
 						<template #actions>
 							<Button @click="showPrepaidCreditsDialog = true" variant="solid">
-								Add Credits
+								Thêm Số tín dụng
 							</Button>
 						</template>
 					</Alert>
 
-					<Alert v-else title="Your last invoice payment has failed.">
-						Pay now for uninterrupted services.
+					<Alert
+						v-else
+						title="Việc thanh toán hóa đơn cuối cùng của bạn không thành công."
+					>
+						Thanh toán ngay để không bị gián đoạn dịch vụ.
 						<template v-if="this.$resources.latestUnpaidInvoice.data" #actions>
 							<router-link
 								:to="{ path: '/billing', query: { invoiceStatus: 'Unpaid' } }"
 							>
-								<Button variant="solid"> Go to Billing </Button>
+								<Button variant="solid"> Đến Phần Thanh toán </Button>
 							</router-link>
 						</template>
 					</Alert>
@@ -71,13 +76,13 @@
 				<div class="pb-20">
 					<div class="flex">
 						<div class="flex w-full space-x-2 pb-4">
-							<FormControl label="Search Sites" v-model="searchTerm">
+							<FormControl label="Tìm kiếm trang web" v-model="searchTerm">
 								<template #prefix>
 									<FeatherIcon name="search" class="w-4 text-gray-600" />
 								</template>
 							</FormControl>
 							<FormControl
-								label="Status"
+								label="Trạng thái"
 								class="mr-8"
 								type="select"
 								:options="siteStatusFilterOptions"
@@ -85,7 +90,7 @@
 							/>
 							<FormControl
 								v-if="$resources.siteTags.data.length > 0"
-								label="Tag"
+								label="Thẻ"
 								class="mr-8"
 								type="select"
 								:options="siteTagFilterOptions"
@@ -95,11 +100,11 @@
 					</div>
 					<Table
 						:columns="[
-							{ label: 'Site Name', name: 'name', width: 2 },
-							{ label: 'Status', name: 'status', width: 1 },
-							{ label: 'Region', name: 'region', width: 0.5 },
-							{ label: 'Tags', name: 'tags', width: 1 },
-							{ label: 'Plan', name: 'plan', width: 1.5 },
+							{ label: 'Tên trang web', name: 'name', width: 2 },
+							{ label: 'Trạng thái', name: 'status', width: 1 },
+							{ label: 'Khu vực', name: 'region', width: 0.5 },
+							{ label: 'Thẻ', name: 'tags', width: 1 },
+							{ label: 'Kế hoạch', name: 'plan', width: 1.5 },
 							{ label: '', name: 'actions', width: 0.5 }
 						]"
 						:rows="sites"
@@ -126,7 +131,7 @@
 									class="ml-auto"
 									:route="{ name: 'Bench', params: { benchName: group.group } }"
 								>
-									View Bench
+									Xem Bench
 								</Button>
 								<div v-else class="h-7" />
 							</div>
@@ -218,7 +223,7 @@
 								v-else-if="$resources.allSites.fetched && rows.length === 0"
 								class="text-base text-gray-700"
 							>
-								No Sites
+								Không có trang web
 							</div>
 						</div>
 					</Table>
@@ -228,7 +233,7 @@
 							title: 'Login As Administrator',
 							actions: [
 								{
-									label: 'Proceed',
+									label: 'Thực hiện',
 									variant: 'solid',
 									onClick: proceedWithLoginAsAdmin
 								}
@@ -238,7 +243,7 @@
 					>
 						<template #body-content>
 							<FormControl
-								label="Reason for logging in as Administrator"
+								label="Lý do đăng nhập với tư cách Quản trị viên"
 								type="textarea"
 								v-model="reasonForAdminLogin"
 								required
@@ -265,7 +270,7 @@ export default {
 	name: 'Sites',
 	pageMeta() {
 		return {
-			title: 'Sites - Frappe Cloud'
+			title: 'Trang Web - MBW Cloud'
 		};
 	},
 	props: ['bench'],
@@ -342,8 +347,8 @@ export default {
 			if (data.status === 'Success' && data.user === this.$account.user.name) {
 				this.reload();
 				notify({
-					title: 'Site creation complete!',
-					message: 'Login to your site and complete the setup wizard',
+					title: 'Hoàn tất tạo trang web!',
+					message: 'Đăng nhập vào trang web của bạn và hoàn tất đạo cụ cài đặt',
 					icon: 'check',
 					color: 'green'
 				});
@@ -378,13 +383,13 @@ export default {
 		dropdownItems(site) {
 			return [
 				{
-					label: 'Visit Site',
+					label: 'Truy cập trang web',
 					onClick: () => {
 						window.open(`https://${site.name}`, '_blank');
 					}
 				},
 				{
-					label: 'Login As Admin',
+					label: 'Đăng nhập với tư cách Quản trị viên',
 					onClick: () => {
 						if (this.$account.team.name === site.team) {
 							return this.$resources.loginAsAdmin.submit({
@@ -402,7 +407,7 @@ export default {
 			this.errorMessage = '';
 
 			if (!this.reasonForAdminLogin.trim()) {
-				this.errorMessage = 'Reason is required';
+				this.errorMessage = 'Yêu cầu cung cấp lý do';
 				return;
 			}
 
@@ -492,27 +497,27 @@ export default {
 		siteStatusFilterOptions() {
 			return [
 				{
-					label: 'All',
+					label: 'Tất cả',
 					value: 'All'
 				},
 				{
-					label: 'Active',
+					label: 'Hoạt động',
 					value: 'Active'
 				},
 				{
-					label: 'Broken',
+					label: 'Đã hỏng',
 					value: 'Broken'
 				},
 				{
-					label: 'Inactive',
+					label: 'Không hoạt động',
 					value: 'Inactive'
 				},
 				{
-					label: 'Trial',
+					label: 'Thử nghiệm',
 					value: 'Trial'
 				},
 				{
-					label: 'Update Available',
+					label: 'Có Bản Cập Nhật',
 					value: 'Update Available'
 				}
 			];

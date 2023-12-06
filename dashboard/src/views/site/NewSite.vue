@@ -5,7 +5,7 @@
 		>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Sites', route: { name: 'Sites' } },
+					{ label: 'Trang Web', route: { name: 'Sites' } },
 					{ label: 'New', route: { name: 'NewSite' } }
 				]"
 			/>

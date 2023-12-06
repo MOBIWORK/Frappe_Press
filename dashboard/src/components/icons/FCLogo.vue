@@ -1,5 +1,6 @@
 <template>
-	<svg
+	<img src="../../assets/cropped-mbw.cloud_11-192x192.png" />
+	<!-- <svg
 		width="118"
 		height="118"
 		viewBox="0 0 118 118"
@@ -27,5 +28,5 @@
 				<stop offset="1" stop-color="#0097FF" />
 			</radialGradient>
 		</defs>
-	</svg>
+	</svg> -->
 </template>

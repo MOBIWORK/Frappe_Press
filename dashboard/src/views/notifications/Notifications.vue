@@ -4,11 +4,11 @@
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 		>
 			<Breadcrumbs
-				:items="[{ label: 'Notifications', route: { name: 'Notifications' } }]"
+				:items="[{ label: 'Thông báo', route: { name: 'Notifications' } }]"
 			>
 				<template #actions>
 					<TabButtons
-						:buttons="[{ label: 'Unread', active: true }, { label: 'Read' }]"
+						:buttons="[{ label: 'Chưa đọc', active: true }, { label: 'Đọc' }]"
 						v-model="activeTab"
 					/>
 				</template>
@@ -28,13 +28,13 @@
 					<template #actions>
 						<Button
 							variant="ghost"
-							label="View"
+							label="Xem"
 							@click="openNotification(notification)"
 						/>
 					</template>
 				</ListItem>
 				<div v-if="!notifications?.length" class="text-base text-gray-600">
-					No Notifications
+					Không có thông báo
 				</div>
 			</div>
 		</div>
@@ -49,7 +49,7 @@ export default {
 	name: 'Notifications',
 	pageMeta() {
 		return {
-			title: 'Notifications'
+			title: 'Thông báo'
 		};
 	},
 	components: {
@@ -57,12 +57,12 @@ export default {
 	},
 	data() {
 		return {
-			activeTab: 'Unread'
+			activeTab: 'Chưa đọc'
 		};
 	},
 	resources: {
 		unreadNotifications() {
-			if (this.activeTab !== 'Unread') return;
+			if (this.activeTab !== 'Chưa đọc') return;
 			return {
 				url: 'press.api.notifications.get_notifications',
 				params: {
@@ -73,7 +73,7 @@ export default {
 			};
 		},
 		readNotifications() {
-			if (this.activeTab !== 'Read') return;
+			if (this.activeTab !== 'Đọc') return;
 			return {
 				url: 'press.api.notifications.get_notifications',
 				params: {
@@ -104,7 +104,7 @@ export default {
 	},
 	computed: {
 		notifications() {
-			return this.activeTab === 'Unread'
+			return this.activeTab === 'Chưa đọc'
 				? this.$resources.unreadNotifications.data
 				: this.$resources.readNotifications.data;
 		}

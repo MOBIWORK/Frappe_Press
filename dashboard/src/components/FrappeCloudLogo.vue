@@ -1,5 +1,6 @@
 <template>
-	<svg
+	<img src="../assets/cropped-mbw.cloud_11-32x32.png" />
+	<!-- <svg
 		width="48"
 		height="48"
 		viewBox="0 0 48 48"
@@ -91,5 +92,5 @@
 				/>
 			</filter>
 		</defs>
-	</svg>
+	</svg> -->
 </template>

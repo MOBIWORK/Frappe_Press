@@ -10,7 +10,7 @@
 						<FCLogo class="h-8 w-8 rounded" />
 						<div class="ml-2 flex flex-col">
 							<div class="text-base font-medium leading-none text-gray-900">
-								Frappe Cloud
+								MBW Cloud
 							</div>
 							<div
 								v-if="$account.user"
@@ -58,7 +58,7 @@
 							<span class="mr-1.5">
 								<FeatherIcon name="inbox" class="h-4.5 w-4.5 text-gray-700" />
 							</span>
-							<span class="text-sm">Notifications </span>
+							<span class="text-sm">Thông báo </span>
 							<span
 								v-if="unreadNotificationsCount > 0"
 								class="ml-auto rounded bg-gray-400 px-1.5 py-0.5 text-xs text-white"
@@ -174,7 +174,7 @@ export default {
 		items() {
 			return [
 				{
-					label: 'Sites',
+					label: 'Trang Web',
 					route: '/sites',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/sites');

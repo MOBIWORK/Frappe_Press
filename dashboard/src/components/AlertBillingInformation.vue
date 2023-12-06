@@ -1,5 +1,5 @@
 <template>
-	<Alert title="Account Setup" v-if="!$account.hasBillingInfo">
+	<Alert title="Thiết lập tài khoản" v-if="!$account.hasBillingInfo">
 		{{ message }}
 		<template #actions>
 			<Button
@@ -12,7 +12,7 @@
 				class="whitespace-nowrap"
 			>
 				{{
-					isDefaultPaymentModeCard ? 'Add Balance' : 'Add Billing Information'
+					isDefaultPaymentModeCard ? 'Thêm Số Dư' : 'Thêm thông tin thanh toán'
 				}}
 			</Button>
 		</template>
@@ -55,9 +55,9 @@ export default {
 		},
 		message() {
 			if (this.isDefaultPaymentModeCard) {
-				return "We couldn't verify your card with micro charge. Please add some balance to your account to start creating sites.";
+				return 'Chúng tôi không thể xác minh thẻ của bạn bằng khoản phí vi mô. Vui lòng thêm một số số dư vào tài khoản của bạn để bắt đầu tạo trang web.';
 			} else {
-				return "You haven't added your billing information yet. Add it to start creating sites.";
+				return 'Bạn chưa thêm thông tin thanh toán của mình. Thêm nó để bắt đầu tạo trang web.';
 			}
 		}
 	}
