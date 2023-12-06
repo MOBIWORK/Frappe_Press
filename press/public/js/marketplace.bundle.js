@@ -42,21 +42,21 @@ function saveInput(e) {
 	if (arr_search[0].includes('?')) {
 		var check_text_search = 0;
 		for (const x in arr_search) {
-			if (arr_search[x].includes('text_search')) {
-				arr_search[x] = `text_search=${searchText}`;
+			if (arr_search[x].includes('text_search=')) {
+				var text = arr_search[x].split('=');
+				arr_search[x] = text[0] + `=${searchText}`;
 				check_text_search += 1;
 			}
 		}
 		if (check_text_search == 0) {
 			arr_search[arr_search.length] = `text_search=${searchText}`;
 		}
-
 		new_str_search = arr_search.join('&');
 	} else {
 		new_str_search = `?text_search=${searchText}`;
 	}
 
-	location.href = '/marketplace/' + new_str_search;
+	location.href = '/marketplace' + new_str_search;
 }
 const processChange = debounce((e) => saveInput(e));
 
