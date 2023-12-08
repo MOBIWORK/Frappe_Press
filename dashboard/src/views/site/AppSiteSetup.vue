@@ -53,7 +53,7 @@
 					size="md"
 				/>
 				<ErrorMessage
-					:message="siteProgress.data?.error ? 'An error occurred' : null"
+					:message="siteProgress.data?.error ? 'Có lỗi xảy ra' : null"
 				/>
 			</div>
 			<div v-else-if="state == 'Site Created'">

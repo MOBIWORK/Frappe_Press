@@ -1,7 +1,7 @@
 <template>
 	<LineChart
 		type="time"
-		title="Daily Usage"
+		title="Sử dụng hằng ngày"
 		:key="dailyUsageData"
 		:data="dailyUsageData"
 		unit="seconds"
@@ -14,7 +14,7 @@
 				class="text-base text-gray-600 hover:text-gray-700"
 				:to="`/sites/${site.name}/analytics`"
 			>
-				All analytics →
+				Phân tích →
 			</router-link>
 		</template>
 	</LineChart>

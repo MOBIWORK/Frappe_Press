@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<label class="text-lg font-semibold"> Choose a hostname </label>
+		<label class="text-lg font-semibold"> Chọn một tên máy chủ </label>
 		<p class="text-base text-gray-700">
-			Give your site a unique name. It can only contain alphanumeric characters
-			and dashes.
+			Đặt tên độc đáo cho trang web của bạn. Chỉ có thể chứa các ký tự chữ và số
+			cũng như dấu gạch ngang.
 		</p>
 		<div class="mt-4 flex">
 			<input
@@ -23,7 +23,7 @@
 				class="text-sm text-green-600"
 				role="alert"
 			>
-				{{ modelValue }}.{{ domain }} is available
+				{{ modelValue }}.{{ domain }} hợp lệ
 			</div>
 			<ErrorMessage :message="errorMessage" />
 		</div>
@@ -68,7 +68,7 @@ export default {
 					domain: this.domain
 				});
 				if (subdomainTaken) {
-					error = `${subdomain}.${this.domain} already exists.`;
+					error = `${subdomain}.${this.domain} đã tồn tại.`;
 				} else {
 					this.subdomainAvailable = true;
 				}

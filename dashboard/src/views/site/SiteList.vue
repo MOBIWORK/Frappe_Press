@@ -29,7 +29,11 @@
 				</div>
 				<div class="w-1/12">
 					<div class="text-base text-gray-700">
-						{{ site.plan ? `${$planTitle(site.plan)}/mo` : 'No Plan Set' }}
+						{{
+							site.plan
+								? `${$planTitle(site.plan)}/tháng`
+								: 'Không có gói được thiết lập'
+						}}
 					</div>
 				</div>
 			</div>

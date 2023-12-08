@@ -24,7 +24,7 @@ badge_gray, badge_green, five_star_rating -%} {%- block title -%}
 	role="dialog"
 	aria-modal="true"
 >
-	<div class="fixed inset-0 w-screen overflow-y-auto">
+	<div class="fixed inset-0 w-screen overflow-y-auto z-10">
 		<div
 			onclick="document.getElementById('long_description').classList.add('hidden')"
 			class="fixed inset-0 h-screen w-screen bg-gray-900 bg-opacity-75 transition-opacity"
@@ -78,12 +78,12 @@ badge_gray, badge_green, five_star_rating -%} {%- block title -%}
 <!-- modal price -->
 <div
 	id="price"
-	class="z-10 hidden"
+	class="hidden"
 	aria-labelledby="modal-title"
 	role="dialog"
 	aria-modal="true"
 >
-	<div class="fixed inset-0 w-screen overflow-y-auto">
+	<div class="fixed inset-0 w-screen overflow-y-auto z-10">
 		<div
 			onclick="document.getElementById('price').classList.add('hidden')"
 			class="fixed inset-0 h-screen w-screen bg-gray-900 bg-opacity-75 transition-opacity"
@@ -139,7 +139,7 @@ badge_gray, badge_green, five_star_rating -%} {%- block title -%}
 	role="dialog"
 	aria-modal="true"
 >
-	<div class="fixed inset-0 w-screen overflow-y-auto">
+	<div class="fixed inset-0 w-screen overflow-y-auto z-10">
 		<div
 			onclick="document.getElementById('evaluate').classList.add('hidden')"
 			class="fixed inset-0 h-screen w-screen bg-gray-900 bg-opacity-75 transition-opacity"
@@ -677,7 +677,9 @@ badge_gray, badge_green, five_star_rating -%} {%- block title -%}
 								>
 								<div class="flex flex-col mt-4">
 									{%- if review.developer_reply|length > 1-%}
-									<div class="mb-3 text-black cursor-pointer hover:underline">
+									<div class="mb-3 text-black cursor-pointer hover:underline"
+										onclick="document.getElementById('evaluate').classList.toggle('hidden')"
+									>
 										Xem ({{ review.developer_reply|length - 1 }}) trả lời trước
 									</div>
 									{%- endif -%} {%- set count_reply = namespace(value=0) -%} {%

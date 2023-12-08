@@ -17,11 +17,11 @@
 			<div v-else>
 				<Button
 					:loading="true"
-					loading-text="Loading..."
+					loading-text="Đang tải..."
 					v-if="$resources.log.loading"
 				/>
 				<span v-else class="text-base text-gray-600">
-					{{ logName ? 'Invalid Log' : 'No log selected' }}
+					{{ logName ? 'Log không hợp lệ' : 'Không có log nào được chọn' }}
 				</span>
 			</div>
 		</div>

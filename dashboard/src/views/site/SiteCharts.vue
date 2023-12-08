@@ -3,7 +3,7 @@
 		<ErrorMessage :message="$resources.analytics.error" />
 		<FormControl
 			class="w-32"
-			label="Duration"
+			label="Khoảng thời gian"
 			type="select"
 			:options="durationOptions"
 			v-model="duration"
@@ -11,7 +11,7 @@
 		<div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
 			<LineChart
 				type="time"
-				title="Usage Counter"
+				title="Bộ đếm sử dụng"
 				:key="usageCounterData"
 				:data="usageCounterData"
 				unit="seconds"
@@ -26,7 +26,7 @@
 
 			<LineChart
 				type="time"
-				title="Requests"
+				title="Yêu cầu"
 				:key="requestCountData"
 				:data="requestCountData"
 				unit="requests"
@@ -35,7 +35,7 @@
 			/>
 			<LineChart
 				type="time"
-				title="CPU Usage"
+				title="Sử dụng CPU"
 				:key="requestTimeData"
 				:data="requestTimeData"
 				unit="seconds"
@@ -44,7 +44,7 @@
 			/>
 			<LineChart
 				type="time"
-				title="Background Jobs"
+				title="Công việc nền"
 				:key="jobCountData"
 				:data="jobCountData"
 				unit="jobs"
@@ -53,7 +53,7 @@
 			/>
 			<LineChart
 				type="time"
-				title="Background Jobs CPU Usage"
+				title="Công việc nền sử dụng CPU"
 				:key="jobTimeData"
 				:data="jobTimeData"
 				unit="seconds"
@@ -63,7 +63,7 @@
 
 			<BarChart
 				class="col-span-2"
-				title="Request Count by Path"
+				title="Số lượng yêu cầu theo đường dẫn"
 				:key="requestCountByPathData"
 				:data="requestCountByPathData"
 				unit="requests"
@@ -72,7 +72,7 @@
 			/>
 			<BarChart
 				class="col-span-2"
-				title="Request Duration by Path"
+				title="Thời lượng yêu cầu theo đường dẫn"
 				:key="requestDurationByPathData"
 				:data="requestDurationByPathData"
 				unit="seconds"
@@ -101,11 +101,11 @@ export default {
 		return {
 			duration: '7d',
 			durationOptions: [
-				{ label: '1 hour', value: '1h' },
-				{ label: '6 hours', value: '6h' },
-				{ label: '24 hours', value: '24h' },
-				{ label: '7 days', value: '7d' },
-				{ label: '15 days', value: '15d' }
+				{ label: '1 giờ', value: '1h' },
+				{ label: '6 giờ', value: '6h' },
+				{ label: '24 giờ', value: '24h' },
+				{ label: '7 ngày', value: '7d' },
+				{ label: '15 ngày', value: '15d' }
 			]
 		};
 	},

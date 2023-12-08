@@ -2,9 +2,9 @@
 	<WizardCard>
 		<div>
 			<div class="mb-6 text-center">
-				<h1 class="text-2xl font-bold sm:text-center">New Bench</h1>
+				<h1 class="text-2xl font-bold sm:text-center">Bench mới</h1>
 				<p v-if="serverTitle" class="text-base text-gray-700">
-					Bench will be created on server
+					Bench sẽ được tạo trên máy chủ
 					<span class="font-medium">{{ serverTitle.slice(0, -14) }}</span>
 				</p>
 			</div>
@@ -14,18 +14,18 @@
 			<div class="space-y-8 sm:space-y-6" v-else>
 				<div>
 					<label class="text-lg font-semibold">
-						Choose a name for your bench
+						Chọn một tên cho Bench của bạn
 					</label>
 					<p class="text-base text-gray-700">
-						Name your bench based on its purpose. For e.g., Personal Websites,
-						Staging Bench, etc.
+						Đặt tên cho bench dựa trên mục đích của nó. Ví dụ, Websites Cá nhân,
+						Bench Staging, v.v.
 					</p>
 					<FormControl class="mt-2" v-model="benchTitle" />
 				</div>
 				<div v-if="regionOptions.length > 0">
-					<h2 class="text-lg font-semibold">Select Region</h2>
+					<h2 class="text-lg font-semibold">Chọn Khu vực</h2>
 					<p class="text-base text-gray-700">
-						Select the datacenter region where your bench should be created
+						Chọn khu vực trung tâm dữ liệu nơi Bench của bạn sẽ được tạo
 					</p>
 					<div class="mt-2">
 						<RichSelect
@@ -36,9 +36,9 @@
 					</div>
 				</div>
 				<div>
-					<label class="text-lg font-semibold"> Select a Frappe version </label>
+					<label class="text-lg font-semibold"> Chọn phiên bản Frappe </label>
 					<p class="text-base text-gray-700">
-						Select a Frappe version for your bench.
+						Chọn phiên bản Frappe cho Bench của bạn.
 					</p>
 					<FormControl
 						class="mt-2"
@@ -49,10 +49,12 @@
 				</div>
 
 				<div v-if="selectedVersionName">
-					<label class="text-lg font-semibold"> Select apps to install </label>
+					<label class="text-lg font-semibold">
+						Chọn ứng dụng để cài đặt
+					</label>
 					<p class="text-base text-gray-700">
-						These apps will be available for sites on your bench. You can also
-						add apps to your bench later.
+						Những ứng dụng này sẽ có sẵn cho các trang web trên Bench của bạn.
+						Bạn cũng có thể thêm ứng dụng vào Bench của bạn sau này.
 					</p>
 					<div class="mt-4">
 						<AppSourceSelector
@@ -74,8 +76,8 @@
 						for="region-consent"
 						class="ml-1 text-sm font-semibold text-gray-900"
 					>
-						I agree that the laws of the region selected by me shall stand
-						applicable to me and Frappe.
+						Tôi đồng ý rằng các luật pháp của khu vực được tôi chọn sẽ áp dụng
+						đối với tôi và Frappe.
 					</label>
 				</div>
 
@@ -87,7 +89,7 @@
 						:loading="$resources.createBench.loading"
 						@click="$resources.createBench.submit()"
 					>
-						Create Bench
+						Tạo Bench
 					</Button>
 				</div>
 			</div>
@@ -154,18 +156,18 @@ export default {
 				},
 				validate() {
 					if (!this.benchTitle) {
-						return 'Bench Title cannot be blank';
+						return 'Tiêu đề Bench không thể để trống';
 					}
 					if (!this.selectedVersionName) {
-						return 'Select a version to create bench';
+						return 'Chọn một phiên bản để tạo Bench';
 					}
 					if (this.selectedApps.length < 1) {
-						return 'Select atleast one app to create bench';
+						return 'Chọn ít nhất một ứng dụng để tạo Bench';
 					}
 
 					if (!this.agreedToRegionConsent) {
 						document.getElementById('region-consent').focus();
-						return 'Please agree to the above consent to create bench';
+						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo Bench';
 					}
 				},
 				onSuccess(benchName) {

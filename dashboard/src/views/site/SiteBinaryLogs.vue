@@ -14,7 +14,7 @@
 					{ label: 'Query', name: 'query', class: 'w-9/12' }
 				]"
 				:data="formatData"
-				title="MariaDB Binary Log Report"
+				title="Báo cáo Binary Log của MariaDB"
 			/>
 			<div
 				class="px-2 py-2 text-base text-gray-600"
@@ -26,7 +26,7 @@
 				class="py-2 text-base text-gray-600"
 				v-else-if="$resources.binaryLogs.data.length == 0"
 			>
-				No data
+				Không có dữ liệu
 			</div>
 			<Button
 				v-if="$resources.binaryLogs.data && $resources.binaryLogs.data.length"

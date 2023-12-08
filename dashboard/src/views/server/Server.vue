@@ -152,7 +152,7 @@ export default {
 				},
 				onError() {
 					notify({
-						title: 'An error occurred',
+						title: 'Có lỗi xảy ra',
 						color: 'red',
 						icon: 'x'
 					});

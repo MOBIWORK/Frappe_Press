@@ -1,7 +1,7 @@
 <template>
 	<CardWithDetails
 		title="Logs"
-		subtitle="Available logs for your site"
+		subtitle="Log có sẵn cho trang web của bạn"
 		:showDetails="logName"
 	>
 		<div v-if="$resources.logs.data && $resources.logs.data.length">

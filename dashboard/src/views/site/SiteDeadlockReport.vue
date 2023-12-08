@@ -14,7 +14,7 @@
 					{ label: 'Query', name: 'query', class: 'w-10/12' }
 				]"
 				:data="formatDeadlockData"
-				title="MariaDB Deadlock Report"
+				title="Báo cáo Deadlock của MariaDB"
 			/>
 			<div
 				class="px-2 py-2 text-base text-gray-600"
@@ -32,7 +32,7 @@
 					$resources.deadlockReport.data.length == 0
 				"
 			>
-				No data
+				Không có dữ liệu
 			</div>
 			<Button
 				v-if="

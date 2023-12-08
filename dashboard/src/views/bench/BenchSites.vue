@@ -2,11 +2,11 @@
 	<div class="space-y-8">
 		<Table
 			:columns="[
-				{ label: 'Site Name', name: 'name', width: 2 },
-				{ label: 'Status', name: 'status' },
-				{ label: 'Region', name: 'region' },
-				{ label: 'Tags', name: 'tags' },
-				{ label: 'Plan', name: 'plan' },
+				{ label: 'Tên trang web', name: 'name', width: 2 },
+				{ label: 'Trạng thái', name: 'status' },
+				{ label: 'Khu vực', name: 'region' },
+				{ label: 'Thẻ', name: 'tags' },
+				{ label: 'Gói', name: 'plan' },
 				{ label: '', name: 'actions', width: 0.5 }
 			]"
 			:rows="versions"
@@ -16,7 +16,7 @@
 			<div class="flex items-center justify-center">
 				<LoadingText class="mt-8" v-if="$resources.versions.loading" />
 				<div v-else-if="rows.length === 0" class="mt-8">
-					<div class="text-base text-gray-700">No Sites</div>
+					<div class="text-base text-gray-700">Không có trang web</div>
 				</div>
 			</div>
 			<div
@@ -42,7 +42,7 @@
 					<div class="flex items-center space-x-2">
 						<Button
 							variant="ghost"
-							label="Show Apps"
+							label="Hiển thị ứng dụng"
 							@click="
 								$resources.versionApps.submit({ name: group.name });
 								showAppsDialog = true;
@@ -63,7 +63,7 @@
 					v-if="!group.sites?.length"
 					class="flex items-center justify-center border-b py-4.5"
 				>
-					<div class="text-base text-gray-600">No Sites</div>
+					<div class="text-base text-gray-600">Không có trang web</div>
 				</div>
 				<TableRow
 					v-for="(row, index) in group.sites"
@@ -176,7 +176,7 @@
 	>
 		<template #body-content>
 			<FormControl
-				label="Reason for logging in as Administrator"
+				label="Lý do đăng nhập với tư cách quản trị viên"
 				type="textarea"
 				v-model="reasonForAdminLogin"
 				required
@@ -192,8 +192,7 @@
 					<h4 class="text-base font-semibold text-gray-700">Step 1</h4>
 					<div class="space-y-1">
 						<p class="text-base">
-							Execute the following shell command to store the SSH certificate
-							locally.
+							Thực hiện lệnh shell sau để lưu chứng chỉ SSH cục bộ.
 						</p>
 						<ClickToCopyField :textContent="certificateCommand" />
 					</div>
@@ -203,7 +202,7 @@
 					<h4 class="text-base font-semibold text-gray-700">Step 2</h4>
 					<div class="space-y-1">
 						<p class="text-base">
-							Execute the following shell command to SSH into your bench
+							Thực hiện lệnh shell sau để kết nối SSH vào bench của bạn.
 						</p>
 						<ClickToCopyField :textContent="sshCommand" />
 					</div>
@@ -211,16 +210,16 @@
 			</div>
 			<div v-if="!certificate">
 				<p class="mb-4 text-base">
-					You will need an SSH certificate to get SSH access to your bench. This
-					certificate will work only with your public-private key pair and will
-					be valid for 6 hours.
+					Bạn sẽ cần một chứng chỉ SSH để có quyền truy cập SSH vào bench của
+					bạn. Chứng chỉ này chỉ hoạt động với cặp khóa public-private của bạn
+					và sẽ có hiệu lực trong 6 giờ.
 				</p>
 				<p class="text-base">
-					Please refer to the
+					Vui lòng tham khảo tại
 					<a href="/docs/benches/ssh" class="underline"
-						>SSH Access documentation</a
+						>Tài liệu truy cập SSH</a
 					>
-					for more details.
+					để biết thêm chi tiết.
 				</p>
 			</div>
 		</template>
@@ -230,7 +229,7 @@
 				@click="$resources.generateCertificate.fetch()"
 				variant="solid"
 				class="w-full"
-				>Generate SSH Certificate</Button
+				>Tạo chứng chỉ SSH</Button
 			>
 		</template>
 		<ErrorMessage
@@ -334,10 +333,10 @@ export default {
 				url: 'press.api.bench.update',
 				onSuccess() {
 					notify({
-						title: 'Site update scheduled successfully',
-						message: `All sites in ${
+						title: 'Lên lịch cập nhật trang web thành công',
+						message: `Tất cả các trang web trong ${
 							this.versions[this.selectedVersionIndex]?.name
-						} will be updated to the latest version`,
+						} sẽ được cập nhật lên phiên bản mới nhất`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -357,13 +356,13 @@ export default {
 		dropdownItems(site) {
 			return [
 				{
-					label: 'Visit Site',
+					label: 'Truy cập trang web',
 					onClick: () => {
 						window.open(`https://${site.name}`, '_blank');
 					}
 				},
 				{
-					label: 'Login As Admin',
+					label: 'Đăng nhập với tư cách quản trị viên',
 					onClick: () => {
 						if (this.$account.team.name === site.team) {
 							return this.$resources.loginAsAdmin.submit({
@@ -380,7 +379,7 @@ export default {
 		benchDropdownItems(i) {
 			return [
 				{
-					label: 'View in Desk',
+					label: 'Xem trong Desk',
 					onClick: () => {
 						window.open(
 							`${window.location.protocol}//${window.location.host}/app/bench/${this.versions[i].name}`,
@@ -390,7 +389,7 @@ export default {
 					condition: () => this.$account.user.user_type === 'System User'
 				},
 				{
-					label: 'SSH Access',
+					label: 'Truy cập SSH',
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.showSSHDialog = true;
@@ -402,7 +401,7 @@ export default {
 						this.permissions.sshAccess
 				},
 				{
-					label: 'View Logs',
+					label: 'Xem Logs',
 					onClick: () => {
 						this.$router.push(
 							`/benches/${this.bench.name}/logs/${this.versions[i].name}/`
@@ -411,7 +410,7 @@ export default {
 					condition: () => this.versions[i].status === 'Active'
 				},
 				{
-					label: 'Update All Sites',
+					label: 'Cập nhật tất cả các trang web',
 					onClick: () => {
 						this.$resources.updateAllSites.submit({
 							name: this.versions[i]?.name
@@ -423,7 +422,7 @@ export default {
 						this.versions[i].sites.length > 0
 				},
 				{
-					label: 'Restart Bench',
+					label: 'Khởi động lại Bench',
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.confirmRestart();
@@ -433,7 +432,7 @@ export default {
 						this.permissions.restartBench
 				},
 				{
-					label: 'Build Assets',
+					label: 'Xây dựng Assets',
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.confirmRebuild();
@@ -443,7 +442,7 @@ export default {
 						this.permissions.rebuildBench
 				},
 				{
-					label: 'Create Code Server',
+					label: 'Tạo mã máy chủ',
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.showCodeServerDialog = true;
@@ -456,7 +455,7 @@ export default {
 			this.errorMessage = '';
 
 			if (!this.reasonForAdminLogin.trim()) {
-				this.errorMessage = 'Reason is required';
+				this.errorMessage = 'Yêu cầu một lý do';
 				return;
 			}
 
@@ -469,12 +468,11 @@ export default {
 		},
 		confirmRestart() {
 			this.$confirm({
-				title: 'Restart Bench',
+				title: 'Khởi động lại bench',
 				message: `
-					<b>bench restart</b> command will be executed on your bench. This will temporarily stop all web and backgound workers. Are you sure
-					you want to run this command?
+					Lệnh <b>bench restart</b> sẽ được thực hiện trên bench của bạn. Điều này sẽ tạm dừng tất cả các web và workers nền. Bạn có chắc chắn muốn chạy lệnh này không?
 				`,
-				actionLabel: 'Restart Bench',
+				actionLabel: 'Khởi động lại bench',
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.restartBench.submit();
@@ -484,12 +482,11 @@ export default {
 		},
 		confirmRebuild() {
 			this.$confirm({
-				title: 'Build Assets',
+				title: 'Xây dựng Assets',
 				message: `
-					<b>bench build</b> command will be executed on your bench. This will regenerate all static assets. Are you sure
-					you want to run this command?
+					Lệnh <b>bench build</b> sẽ được thực hiện trên bench của bạn. Điều này sẽ tạo lại tất cả các asset tĩnh. Bạn có chắc chắn muốn chạy lệnh này không?
 				`,
-				actionLabel: 'Build Assets',
+				actionLabel: 'Xây dựng Assets',
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.rebuildBench.submit();

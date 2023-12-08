@@ -5,9 +5,9 @@
 		</div>
 		<div class="space-y-6" v-if="$resources.versions.data">
 			<div v-if="!this.privateBench">
-				<h2 class="text-lg font-semibold">Select Frappe version</h2>
+				<h2 class="text-lg font-semibold">Chọn phiên bản Frappe</h2>
 				<p class="text-base text-gray-700">
-					Select the Frappe version for your site
+					Chọn phiên bản Frappe cho trang web của bạn
 				</p>
 				<div class="mt-4">
 					<FormControl
@@ -18,9 +18,9 @@
 				</div>
 			</div>
 			<div v-if="regionOptions.length > 0">
-				<h2 class="text-lg font-semibold">Select Region</h2>
+				<h2 class="text-lg font-semibold">Chọn Khu vực</h2>
 				<p class="text-base text-gray-700">
-					Select the datacenter region where your site should be created
+					Chọn khu vực trung tâm dữ liệu nơi trang web của bạn sẽ được tạo
 				</p>
 				<div class="mt-4">
 					<RichSelect
@@ -31,14 +31,15 @@
 				</div>
 			</div>
 			<div v-if="publicApps.length > 1 || privateApps.length">
-				<h2 class="text-lg font-semibold">Select apps to install</h2>
+				<h2 class="text-lg font-semibold">Chọn ứng dụng cài đặt</h2>
 				<p class="text-base text-gray-700">
-					Choose apps to install on your site. You can select apps published on
-					marketplace or your private apps.
+					Chọn các ứng dụng để cài đặt trên trang web của bạn. Bạn có thể chọn
+					các ứng dụng được xuất bản trên thị trường hoặc các ứng dụng riêng của
+					bạn.
 				</p>
 				<div class="mt-4 space-y-4">
 					<div v-if="publicApps.length">
-						<h3 class="sr-only">Marketplace Apps</h3>
+						<h3 class="sr-only">Ứng dụng từ thị trường</h3>
 						<div
 							class="-mx-2 mt-4 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
@@ -66,7 +67,7 @@
 										target="_blank"
 										@click.stop
 									>
-										Details
+										Chi tiết
 									</a>
 									<span class="text-sm leading-snug text-gray-700" v-else>
 										{{ publicApp.repository_owner }}/{{ publicApp.repository }}
@@ -77,7 +78,7 @@
 						</div>
 					</div>
 					<div v-if="privateApps.length > 0">
-						<h3 class="text-sm font-medium">Your Private Apps</h3>
+						<h3 class="text-sm font-medium">Ứng dụng Riêng của bạn</h3>
 						<div
 							class="mt- -mx-2 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
@@ -100,7 +101,7 @@
 			<div v-if="selectedApps.includes('erpnext')">
 				<FormControl
 					type="checkbox"
-					label="I am okay if my details are shared with local partner"
+					label="Tôi đồng ý nếu thông tin của tôi được chia sẻ với đối tác địa phương"
 					@change="
 						val => $emit('update:shareDetailsConsent', val.target.checked)
 					"

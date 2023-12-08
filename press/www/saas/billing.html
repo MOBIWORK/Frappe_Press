@@ -285,7 +285,7 @@ address_wrapper, email_verify_wrapper -%} {% block content %}
 			})
 			.then((r) => {
 				if (r.exc) {
-					console.error('An error occurred', r.exc);
+					console.error('Có lỗi xảy ra', r.exc);
 					return;
 				}
 				return r;

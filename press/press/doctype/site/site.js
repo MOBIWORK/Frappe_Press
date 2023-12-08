@@ -28,7 +28,7 @@ frappe.ui.form.on('Site', {
 					<div class="col-sm-4">Database Usage: ${frm.doc.current_database_usage}%</div>
 					<div class="col-sm-4">Disk Usage: ${frm.doc.current_disk_usage}%</div>
 				</div>
-			</div>`,
+			</div>`
 		);
 		frm.add_web_link(`https://${frm.doc.name}`, __('Visit Site'));
 		frm.add_web_link(`/dashboard/sites/${frm.doc.name}`, __('Visit Dashboard'));
@@ -73,12 +73,12 @@ frappe.ui.form.on('Site', {
 					} else {
 						frappe.throw(
 							__(
-								"Couldn't retrieve account. Check Error Log for more information",
-							),
+								"Couldn't retrieve account. Check Error Log for more information"
+							)
 						);
 					}
 				},
-				__('Actions'),
+				__('Actions')
 			);
 		}
 
@@ -91,7 +91,7 @@ frappe.ui.form.on('Site', {
 				() => {
 					frm.call(method).then((r) => frm.refresh());
 				},
-				__('Actions'),
+				__('Actions')
 			);
 		});
 		[
@@ -144,10 +144,10 @@ frappe.ui.form.on('Site', {
 					() => {
 						frappe.confirm(
 							`Are you sure you want to ${label.toLowerCase()} this site?`,
-							() => frm.call(method).then((r) => frm.refresh()),
+							() => frm.call(method).then((r) => frm.refresh())
 						);
 					},
-					__('Actions'),
+					__('Actions')
 				);
 			}
 		});
@@ -156,10 +156,10 @@ frappe.ui.form.on('Site', {
 			__('Force Archive'),
 			() => {
 				frappe.confirm(`Are you sure you want to force drop this site?`, () =>
-					frm.call('archive', { force: true }).then((r) => frm.refresh()),
+					frm.call('archive', { force: true }).then((r) => frm.refresh())
 				);
 			},
-			__('Actions'),
+			__('Actions')
 		);
 
 		[
@@ -183,10 +183,10 @@ frappe.ui.form.on('Site', {
 								})
 								.then((r) => frm.refresh());
 						},
-						__('Provide Reason'),
+						__('Provide Reason')
 					);
 				},
-				__('Actions'),
+				__('Actions')
 			);
 		});
 		frm.toggle_enable(['host_name'], frm.doc.status === 'Active');
@@ -210,7 +210,7 @@ Password: ${r.message.password}
 
 						frappe.msgprint(frappe.markdown(message), 'Database Credentials');
 					}),
-				__('Actions'),
+				__('Actions')
 			);
 		}
 
@@ -239,7 +239,7 @@ Password: ${r.message.password}
 				});
 				dialog.show();
 			},
-			__('Actions'),
+			__('Actions')
 		);
 
 		frm.add_custom_button(
@@ -284,7 +284,7 @@ Password: ${r.message.password}
 
 				dialog.show();
 			},
-			__('Actions'),
+			__('Actions')
 		);
 	},
 });
@@ -304,13 +304,13 @@ function login_as_admin(site_name, reason = null) {
 				if (res) {
 					window.open(
 						`https://${site_name}/desk?sid=${res.message.sid}`,
-						'_blank',
+						'_blank'
 					);
 				}
 			},
 			(error) => {
 				console.log(error);
-				frappe.throw(__(`An error occurred!!`));
-			},
+				frappe.throw(__(`Có lỗi xảy ra!!`));
+			}
 		);
 }

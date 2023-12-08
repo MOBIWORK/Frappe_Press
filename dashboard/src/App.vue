@@ -10,7 +10,7 @@
 			>
 				<div class="flex-1">
 					<Navbar class="sm:hidden" v-if="!$route.meta.isLoginPage" />
-					<div class="mx-auto flex h-full flex-row justify-start">
+					<div class="mx-auto flex min-h-full flex-row justify-start">
 						<Sidebar
 							class="sticky top-0 hidden w-64 flex-shrink-0 sm:flex"
 							v-if="$auth.isLoggedIn && !$route.meta.hideSidebar"

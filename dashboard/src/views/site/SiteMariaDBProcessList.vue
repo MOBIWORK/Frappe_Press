@@ -8,7 +8,7 @@
 	<div v-else-if="$resources.getPlan?.data?.monitor_access">
 		<Card>
 			<Report
-				:title="`MariaDB Process List`"
+				:title="`Danh sách quy trình của MariaDB`"
 				:columns="[
 					{ label: 'ID', name: 'id', class: 'w-1/12' },
 					{ label: 'User', name: 'user', class: 'w-2/12' },
@@ -43,7 +43,7 @@
 					$resources.processList.data.length == 0
 				"
 			>
-				No data
+				Không có dữ liệu
 			</div>
 		</Card>
 	</div>

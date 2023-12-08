@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="Regions"
-		subtitle="Regions available for your bench"
+		title="Khu vực"
+		subtitle="Các khu vực có sẵn cho bench của bạn"
 		:loading="$resources.regions.loading"
 	>
 		<template #actions>
@@ -14,7 +14,7 @@
 					showAddRegionDialog = true;
 				"
 			>
-				Add Region
+				Thêm Khu vực
 			</Button>
 		</template>
 
@@ -29,7 +29,7 @@
 		</div>
 
 		<Dialog
-			:options="{ title: 'Select secondary region for your bench' }"
+			:options="{ title: 'Chọn khu vực phụ cho bench của bạn.' }"
 			v-model="showAddRegionDialog"
 		>
 			<template v-slot:body-content>
@@ -55,7 +55,7 @@
 						})
 					"
 				>
-					Add
+					Thêm
 				</Button>
 			</template>
 		</Dialog>

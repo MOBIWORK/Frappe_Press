@@ -74,7 +74,6 @@ if (import.meta.env.DEV) {
 	}).then(values => {
 		for (let key in values) {
 			window[key] = values[key];
-			console.log(window[key], values[key]);
 		}
 		app.mount('#app');
 	});
@@ -89,7 +88,7 @@ app.config.errorHandler = (error, instance) => {
 		if (error.messages) errorMessage = error.messages.join('\n');
 		notify({
 			icon: 'x',
-			title: 'An error occurred',
+			title: 'Có lỗi xảy ra',
 			message: errorMessage,
 			color: 'red'
 		});

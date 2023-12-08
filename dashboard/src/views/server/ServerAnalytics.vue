@@ -2,7 +2,7 @@
 	<div class="space-y-4">
 		<FormControl
 			class="w-32"
-			label="Duration"
+			label="Khoảng thời gian"
 			type="select"
 			:options="
 				durationOptions.map(option => ({ label: option, value: option }))

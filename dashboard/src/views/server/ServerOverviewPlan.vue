@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="Plan"
-		:subtitle="'Upgrade or downgrade your plan based on your usage'"
+		title="Gói"
+		:subtitle="'Nâng cấp hoặc hạ cấp kế hoạch của bạn dựa trên việc sử dụng của bạn'"
 	>
 		<template #actions>
 			<Button
@@ -12,7 +12,7 @@
 					}
 				"
 			>
-				Change
+				Thay đổi
 			</Button>
 		</template>
 
@@ -21,7 +21,7 @@
 			<div class="ml-4">
 				<h4 class="text-4xl font-semibold text-gray-900">
 					{{ $planTitle(plan) }}
-					<span v-if="plan.price_usd > 0" class="text-lg"> /mo </span>
+					<span v-if="plan.price_usd > 0" class="text-lg"> /tháng </span>
 				</h4>
 				<p class="text-base text-gray-700">
 					{{ plan.vcpu }} {{ $plural(plan.vcpu, 'vCPU', 'vCPUs') }} +
@@ -45,10 +45,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Change Plan',
+				title: 'Thay đổi gói',
 				actions: [
 					{
-						label: 'Submit',
+						label: 'Gửi',
 						variant: 'solid',
 						loading: $resources.changePlan.loading,
 						onClick: () => $resources.changePlan.submit()
@@ -118,7 +118,7 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: `Plan changed to ${this.selectedPlan.plan_title}`,
+						title: `Gói đã được thay đổi thành ${this.selectedPlan.plan_title}`,
 						icon: 'check',
 						color: 'green'
 					});

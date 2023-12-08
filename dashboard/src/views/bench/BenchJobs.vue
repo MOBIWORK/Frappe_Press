@@ -1,7 +1,7 @@
 <template>
 	<AgentJobs
-		title="Jobs"
-		subtitle="History of jobs that ran on your bench"
+		title="Công việc"
+		subtitle="Lịch sử các công việc đã chạy trên bench của bạn"
 		:resource="jobResource"
 		:jobName="jobName"
 		:jobRoute="jobRoute"

@@ -275,7 +275,7 @@ export default {
 					// 	(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Please agree to the above consent to create site';
+						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo trang web';
 					}
 
 					// if (!canCreate) {

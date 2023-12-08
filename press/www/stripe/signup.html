@@ -1,6 +1,4 @@
-{%- extends "templates/erpnextsmb_signup_layout.html" -%} 
-
-{%- block content -%}
+{%- extends "templates/erpnextsmb_signup_layout.html" -%} {%- block content -%}
 
 <div
 	class="mx-auto form-container col-xl-5 col-lg-6 col-md-7 col-sm-9"
@@ -119,14 +117,11 @@
 						<span id="button-text">Add Card</span>
 					</button>
 				</div>
-
 			</form>
 		</div>
 	</div>
 </div>
-{%- endblock -%} 
-
-{%- block script -%}
+{%- endblock -%} {%- block script -%}
 <script src="/assets/press/js/form_controller.js"></script>
 <script>
 	let controller;
@@ -215,7 +210,7 @@
 			})
 			.then((r) => {
 				if (r.exc) {
-					console.error('An error occurred', r.exc);
+					console.error('Có lỗi xảy ra', r.exc);
 					return;
 				}
 				return r;

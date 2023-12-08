@@ -1,11 +1,12 @@
 <template>
 	<Alert
-		title="Site Activation"
+		title="Kích hoạt trang web"
 		v-if="site.status == 'Active' && !site.setup_wizard_complete"
 	>
 		<span>
-			Please login and complete the setup wizard on your site. Analytics will be
-			collected only after setup is complete.
+			Vui lòng đăng nhập và hoàn thành hướng dẫn thiết lập trên trang web của
+			bạn. Dữ liệu phân tích sẽ chỉ được thu thập sau khi quá trình thiết lập
+			hoàn tất.
 		</span>
 		<template #actions>
 			<Button
@@ -13,7 +14,7 @@
 				@click="$resources.loginAsAdmin.submit()"
 				:loading="$resources.loginAsAdmin.loading"
 			>
-				Login
+				Đăng nhập
 			</Button>
 		</template>
 	</Alert>

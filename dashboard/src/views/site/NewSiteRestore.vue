@@ -1,14 +1,17 @@
 <template>
 	<div>
-		<label class="text-lg font-semibold"> Restore an existing site </label>
+		<label class="text-lg font-semibold">
+			Khôi phục một trang web hiện tại
+		</label>
 		<p class="text-base text-gray-700">
-			Restore an existing site from backup files or directly from site url.
+			Khôi phục một trang web hiện tại từ tệp sao lưu hoặc trực tiếp từ URL của
+			trang web.
 		</p>
 		<div class="mt-4 grid grid-cols-2 gap-6">
 			<Button
 				v-for="tab in [
-					{ name: 'Upload Backups', key: 'backup' },
-					{ name: 'Migrate from Site URL', key: 'siteUrl' }
+					{ name: 'Tải lên tệp sao lưu', key: 'backup' },
+					{ name: 'Chuyển đổi từ URL trang web', key: 'siteUrl' }
 				]"
 				:key="tab.key"
 				:type="restoreFrom === tab.key ? 'primary' : 'secondary'"
@@ -22,21 +25,22 @@
 				class="mt-6 rounded-md border border-gray-300 px-4 py-3 text-sm text-gray-700"
 			>
 				<ol class="list-decimal pl-4">
-					<li>Login to your site.</li>
-					<li>From the Download Backups page, download the latest backup.</li>
+					<li>Đăng nhập vào trang web của bạn.</li>
+					<li>Từ trang Tải về Bản sao lưu, tải xuống bản sao lưu mới nhất.</li>
 					<li>
-						To get files backup, click on Download Files Backup. This will
-						generate a new files backup and you will get an email.
+						Để có bản sao lưu tệp, nhấp vào Tải về Bản sao lưu Tệp. Điều này sẽ
+						tạo ra một bản sao lưu tệp mới và bạn sẽ nhận được một email.
 					</li>
 					<li>
-						Download the files backup from the links in the email and upload the
-						files here.
+						Tải xuống bản sao lưu tệp từ các liên kết trong email và tải lên tệp
+						ở đây.
 					</li>
 				</ol>
 			</div>
 			<Alert class="mt-5 w-full" v-if="manualMigration">
-				Seems like your site is huge. Open a support ticket mentioning that you
-				want to restore a backup and it's size and we'll take it from there.
+				Dường như trang web của bạn lớn. Hãy mở một phiếu hỗ trợ và cho biết bạn
+				muốn khôi phục một bản sao lưu và kích thước của nó, chúng tôi sẽ xử lý
+				từ đó.
 			</Alert>
 			<BackupFilesUploader
 				class="mt-6"
@@ -50,14 +54,13 @@
 					class="rounded-md border border-gray-300 px-4 py-3 text-sm text-gray-700"
 				>
 					<ol class="list-decimal pl-4">
-						<li>Login to your site.</li>
+						<li>Đăng nhập vào trang web của bạn và hoàn tất đạo cụ cài đặt.</li>
+						<li>Từ trang Tải Bản sao lưu, nhấp vào Tải về Bản sao lưu Tệp.</li>
 						<li>
-							From the Download Backups page, click on Download Files Backup.
+							Điều này sẽ tạo ra một bản sao lưu tệp mới và bạn sẽ nhận được một
+							email.
 						</li>
-						<li>
-							This will generate a new files backup and you will get an email.
-						</li>
-						<li>After that, come back here and click on Get Backups.</li>
+						<li>Sau đó, quay lại đây và nhấp vào Lấy Bản sao lưu.</li>
 					</ol>
 				</div>
 				<Alert
@@ -66,15 +69,15 @@
 						errorContains('Your site exceeds the limits for this operation')
 					"
 				>
-					Seems like your site is huge. Open a support ticket mentioning that
-					you want to restore a backup and it's size and we'll take it from
-					there.
+					Dường như trang web của bạn lớn. Hãy mở một phiếu hỗ trợ và cho biết
+					bạn muốn khôi phục một bản sao lưu và kích thước của nó, chúng tôi sẽ
+					xử lý từ đó.
 				</Alert>
 				<Form
 					class="mt-6"
 					:fields="[
 						{
-							label: 'Site URL',
+							label: 'URL trang web',
 							fieldtype: 'Data',
 							fieldname: 'url'
 						},
@@ -84,7 +87,7 @@
 							fieldname: 'email'
 						},
 						{
-							label: 'Password',
+							label: 'Mật khẩu',
 							fieldtype: 'Password',
 							fieldname: 'password'
 						}
@@ -100,7 +103,8 @@
 						class="text-base font-semibold text-green-500"
 						v-if="$resources.getBackupLinks.data"
 					>
-						Found latest backups at {{ fetchedBackupFiles[0].timestamp }}
+						Tìm thấy bản sao lưu mới nhất tại
+						{{ fetchedBackupFiles[0].timestamp }}
 					</div>
 					<div class="mt-2 space-y-1" v-if="$resources.getBackupLinks.data">
 						<div v-for="file in fetchedBackupFiles" :key="file.remote_file">
@@ -116,7 +120,7 @@
 					@click="$resources.getBackupLinks.submit()"
 					:loading="$resources.getBackupLinks.loading"
 				>
-					Get Backups
+					Nhận Bản sao lưu
 				</Button>
 			</div>
 		</div>
@@ -130,7 +134,7 @@
 				v-model="wantToSkipFailingPatches"
 			/>
 			<label for="skip-failing" class="ml-2 text-sm text-gray-900">
-				Skip failing patches (if any patch fails)
+				Bỏ qua các bản vá thất bại (nếu có bất kỳ bản vá nào thất bại)
 			</label>
 		</div>
 	</div>
@@ -210,7 +214,7 @@ export default {
 				validate() {
 					let { url, email, password } = this.frappeSite;
 					if (!(url && email && password)) {
-						return 'Please enter URL, Username and Password';
+						return 'Vui lòng nhập URL, Tên người dùng và Mật khẩu';
 					}
 				},
 				onSuccess(remoteFiles) {

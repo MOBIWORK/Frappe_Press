@@ -1,5 +1,8 @@
 <template>
-	<Card title="Apps" subtitle="Apps installed on your site">
+	<Card
+		title="Ứng dụng"
+		subtitle="Các ứng dụng đã được cài đặt trên trang web của bạn"
+	>
 		<template #actions>
 			<Button
 				@click="
@@ -10,15 +13,15 @@
 				"
 				:disabled="site?.status === 'Suspended'"
 			>
-				Add App
+				Thêm ứng dụng
 			</Button>
 		</template>
 
 		<div class="flex text-base text-gray-600">
-			<span class="w-2/6">App</span>
-			<span class="hidden w-1/6 md:inline">Plan</span>
-			<span class="w-1/6">Status</span>
-			<span class="hidden w-1/6 md:inline">Price</span>
+			<span class="w-2/6">Ứng dụng</span>
+			<span class="hidden w-1/6 md:inline">Gói</span>
+			<span class="w-1/6">Trạng thái</span>
+			<span class="hidden w-1/6 md:inline">Giá</span>
 			<span></span>
 		</div>
 
@@ -75,7 +78,7 @@
 
 				<div class="ml-auto flex items-center space-x-2">
 					<Button v-if="app.plan_info" @click="changeAppPlan(app)"
-						>Change Plan</Button
+						>Thay đổi gói</Button
 					>
 					<Button
 						v-if="!app.plan_info && app.subscription_available"
@@ -85,7 +88,7 @@
 								appToInstall = app;
 							}
 						"
-						>Subscribe</Button
+						>Đăng ký</Button
 					>
 					<Dropdown :options="dropdownItems(app)" right>
 						<template v-slot="{ open }">
@@ -98,7 +101,7 @@
 
 		<Dialog
 			:options="{
-				title: 'Install an app on your site',
+				title: 'Cài đặt một ứng dụng trên trang web của bạn',
 				position: 'top',
 				size: 'lg'
 			}"
@@ -135,18 +138,18 @@
 								$resources.installApp.loading && appToInstall.name == app.name
 							"
 						>
-							Install
+							Cài đặt
 						</Button>
 					</div>
 				</div>
 				<div class="text-base text-gray-600" v-else>
-					No apps available to install
+					Không có ứng dụng nào có sẵn để cài đặt
 				</div>
 
 				<div v-if="site?.group">
 					<p class="mt-4 text-sm text-gray-700">
 						<Link :to="`/benches/${site.group}/apps`" class="font-medium">
-							Add more apps to your bench
+							Thêm nhiều ứng dụng khác vào bench của bạn
 						</Link>
 					</p>
 				</div>
@@ -157,11 +160,11 @@
 		<Dialog
 			v-model="showPlanSelectionDialog"
 			:options="{
-				title: 'Select app plan',
+				title: 'Chọn gói ứng dụng',
 				size: '2xl',
 				actions: [
 					{
-						label: 'Proceed',
+						label: 'Tiếp tục',
 						variant: 'solid',
 						onClick: handlePlanSelection
 					}
@@ -189,11 +192,11 @@
 		<!-- Plan Change Dialog -->
 		<Dialog
 			:options="{
-				title: 'Select Plan',
+				title: 'Chọn gói',
 				size: '2xl',
 				actions: [
 					{
-						label: 'Change Plan',
+						label: 'Thay đổi gói',
 						variant: 'solid',
 						onClick: handlePlanChange,
 						loading: $resources.changePlan.loading
@@ -220,7 +223,7 @@
 
 		<Dialog
 			v-model="showCheckoutDialog"
-			:options="{ title: 'Checkout Details' }"
+			:options="{ title: 'Chi tiết thanh toán' }"
 			:dismissable="true"
 		>
 			<template v-slot:body-content>
@@ -328,7 +331,7 @@ export default {
 				},
 				validate() {
 					if (this.showPlanSelectionDialog && !this.selectedPlan) {
-						return 'Please select a plan to continue';
+						return 'Vui lòng chọn một gói để tiếp tục';
 					}
 				},
 				onSuccess() {
@@ -467,12 +470,12 @@ export default {
 					condition: () => this.$account.user.user_type == 'System User'
 				},
 				{
-					label: 'Remove App',
+					label: 'Gỡ bỏ ứng dụng',
 					onClick: () => this.confirmRemoveApp(app),
 					condition: () => app.app != 'frappe'
 				},
 				{
-					label: 'Visit Repo',
+					label: 'Truy cập kho lưu trữ',
 					onClick: () =>
 						window.open(`${app.repository_url}/tree/${app.branch}`, '_blank')
 				}
@@ -480,9 +483,9 @@ export default {
 		},
 		confirmRemoveApp(app) {
 			this.$confirm({
-				title: 'Remove App',
-				message: `Are you sure you want to uninstall app ${app.title} from site?`,
-				actionLabel: 'Remove App',
+				title: 'Gỡ bỏ ứng dụng',
+				message: `Bạn có chắc chắn muốn gỡ bỏ ứng dụng ${app.title} khỏi trang web không?`,
+				actionLabel: 'Gỡ bỏ ứng dụng',
 				actionColor: 'red',
 				action: closeDialog => {
 					closeDialog();

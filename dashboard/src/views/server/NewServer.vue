@@ -1,7 +1,7 @@
 <template>
 	<WizardCard v-if="options">
 		<div class="mb-6 text-center">
-			<h1 class="text-2xl font-bold">Create a new server</h1>
+			<h1 class="text-2xl font-bold">Tạo máy chủ mới</h1>
 		</div>
 		<Steps :steps="steps">
 			<template
@@ -46,8 +46,8 @@
 							for="region-consent"
 							class="ml-1 text-sm font-semibold text-gray-900"
 						>
-							I agree that the laws of the region selected by me shall stand
-							applicable to me and Frappe.
+							Tôi đồng ý rằng các luật pháp của khu vực tôi chọn sẽ được áp dụng
+							đối với tôi và Frappe.
 						</label>
 					</div>
 
@@ -62,7 +62,7 @@
 							@click="nextStep(activeStep, next)"
 							:class="{ 'mt-2': hasPrevious }"
 						>
-							Next
+							Tiếp theo
 						</Button>
 						<Button
 							v-show="!hasNext"
@@ -71,7 +71,7 @@
 							@click="$resources.newServer.submit()"
 							:loading="$resources.newServer.loading"
 						>
-							Create Servers
+							Tạo Máy chủ
 						</Button>
 					</div>
 				</div>
@@ -167,25 +167,25 @@ export default {
 						this.selectedRegion;
 
 					if (!this.selectedAppPlan) {
-						return 'Please select a plan for application server';
+						return 'Vui lòng chọn một kế hoạch cho máy chủ ứng dụng';
 					}
 
 					if (!this.selectedDBPlan) {
-						return 'Please select a plan for database server';
+						return 'Vui lòng chọn một kế hoạch cho máy chủ cơ sở dữ liệu';
 					}
 
 					if (!this.selectedRegion) {
-						return 'Please select the region';
+						return 'Vui lòng chọn khu vực';
 					}
 
 					if (!this.agreedToRegionConsent) {
 						document.getElementById('region-consent').focus();
 
-						return 'Please agree to the above consent to create server';
+						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo máy chủ';
 					}
 
 					if (!canCreate) {
-						return 'Cannot create server';
+						return 'Không thể tạo máy chủ';
 					}
 				}
 			};

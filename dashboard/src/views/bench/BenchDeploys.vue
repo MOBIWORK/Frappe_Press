@@ -1,9 +1,11 @@
 <template>
 	<div>
 		<CardWithDetails
-			title="Deploys"
+			title="Triển khai"
 			:subtitle="
-				candidates.length ? 'Deploys on your bench' : 'No deploys on your bench'
+				candidates.length
+					? 'Triển khai trên bench của bạn'
+					: 'Không có triển khai trên bench của bạn'
 			"
 			:show-details="selectedCandidate"
 		>
@@ -20,7 +22,7 @@
 					:to="`/benches/${benchName}/deploys/${candidate.name}`"
 				>
 					<ListItem
-						:title="`Deploy on ${formatDate(
+						:title="`Triển khai trên ${formatDate(
 							candidate.creation,
 							'DATETIME_SHORT'
 						)}`"
@@ -39,10 +41,10 @@
 				<div class="py-3" v-if="$resources.candidates.hasNextPage">
 					<Button
 						:loading="$resources.candidates.list.loading"
-						loadingText="Loading..."
+						loadingText="Đang tải..."
 						@click="$resources.candidates.next()"
 					>
-						Load more
+						Tải thêm
 					</Button>
 				</div>
 			</div>
@@ -51,7 +53,7 @@
 					:showDetails="selectedCandidate"
 					:loading="$resources.selectedCandidate.loading"
 					:steps="getSteps(selectedCandidate)"
-					title="Build Log"
+					title="Log xây dựng"
 					:subtitle="subtitle"
 				/>
 			</template>
@@ -150,7 +152,7 @@ export default {
 					name: `Deploy ${job.bench}`,
 					output:
 						job.status == 'Success'
-							? `Deploy completed in ${job.duration.split('.')[0]}`
+							? `Triển khai hoàn thành trong ${job.duration.split('.')[0]}`
 							: null,
 					status: job.status,
 					completed: job.status == 'Success',
@@ -158,12 +160,12 @@ export default {
 					action: {
 						render() {
 							return h(
-								'Link',
+								'Liên kết',
 								{
 									props: { to: `/benches/${bench?.name}/jobs/${job.name}` },
 									class: 'text-sm'
 								},
-								'Job Log →'
+								'Log công việc →'
 							);
 						}
 					}
@@ -193,19 +195,19 @@ export default {
 				let duration = this.$formatDuration(
 					this.selectedCandidate.build_duration
 				);
-				return `Completed ${when} in ${duration}`;
+				return `Hoàn thành ${when} in ${duration}`;
 			} else if (this.selectedCandidate?.status === 'Running') {
 				const when = this.formatDate(
 					this.selectedCandidate.build_start,
 					'relative'
 				);
-				return `Started ${when}`;
+				return `Bắt đầu ${when}`;
 			} else if (this.selectedCandidate?.status === 'Failure') {
 				const when = this.formatDate(
 					this.selectedCandidate.build_end,
 					'relative'
 				);
-				return `Failed ${when}`;
+				return `Thất bại ${when}`;
 			}
 		},
 		candidates() {

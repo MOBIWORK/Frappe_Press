@@ -179,10 +179,10 @@ export async function trypromise(promise) {
 
 export function validateSubdomain(subdomain) {
 	if (!subdomain) {
-		return 'Subdomain cannot be empty';
+		return 'Tên miền không thể trống.';
 	}
 	if (subdomain.length < 5) {
-		return 'Subdomain too short. Use 5 or more characters';
+		return 'Tên miền quá ngắn. Hãy sử dụng 5 ký tự trở lên.';
 	}
 	if (subdomain.length > 32) {
 		return 'Subdomain too long. Use 32 or less characters';

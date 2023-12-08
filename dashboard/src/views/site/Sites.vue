@@ -104,7 +104,7 @@
 							{ label: 'Trạng thái', name: 'status', width: 1 },
 							{ label: 'Khu vực', name: 'region', width: 0.5 },
 							{ label: 'Thẻ', name: 'tags', width: 1 },
-							{ label: 'Kế hoạch', name: 'plan', width: 1.5 },
+							{ label: 'Gói', name: 'plan', width: 1.5 },
 							{ label: '', name: 'actions', width: 0.5 }
 						]"
 						:rows="sites"
@@ -517,7 +517,7 @@ export default {
 					value: 'Trial'
 				},
 				{
-					label: 'Có Bản Cập Nhật',
+					label: 'Có bản cập nhật',
 					value: 'Update Available'
 				}
 			];

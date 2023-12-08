@@ -1,10 +1,10 @@
 <template>
-	<Card title="Uptime" :subtitle="subtitle" :loading="loading">
+	<Card title="Thời gian hoạt động" :subtitle="subtitle" :loading="loading">
 		<div
 			v-if="!data || data[0].date === undefined"
 			class="flex h-full items-center justify-center"
 		>
-			<div class="text-base text-gray-600">No data</div>
+			<div class="text-base text-gray-600">Không có dữ liệu</div>
 		</div>
 		<div v-else class="mt-8" v-for="type in uptimeTypes" :key="type.key">
 			<div class="flex h-10 justify-between">

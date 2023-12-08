@@ -1,5 +1,5 @@
 <template>
-	<Card title="Tags">
+	<Card title="Thẻ">
 		<template #actions>
 			<Button label="Add Tag" @click="showAddDialog = true" />
 		</template>
@@ -11,7 +11,7 @@
 			</ListItem>
 		</div>
 		<div v-else class="m-4 text-center">
-			<p class="text-base text-gray-500">No tags added yet</p>
+			<p class="text-base text-gray-500">Chưa thêm thẻ nào</p>
 		</div>
 		<ErrorMessage
 			:message="
@@ -22,12 +22,12 @@
 		/>
 	</Card>
 	<Dialog
-		:options="{ title: `Add a New Tag for ${doctype}` }"
+		:options="{ title: `Thêm một thẻ mới cho ${doctype}` }"
 		v-model="showAddDialog"
 	>
 		<template #body-content>
 			<Autocomplete
-				placeholder="Tags"
+				placeholder="Thẻ"
 				:options="getAutocompleteOptions"
 				v-model="chosenTag"
 				@update:modelValue="handleAutocompleteSelection"
@@ -36,12 +36,12 @@
 				v-if="showNewTagInput"
 				v-model="newTag"
 				class="mt-4"
-				placeholder="Enter New Tag's name"
+				placeholder="Nhập tên thẻ mới"
 			/>
 		</template>
 		<template #actions>
 			<Button variant="solid" class="w-full" @click="addTag()">{{
-				showNewTagInput ? 'Create a New Tag' : 'Add Tag'
+				showNewTagInput ? 'Tạo một thẻ Mới' : 'Thêm thẻ'
 			}}</Button>
 		</template>
 	</Dialog>
@@ -71,7 +71,7 @@ export default {
 				},
 				validate() {
 					if (this.addedTags.find(t => t.name == this.newTag)) {
-						return 'Tag already added';
+						return 'Thẻ đã được thêm vào trước đó';
 					}
 				},
 				onSuccess(d) {
@@ -100,7 +100,7 @@ export default {
 				},
 				validate() {
 					if (this.tags.find(t => t.tag === this.newTag)) {
-						return 'Tag already exists';
+						return 'Thẻ đã tồn tại';
 					}
 				},
 				onSuccess(d) {
@@ -144,11 +144,11 @@ export default {
 		getAutocompleteOptions() {
 			return [
 				{
-					group: 'New Tag',
-					items: [{ label: 'Create a New Tag', value: 'new_tag' }]
+					group: 'Thẻ mới',
+					items: [{ label: 'Tạo một thẻ mới', value: 'new_tag' }]
 				},
 				{
-					group: 'Existing Tags',
+					group: 'Các thẻ đã tồn tại',
 					items: this.tags.map(t => ({ label: t.tag, value: t.name }))
 				}
 			];

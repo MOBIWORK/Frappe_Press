@@ -1,26 +1,27 @@
 <template>
 	<Card
 		v-if="site"
-		title="Restore, Migrate & Reset"
+		title="Khôi phục, Di chuyển và Đặt lại"
 		:subtitle="
 			site.status === 'Suspended'
-				? 'Activate the site to enable these actions'
+				? 'Kích hoạt trang web để kích hoạt những hành động này'
 				: ''
 		"
 	>
 		<div class="divide-y">
 			<div class="flex items-center justify-between py-3">
 				<div>
-					<h3 class="text-lg">Restore</h3>
+					<h3 class="text-lg">Khôi phục</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Restore your database using a previous backup
+						Khôi phục cơ sở dữ liệu của bạn bằng cách sử dụng một bản sao lưu
+						trước đó
 					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.restore
-							? `You don't have enough permissions to perform this action`
-							: 'Restore Database'
+							? `Bạn không có đủ quyền để thực hiện hành động này`
+							: 'Khôi phục Database'
 					"
 				>
 					<Button
@@ -28,7 +29,7 @@
 						:disabled="site.status === 'Suspended' || !permissions.restore"
 						@click="showRestoreDialog = true"
 					>
-						Restore
+						Khôi phục
 					</Button>
 				</Tooltip>
 			</div>
@@ -36,13 +37,13 @@
 				<div>
 					<h3 class="text-lg">Migrate</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Run bench migrate command on your database
+						Chạy lệnh `bench migrate` trên database của bạn.
 					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.migrate
-							? `You don't have enough permissions to perform this action`
+							? `Bạn không có đủ quyền để thực hiện hành động này`
 							: 'Migrate Database'
 					"
 				>
@@ -56,16 +57,16 @@
 			</div>
 			<div class="flex items-center justify-between py-3">
 				<div>
-					<h3 class="text-lg">Reset</h3>
+					<h3 class="text-lg">Đặt lại</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Reset your database to a clean state
+						Đặt lại database của bạn về trạng thái sạch sẽ.
 					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.reset
-							? `You don't have enough permissions to perform this action`
-							: 'Reset Database'
+							? `Bạn không có đủ quyền để thực hiện hành động này`
+							: 'Đặt lại Database'
 					"
 				>
 					<Button
@@ -73,20 +74,22 @@
 						:disabled="site.status === 'Suspended' || !permissions.reset"
 						@click="showResetDialog = true"
 					>
-						Reset
+						Đặt lại
 					</Button>
 				</Tooltip>
 			</div>
 			<div class="flex items-center justify-between py-3">
 				<div>
-					<h3 class="text-lg">Clear Cache</h3>
-					<p class="mt-1 text-base text-gray-600">Clear your site's cache</p>
+					<h3 class="text-lg">Xóa Cache</h3>
+					<p class="mt-1 text-base text-gray-600">
+						Xóa bộ nhớ cache của trang web của bạn
+					</p>
 				</div>
 				<Button
 					:disabled="site.status === 'Suspended'"
 					@click="confirmClearCache"
 				>
-					Clear
+					Xóa
 				</Button>
 			</div>
 			<div
@@ -94,14 +97,16 @@
 				v-if="$account.team.database_access_enabled"
 			>
 				<div>
-					<h3 class="text-lg">Access</h3>
-					<p class="mt-1 text-base text-gray-600">Connect to your database</p>
+					<h3 class="text-lg">Truy cập</h3>
+					<p class="mt-1 text-base text-gray-600">
+						Kết nối vào database của bạn
+					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.access
-							? `You don't have enough permissions to perform this action`
-							: 'Access Database'
+							? `Bạn không có đủ quyền để thực hiện hành động này`
+							: 'Truy cập Database'
 					"
 				>
 					<Button
@@ -109,7 +114,7 @@
 						icon-left="database"
 						@click="showDatabaseAccessDialog = true"
 					>
-						Access</Button
+						Truy cập</Button
 					>
 				</Tooltip>
 			</div>
@@ -138,9 +143,9 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					<b>bench migrate</b> command will be executed on your database. Are
-					you sure you want to run this command? We recommend that you download
-					a database backup before continuing.
+					Lệnh <b>bench migrate</b> sẽ được thực hiện trên database của bạn. Bạn
+					có chắc chắn muốn chạy lệnh này không? Chúng tôi khuyên bạn nên tải về
+					một bản sao lưu database trước khi tiếp tục.
 				</p>
 				<ErrorMessage
 					class="mt-2"
@@ -155,7 +160,8 @@
 						v-model="wantToSkipFailingPatches"
 					/>
 					<label for="skip-failing" class="ml-2 text-sm text-gray-900">
-						Skip failing patches (if any patch fails)
+						Bỏ qua các bản vá (patch) không thành công (nếu có bất kỳ bản vá nào
+						thất bại)
 					</label>
 				</div>
 			</template>
@@ -163,10 +169,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Restore',
+				title: 'Khôi phục',
 				actions: [
 					{
-						label: 'Restore',
+						label: 'Khôi phục',
 						variant: 'solid',
 						loading: $resources.restoreBackup.loading,
 						onClick: () => $resources.restoreBackup.submit()
@@ -178,7 +184,8 @@
 			<template v-slot:body-content>
 				<div class="space-y-4">
 					<p class="text-base">
-						Restore your database using a previous backup.
+						Khôi phục database của bạn bằng cách sử dụng một bản sao lưu trước
+						đó.
 					</p>
 					<BackupFilesUploader v-model:backupFiles="selectedFiles" />
 				</div>
@@ -191,7 +198,8 @@
 						v-model="wantToSkipFailingPatches"
 					/>
 					<label for="skip-failing" class="ml-2 text-sm text-gray-900">
-						Skip failing patches (if any patch fails)
+						Bỏ qua các bản vá (patch) không thành công (nếu có bất kỳ bản vá nào
+						thất bại)
 					</label>
 				</div>
 				<ErrorMessage class="mt-2" :message="$resources.restoreBackup.error" />
@@ -206,10 +214,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Reset Database',
+				title: 'Khôi phục Database',
 				actions: [
 					{
-						label: 'Reset',
+						label: 'Khôi phục',
 						variant: 'solid',
 						theme: 'red',
 						loading: $resources.resetDatabase.loading,
@@ -221,12 +229,12 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					All the data from your site will be lost. Are you sure you want to
-					reset your database?
+					Tất cả dữ liệu từ trang web của bạn sẽ bị mất. Bạn có chắc chắn muốn
+					đặt lại database không?
 				</p>
 				<p class="mt-4 text-base">
-					Please type
-					<span class="font-semibold">{{ site.name }}</span> to confirm.
+					Vui lòng nhập
+					<span class="font-semibold">{{ site.name }}</span> để xác nhận.
 				</p>
 				<FormControl class="mt-4 w-full" v-model="confirmSiteName" />
 				<ErrorMessage class="mt-2" :message="$resources.resetDatabase.error" />
@@ -274,7 +282,7 @@ export default {
 				},
 				validate() {
 					if (!this.filesUploaded) {
-						return 'Please upload database, public and private files to restore.';
+						return 'Vui lòng tải lên database, public và private files để khôi phục.';
 					}
 				},
 				onSuccess(jobName) {
@@ -294,7 +302,7 @@ export default {
 				},
 				validate() {
 					if (this.confirmSiteName !== this.site?.name) {
-						return 'Please type the site name to confirm.';
+						return 'Vui lòng nhập tên trang web để xác nhận.';
 					}
 				},
 				onSuccess(jobName) {
@@ -349,12 +357,11 @@ export default {
 		},
 		confirmClearCache() {
 			this.$confirm({
-				title: 'Clear Cache',
+				title: 'Xóa Cache',
 				message: `
-					<b>bench clear-cache</b> and <b>bench clear-website-cache</b> commands will be executed on your site. Are you sure
-					you want to run these command?
+				<b>bench clear-cache</b> và <b>bench clear-website-cache</b> sẽ được thực hiện trên trang web của bạn. Bạn có chắc chắn muốn chạy các lệnh này không?
 				`,
-				actionLabel: 'Clear Cache',
+				actionLabel: 'Xóa Cache',
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.clearCache.submit();

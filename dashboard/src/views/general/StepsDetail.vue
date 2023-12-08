@@ -20,7 +20,9 @@
 			</template>
 			<div v-else>
 				<LoadingText v-if="loading" />
-				<span v-else class="text-base text-gray-600"> No item selected </span>
+				<span v-else class="text-base text-gray-600">
+					Không có mục nào được chọn
+				</span>
 			</div>
 		</div>
 		<div class="flex-auto overflow-auto" v-if="showDetails">

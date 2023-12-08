@@ -36,7 +36,9 @@ const submitReply = createResource({
 <template>
 	<div class="px-4 py-4 text-base sm:px-8">
 		<div>
-			<h1 class="mb-4 text-xl font-semibold">Reply App: {{ appTitle }}</h1>
+			<h1 class="mb-4 text-xl font-semibold">
+				Phản hồi về ứng dụng: {{ appTitle }}
+			</h1>
 		</div>
 
 		<div class="mt-2 sm:grid sm:grid-cols-2">
@@ -44,7 +46,7 @@ const submitReply = createResource({
 				<FormControl
 					v-model="reply.reply"
 					type="textarea"
-					label="Write Reply"
+					label="Viết Phản hồi"
 				/>
 
 				<ErrorMessage class="mt-2" :message="submitReply.error" />
@@ -53,7 +55,7 @@ const submitReply = createResource({
 					:loading="submitReply.loading"
 					variant="solid"
 					@click="submitReply.submit({ ...reply })"
-					>Submit</Button
+					>Gửi</Button
 				>
 			</div>
 		</div>

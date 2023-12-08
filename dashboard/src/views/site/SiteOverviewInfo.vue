@@ -1,5 +1,8 @@
 <template>
-	<Card title="Site Info" subtitle="General information about your site">
+	<Card
+		title="Thông tin trang web"
+		subtitle="Thông tin chung về trang web của bạn"
+	>
 		<div class="divide-y">
 			<div class="flex items-center py-3">
 				<Avatar
@@ -9,20 +12,20 @@
 				/>
 				<div class="ml-3 flex flex-1 items-center justify-between">
 					<div>
-						<div class="text-base text-gray-600">Owned By</div>
+						<div class="text-base text-gray-600">Sở hữu bởi</div>
 						<div class="text-base font-medium text-gray-900">
 							{{ info.owner.first_name }}
 							{{ info.owner.last_name }}
 						</div>
 					</div>
 					<div class="text-right">
-						<div class="text-base text-gray-600">Created On</div>
+						<div class="text-base text-gray-600">Ngày tạo</div>
 						<div class="text-base font-medium text-gray-900">
 							{{ formatDate(info.created_on, 'DATE_FULL') }}
 						</div>
 					</div>
 					<div v-if="info.last_deployed" class="text-right">
-						<div class="text-base text-gray-600">Last Deployed</div>
+						<div class="text-base text-gray-600">Lần triển khai cuối cùng</div>
 
 						<div class="text-base font-medium text-gray-900">
 							{{
@@ -38,9 +41,9 @@
 
 			<ListItem
 				v-if="site.group && site.status !== 'Pending'"
-				title="Auto Update Site"
+				title="Tự động cập nhật trang web"
 				class="overflow-x-hidden"
-				description="Automatically schedule site updates whenever available"
+				description="Lên lịch tự động cập nhật trang web khi có sẵn"
 			>
 				<template v-slot:actions>
 					<LoadingIndicator class="h-4 w-4" v-if="loading" />
@@ -55,15 +58,15 @@
 			</ListItem>
 			<ListItem
 				v-if="site.status == 'Active'"
-				title="Deactivate Site"
-				description="The site will go inactive and won't be publicly accessible"
+				title="Ngưng hoạt động trang web"
+				description="Trang web sẽ trở thành không hoạt động và sẽ không thể truy cập công khai"
 			>
 				<template v-slot:actions>
 					<Tooltip
 						:text="
 							!permissions.deactivate
-								? `You don't have enough permissions to perform this action`
-								: 'Deactivate Site'
+								? `Bạn không có đủ quyền để thực hiện hành động này`
+								: 'Ngưng hoạt động trang web'
 						"
 					>
 						<Button
@@ -71,7 +74,7 @@
 							class="shrink-0"
 							:disabled="!permissions.deactivate"
 						>
-							Deactivate Site
+							Ngưng hoạt động trang web
 						</Button>
 					</Tooltip>
 				</template>
@@ -79,8 +82,8 @@
 
 			<ListItem
 				v-if="['Inactive', 'Broken'].includes(site.status)"
-				title="Activate Site"
-				description="The site will become active and will be accessible"
+				title="Kích hoạt trang web"
+				description="Trang web sẽ trở nên hoạt động và có thể truy cập được"
 			>
 				<template v-slot:actions>
 					<Button
@@ -88,23 +91,23 @@
 						class="shrink-0"
 						:variant="site.status === 'Broken' ? 'solid' : 'subtle'"
 					>
-						Activate Site
+						Kích hoạt trang web
 					</Button>
 				</template>
 			</ListItem>
 
 			<ListItem
 				v-if="site.status !== 'Pending'"
-				title="Drop Site"
-				description="Once you drop site your site, there is no going back"
+				title="Xóa trang web"
+				description="Một khi bạn xóa trang web, không có cách nào quay lại"
 			>
 				<template v-slot:actions>
 					<SiteDrop :site="site" v-slot="{ showDialog }">
 						<Tooltip
 							:text="
 								!permissions.drop
-									? `You don't have enough permissions to perform this action`
-									: 'Drop Site'
+									? `Bạn không có đủ quyền để thực hiện hành động này`
+									: 'Xóa trang web'
 							"
 						>
 							<Button
@@ -112,7 +115,7 @@
 								:disabled="!permissions.drop"
 								@click="showDialog"
 							>
-								Drop Site
+								Xóa trang web
 							</Button>
 						</Tooltip>
 					</SiteDrop>
@@ -155,22 +158,21 @@ export default {
 		},
 		onDeactivateClick() {
 			this.$confirm({
-				title: 'Deactivate Site',
+				title: 'Ngưng hoạt động trang web',
 				message: `
-					Are you sure you want to deactivate this site? The site will go in an inactive state.
-					It won't be accessible and background jobs won't run. You will <strong>still be charged</strong> for it.
+				Bạn có chắc chắn muốn ngưng hoạt động trang web này không? Trang web sẽ chuyển sang trạng thái không hoạt động. Nó sẽ không thể truy cập và các công việc nền sẽ không chạy. Bạn vẫn sẽ bị tính phí <strong>kể cả khi tắt</strong>.
 				`,
-				actionLabel: 'Deactivate',
+				actionLabel: 'Ngưng hoạt động',
 				actionColor: 'red',
 				action: () => this.deactivate()
 			});
 		},
 		onActivateClick() {
 			this.$confirm({
-				title: 'Activate Site',
-				message: `Are you sure you want to activate this site?
-				<br><br><strong>Note: Use this as last resort if site is broken and inaccessible</strong>`,
-				actionLabel: 'Activate',
+				title: 'Kích hoạt trang web',
+				message: `Bạn có chắc chắn muốn kích hoạt trang web này không?
+<br><br><strong>Ghi chú: Sử dụng điều này như một phương án cuối cùng nếu trang web gặp sự cố và không thể truy cập được.</strong>`,
+				actionLabel: 'Kích hoạt',
 				action: () => this.activate()
 			});
 		},
@@ -186,8 +188,8 @@ export default {
 				name: this.site.name
 			});
 			notify({
-				title: 'Site activated successfully!',
-				message: 'You can now access your site',
+				title: 'Trang web đã được kích hoạt thành công!',
+				message: 'Bạn có thể truy cập trang web của mình ngay bây giờ',
 				icon: 'check',
 				color: 'green'
 			});

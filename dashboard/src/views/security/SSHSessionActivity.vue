@@ -22,7 +22,7 @@
 			<div v-else>
 				<LoadingText v-if="loading" />
 				<span v-else class="text-center text-base text-gray-600">
-					No item selected
+					Không có mục nào được chọn
 				</span>
 			</div>
 		</div>

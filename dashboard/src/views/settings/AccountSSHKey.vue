@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="SSH Key"
-		subtitle="SSH public key associated with your account"
+		title="Khóa SSH"
+		subtitle="Khóa công khai SSH liên kết với tài khoản của bạn"
 		v-if="$account.team.ssh_access_enabled"
 	>
 		<div v-if="$account.ssh_key">
@@ -9,7 +9,7 @@
 				SHA256:{{ $account.ssh_key.ssh_fingerprint }}
 			</p>
 			<div class="mt-2 text-base text-gray-700">
-				Added on
+				Đã thêm vào
 				{{
 					$date($account.ssh_key.creation).toLocaleString({
 						month: 'short',
@@ -21,18 +21,18 @@
 		</div>
 		<template #actions>
 			<Button v-if="!$account.ssh_key" @click="showAddNewKeyDialog = true">
-				New SSH Key
+				Khóa SSH mới
 			</Button>
 			<Button v-else @click="showAddNewKeyDialog = true">
-				Change SSH Key
+				Thay đổi khóa SSH
 			</Button>
 		</template>
 		<Dialog
 			:options="{
-				title: 'New SSH Key',
+				title: 'Khóa SSH mới',
 				actions: [
 					{
-						label: 'Add Key',
+						label: 'Thêm khoá',
 						variant: 'solid',
 						onClick: () => $resources.saveKey.submit()
 					}
@@ -43,7 +43,7 @@
 			<template v-slot:body-content>
 				<div class="mt-3">
 					<FormControl
-						:label="'SSH Key'"
+						:label="'Khóa SSH'"
 						type="textarea"
 						placeholder="Begins with 'ssh-rsa', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'ssh-ed25519', 'sk-ecdsa-sha2-nistp256@openssh.com', or 'sk-ssh-ed25519@openssh.com'"
 						required
@@ -78,7 +78,7 @@ export default {
 					this.$account.fetchAccount();
 					this.showAddNewKeyDialog = false;
 					notify({
-						title: 'New SSH Key Added',
+						title: 'Khóa SSH mới đã được thêm',
 						icon: 'check',
 						color: 'green'
 					});

@@ -45,11 +45,11 @@ const siteMigrationText = computed(() => {
 	const status = props.site?.site_migration.status;
 
 	if (status === 'Running') {
-		return 'Your Site Migration is in progress';
+		return 'Công việc di chuyển trang web của bạn đang trong quá trình tiến hành';
 	} else if (status === 'Pending') {
-		return 'Your Site Migration will start shortly';
+		return 'Quá trình di chuyển trang web của bạn sẽ bắt đầu trong thời gian ngắn';
 	} else if (status === 'Scheduled') {
-		return `Your Site Migration is scheduled to happen ${utils.methods.formatDate(
+		return `Quá trình di chuyển trang web của bạn đã được lên lịch để diễn ra ${utils.methods.formatDate(
 			props.site?.site_migration.scheduled_time,
 			'relative'
 		)}.`;
@@ -60,11 +60,11 @@ const siteVersionUpgradeText = computed(() => {
 	const status = props.site?.version_upgrade.status;
 
 	if (status === 'Running') {
-		return 'Your Site Version Upgrade is in progress';
+		return 'Quá trình nâng cấp phiên bản trang web của bạn đang trong quá trình tiến hành';
 	} else if (status === 'Pending') {
-		return 'Your Site Version Upgrade will start shortly';
+		return 'Quá trình nâng cấp phiên bản trang web của bạn sẽ bắt đầu trong thời gian ngắn';
 	} else if (status === 'Scheduled') {
-		return `Your Site Version Upgrade is scheduled to happen ${utils.methods.formatDate(
+		return `Quá trình nâng cấp phiên bản trang web của bạn đã được lên lịch để diễn ra ${utils.methods.formatDate(
 			props.site?.version_upgrade.scheduled_time,
 			'relative'
 		)}.`;
@@ -106,14 +106,15 @@ const marketplacePromotionalBanners = createResource({
 							}
 						"
 					>
-						Learn More
+						Xem thêm
 					</Button>
 				</template>
 			</Alert>
 		</div>
-		<Alert title="Trial" v-if="isInTrial && $account.hasBillingInfo">
-			Your trial ends {{ trialEndsText }} after which your site will get
-			suspended. Add your billing information to avoid suspension.
+		<Alert title="Thử nghiệm" v-if="isInTrial && $account.hasBillingInfo">
+			Thời gian thử nghiệm của bạn sẽ kết thúc vào {{ trialEndsText }}, sau đó
+			trang web của bạn sẽ bị tạm ngừng. Thêm thông tin thanh toán của bạn để
+			tránh tình trạng tạm ngừng.
 
 			<template #actions>
 				<Button
@@ -125,9 +126,10 @@ const marketplacePromotionalBanners = createResource({
 				</Button>
 			</template>
 		</Alert>
-		<Alert title="Trial" v-if="isInTrial && $account.hasBillingInfo">
-			Your trial ends {{ trialEndsText }} after which your site will get
-			suspended. Select a plan to avoid suspension.
+		<Alert title="Thử nghiệm" v-if="isInTrial && $account.hasBillingInfo">
+			Thời gian thử nghiệm của bạn sẽ kết thúc vào {{ trialEndsText }}, sau đó
+			trang web của bạn sẽ bị tạm ngừng. Chọn một gói để tránh tình trạng tạm
+			ngừng.
 
 			<template #actions>
 				<Button
@@ -135,20 +137,20 @@ const marketplacePromotionalBanners = createResource({
 					@click="showChangePlanDialog = true"
 					variant="solid"
 				>
-					Select Plan
+					Chọn Gói
 				</Button>
 			</template>
 		</Alert>
-		<Alert title="Attention Required" v-if="limitExceeded">
-			Your site has exceeded the allowed usage for your plan. Upgrade your plan
-			now.
+		<Alert title="Yêu cầu chú ý" v-if="limitExceeded">
+			Trang web của bạn đã vượt quá sử dụng được phép cho gói của bạn. Nâng cấp
+			gói ngay bây giờ.
 		</Alert>
-		<Alert title="Attention Required" v-else-if="closeToLimits">
-			Your site has exceeded 80% of the allowed usage for your plan. Upgrade
-			your plan now.
+		<Alert title="Yêu cầu chú ý" v-else-if="closeToLimits">
+			Trang web của bạn đã vượt quá 80% sử dụng được phép cho gói của bạn. Nâng
+			cấp gói ngay bây giờ.
 		</Alert>
 
-		<Alert title="Site Migration" v-if="site?.site_migration">
+		<Alert title="Di chuyển trang web" v-if="site?.site_migration">
 			{{ siteMigrationText }}
 			<template #actions>
 				<Button
@@ -163,12 +165,12 @@ const marketplacePromotionalBanners = createResource({
 						params: { jobName: site.site_migration.job_id }
 					}"
 				>
-					View Job
+					Xem Công việc
 				</Button>
 			</template>
 		</Alert>
 
-		<Alert title="Version Upgrade" v-if="site?.version_upgrade">
+		<Alert title="Nâng cấp phiên bản" v-if="site?.version_upgrade">
 			{{ siteVersionUpgradeText }}
 			<template #actions>
 				<Button
@@ -183,7 +185,7 @@ const marketplacePromotionalBanners = createResource({
 						params: { jobName: site.version_upgrade.job_id }
 					}"
 				>
-					View Job
+					Xem Công việc
 				</Button>
 			</template>
 		</Alert>
@@ -197,7 +199,7 @@ const marketplacePromotionalBanners = createResource({
 					{
 						variant: 'solid',
 						route: `/install-app/${clickedPromotion?.app}`,
-						label: 'Install App'
+						label: 'Cài đặt ứng dụng'
 					}
 				]
 			}"

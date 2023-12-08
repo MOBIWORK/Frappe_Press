@@ -159,18 +159,18 @@ export default {
 			let tabRoute = subRoute => `/benches/${this.benchName}/${subRoute}`;
 			let tabs = [
 				{
-					label: 'Sites',
+					label: 'Trang web',
 					route: 'sites'
 				},
-				{ label: 'Apps', route: 'apps' },
-				{ label: 'Deploys', route: 'deploys' },
+				{ label: 'Ứng dụng', route: 'apps' },
+				{ label: 'Triển khai', route: 'deploys' },
 				{
-					label: 'Config',
+					label: 'Cấu hình',
 					route: 'bench-config',
 					condition: () => !this.bench?.public
 				},
-				{ label: 'Jobs', route: 'jobs' },
-				{ label: 'Settings', route: 'settings' }
+				{ label: 'Công việc', route: 'jobs' },
+				{ label: 'Cài đặt', route: 'settings' }
 			].filter(tab => (tab.condition ? tab.condition() : true));
 
 			if (this.bench) {
@@ -186,12 +186,12 @@ export default {
 		benchActions() {
 			return [
 				{
-					label: 'Edit Title',
+					label: 'Chỉnh sửa tiêu đề',
 					icon: 'edit',
 					onClick: () => (this.showEditTitleDialog = true)
 				},
 				{
-					label: 'View in Desk',
+					label: 'Xem trong Desk',
 					icon: 'external-link',
 					condition: () => this.$account.user.user_type == 'System User',
 					onClick: () => {
@@ -202,7 +202,7 @@ export default {
 					}
 				},
 				{
-					label: 'Impersonate Team',
+					label: 'Nhóm mạo danh',
 					icon: 'tool',
 					condition: () => this.$account.user.user_type == 'System User',
 					onClick: async () => {
@@ -210,22 +210,22 @@ export default {
 					}
 				},
 				{
-					label: 'Update All Sites',
+					label: 'Cập nhật tất cả các trang web',
 					icon: 'arrow-up-circle',
 					condition: () => this.bench.status == 'Active' && !this.bench.public,
 					onClick: async () => {
 						await this.$resources.updateAllSites.submit();
 						notify({
-							title: 'Site update scheduled successfully',
+							title: 'Lên lịch cập nhật trang web thành công',
 							message:
-								'All sites in this bench will be updated to the latest version',
+								'Tất cả các trang web trên bench này sẽ được cập nhật lên phiên bản mới nhất',
 							icon: 'check',
 							color: 'green'
 						});
 					}
 				},
 				{
-					label: 'Drop Bench',
+					label: 'Xóa Bench',
 					icon: 'trash',
 					condition: () => !this.bench.public,
 					onClick: () => (this.showDropBenchDialog = true)

@@ -1,10 +1,10 @@
 <template>
 	<Card
-		title="Plan"
+		title="Gói"
 		:subtitle="
 			site.status == 'Suspended'
-				? 'Set a plan to activate your suspended site'
-				: 'Upgrade or downgrade your plan based on your usage'
+				? 'Đặt kế hoạch để kích hoạt trang web bị tạm ngừng của bạn'
+				: 'Nâng cấp hoặc hạ cấp kế hoạch của bạn dựa trên việc sử dụng của bạn'
 		"
 		v-if="site.status != 'Inactive'"
 	>
@@ -12,8 +12,8 @@
 			<Tooltip
 				:text="
 					!permissions.changePlan
-						? `You don't have enough permissions to perform this action`
-						: 'Change Plan'
+						? `Bạn không có đủ quyền để thực hiện hành động này`
+						: 'Thay đổi gói'
 				"
 			>
 				<Button
@@ -44,7 +44,7 @@
 					<h4 class="text-4xl font-semibold text-gray-900">
 						{{ $planTitle(plan.current_plan) }}
 						<span v-if="plan.current_plan.price_usd > 0" class="text-lg">
-							/mo
+							/tháng
 						</span>
 					</h4>
 					<p
@@ -53,13 +53,15 @@
 					>
 						{{ plan.current_plan.cpu_time_per_day }}
 						{{ $plural(plan.current_plan.cpu_time_per_day, 'hour', 'hours') }}
-						of CPU / day
+						of CPU / ngày
 					</p>
 				</div>
 			</div>
 			<div v-else class="flex rounded-lg bg-gray-50 p-5">
 				<div>
-					<h4 class="font-semibold text-gray-600">No Plan Set</h4>
+					<h4 class="font-semibold text-gray-600">
+						Không có gói được thiết lập
+					</h4>
 				</div>
 			</div>
 

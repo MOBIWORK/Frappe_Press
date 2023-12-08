@@ -1,8 +1,8 @@
 <template>
 	<div class="space-y-5">
 		<Card
-			title="Apps"
-			subtitle="Apps available on your bench"
+			title="Ứng dụng"
+			subtitle="Các ứng dụng có sẵn trên bench của bạn"
 			:loading="$resources.apps.loading"
 		>
 			<template #actions>
@@ -14,7 +14,7 @@
 						showAddAppDialog = true;
 					"
 				>
-					Add App
+					Thêm ứng dụng
 				</Button>
 			</template>
 			<div class="max-h-96 divide-y">
@@ -39,7 +39,7 @@
 							>
 								<Tooltip
 									class="mr-2 flex cursor-pointer items-center rounded-full bg-gray-100 p-1"
-									text="What's this?"
+									text="Điều này là gì?"
 									placement="top"
 								>
 									<a
@@ -53,11 +53,11 @@
 									</a>
 								</Tooltip>
 
-								<Badge label="Attention Required" theme="red" />
+								<Badge label="Cần chú ý" theme="red" />
 							</span>
 							<Badge
 								v-if="!app.last_github_poll_failed && !app.deployed"
-								label="Not Deployed"
+								label="Chưa triển khai"
 								theme="orange"
 							/>
 							<Badge
@@ -66,7 +66,7 @@
 									app.update_available &&
 									app.deployed
 								"
-								label="Update Available"
+								label="Cập nhật có sẵn"
 								theme="blue"
 							/>
 							<Dropdown :options="dropdownItems(app)" right>
@@ -82,7 +82,7 @@
 			<ErrorMessage :message="$resources.fetchLatestAppUpdate.error" />
 
 			<Dialog
-				:options="{ title: 'Add apps to your bench', position: 'top' }"
+				:options="{ title: 'Thêm ứng dụng vào bench của bạn', position: 'top' }"
 				v-model="showAddAppDialog"
 			>
 				<template v-slot:body-content>
@@ -101,10 +101,8 @@
 						:multiple="true"
 					/>
 					<p class="mt-4 text-base" @click="showAddAppDialog = false">
-						Don't find your app here?
-						<Link :to="`/benches/${benchName}/apps/new`">
-							Add from GitHub
-						</Link>
+						Không tìm thấy ứng dụng của bạn ở đây?
+						<Link :to="`/benches/${benchName}/apps/new`"> Thêm từ GitHub </Link>
 					</p>
 				</template>
 				<template v-slot:actions>
@@ -123,7 +121,8 @@
 							})
 						"
 					>
-						Add App{{ selectedApps.length > 1 ? 's' : '' }}
+						Thêm ứng dụng
+						<!-- {{ selectedApps.length > 1 ? 's' : '' }} -->
 					</Button>
 				</template>
 			</Dialog>
@@ -208,7 +207,7 @@ export default {
 				},
 				onError(e) {
 					notify({
-						title: 'Error',
+						title: 'Lỗi',
 						message: e,
 						icon: 'x',
 						color: 'red'
@@ -230,7 +229,7 @@ export default {
 		dropdownItems(app) {
 			return [
 				{
-					label: 'View in Desk',
+					label: 'Xem trong Desk',
 					onClick: () =>
 						window.open(
 							`${window.location.protocol}//${window.location.host}/app/app/${app.name}`,
@@ -239,22 +238,22 @@ export default {
 					condition: () => this.$account.user.user_type == 'System User'
 				},
 				{
-					label: 'Fetch Latest Update',
+					label: 'Tải về cập nhật mới nhất',
 					onClick: () => this.fetchLatestUpdate(app)
 				},
 				{
-					label: 'Remove App',
+					label: 'Xóa ứng dụng',
 					onClick: () => this.confirmRemoveApp(app),
 					condition: () => app.name != 'frappe'
 				},
 				{
-					label: 'Change Branch',
+					label: 'Thay đổi nhánh',
 					onClick: () => {
 						this.appToChangeBranchOf = app;
 					}
 				},
 				{
-					label: 'Visit Repo',
+					label: 'Truy cập kho lưu trữ',
 					onClick: () =>
 						window.open(`${app.repository_url}/tree/${app.branch}`, '_blank')
 				}
@@ -268,9 +267,9 @@ export default {
 		},
 		confirmRemoveApp(app) {
 			this.$confirm({
-				title: 'Remove App',
-				message: `Are you sure you want to remove app ${app.name} from this bench?`,
-				actionLabel: 'Remove App',
+				title: 'Xóa ứng dụng',
+				message: `Bạn có chắc chắn muốn xóa ứng dụng ${app.name} khỏi bench này không?`,
+				actionLabel: 'Xóa ứng dụng',
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.removeApp.submit({

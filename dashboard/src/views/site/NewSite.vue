@@ -6,15 +6,15 @@
 			<Breadcrumbs
 				:items="[
 					{ label: 'Trang Web', route: { name: 'Sites' } },
-					{ label: 'New', route: { name: 'NewSite' } }
+					{ label: 'Mới', route: { name: 'NewSite' } }
 				]"
 			/>
 		</header>
 		<WizardCard>
 			<div class="mb-2 text-center">
-				<h1 class="text-2xl font-bold">Create a new site</h1>
+				<h1 class="text-2xl font-bold">Tạo trang web mới</h1>
 				<p v-if="benchTitle" class="text-base text-gray-700">
-					Site will be created on bench
+					Trang web sẽ được tạo trên bench
 					<span class="font-medium">{{ benchTitle }}</span>
 				</p>
 			</div>
@@ -68,14 +68,14 @@
 							<FormControl
 								type="checkbox"
 								v-model="agreedToRegionConsent"
-								label="I agree that the laws of the region selected by me shall stand applicable to me and Frappe."
+								label="Tôi đồng ý rằng các luật pháp của khu vực được tôi chọn sẽ áp dụng đối với tôi và Frappe."
 							/>
 						</div>
 
 						<ErrorMessage class="mb-4" :message="$resources.newSite.error" />
 
 						<div class="flex items-center justify-between">
-							<Button v-show="hasPrevious" @click="previous"> Back </Button>
+							<Button v-show="hasPrevious" @click="previous"> Quay lại </Button>
 							<Button
 								v-show="
 									(activeStep.name !== 'Restore' || wantsToRestore) && hasNext
@@ -87,7 +87,7 @@
 								:loading="loadingPlans"
 								loadingText="Loading"
 							>
-								Next
+								Tiếp theo
 							</Button>
 							<Button
 								v-show="
@@ -97,7 +97,7 @@
 								variant="solid"
 								@click="nextStep(activeStep, next)"
 							>
-								Skip
+								Bỏ qua
 							</Button>
 							<Button
 								v-show="!hasNext"
@@ -107,7 +107,7 @@
 								@click="$resources.newSite.submit()"
 								:loading="$resources.newSite.loading"
 							>
-								Create Site
+								Tạo Trang web
 							</Button>
 						</div>
 					</div>
@@ -170,7 +170,7 @@ export default {
 					validate: () => {
 						if (this.privateBench) return true;
 						if (!this.selectedRegion) {
-							this.validationMessage = 'Please select the region';
+							this.validationMessage = 'Vui lòng chọn khu vực';
 							return false;
 						} else {
 							this.validationMessage = null;
@@ -248,11 +248,11 @@ export default {
 						(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Please agree to the above consent to create site';
+						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo trang web';
 					}
 
 					if (!canCreate) {
-						return 'Cannot create site';
+						return 'Không thể tạo trang web';
 					}
 				}
 			};
@@ -309,7 +309,7 @@ export default {
 					validate: () => {
 						for (let app of Object.keys(this.selectedAppPlans)) {
 							if (!this.selectedAppPlans[app]) {
-								this.validationMessage = `Please select a plan for ${app}`;
+								this.validationMessage = `Vui lòng chọn một gói cho ${app}`;
 								return false;
 							} else {
 								this.validationMessage = null;

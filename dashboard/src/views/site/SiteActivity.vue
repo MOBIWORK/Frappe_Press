@@ -1,8 +1,8 @@
 <template>
 	<Card
 		class="h-full max-h-96 min-h-full"
-		title="Site Activity"
-		subtitle="Log of activities performed on your site"
+		title="Hoạt động trang web"
+		subtitle="Bản ghi các hoạt động được thực hiện trên trang web của bạn"
 	>
 		<div class="divide-y">
 			<ListItem
@@ -18,21 +18,21 @@
 				loadingText="Fetching..."
 				@click="$resources.activities.next()"
 			>
-				Load more
+				Tải thêm
 			</Button>
 		</div>
 
 		<template v-slot:actions>
 			<Button @click="showChangeNotifyEmailDialog = true">
-				Change Notify Email
+				Thay đổi email thông báo
 			</Button>
 		</template>
 		<Dialog
 			:options="{
-				title: 'Change Notify Email',
+				title: 'Thay đổi email thông báo',
 				actions: [
 					{
-						label: 'Save Changes',
+						label: 'Lưu thay đổi',
 						variant: 'solid',
 						loading: $resources.changeNotifyEmail.loading,
 						onClick: () => $resources.changeNotifyEmail.submit()
@@ -78,7 +78,7 @@ export default {
 				onSuccess() {
 					this.showChangeNotifyEmailDialog = false;
 					notify({
-						title: 'Notify Email Changed!',
+						title: 'Email thông báo đã được thay đổi!',
 						icon: 'check',
 						color: 'green'
 					});

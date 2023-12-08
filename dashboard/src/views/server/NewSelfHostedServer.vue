@@ -1,7 +1,7 @@
 <template>
 	<WizardCard v-if="options">
 		<div class="mb-6 text-center">
-			<h1 class="text-2xl font-bold">Create a new Self Hosted Server</h1>
+			<h1 class="text-2xl font-bold">Tạo một Máy chủ Tự lưu trữ mới</h1>
 		</div>
 		<Steps :steps="steps">
 			<template
@@ -68,7 +68,7 @@
 						:loading="$resources.verify.loading"
 						variant="solid"
 					>
-						Verify Server
+						Xác minh Máy chủ
 					</Button>
 					<Button
 						v-else
@@ -83,8 +83,8 @@
 					</Button>
 					<div class="mt-1" v-if="playOutput && !nginxSetup">
 						<span class="text-sm text-green-600">
-							Server Verification is complete. Setting Up Nginx, this can take
-							upto a minute</span
+							Quá trình Xác minh Máy chủ đã hoàn thành. Đang thiết lập Nginx,
+							điều này có thể mất đến một phút</span
 						>
 					</div>
 				</div>
@@ -116,7 +116,7 @@
 							"
 							:class="{ 'mt-2': hasPrevious }"
 						>
-							Next
+							Tiếp theo
 						</Button>
 						<Button
 							v-show="!hasNext"
@@ -128,7 +128,7 @@
 							@click="setupServers"
 							:loading="$resources.setupServer.loading"
 						>
-							Setup Server
+							Thiết lập Máy chủ
 						</Button>
 					</div>
 				</div>
@@ -250,10 +250,10 @@ export default {
 					let canCreate = this.title;
 
 					if (!this.agreedToRegionConsent) {
-						return 'Please agree to the above consent to create server';
+						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo máy chủ';
 					}
 					if (!canCreate) {
-						return 'Cannot create server';
+						return 'Không thể tạo máy chủ';
 					}
 				}
 			};
@@ -269,7 +269,7 @@ export default {
 					this.domainVerified = data;
 					this.dnsErrorMessage = this.domainVerified
 						? null
-						: `DNS verification Failed, Please make sure ${this.domain} is pointed to ${this.publicIP}`;
+						: `Xác minh DNS không thành công. Vui lòng đảm bảo ${this.domain} được chỉ đến ${this.publicIP}`;
 				}
 			};
 		},

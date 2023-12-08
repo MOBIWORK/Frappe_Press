@@ -1,5 +1,5 @@
 <template>
-	<Card :title="title || 'Site Config'">
+	<Card :title="title || 'Cấu hình trang web'">
 		<template #actions>
 			<Button
 				class="mr-2"
@@ -13,7 +13,7 @@
 					}
 				"
 			>
-				Discard changes
+				Loại bỏ các thay đổi
 			</Button>
 			<Button
 				variant="solid"
@@ -21,7 +21,7 @@
 				@click="updateConfig"
 				:loading="$resources.updateConfig.loading"
 			>
-				Save changes
+				Lưu các thay đổi
 			</Button>
 		</template>
 		<div class="flex space-x-4">
@@ -48,10 +48,10 @@
 						/>
 					</div>
 					<p v-else class="my-2 text-base text-gray-600">
-						No keys added. Click on Add Key to add one.
+						Chưa thêm khóa nào. Nhấp vào "Thêm Khóa" để thêm một.
 					</p>
 					<Button class="mt-4" @click="showAddConfigKeyDialog = true"
-						>Add Key</Button
+						>Thêm Khóa</Button
 					>
 				</div>
 			</div>
@@ -63,10 +63,10 @@
 			</div>
 			<Dialog
 				:options="{
-					title: 'Add Config Key',
+					title: 'Thêm khóa cấu hình',
 					actions: [
 						{
-							label: 'Add Key',
+							label: 'Thêm Khóa',
 							variant: 'solid',
 							onClick: addConfig
 						}
@@ -77,9 +77,9 @@
 				<template v-slot:body-content>
 					<div class="space-y-4">
 						<div>
-							<span class="mb-1 block text-xs text-gray-600">Key</span>
+							<span class="mb-1 block text-xs text-gray-600">Khóa</span>
 							<Autocomplete
-								placeholder="Key"
+								placeholder="Khóa"
 								:options="getStandardConfigKeys"
 								v-model="chosenStandardConfig"
 								@update:modelValue="handleAutocompleteSelection"
@@ -88,12 +88,12 @@
 						<FormControl
 							v-if="showCustomKeyInput"
 							v-model="newConfig.key"
-							label="Custom Key"
+							label="Khóa tùy chỉnh"
 							class="w-full"
 							@change="isDirty = true"
 						/>
 						<FormControl
-							label="Type"
+							label="Loại"
 							v-model="newConfig.type"
 							type="select"
 							:disabled="chosenStandardConfig && !showCustomKeyInput"
@@ -103,7 +103,7 @@
 						<FormControl
 							v-bind="configInputProps()"
 							v-model="newConfig.value"
-							label="Value"
+							label="Giá trị"
 							class="w-full"
 							@change="isDirty = true"
 						/>
@@ -176,27 +176,27 @@ export default {
 				async validate() {
 					let keys = updatedConfig.map(d => d.key);
 					if (keys.length !== [...new Set(keys)].length) {
-						return 'Duplicate key';
+						return 'Khóa trùng lặp';
 					}
 					this.$resources.validateKeys.submit({
 						keys: JSON.stringify(keys)
 					});
 					let invalidKeys = this.$resources.validateKeys.data;
 					if (invalidKeys?.length > 0) {
-						return `Invalid key: ${invalidKeys.join(', ')}`;
+						return `'Khóa không hợp lệ: ${invalidKeys.join(', ')}`;
 					}
 					for (let config of updatedConfig) {
 						if (config.type === 'JSON') {
 							try {
 								JSON.parse(JSON.stringify(config.value));
 							} catch (error) {
-								return `Invalid JSON -- ${error}`;
+								return `JSON không hợp Lệ -- ${error}`;
 							}
 						} else if (config.type === 'Number') {
 							try {
 								Number(config.value);
 							} catch (error) {
-								return 'Invalid Number';
+								return 'Số không hợp lệ';
 							}
 						}
 					}
@@ -238,7 +238,7 @@ export default {
 			return [
 				{
 					group: 'Custom',
-					items: [{ label: 'Create a custom key', value: 'custom_key' }]
+					items: [{ label: 'Tạo một khóa tùy chỉnh', value: 'custom_key' }]
 				},
 				{
 					group: 'Standard',

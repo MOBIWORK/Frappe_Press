@@ -14,7 +14,7 @@ class ChartComponent {
 		if (this.df.data) {
 			if (this.df.type === 'mixed-bars') {
 				let mixed_bar_section = $(`<div class="mixed-bars mt-4">`).appendTo(
-					chart_section,
+					chart_section
 				);
 				for (let value of this.df.data.datasets[0].values) {
 					var bar;
@@ -39,11 +39,11 @@ class ChartComponent {
 			}
 		} else {
 			chart_section.append(`
-                <table style="height: 250px"> 
+                <table style="height: 250px">
                     <tbody>
                         <tr>
                             <td/>
-                            <td class="align-middle text-center w-100 pb-4">No data yet</td>
+                            <td class="align-middle text-center w-100 pb-4">Chưa có dữ liệu</td>
                             <td/>
                         </tr>
                     </tbody>

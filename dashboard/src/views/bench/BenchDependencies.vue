@@ -1,13 +1,13 @@
 <template>
 	<Card
-		title="Dependencies"
-		subtitle="Update dependencies for your bench"
+		title="Phụ thuộc"
+		subtitle="Cập nhật các phần phụ thuộc cho bench của bạn"
 		:loading="$resources.dependencies.loading"
 	>
 		<template #actions>
 			<Button
 				v-if="isDirty"
-				label="Update"
+				label="Cập nhật"
 				@click="$resources.updateDependencies.submit()"
 				:loading="$resources.updateDependencies.loading"
 			/>
@@ -27,7 +27,7 @@
 			v-if="dependencies.update_available"
 			class="ml-0.5 mt-2.5 text-base text-red-600"
 		>
-			The changes will take effect in your next bench deploy.
+			Thay đổi sẽ có hiệu lực trong lần triển khai bench tiếp theo của bạn.
 		</p>
 	</Card>
 </template>
@@ -62,14 +62,14 @@ export default {
 					dependencies: JSON.stringify(this.dependencies.active_dependencies)
 				},
 				validate() {
-					if (!this.isDirty) return 'No changes made';
+					if (!this.isDirty) return 'Không có sự thay đổi nào được thực hiện';
 				},
 				onSuccess() {
 					this.isDirty = false;
 				},
 				onError(err) {
 					notify({
-						title: 'Error',
+						title: 'Lỗi',
 						message: (err.messages || err.message.split('_')).join(', '),
 						icon: 'x',
 						color: 'red'

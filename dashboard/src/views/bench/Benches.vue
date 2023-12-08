@@ -10,7 +10,7 @@
 					<Button
 						variant="solid"
 						icon-left="plus"
-						label="Create"
+						label="Tạo mới"
 						class="ml-2"
 						@click="showBillingDialog"
 					/>
@@ -21,13 +21,13 @@
 		<div class="mx-5 mt-5">
 			<div class="flex">
 				<div class="flex w-full space-x-2 pb-4">
-					<FormControl label="Search Benches" v-model="searchTerm">
+					<FormControl label="Tìm kiếm Benches" v-model="searchTerm">
 						<template #prefix>
 							<FeatherIcon name="search" class="w-4 text-gray-600" />
 						</template>
 					</FormControl>
 					<FormControl
-						label="Status"
+						label="Trạng thái"
 						class="mr-8"
 						type="select"
 						:options="benchStatusFilterOptions"
@@ -35,7 +35,7 @@
 					/>
 					<FormControl
 						v-if="$resources.benchTags.data.length > 0"
-						label="Tag"
+						label="Thẻ"
 						class="mr-8"
 						type="select"
 						:options="benchTagFilterOptions"
@@ -46,11 +46,11 @@
 			</div>
 			<Table
 				:columns="[
-					{ label: 'Bench Name', name: 'name', width: 2 },
-					{ label: 'Status', name: 'status' },
-					{ label: 'Version', name: 'version' },
-					{ label: 'Tags', name: 'tags' },
-					{ label: 'Stats', name: 'stats' },
+					{ label: 'Tên Bench', name: 'name', width: 2 },
+					{ label: 'Trạng thái', name: 'status' },
+					{ label: 'Phiên bản', name: 'version' },
+					{ label: 'Thẻ', name: 'tags' },
+					{ label: 'Thống kê', name: 'stats' },
 					{ label: '', name: 'actions', width: 0.5 }
 				]"
 				:rows="benches"
@@ -131,7 +131,7 @@
 						v-else-if="$resources.allBenches.fetched && rows.length === 0"
 						class="text-base text-gray-700"
 					>
-						No Benches
+						Không có Benches
 					</div>
 				</div>
 			</Table>
@@ -240,15 +240,15 @@ export default {
 		benchStatusFilterOptions() {
 			return [
 				{
-					label: 'All',
+					label: 'Tất cả',
 					value: 'All'
 				},
 				{
-					label: 'Active',
+					label: 'Hoạt động',
 					value: 'Active'
 				},
 				{
-					label: 'Awaiting Deploy',
+					label: 'Chờ triển khai',
 					value: 'Awaiting Deploy'
 				}
 			];
@@ -283,7 +283,7 @@ export default {
 		dropdownItems(bench) {
 			return [
 				{
-					label: 'New Site',
+					label: 'Tạo trang web mới',
 					onClick: () => {
 						this.$router.push({
 							name: 'NewBenchSite',
@@ -293,7 +293,7 @@ export default {
 					condition: () => bench.status === 'Active'
 				},
 				{
-					label: 'View Sites',
+					label: 'Xem Trang web',
 					onClick: () => {
 						this.$router.push({
 							name: 'BenchSiteList',

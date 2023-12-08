@@ -108,17 +108,17 @@ body {
 }
 
 .box-shadow-custom {
-	border-radius: var(--radius-2, 16px);
-	opacity: var(--textfield-standard-input-small-pt, 1);
-	background: var(--background-default, #fff);
+	border-radius: 16px;
+	opacity: 1;
+	background: #fff;
 
 	/* shadow/card */
-	box-shadow: 0px 12px 24px -4px rgba(145, 158, 171, 0.12),
-		0px 0px 2px 0px rgba(145, 158, 171, 0.2);
+	box-shadow: 0px 12px 24px -4px rgba(34, 36, 37, 0.12),
+		0px 0px 2px 0px rgba(20, 20, 20, 0.2);
 }
 
 .box-shadow-custom:hover {
-	box-shadow: 0px 12px 24px -4px rgba(204, 101, 101, 0.2),
+	box-shadow: 0px 12px 24px -4px rgba(204, 101, 101, 0.4),
 		0px 0px 2px 0px rgba(204, 101, 101, 0.3);
 }
 
@@ -161,6 +161,11 @@ body {
 /* tailwind */
 .border-t {
 	border-top-width: 1px;
+}
+
+.border-gray-200 {
+	--tw-border-opacity: 1;
+	border-color: rgb(237 237 237 / var(--tw-border-opacity));
 }
 
 .gap-3 {
@@ -363,6 +368,21 @@ body {
 .hover\:text-red-500:hover {
 	--tw-text-opacity: 1;
 	color: rgb(224 54 54 / var(--tw-text-opacity));
+}
+
+.focus\:border-red-500:focus {
+	--tw-border-opacity: 1;
+	border-color: rgb(224 54 54 / var(--tw-border-opacity));
+}
+
+.bg-red-300 {
+	--tw-bg-opacity: 1;
+	background-color: rgb(249 198 198 / var(--tw-bg-opacity));
+}
+
+.bg-red-400 {
+	--tw-bg-opacity: 1;
+	background-color: rgb(235 144 145 / var(--tw-bg-opacity));
 }
 
 .ml-1 {

@@ -17,7 +17,7 @@
 					{ label: 'Rows Sent', name: 'sent', class: 'w-1/12' }
 				]"
 				:data="formatSlowQueries"
-				title="MariaDB Slow Queries Report"
+				title="Báo cáo truy vấn chậm của MariaDB"
 			/>
 			<div
 				class="px-2 py-2 text-base text-gray-600"
@@ -35,7 +35,7 @@
 					$resources.slowQueries.data.length == 0
 				"
 			>
-				No data
+				Không có dữ liệu
 			</div>
 			<Button
 				v-if="$resources.slowQueries.data && $resources.slowQueries.data.length"

@@ -445,67 +445,67 @@ export default {
 			let siteMonitorTab = '';
 			let tabRoute = subRoute => `/sites/${this.siteName}/${subRoute}`;
 			let tabs = [
-				{ label: 'Overview', route: 'overview' },
-				{ label: 'Apps', route: 'apps' },
-				{ label: 'Analytics', route: 'analytics' },
-				{ label: 'Monitor', route: 'monitor' },
+				{ label: 'Tổng quan', route: 'overview' },
+				{ label: 'Ứng dụng', route: 'apps' },
+				{ label: 'Phân tích', route: 'analytics' },
+				{ label: 'Giám sát', route: 'monitor' },
 				{ label: 'Database', route: 'database' },
-				{ label: 'Config', route: 'site-config' },
-				{ label: 'Jobs', route: 'jobs', showRedDot: this.runningJob },
+				{ label: 'Cấu hình', route: 'site-config' },
+				{ label: 'Công việc', route: 'jobs', showRedDot: this.runningJob },
 				{ label: 'Logs', route: 'logs' },
-				{ label: 'Settings', route: 'settings' }
+				{ label: 'Cài đặt', route: 'settings' }
 			];
 
 			if (this.site && this.site?.hide_config !== 1) {
-				siteConfig = 'Config';
+				siteConfig = 'Cấu hình';
 			}
 
 			if (this.site && this.hasMonitorAccess) {
-				siteMonitorTab = 'Monitor';
+				siteMonitorTab = 'Giám sát';
 			}
 
 			let tabsByStatus = {
 				Active: [
-					'Overview',
-					'Apps',
-					'Analytics',
+					'Tổng quan',
+					'Ứng dụng',
+					'Phân tích',
 					'Database',
 					siteConfig,
-					'Jobs',
+					'Công việc',
 					'Logs',
 					'Request Logs',
-					'Settings',
+					'Cài đặt',
 					siteMonitorTab
 				],
 				Inactive: [
-					'Overview',
-					'Apps',
+					'Tổng quan',
+					'Ứng dụng',
 					'Database',
 					siteConfig,
-					'Jobs',
+					'Công việc',
 					'Logs',
-					'Settings'
+					'Cài đặt'
 				],
-				Installing: ['Jobs'],
-				Pending: ['Jobs'],
+				Installing: ['Công việc'],
+				Pending: ['Công việc'],
 				Broken: [
-					'Overview',
-					'Apps',
+					'Tổng quan',
+					'Ứng dụng',
 					siteConfig,
 					'Database',
-					'Jobs',
+					'Công việc',
 					'Logs',
-					'Settings',
+					'Cài đặt',
 					siteMonitorTab
 				],
 				Suspended: [
-					'Overview',
-					'Apps',
+					'Tổng quan',
+					'Ứng dụng',
 					'Database',
-					'Jobs',
-					'Plan',
+					'Công việc',
+					'Gói',
 					'Logs',
-					'Settings'
+					'Cài đặt'
 				]
 			};
 			if (this.site) {

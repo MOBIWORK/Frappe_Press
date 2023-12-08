@@ -1,28 +1,30 @@
 <template>
 	<Alert :title="alertTitle" v-if="show">
 		<span v-if="deployInformation.deploy_in_progress"
-			>A deploy for this bench is in progress</span
+			>Một quá trình triển khai cho bench này đang trong quá trình tiến
+			hành.</span
 		>
 		<span v-else-if="bench.status == 'Active'">
-			A new update is available for your bench. Would you like to deploy the
-			update now?
+			Cập nhật mới đã sẵn có cho bench của bạn. Bạn có muốn triển khai cập nhật
+			ngay bây giờ không?
 		</span>
 		<span v-else>
-			Your bench is not deployed yet. You can add more apps to your bench before
-			deploying. If you want to deploy now, click on Deploy.
+			Bench của bạn chưa được triển khai. Bạn có thể thêm nhiều ứng dụng khác
+			vào bench trước khi triển khai. Nếu bạn muốn triển khai ngay bây giờ, hãy
+			nhấp vào "Triển khai".
 		</span>
 		<template #actions>
 			<Button
 				v-if="deployInformation.deploy_in_progress"
 				variant="solid"
 				:route="`/benches/${bench.name}/deploys/${deployInformation.last_deploy.name}`"
-				>View Progress</Button
+				>Xem tiến trình</Button
 			>
 			<Tooltip
 				v-else
 				:text="
 					!permissions.update
-						? `You don't have enough permissions to perform this action`
+						? `Bạn không có đủ quyền để thực hiện hành động này`
 						: ''
 				"
 			>
@@ -31,13 +33,13 @@
 					:disabled="!permissions.update"
 					@click="showDeployDialog = true"
 				>
-					Show updates
+					Hiển thị cập nhật
 				</Button>
 			</Tooltip>
 		</template>
 
 		<Dialog
-			:options="{ title: 'Select the apps you want to update' }"
+			:options="{ title: 'Chọn các ứng dụng mà bạn muốn cập nhật' }"
 			v-model="showDeployDialog"
 		>
 			<template v-slot:body-content>
@@ -56,7 +58,7 @@
 					:loading="$resources.deploy.loading"
 					v-if="this.bench.team === $account.team.name"
 				>
-					Deploy
+					Triển khai
 				</Button>
 				<Button
 					class="w-full"
@@ -64,7 +66,7 @@
 					@click="showTeamSwitcher = true"
 					v-else
 				>
-					Switch Team
+					Chuyển nhóm
 				</Button>
 				<SwitchTeamDialog v-model="showTeamSwitcher" />
 			</template>
@@ -110,7 +112,7 @@ export default {
 						this.selectedApps.length === 0 &&
 						this.deployInformation.removed_apps.length === 0
 					) {
-						return 'You must select atleast 1 app to proceed with update.';
+						return 'Bạn phải chọn ít nhất 1 ứng dụng để tiếp tục với quá trình cập nhật.';
 					}
 				},
 				onSuccess(candidate) {
@@ -141,7 +143,7 @@ export default {
 			return (
 				this.$resources.deploy.error ||
 				(this.bench.team !== $account.team.name
-					? "Current Team doesn't have enough permissions"
+					? 'Nhóm hiện tại không có đủ quyền.'
 					: '')
 			);
 		},
@@ -150,7 +152,7 @@ export default {
 		},
 		alertTitle() {
 			if (this.deployInformation && this.deployInformation.deploy_in_progress) {
-				return 'Deploy in Progress';
+				return 'Quá trình triển khai đang được thực hiện.';
 			}
 			return this.bench.status == 'Active' ? 'Update Available' : 'Deploy';
 		}

@@ -8,7 +8,7 @@
 	<div v-else-if="$resources.getPlan?.data?.monitor_access">
 		<Card>
 			<Report
-				title="Request Logs"
+				title="Logs yêu cầu"
 				:columns="[
 					{ label: 'Time', name: 'time', class: 'w-2/12' },
 					{ label: 'Method', name: 'method', class: 'w-1/12' },
@@ -36,7 +36,7 @@
 					$resources.requestLogs.data.length == 0
 				"
 			>
-				No data
+				Không có dữ liệu
 			</div>
 			<Button
 				v-if="$resources.requestLogs.data && $resources.requestLogs.data.length"
