@@ -4,11 +4,11 @@
 			class="bg-gray-0 flex rounded-t-md border border-b-0 px-4 py-3 text-base text-gray-800"
 		>
 			<div class="w-10"></div>
-			<div class="w-1/4">Plan</div>
-			<div class="w-1/4">Compute</div>
+			<div class="w-1/4">Gói</div>
+			<div class="w-1/4">Tính toán</div>
 			<div class="w-1/4">Database</div>
-			<div class="w-1/4">Disk</div>
-			<div class="w-1/4">Support</div>
+			<div class="w-1/4">Ổ cứng</div>
+			<div class="w-1/4">Hỗ trợ</div>
 		</div>
 		<div
 			class="focus-within:shadow-outline flex cursor-pointer border px-4 py-3 text-left text-base"
@@ -36,11 +36,11 @@
 				<span class="font-semibold">
 					{{ $planTitle(plan) }}
 				</span>
-				<span v-if="plan.price_usd > 0"> /mo</span>
+				<span v-if="plan.price_usd > 0"> /tháng</span>
 			</div>
 			<div class="w-1/4 text-gray-700" :class="{ 'opacity-25': plan.disabled }">
 				{{ plan.cpu_time_per_day }}
-				{{ $plural(plan.cpu_time_per_day, 'hour', 'hours') }} / day
+				{{ $plural(plan.cpu_time_per_day, 'hour', 'hours') }} / ngày
 			</div>
 			<div class="w-1/4 text-gray-700" :class="{ 'opacity-25': plan.disabled }">
 				{{ formatBytes(plan.max_database_usage, 0, 2) }}
@@ -62,7 +62,7 @@
 		</div>
 	</div>
 	<div class="text-center" v-else>
-		<Button :loading="true">Loading</Button>
+		<Button :loading="true">Đang tải</Button>
 	</div>
 </template>
 

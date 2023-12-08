@@ -1,8 +1,9 @@
 <template>
 	<div>
-		<label class="text-lg font-semibold"> Choose your plan </label>
+		<label class="text-lg font-semibold"> Chọn gói của bạn </label>
 		<p class="text-base text-gray-700">
-			Select a plan based on the type of usage you are expecting on your site.
+			Chọn một gói dựa trên loại sử dụng mà bạn mong đợi trên trang web của
+			mình.
 		</p>
 		<div class="mt-4">
 			<div v-if="$resources.plans.loading" class="flex justify-center">
