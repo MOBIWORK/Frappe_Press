@@ -70,7 +70,7 @@
    "fieldname": "preferred_payout_method",
    "fieldtype": "Select",
    "label": "Preferred Payout Method",
-   "options": "Frappe Cloud Credits\nBank Transfer\nPayPal"
+   "options": "MBW Cloud Credits\nFrappe Cloud Credits\nBank Transfer\nPayPal"
   },
   {
    "depends_on": "eval:doc.preferred_payout_method==\"PayPal\"",
@@ -80,7 +80,7 @@
    "mandatory_depends_on": "eval:doc.preferred_payout_method==\"PayPal\""
   },
   {
-   "depends_on": "eval:doc.preferred_payout_method!=\"Frappe Cloud Credits\"",
+   "depends_on": "eval:doc.preferred_payout_method!=\"Frappe Cloud Credits\" && doc.preferred_payout_method!=\"MBW Cloud Credits\"",
    "fieldname": "gstin",
    "fieldtype": "Data",
    "label": "GSTIN (If Applicable)"
@@ -114,7 +114,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2022-10-21 16:20:49.110120",
+ "modified": "2023-12-08 11:08:20.634892",
  "modified_by": "Administrator",
  "module": "Marketplace",
  "name": "Marketplace Publisher Profile",

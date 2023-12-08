@@ -30,9 +30,16 @@
 				>
 					<a
 						:class="[
-							(item.route == '/' ? isExactActive : isActive)
+							(
+								Boolean(item.highlight)
+									? item.highlight(route)
+									: item.route == '/'
+							)
 								? 'bg-gray-200'
 								: 'text-gray-900 hover:bg-gray-50'
+							// (item.route == '/' ? isExactActive : isActive)
+							// 	? 'bg-gray-200'
+							// 	: 'text-gray-900 hover:bg-gray-50'
 						]"
 						:href="href"
 						@click="navigate"
@@ -66,21 +73,21 @@
 						target="_blank"
 						class="block rounded-md px-3 pt-4 text-base font-medium focus:outline-none"
 					>
-						Support
+						Hỗ trợ
 					</a>
 					<a
 						href="/docs"
 						target="_blank"
 						class="block rounded-md px-3 text-base font-medium focus:outline-none"
 					>
-						Docs
+						Tài liệu
 					</a>
 					<a
 						href="#"
 						class="block rounded-md px-3 text-base font-medium focus:outline-none"
 						@click.prevent="$auth.logout"
 					>
-						Logout
+						Đăng xuất
 					</a>
 				</div>
 			</div>
@@ -114,27 +121,30 @@ export default {
 					label: 'Benches',
 					route: '/benches',
 					highlight: () => {
-						return this.$route.fullPath.endsWith('/sites');
+						return this.$route.fullPath.endsWith('/benches');
 					}
 				},
 				{
-					label: 'Apps',
-					route: '/marketplace',
+					label: 'Ứng dụng',
+					route: '/marketplace/apps',
 					highlight: () => {
-						return this.$route.fullPath.includes('/marketplace');
+						return this.$route.fullPath.includes('/marketplace/');
 					},
 					condition: () => this.$account.team?.is_developer
 				},
 				{
-					label: 'Billing',
+					label: 'Thanh toán',
 					route: '/billing',
 					highlight: () => {
-						return this.$route.fullPath.endsWith('/sites');
+						return this.$route.fullPath.includes('/billing/');
 					}
 				},
 				{
-					label: 'Settings',
-					route: '/settings/profile'
+					label: 'Cài đặt',
+					route: '/settings/profile',
+					highlight: () => {
+						return this.$route.fullPath.includes('/settings');
+					}
 				}
 			].filter(d => (d.condition ? d.condition() : true));
 		}

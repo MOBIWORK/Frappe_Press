@@ -46,6 +46,7 @@ const createAppPlan = createResource({
 });
 
 function editPlan(plan) {
+	refreshState();
 	if (plan) {
 		Object.assign(currentEditingPlan, plan);
 		currentEditingPlan.enabled = Boolean(plan.enabled);
@@ -98,10 +99,10 @@ function resetCurrentEditingPlan() {
 
 <template>
 	<div>
-		<Card title="Pricing Plans" subtitle="Set up pricing plans for this app">
+		<Card title="Gói giá" subtitle="Thiết lập gói giá cho ứng dụng này">
 			<div class="m-4">
 				<div class="flex justify-center" v-if="appPlans.loading">
-					<Button :loading="true">Loading</Button>
+					<Button :loading="true">Đang tải</Button>
 				</div>
 
 				<div v-else-if="appPlans.data">
@@ -122,23 +123,23 @@ function resetCurrentEditingPlan() {
 						<div class="mt-7 flex flex-col items-center justify-center">
 							<PrinterIcon class="mb-5 h-20 w-20" />
 							<p class="mb-1 text-2xl font-semibold text-gray-900">
-								Create a plan
+								Tạo một gói
 							</p>
 							<p class="mb-3.5 text-base text-gray-700">
-								Looks like you haven't created any plans yet
+								Dường như bạn chưa tạo bất kỳ gói nào.
 							</p>
-							<Button variant="solid" @click="editPlan()">Create plan</Button>
+							<Button variant="solid" @click="editPlan()">Tạo gói</Button>
 						</div>
 					</div>
 				</div>
 			</div>
 
 			<template v-if="appPlans.data && 0 < appPlans.data.length" #actions>
-				<Button @click="editPlan()">New Plan</Button>
+				<Button @click="editPlan()">Gói mới</Button>
 			</template>
 		</Card>
 
-		<Dialog :options="{ title: 'Edit Plan' }" v-model="showEditPlanDialog">
+		<Dialog :options="{ title: 'Chỉnh sửa gói' }" v-model="showEditPlanDialog">
 			<template v-slot:body-content>
 				<div>
 					<div class="mb-4">
@@ -149,31 +150,31 @@ function resetCurrentEditingPlan() {
 							v-model="currentEditingPlan.enabled"
 						/>
 						<label for="enabled-checkbox" class="ml-1 text-sm text-gray-900">
-							Enabled
+							Đã kích hoạt
 						</label>
 					</div>
 					<div class="mb-4">
 						<FormControl
 							placeholder="My Pro Plan"
-							label="Name"
+							label="Tên"
 							v-model="currentEditingPlan.plan_title"
 						></FormControl>
 					</div>
 					<div class="mb-8">
-						<h3 class="mb-4 text-lg font-semibold">Subscription Price</h3>
+						<h3 class="mb-4 text-lg font-semibold">Giá đăng ký</h3>
 						<div class="grid grid-cols-2 gap-2">
 							<FormControl
-								label="Price INR"
+								label="Giá INR"
 								v-model="currentEditingPlan.price_inr"
 							></FormControl>
 							<FormControl
-								label="Price USD"
+								label="Giá USD"
 								v-model="currentEditingPlan.price_usd"
 							></FormControl>
 						</div>
 					</div>
 					<div>
-						<h3 class="mb-4 text-lg font-semibold">Features</h3>
+						<h3 class="mb-4 text-lg font-semibold">Tính năng</h3>
 						<div>
 							<div
 								v-for="(feature, idx) in currentEditingPlan.features"
@@ -201,7 +202,7 @@ function resetCurrentEditingPlan() {
 							</div>
 						</div>
 						<div>
-							<Button icon-left="plus" @click="addFeatureInput">Add</Button>
+							<Button icon-left="plus" @click="addFeatureInput">Thêm</Button>
 						</div>
 
 						<div>
@@ -219,7 +220,7 @@ function resetCurrentEditingPlan() {
 					:loading="updateAppPlan.loading || createAppPlan.loading"
 					@click="savePlan"
 					@close="resetCurrentEditingPlan"
-					>Save</Button
+					>Lưu</Button
 				>
 			</template>
 		</Dialog>

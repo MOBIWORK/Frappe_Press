@@ -7,9 +7,9 @@
 				<Breadcrumbs
 					:items="[
 						{
-							label: 'Apps',
+							label: 'Ứng dụng',
 							route: {
-								name: 'Marketplace',
+								name: 'MarketplaceApps',
 								params: { appName: app.name }
 							}
 						},
@@ -27,7 +27,7 @@
 							v-if="app.status === 'Published'"
 							variant="solid"
 							icon-left="external-link"
-							label="View in Marketplace"
+							label="Xem trên Marketplace"
 							class="ml-2"
 							:link="`/marketplace/apps/${app.name}`"
 						/>
@@ -96,34 +96,34 @@ export default {
 		},
 		tabs() {
 			let tabsByStatus = {
-				Draft: ['Overview', 'Releases', 'Review'],
-				'In Review': ['Overview', 'Releases', 'Review'],
-				Rejected: ['Overview', 'Releases', 'Review'],
+				Draft: ['Tổng quan', 'Bản phát hành', 'Đánh giá'],
+				'In Review': ['Tổng quan', 'Bản phát hành', 'Đánh giá'],
+				Rejected: ['Tổng quan', 'Bản phát hành', 'Đánh giá'],
 				Published: [
-					'Overview',
-					'Releases',
-					'Analytics',
-					'Subscriptions',
-					'Pricing'
+					'Tổng quan',
+					'Bản phát hành',
+					'Phân tich',
+					'Đăng ký',
+					'Định giá'
 				],
 				'Attention Required': [
-					'Overview',
-					'Releases',
-					'Review',
-					'Analytics',
-					'Subscriptions',
-					'Pricing'
+					'Tổng quan',
+					'Bản phát hành',
+					'Đánh giá',
+					'Phân tich',
+					'Đăng ký',
+					'Định giá'
 				]
 			};
 			let tabRoute = subRoute =>
 				`/marketplace/apps/${this.appName}/${subRoute}`;
 			let tabs = [
-				{ label: 'Overview', route: 'overview' },
-				{ label: 'Releases', route: 'releases' },
-				{ label: 'Review', route: 'review' },
-				{ label: 'Analytics', route: 'analytics' },
-				{ label: 'Subscriptions', route: 'subscriptions' },
-				{ label: 'Pricing', route: 'pricing' }
+				{ label: 'Tổng quan', route: 'overview' },
+				{ label: 'Bản phát hành', route: 'releases' },
+				{ label: 'Đánh giá', route: 'review' },
+				{ label: 'Phân tích', route: 'analytics' },
+				{ label: 'Đăng ký', route: 'subscriptions' },
+				{ label: 'Định giá', route: 'pricing' }
 			];
 
 			if (this.app) {

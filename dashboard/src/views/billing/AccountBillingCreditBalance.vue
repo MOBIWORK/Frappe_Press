@@ -1,13 +1,13 @@
 <template>
-	<Card title="Credit Balance" subtitle="History of your credit balance">
+	<Card title="Số dư tín dụng" subtitle="Lịch sử số dư tín dụng của bạn">
 		<div class="max-h-96 divide-y">
 			<div
 				class="grid grid-cols-4 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-4"
 			>
-				<span class="hidden md:inline">Date</span>
-				<span class="col-span-2 md:col-span-1">Description</span>
-				<span>Amount</span>
-				<span>Balance</span>
+				<span class="hidden md:inline">Ngày</span>
+				<span class="col-span-2 md:col-span-1">Mô tả</span>
+				<span>Số tiền</span>
+				<span>Số dư</span>
 			</div>
 			<div
 				class="grid grid-cols-4 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-4"
@@ -47,7 +47,7 @@ export default {
 		},
 		getDescription(d) {
 			if (d.type === 'Applied To Invoice' && d.formatted.invoice_for) {
-				return `Invoice For ${d.formatted.invoice_for}`;
+				return `Hóa đơn cho ${d.formatted.invoice_for}`;
 			}
 
 			return d.amount < 0 ? d.type : d.source;

@@ -3,22 +3,25 @@
 		v-if="$resources.analytics.data"
 		class="grid grid-cols-1 gap-5 sm:grid-cols-2"
 	>
-		<Card title="Earnings">
+		<Card title="Thu nhập">
 			<template #actions>
 				<a
 					class="text-base text-gray-700 hover:text-gray-800"
 					href="/support/tickets"
 					target="_blank"
 				>
-					Contact Support →
+					Liên hệ hỗ trợ →
 				</a>
 			</template>
 			<ListItem
-				title="Total Earnings"
-				:subtitle="`Total earnings for ${app.title}`"
+				title="Tổng thu nhập"
+				:subtitle="`Tổng thu nhập cho ${app.title}`"
 			>
 				<template #actions>
 					<span class="text-base font-semibold text-green-500">{{
+						'VND' +
+						paymentAnalytics.total_payout.usd +
+						' + ' +
 						'$' +
 						paymentAnalytics.total_payout.usd +
 						' + ' +
@@ -28,11 +31,14 @@
 				</template>
 			</ListItem>
 			<ListItem
-				title="Pending Payout"
-				subtitle="Payout you are yet to receive from MBW Cloud"
+				title="Đang chờ thanh toán"
+				subtitle="Thanh toán mà bạn vẫn chưa nhận từ MBW Cloud."
 			>
 				<template #actions>
 					<span class="text-base font-semibold">{{
+						'VND' +
+						paymentAnalytics.total_payout.usd +
+						' + ' +
 						'$' +
 						paymentAnalytics.pending_payout.usd +
 						' + ' +
@@ -42,11 +48,14 @@
 				</template>
 			</ListItem>
 			<ListItem
-				title="Commission"
-				subtitle="Payouts start once you have passed $500 threshold"
+				title="Hoa hồng"
+				subtitle="Tiền hoa hồng bắt đầu khi bạn vượt qua ngưỡng $500."
 			>
 				<template #actions>
 					<span class="text-base font-semibold">{{
+						'VND' +
+						paymentAnalytics.total_payout.usd +
+						' + ' +
 						'$' +
 						paymentAnalytics.commission.usd +
 						' + ' +
@@ -56,7 +65,7 @@
 				</template>
 			</ListItem>
 		</Card>
-		<Card title="Installs">
+		<Card title="Cài đặt">
 			<div class="divide-y" v-if="analytics">
 				<ListItem
 					v-for="stat in analytics"
@@ -68,15 +77,15 @@
 			</div>
 
 			<div class="py-10 text-center" v-if="$resources.analytics.loading">
-				<Button :loading="true">Loading</Button>
+				<Button :loading="true">Đang tải</Button>
 			</div>
 		</Card>
 		<LineChart
-			title="Pageviews"
+			title="Số lượt xem trang"
 			type="time"
 			:key="pageViewsData"
 			:data="pageViewsData"
-			unit="views"
+			unit="Lượt"
 			:chartTheme="[$theme.colors.purple[500]]"
 			:loading="$resources.plausible_analytics.loading"
 			:error="$resources.plausible_analytics.error"
@@ -88,16 +97,16 @@
 					:href="`/marketplace/apps/${app.app}`"
 					target="_blank"
 				>
-					View Marketplace Page →
+					Xem trang từ Marketplace →
 				</a>
 			</template>
 		</LineChart>
 		<LineChart
-			title="Unique Visitors"
+			title="Số lượng khách truy cập"
 			type="time"
 			:key="visitorsData"
 			:data="visitorsData"
-			unit="visitors"
+			unit="khách"
 			:chartTheme="[$theme.colors.green[500]]"
 			:loading="$resources.plausible_analytics.loading"
 			:error="$resources.plausible_analytics.error"
@@ -175,21 +184,21 @@ export default {
 
 				return [
 					{
-						title: 'Total Installs',
+						title: 'Tổng số lượt cài đặt',
 						value:
 							total_installs.toString() +
 							' ' +
 							(total_installs == 1 ? 'Site' : 'Sites')
 					},
 					{
-						title: 'Active Sites with this App',
+						title: 'Các trang web hoạt động với ứng dụng này',
 						value:
 							num_installs_active_sites.toString() +
 							' ' +
 							(num_installs_active_sites == 1 ? 'Site' : 'Sites')
 					},
 					{
-						title: 'Active Benches with this App',
+						title: 'Các bench làm việc hoạt động với ứng dụng này',
 						value:
 							num_installs_active_benches.toString() +
 							' ' +

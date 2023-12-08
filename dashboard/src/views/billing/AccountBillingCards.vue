@@ -1,8 +1,8 @@
 <template>
-	<Card title="Payment methods" :subtitle="subtitle">
+	<Card title="Phương thức thanh toán" :subtitle="subtitle">
 		<template #actions>
-			<Button @click="showAddCardDialog = true"> Add Card </Button>
-			<Dialog :options="{ title: 'Add new card' }" v-model="showAddCardDialog">
+			<Button @click="showAddCardDialog = true"> Thêm thẻ </Button>
+			<Dialog :options="{ title: 'Thêm thẻ mới' }" v-model="showAddCardDialog">
 				<template v-slot:body-content>
 					<StripeCard
 						class="mb-1"
@@ -23,11 +23,11 @@
 			>
 				<div class="flex">
 					<component
-						class="mr-6 w-12 h-12"
+						class="mr-6 h-12 w-12"
 						:is="cardBrand[card.brand]"
 						v-if="card.brand"
 					/>
-					<component class="mr-6 w-12 h-12" :is="cardBrand['generic']" v-else />
+					<component class="mr-6 h-12 w-12" :is="cardBrand['generic']" v-else />
 					<div class="my-auto">
 						<div class="text-lg font-medium text-gray-900">
 							{{ card.name_on_card }} <span class="text-gray-500">••••</span>
@@ -36,10 +36,12 @@
 						</div>
 						<div class="mt-1 text-sm text-gray-600">
 							<span>
-								Valid till {{ card.expiry_month }}/{{ card.expiry_year }}
+								Hiệu lực đến {{ card.expiry_month }}/{{ card.expiry_year }}
 							</span>
 							·
-							<span>Added on {{ $date(card.creation).toLocaleString() }}</span>
+							<span
+								>Đã thêm vào {{ $date(card.creation).toLocaleString() }}</span
+							>
 						</div>
 					</div>
 				</div>
@@ -97,9 +99,9 @@ export default {
 				this.$resources.paymentMethods.loading ||
 				this.$resources.paymentMethods.data?.length > 0
 			) {
-				return 'Cards you have added for automatic billing';
+				return 'Các thẻ của bạn đã thêm để thanh toán tự động';
 			}
-			return "You haven't added any cards yet";
+			return 'Bạn chưa thêm bất kỳ thẻ nào cho việc thanh toán tự động';
 		},
 		cardBrand() {
 			return {
@@ -128,20 +130,20 @@ export default {
 		dropdownItems(card) {
 			return [
 				!card.is_default && {
-					label: 'Set as default',
+					label: 'Đặt mặc định',
 					onClick: () => this.confirmSetAsDefault(card)
 				},
 				{
-					label: 'Remove',
+					label: 'Xóa',
 					onClick: () => this.confirmRemove(card)
 				}
 			];
 		},
 		confirmSetAsDefault(card) {
 			this.$confirm({
-				title: 'Set as default',
-				message: 'Set this card as the default payment method?',
-				actionLabel: 'Set as default',
+				title: 'Đặt mặc định',
+				message: 'Đặt thẻ này làm phương thức thanh toán mặc định?',
+				actionLabel: 'Đặt mặc định',
 				resource: this.$resources.setAsDefault,
 				action: closeDialog => {
 					this.$resources.setAsDefault.submit({ name: card.name }).then(() => {
@@ -153,9 +155,9 @@ export default {
 		},
 		confirmRemove(card) {
 			this.$confirm({
-				title: 'Remove payment method',
-				message: 'Are you sure you want to remove this payment method?',
-				actionLabel: 'Remove',
+				title: 'Xóa phương thức thanh toán',
+				message: 'Bạn có chắc chắn muốn xóa phương thức thanh toán này không?',
+				actionLabel: 'Xóa',
 				actionColor: 'red',
 				resource: this.$resources.remove,
 				action: closeDialog => {

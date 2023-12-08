@@ -2,10 +2,10 @@
 	<Dialog
 		:modelValue="show"
 		:options="{
-			title: 'Add a New App Version',
+			title: 'Thêm phiên bản ứng dụng mới',
 			actions: [
 				{
-					label: 'Add New Version',
+					label: 'Thêm phiên bản',
 					variant: 'solid',
 					loading: $resources.addVersion.loading,
 					onClick: () => $resources.addVersion.submit()

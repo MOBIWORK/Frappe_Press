@@ -1,5 +1,5 @@
 <template>
-	<Card title="App Releases">
+	<Card title="Bản phát hành ứng dụng">
 		<div v-if="sources.length">
 			<div class="flex flex-row items-baseline">
 				<FormControl
@@ -17,15 +17,15 @@
 		</div>
 		<div v-if="!sources.length">
 			<p class="mt-3 text-center text-lg text-gray-600">
-				No published source exist for this app. Please contact support to
-				publish a version of this app.
+				Không có nguồn ứng dụng đã xuất bản cho ứng dụng này. Vui lòng liên hệ
+				với bộ phận hỗ trợ để xuất bản một phiên bản của ứng dụng này.
 			</p>
 		</div>
 		<div
 			v-else-if="releasesList.length === 0 && !$resources.releases.list.loading"
 		>
 			<p class="mt-3 text-center text-lg text-gray-600">
-				No app releases have been created for this version.
+				Không có phiên bản của ứng dụng đã được tạo ra cho phiên bản này.
 			</p>
 		</div>
 
@@ -34,10 +34,10 @@
 				<div
 					class="grid grid-cols-3 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-6"
 				>
-					<span class="md:col-span-2">Commit Message</span>
-					<span class="hidden md:inline">Tag</span>
-					<span class="hidden md:inline">Author</span>
-					<span>Status</span>
+					<span class="md:col-span-2">Tin nhắn xác nhận</span>
+					<span class="hidden md:inline">Thẻ</span>
+					<span class="hidden md:inline">Tác giả</span>
+					<span>Trạng thái</span>
 					<span></span>
 				</div>
 
@@ -71,24 +71,24 @@
 							"
 							@click="confirmApprovalRequest(release.name)"
 						>
-							Publish
+							Xuất bản
 						</Button>
 
 						<Button
 							v-else-if="release.status == 'Awaiting Approval'"
 							@click="confirmCancelRequest(release.name)"
-							>Cancel</Button
+							>Hủy</Button
 						>
 
 						<Button
 							v-else-if="release.status == 'Rejected'"
 							@click="showFeedback(release)"
-							>View Feedback</Button
+							>Xem phản hồi</Button
 						>
 					</span>
 				</div>
 				<Dialog
-					:options="{ title: 'Reason for Rejection' }"
+					:options="{ title: 'Lý do từ chối' }"
 					v-model="showRejectionFeedbackDialog"
 				>
 					<template v-slot:body-content>
@@ -101,8 +101,8 @@
 						@click="$resources.releases.next()"
 						v-if="$resources.releases.hasNextPage"
 						:loading="$resources.releases.list.loading"
-						loadingText="Loading..."
-						>Load More</Button
+						loadingText="Đang tải..."
+						>Tải thêm</Button
 					>
 				</div>
 			</div>
@@ -179,14 +179,14 @@ export default {
 
 					if (requestAlreadyExists)
 						notify({
-							title: 'Request already exists',
+							title: 'Yêu cầu đã tồn tại',
 							message: err.messages.join('\n'),
 							color: 'red',
 							icon: 'x'
 						});
 					else
 						notify({
-							title: 'Error',
+							title: 'Lỗi',
 							message: err.messages.join('\n'),
 							color: 'red',
 							icon: 'x'
@@ -235,10 +235,10 @@ export default {
 		},
 		confirmApprovalRequest(appRelease) {
 			this.$confirm({
-				title: 'Publish Release',
+				title: 'Xuất bản phiên bản',
 				message:
-					'Are you sure you want to publish this release to marketplace? Upon confirmation, the release will be sent for approval by the review team.',
-				actionLabel: 'Publish',
+					'Bạn có chắc muốn xuất bản phiên bản này lên marketplace không? Khi xác nhận, phiên bản sẽ được gửi đi để được xác nhận bởi nhóm đánh giá.',
+				actionLabel: 'Xuất bản',
 				action: closeDialog => {
 					closeDialog();
 					this.createApprovalRequest(appRelease);
@@ -247,10 +247,10 @@ export default {
 		},
 		confirmCancelRequest(appRelease) {
 			this.$confirm({
-				title: 'Cancel Release Approval Request',
+				title: 'Hủy yêu cầu phê duyệt phiên bản',
 				message:
-					'Are you sure you want to <strong>cancel</strong> the publish request for this release?',
-				actionLabel: 'Proceed',
+					'Bạn có chắc muốn <strong>hủy</strong> yêu cầu xuất bản cho phiên bản này không?',
+				actionLabel: 'Tiếp tục',
 				actionColor: 'red',
 				action: closeDialog => {
 					closeDialog();

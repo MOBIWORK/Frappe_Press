@@ -1,5 +1,5 @@
 <template>
-	<Card title="App Profile" subtitle="Your app's primary profile">
+	<Card title="Hồ sơ ứng dụng" subtitle="Hồ sơ chính của ứng dụng của bạn">
 		<div class="flex items-center border-b pb-6">
 			<div class="group relative">
 				<Avatar
@@ -26,12 +26,12 @@
 								:class="{ 'opacity-50': uploading }"
 							>
 								<span v-if="uploading">{{ progress }}%</span>
-								<span v-else>Edit</span>
+								<span v-else>Sửa</span>
 							</button>
 							<button
 								class="absolute bottom-0 left-0 grid w-full place-items-center rounded-md bg-gray-900 text-xs font-semibold text-white text-opacity-70 opacity-80 group-hover:opacity-0"
 							>
-								<span>Edit</span>
+								<span>Sửa</span>
 							</button>
 						</div>
 					</template>
@@ -45,12 +45,12 @@
 			</div>
 			<div class="ml-auto">
 				<Button icon-left="edit" @click="showAppProfileEditDialog = true">
-					Edit
+					Chỉnh sửa
 				</Button>
 			</div>
 		</div>
 		<div class="mt-8 flex justify-between">
-			<p class="text-lg font-semibold">Published Versions</p>
+			<p class="text-lg font-semibold">Phiên bản đã xuất bản</p>
 			<Button
 				icon-left="plus"
 				@click="
@@ -59,7 +59,7 @@
 					}
 				"
 			>
-				Add
+				Thêm
 			</Button>
 		</div>
 		<div class="divide-y" v-if="app">
@@ -83,10 +83,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Update App Title',
+				title: 'Cập nhật tiêu đề ứng dụng',
 				actions: [
 					{
-						label: 'Save Changes',
+						label: 'Lưu thay đổi',
 						variant: 'solid',
 						loading: $resources.updateAppTitle.loading,
 						onClick: () => $resources.updateAppTitle.submit()
@@ -96,7 +96,7 @@
 			v-model="showAppProfileEditDialog"
 		>
 			<template v-slot:body-content>
-				<FormControl label="App Title" v-model="app.title" />
+				<FormControl label="Tiêu đề ứng dụng" v-model="app.title" />
 
 				<ErrorMessage class="mt-4" :message="$resources.updateAppTitle.error" />
 			</template>
@@ -206,7 +206,7 @@ export default {
 		dropdownItems(source) {
 			return [
 				{
-					label: 'Change Branch',
+					label: 'Thay đổi nhánh',
 					onClick: () => {
 						this.selectedSource = source.source;
 						this.selectedVersion = source.version;
@@ -215,7 +215,7 @@ export default {
 					}
 				},
 				{
-					label: 'Remove',
+					label: 'Xóa',
 					onClick: () => {
 						this.$resources.removeVersion.submit({
 							name: this.app.name,
@@ -227,7 +227,7 @@ export default {
 		},
 		notifySuccess() {
 			notify({
-				title: 'App Profile Updated!',
+				title: 'Hồ sơ ứng dụng đã được cập nhật!',
 				icon: 'check',
 				color: 'green'
 			});

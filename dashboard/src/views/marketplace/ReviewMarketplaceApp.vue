@@ -23,11 +23,11 @@ const submitReview = createResource({
 	url: 'press.api.marketplace.submit_user_review',
 	validate() {
 		if (!review.title) {
-			return 'Please add a title to your review';
+			return 'Vui lòng thêm tiêu đề cho đánh giá của bạn';
 		}
 
 		if (!review.review) {
-			return 'Review cannot be empty';
+			return 'Đánh giá không thể trống';
 		}
 	},
 	onSuccess() {

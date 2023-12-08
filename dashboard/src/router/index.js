@@ -352,6 +352,7 @@ const routes = [
 					import('../views/marketplace/MarketplacePublisherProfile.vue')
 			},
 			{
+				name: 'MarketplaceApps',
 				path: 'apps',
 				component: () => import('../views/marketplace/MarketplaceApps.vue')
 			},

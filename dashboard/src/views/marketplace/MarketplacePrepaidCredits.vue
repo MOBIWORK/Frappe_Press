@@ -1,7 +1,7 @@
 <template>
 	<div v-if="step == 'Confirm Checkout'" class="flex-row text-sm">
 		<div class="mb-4 flex justify-between">
-			<p class="my-auto">Billing</p>
+			<p class="my-auto">Thanh toán</p>
 			<FormControl
 				type="select"
 				:options="paymentOptions"
@@ -181,7 +181,7 @@
 					}
 				"
 			>
-				Cancel
+				Hủy
 			</Button>
 			<Button
 				class="ml-2"
@@ -189,7 +189,7 @@
 				@click="onBuyClick"
 				:loading="paymentInProgress"
 			>
-				Pay
+				Thanh toán
 			</Button>
 		</div>
 	</div>

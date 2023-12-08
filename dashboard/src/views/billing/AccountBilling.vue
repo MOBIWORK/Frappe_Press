@@ -2,7 +2,7 @@
 	<div>
 		<header class="sticky top-0 z-10 border-b bg-white px-5 pt-2.5">
 			<Breadcrumbs
-				:items="[{ label: 'Billing', route: { name: 'BillingScreen' } }]"
+				:items="[{ label: 'Thanh toán', route: { name: 'BillingScreen' } }]"
 			/>
 			<Tabs :tabs="tabs" class="-mb-px pl-0.5" />
 		</header>
@@ -30,10 +30,10 @@ export default {
 		tabs() {
 			let tabRoute = subRoute => `/billing/${subRoute}`;
 			let tabs = [
-				{ label: 'Overview', route: 'overview' },
-				{ label: 'Invoices', route: 'invoices' },
-				{ label: 'Payment Methods', route: 'payment' },
-				{ label: 'Credit Balance', route: 'credit-balance' }
+				{ label: 'Tổng quan', route: 'overview' },
+				{ label: 'Hóa đơn', route: 'invoices' },
+				{ label: 'Phương thức thanh toán', route: 'payment' },
+				{ label: 'Số dư tín dụng', route: 'credit-balance' }
 			];
 
 			return tabs.map(tab => {

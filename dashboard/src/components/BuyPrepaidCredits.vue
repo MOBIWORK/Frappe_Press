@@ -3,7 +3,7 @@
 		<FormControl
 			v-if="step == 'Get Amount'"
 			class="mb-2"
-			label="Credits"
+			label="Tín dụng"
 			v-model.number="creditsToBuy"
 			name="amount"
 			autocomplete="off"
@@ -18,7 +18,7 @@
 			}"
 		>
 			<span class="text-sm leading-4 text-gray-700">
-				Credit or Debit Card
+				Thẻ Tín dụng hoặc Thẻ Ghi nợ
 			</span>
 			<div
 				class="form-input mt-2 block w-full py-2 pl-3"
@@ -29,7 +29,7 @@
 
 		<FormControl
 			v-if="step == 'Get Amount'"
-			label="Total Amount + GST(if applicable)"
+			label="Tổng Số tiền + Thuế GST (nếu áp dụng)"
 			disabled
 			v-model="total"
 			name="total"
@@ -52,18 +52,18 @@
 					@click="$resources.createPaymentIntent.submit()"
 					:loading="$resources.createPaymentIntent.loading"
 				>
-					Next
+					Tiếp theo
 				</Button>
 			</div>
 			<div v-if="step == 'Add Card Details'">
-				<Button @click="$emit('cancel')"> Cancel </Button>
+				<Button @click="$emit('cancel')"> Hủy </Button>
 				<Button
 					class="ml-2"
 					variant="solid"
 					@click="onBuyClick"
 					:loading="paymentInProgress"
 				>
-					Buy Credits
+					Mua tín dụng
 				</Button>
 			</div>
 		</div>
@@ -111,7 +111,7 @@ export default {
 				},
 				validate() {
 					if (this.creditsToBuy < this.minimumAmount) {
-						return `Amount must be greater than ${this.minimumAmount}`;
+						return `Số tiền phải lớn hơn ${this.minimumAmount}`;
 					}
 				},
 				async onSuccess(data) {

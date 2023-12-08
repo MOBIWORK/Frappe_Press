@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Update Billing Details',
+			title: 'Cập nhật chi tiết thanh toán',
 			actions: [
 				{
-					label: 'Submit',
+					label: 'Xác nhận',
 					variant: 'solid',
 					loading: $resources.updateBillingInformation.loading,
 					onClick: () => $resources.updateBillingInformation.submit()
@@ -21,7 +21,7 @@
 			<FormControl
 				class="mt-4"
 				v-model="billingInformation.billing_name"
-				label="Billing Name"
+				label="Tên thanh toán"
 			/>
 			<AddressForm
 				ref="address-form"
@@ -90,7 +90,7 @@ export default {
 				onSuccess() {
 					this.$emit('update:show', false);
 					notify({
-						title: 'Address updated successfully!'
+						title: 'Địa chỉ đã được cập nhật thành công!'
 					});
 					this.$emit('updated');
 				},

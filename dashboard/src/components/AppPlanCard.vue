@@ -11,15 +11,15 @@
 		<div>
 			<div
 				v-if="popular"
-				class="absolute -top-3 left-1/4 rounded-md bg-blue-500 py-1 px-2 text-center text-xs"
+				class="absolute -top-3 left-1/4 rounded-md bg-blue-500 px-2 py-1 text-center text-xs"
 			>
-				<h5 class="font-medium uppercase text-white">Most Popular</h5>
+				<h5 class="font-medium uppercase text-white">Phổ biến nhất</h5>
 			</div>
 
 			<input
 				v-if="selected"
 				type="checkbox"
-				class="absolute top-3 right-3 h-4 w-4 rounded border-gray-300 text-blue-500"
+				class="absolute right-3 top-3 h-4 w-4 rounded border-gray-300 text-blue-500"
 				checked
 				disabled
 			/>
@@ -37,7 +37,7 @@
 				</div>
 				<div v-if="editable">
 					<Button icon-left="edit" @click="e => $emit('beginEdit', e)"
-						>Edit</Button
+						>Chỉnh sửa</Button
 					>
 				</div>
 			</h4>

@@ -3,7 +3,7 @@
 		<Button
 			v-if="$resources.apps.loading && !$resources.apps.data"
 			:loading="true"
-			loadingText="Loading..."
+			loadingText="Đang tải..."
 		></Button>
 		<ErrorMessage
 			v-else-if="!$resources.apps.data"
@@ -11,7 +11,7 @@
 		/>
 		<div v-else-if="$resources.apps.data.length < 1">
 			<p class="text-lg text-gray-600">
-				You have not published any app on our Marketplace.
+				Bạn chưa xuất bản bất kỳ ứng dụng nào trên Marketplace của chúng tôi.
 			</p>
 		</div>
 		<div v-else>

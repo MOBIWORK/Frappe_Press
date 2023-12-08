@@ -3,12 +3,12 @@
 		<header
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 		>
-			<Breadcrumbs :items="[{ label: 'Apps', route: '/marketplace' }]">
+			<Breadcrumbs :items="[{ label: 'Ứng dụng', route: '/marketplace' }]">
 				<template #actions>
 					<Button
 						variant="solid"
 						icon-left="plus"
-						label="New"
+						label="Thêm mới"
 						class="ml-2"
 						@click="
 							!$resources.appOptions.data
@@ -20,11 +20,11 @@
 				</template>
 			</Breadcrumbs>
 		</header>
-		<SectionHeader class="mx-5 mt-6" heading="Apps" />
+		<SectionHeader class="mx-5 mt-6" heading="Ứng dụng" />
 
 		<Dialog
 			:options="{
-				title: 'Add App to Marketplace',
+				title: 'Thêm ứng dụng vào marketplace',
 				size: 'xl'
 			}"
 			v-model="showAddAppDialog"
@@ -40,7 +40,7 @@
 					v-model="selectedApp"
 					:multiple="false"
 				/>
-				<p v-else class="text-base">No app sources available.</p>
+				<p v-else class="text-base">Không có nguồn ứng dụng khả dụng.</p>
 
 				<ErrorMessage
 					class="mt-2"
@@ -48,8 +48,8 @@
 				/>
 
 				<p class="mt-4 text-base" @click="showAddAppDialog = false">
-					Don't find your app here?
-					<Link :to="`/marketplace/apps/new`"> Add from GitHub </Link>
+					Không tìm thấy ứng dụng của bạn ở đây?
+					<Link :to="`/marketplace/apps/new`"> Thêm từ GitHub </Link>
 				</p>
 			</template>
 			<template #actions>
@@ -65,7 +65,7 @@
 						})
 					"
 				>
-					Add {{ selectedApp.app }}
+					Thêm {{ selectedApp.app }}
 				</Button>
 			</template>
 		</Dialog>
@@ -93,9 +93,9 @@ export default {
 	},
 	data: () => ({
 		tabs: [
-			{ label: 'My Apps', route: '/marketplace/apps' },
-			{ label: 'Publisher Profile', route: '/marketplace/publisher-profile' },
-			{ label: 'Payouts', route: '/marketplace/payouts' }
+			{ label: 'Ứng dụng của tôi', route: '/marketplace/apps' },
+			{ label: 'Hồ sơ nhà xuất bản', route: '/marketplace/publisher-profile' },
+			{ label: 'Tiền chi trả', route: '/marketplace/payouts' }
 		],
 		showAddAppDialog: false,
 		selectedApp: null

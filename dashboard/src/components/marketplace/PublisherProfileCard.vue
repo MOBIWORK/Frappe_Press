@@ -2,35 +2,35 @@
 	<div>
 		<Card
 			v-if="profileData && profileData.profile_created"
-			title="Publisher Profile"
-			subtitle="Visible on the marketplace website"
+			title="Hồ sơ nhà xuất bản"
+			subtitle="Hiển thị trên trang web marketplace"
 		>
 			<div class="divide-y-2">
 				<ListItem
-					title="Display Name"
-					:description="displayName || 'Not Set'"
+					title="Tên hiển thị"
+					:description="displayName || 'Chưa đặt'"
 				/>
 				<ListItem
-					title="Contact Email"
-					:description="contactEmail || 'Not Set'"
+					title="Email liên hệ"
+					:description="contactEmail || 'Chưa đặt'"
 				/>
-				<ListItem title="Website" :description="website || 'Not Set'" />
+				<ListItem title="Website" :description="website || 'Chưa đặt'" />
 			</div>
 
 			<template #actions>
 				<Button icon-left="edit" @click="showEditProfileDialog = true"
-					>Edit</Button
+					>Chỉnh sửa</Button
 				>
 			</template>
 		</Card>
 
 		<Dialog
 			:options="{
-				title: 'Edit Publisher Profile',
+				title: 'Chỉnh sửa hồ sơ nhà xuất bản',
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Save Changes',
+						label: 'Lưu thay đổi',
 						loading: $resources.updatePublisherProfile.loading,
 						onClick: () => $resources.updatePublisherProfile.submit()
 					}
@@ -40,9 +40,9 @@
 		>
 			<template v-slot:body-content>
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<FormControl label="Display Name" v-model="displayName" />
+					<FormControl label="Tên hiển thị" v-model="displayName" />
 					<FormControl
-						label="Contact Email"
+						label="Email liên hệ"
 						type="email"
 						v-model="contactEmail"
 					/>
@@ -83,7 +83,7 @@ export default {
 				},
 				validate() {
 					if (!this.displayName) {
-						return 'Display Name is required.';
+						return 'Yêu cầu có tên hiển thị.';
 					}
 				},
 				onSuccess() {

@@ -1,22 +1,22 @@
 <template>
 	<div class="space-y-5">
-		<Card title="Billing Summary">
+		<Card title="Tóm lược thanh toán">
 			<div v-if="!$resources.upcomingInvoice.loading">
-				<div class="grid grid-cols-2 gap-4 mb-4">
-					<div class="border rounded-md p-4">
-						<div class="text-base mb-2">Current Billing Amount</div>
+				<div class="mb-4 grid grid-cols-2 gap-4">
+					<div class="rounded-md border p-4">
+						<div class="mb-2 text-base">Số tiền thanh toán hiện tại</div>
 						<div class="text-2xl font-medium">
 							{{ upcomingInvoice ? upcomingInvoice.formatted.total : '0.00' }}
 						</div>
 					</div>
-					<div class="border rounded-md p-4">
+					<div class="rounded-md border p-4">
 						<div class="flex justify-between text-base">
-							<div>Total Unpaid Amount</div>
+							<div>Tổng số tiền chưa thanh toán</div>
 							<Button
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"
 								iconLeft="credit-card"
-								>Pay</Button
+								>Thanh toán</Button
 							>
 						</div>
 						<div class="text-2xl font-medium">
@@ -27,14 +27,14 @@
 							}}
 						</div>
 					</div>
-					<div class="border rounded-md p-4">
+					<div class="rounded-md border p-4">
 						<div class="flex justify-between text-base">
-							<div>Account Balance</div>
+							<div>Số dư tài khoản</div>
 							<Button
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"
 								iconLeft="plus"
-								>Add</Button
+								>Thêm</Button
 							>
 						</div>
 						<div class="text-2xl font-medium">
@@ -42,15 +42,15 @@
 						</div>
 					</div>
 
-					<div class="border rounded-md p-4">
+					<div class="rounded-md border p-4">
 						<div class="flex justify-between text-base">
-							<div>Payment Mode</div>
+							<div>Phương thức thanh toán</div>
 							<Button @click="showChangeModeDialog = true" theme="gray"
-								>Change</Button
+								>Thay đổi</Button
 							>
 						</div>
 						<div class="text-2xl font-medium">
-							{{ $account.team.payment_mode || 'Not set' }}
+							{{ $account.team.payment_mode || 'Chưa đặt' }}
 						</div>
 					</div>
 				</div>
@@ -60,7 +60,7 @@
 					target="_blank"
 					class="text-sm text-gray-700 underline"
 				>
-					Alternative Payment Options
+					Các phương thức thanh toán khác
 				</a>
 				<ErrorMessage
 					:message="$resources.upcomingInvoice.error"
@@ -69,7 +69,7 @@
 			</div>
 
 			<div class="py-20 text-center" v-if="loading">
-				<Button :loading="true" loadingText="Loading" />
+				<Button :loading="true" loadingText="Đang tải" />
 			</div>
 
 			<ChangePaymentModeDialog v-model="showChangeModeDialog" />
@@ -200,21 +200,21 @@ export default {
 			let balance = this.$account.balance;
 			if (payment_mode === 'Card') {
 				if (!this.upcomingInvoice || balance <= 0) {
-					return `Your card will be charged on ${this.paymentDate}.`;
+					return `Thẻ của bạn sẽ được tính phí vào ${this.paymentDate}.`;
 				} else if (balance >= this.upcomingInvoice.total) {
-					return `Your account balance will be charged on ${this.paymentDate}.`;
+					return `Số dư tài khoản của bạn sẽ bị trừ vào ${this.paymentDate}.`;
 				} else if (balance > 0) {
-					return `Your account balance will be charged and then the remaining balance will be charged from your card on ${this.paymentDate}.`;
+					return `Số dư tài khoản của bạn sẽ được trừ, sau đó số dư còn lại sẽ được tính từ thẻ của bạn vào ${this.paymentDate}.`;
 				} else {
-					return `Your card will be charged on ${this.paymentDate}.`;
+					return `Thẻ của bạn sẽ được tính phí vào ${this.paymentDate}.`;
 				}
 			}
 			if (payment_mode === 'Prepaid Credits') {
-				return `You will be charged from your account balance on ${this.paymentDate}.`;
+				return `Bạn sẽ bị tính phí từ số dư tài khoản vào ${this.paymentDate}.`;
 			}
 
 			if (payment_mode === 'Partner Credits') {
-				return `You will be charged from your Partner Credits on ${this.paymentDate}.`;
+				return `Bạn sẽ bị tính phí từ số dư đối tác của bạn vào ${this.paymentDate}.`;
 			}
 			return '';
 		},

@@ -42,7 +42,7 @@ app.appContext.config.globalProperties.$confirm = confirm;
 						loading: dialog.resource?.loading
 					},
 					{
-						label: 'Cancel',
+						label: 'Hủy',
 						onClick: () => removeConfirmDialog(dialog)
 					}
 				]

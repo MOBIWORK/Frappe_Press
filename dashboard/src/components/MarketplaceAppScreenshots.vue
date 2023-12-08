@@ -1,8 +1,8 @@
 <template>
 	<Card
 		class="md:col-span-2"
-		title="Screenshots"
-		subtitle="Add screenshots to show on the marketplace website"
+		title="Ảnh chụp màn hình"
+		subtitle="Thêm ảnh chụp màn hình để hiển thị trên trang web marketplace."
 	>
 		<div>
 			<div class="flex flex-row">
@@ -55,7 +55,7 @@ export default {
 		onAppImageAdd(file) {
 			this.app.screenshots.push({ image: file });
 			notify({
-				title: 'Screenshot was added successfully!',
+				title: 'Ảnh chụp màn hình đã được thêm thành công!',
 				icon: 'check',
 				color: 'green'
 			});

@@ -5,10 +5,10 @@
 	>
 		<template #body-title>
 			<h3 class="text-2xl font-semibold leading-6 text-gray-900">
-				Add money to your account
+				Thêm tiền vào tài khoản của bạn
 			</h3>
 			<p class="mt-1 text-base text-gray-600">
-				{{ paymentGateway ? '' : 'Choose your payment gateway' }}
+				{{ paymentGateway ? '' : 'Chọn cổng thanh toán của bạn' }}
 			</p>
 		</template>
 		<template v-slot:body-content>
@@ -21,7 +21,7 @@
 
 			<div v-if="paymentGateway === 'razorpay'">
 				<FormControl
-					:label="`Amount (Minimum Amount: ${minimumAmount})`"
+					:label="`Số tiền (Số tiền tối thiểu: ${minimumAmount})`"
 					class="mb-2"
 					v-model.number="creditsToBuy"
 					name="amount"
@@ -31,7 +31,7 @@
 				/>
 
 				<FormControl
-					label="Total Amount + GST(if applicable)"
+					label="Tổng Số tiền + Thuế GST (nếu áp dụng)"
 					disabled
 					v-model="total"
 					name="total"
@@ -40,8 +40,8 @@
 				/>
 
 				<p class="mt-3 text-xs">
-					<span class="font-semibold">Note</span>: If you are using Net Banking,
-					it may take upto 5 days for balance to reflect.
+					<span class="font-semibold">Chú ý</span>: Nếu bạn sử dụng ngân hàng
+					trực tuyến, có thể mất tới 5 ngày để số dư cập nhật.
 				</p>
 
 				<ErrorMessage
@@ -50,14 +50,14 @@
 				/>
 
 				<div class="mt-4 flex w-full justify-between">
-					<Button @click="paymentGateway = null">Go Back</Button>
+					<Button @click="paymentGateway = null">Quay lại</Button>
 					<div>
 						<Button
 							variant="solid"
 							:loading="$resources.createRazorpayOrder.loading"
 							@click="buyCreditsWithRazorpay"
 						>
-							Buy
+							Mua
 						</Button>
 					</div>
 				</div>
@@ -153,7 +153,7 @@ export default {
 				},
 				validate() {
 					if (this.creditsToBuy < this.minimumAmount) {
-						return 'Amount less than minimum amount required';
+						return 'Số tiền ít hơn số tiền tối thiểu yêu cầu';
 					}
 				}
 			};

@@ -24,9 +24,9 @@
 									'Site',
 									'Bench',
 									'Server',
-									'Marketplace',
-									'Account',
-									'MarketplaceApp'
+									// 'Marketplace',
+									// 'MarketplaceApp',
+									'Account'
 								]"
 							>
 								<component :is="Component" />

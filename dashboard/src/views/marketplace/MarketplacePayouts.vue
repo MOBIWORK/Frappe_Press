@@ -17,19 +17,19 @@ const payouts = createResource({
 <template>
 	<Card
 		v-if="!props.payoutOrderName"
-		title="Payouts"
-		subtitle="Look what you have earned"
+		title="Tiền chi trả"
+		subtitle="Xem những gì bạn đã kiếm được"
 	>
-		<Button v-if="payouts.loading" :loading="true">Loading</Button>
+		<Button v-if="payouts.loading" :loading="true">Đang tải</Button>
 
 		<div v-else-if="payouts.data && payouts.data.length > 0">
 			<div class="divide-y">
 				<div
 					class="grid grid-cols-4 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-6"
 				>
-					<span>Due Date</span>
-					<span class="hidden md:inline">Payment Mode</span>
-					<span class="hidden md:inline">Status</span>
+					<span>Ngày đến hạn</span>
+					<span class="hidden md:inline">Phương thức thanh toán</span>
+					<span class="hidden md:inline">Trạng thái</span>
 					<span>Net INR</span>
 					<span>Net USD</span>
 					<span></span>
@@ -49,7 +49,7 @@ const payouts = createResource({
 							})
 						}}
 					</div>
-					<div v-else>Not Set</div>
+					<div v-else>Chưa đặt</div>
 
 					<div class="hidden md:inline">
 						{{ payout.mode_of_payment }}
@@ -65,7 +65,7 @@ const payouts = createResource({
 
 					<div>
 						<Button :route="`/marketplace/payouts/${payout.name}`"
-							>View Details</Button
+							>Xem chi tiết</Button
 						>
 					</div>
 				</div>
@@ -74,14 +74,14 @@ const payouts = createResource({
 
 		<div v-if="payouts.data && payouts.data.length == 0">
 			<p class="my-3 text-center text-base text-gray-600">
-				You have no payouts yet.
+				Bạn chưa có khoản tiền chi trả nào.
 			</p>
 		</div>
 		<ErrorMessage :message="payouts.error" />
 	</Card>
-	<Card v-else title="Payout Details">
+	<Card v-else title="Chi tiết tiền chi trả">
 		<template #actions-left>
-			<Button route="/marketplace/payouts"> ← Back </Button>
+			<Button route="/marketplace/payouts"> ← Trở lại </Button>
 		</template>
 		<MarketplacePayoutDetails :payoutOrderName="payoutOrderName" />
 	</Card>

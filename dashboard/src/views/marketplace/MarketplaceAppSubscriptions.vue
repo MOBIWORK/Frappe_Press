@@ -15,22 +15,22 @@ const appSubscriptions = createResource({
 </script>
 
 <template>
-	<Card title="Subscriptions">
+	<Card title="Đăng ký">
 		<div v-if="appSubscriptions.data">
 			<div v-if="appSubscriptions.data.length === 0">
 				<p class="my-3 text-center text-base text-gray-600">
-					Your app has no active subscribers.
+					Ứng dụng của bạn không có người đăng ký đang hoạt động.
 				</p>
 			</div>
 			<div v-else class="divide-y">
 				<div
 					class="grid grid-cols-3 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-5"
 				>
-					<span class="col-span-2 md:col-span-1">Site</span>
-					<span>Status</span>
-					<span class="hidden md:inline">Price</span>
-					<span class="hidden md:inline">Active For</span>
-					<span class="hidden md:inline">Contact</span>
+					<span class="col-span-2 md:col-span-1">Trang web</span>
+					<span>Trạng thái</span>
+					<span class="hidden md:inline">Giá</span>
+					<span class="hidden md:inline">Hoạt động cho</span>
+					<span class="hidden md:inline">Liên hệ</span>
 				</div>
 
 				<div

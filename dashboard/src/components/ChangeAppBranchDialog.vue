@@ -2,7 +2,7 @@
 	<Dialog
 		v-if="app"
 		v-model="show"
-		:options="{ title: `Change branch for ${app.title}` }"
+		:options="{ title: `Thay đổi branch cho ${app.title}` }"
 	>
 		<template v-slot:body-content>
 			<div class="flex flex-col items-center">
@@ -10,12 +10,12 @@
 					class="w-min"
 					v-if="$resources.branches.loading"
 					:loading="true"
-					loadingText="Loading..."
+					loadingText="Đang tải..."
 				/>
 				<FormControl
 					v-else
 					class="w-full"
-					label="Select Branch"
+					label="Chọn branch"
 					type="select"
 					:options="branchList()"
 					v-model="selectedBranch"
@@ -31,7 +31,7 @@
 				v-if="!$resources.branches.loading"
 				class="w-full"
 				variant="solid"
-				label="Change Branch"
+				label="Thay đổi branch"
 				:loading="$resources.changeBranch.loading"
 				@click="changeBranch()"
 			/>

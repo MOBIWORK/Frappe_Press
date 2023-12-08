@@ -59,7 +59,7 @@
 							<router-link
 								:to="{ path: '/billing', query: { invoiceStatus: 'Unpaid' } }"
 							>
-								<Button variant="solid"> Đến Phần Thanh toán </Button>
+								<Button variant="solid"> Đến phần thanh toán </Button>
 							</router-link>
 						</template>
 					</Alert>

@@ -126,22 +126,22 @@ export default {
 			showTeamSwitcher: false,
 			dropdownItems: [
 				{
-					label: 'Switch Team',
+					label: 'Chuyển nhóm',
 					icon: 'command',
 					onClick: () => (this.showTeamSwitcher = true)
 				},
 				{
-					label: 'Support & Docs',
+					label: 'Hỗ trợ và Tài liệu',
 					icon: 'help-circle',
 					onClick: () => (window.location.href = '/support')
 				},
 				{
-					label: 'Settings',
+					label: 'Cài đặt',
 					icon: 'settings',
 					onClick: () => this.$router.push('/settings/profile')
 				},
 				{
-					label: 'Logout',
+					label: 'Đăng xuất',
 					icon: 'log-out',
 					onClick: () => this.$auth.logout()
 				}
@@ -209,7 +209,7 @@ export default {
 					condition: () => this.$account.team?.code_servers_enabled
 				},
 				{
-					label: 'Apps',
+					label: 'Ứng dụng',
 					route: '/marketplace/apps',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/marketplace');
@@ -227,7 +227,7 @@ export default {
 					condition: () => this.$account.team?.security_portal_enabled
 				},
 				{
-					label: 'Billing',
+					label: 'Thanh toán',
 					route: '/billing',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/billing');
@@ -238,7 +238,7 @@ export default {
 						$account.user?.user_type === 'System User'
 				},
 				{
-					label: 'Settings',
+					label: 'Cài đặt',
 					route: '/settings',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/settings');

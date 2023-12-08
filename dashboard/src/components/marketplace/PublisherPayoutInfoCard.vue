@@ -2,31 +2,31 @@
 	<div>
 		<Card
 			v-if="profileData && profileData.profile_created"
-			title="Payout Preferences"
-			subtitle="Used for payouts for your premium apps"
+			title="Ưu tiên thanh toán"
+			subtitle="Được sử dụng để thanh toán cho các ứng dụng cao cấp của bạn"
 		>
 			<div class="divide-y-2">
 				<ListItem
-					title="Payout Method"
-					:description="payoutMethod || 'Not Set'"
+					title="Phương thức thanh toán"
+					:description="payoutMethod || 'Chưa đặt'"
 				/>
 
 				<ListItem
 					v-if="payoutMethod == 'PayPal'"
 					title="PayPal ID"
-					:description="payPalId || 'Not Set'"
+					:description="payPalId || 'Chưa đặt'"
 				/>
 
 				<ListItem
 					v-if="payoutMethod == 'Bank Transfer'"
 					title="Account Holder Name"
-					:description="acName || 'Not Set'"
+					:description="acName || 'Chưa đặt'"
 				/>
 
 				<ListItem
 					v-if="payoutMethod == 'Bank Transfer'"
 					title="Account Number"
-					:description="acNumber || 'Not Set'"
+					:description="acNumber || 'Chưa đặt'"
 				/>
 			</div>
 
@@ -39,11 +39,11 @@
 
 		<Dialog
 			:options="{
-				title: 'Edit Publisher Profile',
+				title: 'Chỉnh sửa hồ sơ nhà xuất bản',
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Save Changes',
+						label: 'Lưu thay đổi',
 						loading: $resources.updatePublisherProfile.loading,
 						onClick: () => $resources.updatePublisherProfile.submit()
 					}
@@ -54,9 +54,14 @@
 			<template v-slot:body-content>
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 					<FormControl
-						label="Preferred Payment Method"
+						label="Phương thức thanh toán ưu tiên"
 						type="select"
-						:options="['MBW Cloud Credits', 'Bank Transfer', 'PayPal']"
+						:options="[
+							'MBW Cloud Credits',
+							'Frappe Cloud Credits',
+							'Bank Transfer',
+							'PayPal'
+						]"
 						v-model="payoutMethod"
 					/>
 
@@ -68,7 +73,10 @@
 
 					<FormControl
 						label="GSTIN (if applicable)"
-						v-if="payoutMethod != 'MBW Cloud Credits'"
+						v-if="
+							payoutMethod != 'MBW Cloud Credits' &&
+							payoutMethod != 'Frappe Cloud Credits'
+						"
 						v-model="gstin"
 					/>
 

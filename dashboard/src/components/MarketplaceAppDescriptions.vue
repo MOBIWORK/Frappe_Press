@@ -1,23 +1,23 @@
 <template>
 	<Card
 		class="md:col-span-2"
-		title="App Descriptions"
-		subtitle="Details about your app"
+		title="Mô tả ứng dụng"
+		subtitle="Thông tin chi tiết về ứng dụng của bạn"
 	>
 		<div class="divide-y" v-if="app">
-			<ListItem title="Summary" :description="app.description">
+			<ListItem title="Bản tóm tắt" :description="app.description">
 				<template #actions>
 					<Button icon-left="edit" @click="showEditSummaryDialog = true">
-						Edit
+						Chỉnh sửa
 					</Button>
 				</template>
 			</ListItem>
 			<Dialog
 				:options="{
-					title: 'Update App Summary',
+					title: 'Cập nhật tóm tắt ứng dụng',
 					actions: [
 						{
-							label: 'Save Changes',
+							label: 'Lưu thay đổi',
 							variant: 'solid',
 							loading: $resources.updateAppSummary.loading,
 							onClick: () => $resources.updateAppSummary.submit()
@@ -28,7 +28,7 @@
 			>
 				<template v-slot:body-content>
 					<FormControl
-						label="Summary of the app"
+						label="Tóm tắt ứng dụng"
 						type="textarea"
 						v-model="app.description"
 					/>
@@ -39,10 +39,10 @@
 				</template>
 			</Dialog>
 			<div class="py-3">
-				<ListItem title="Long Description">
+				<ListItem title="Mô tả">
 					<template #actions>
 						<Button icon-left="edit" @click="showEditDescriptionDialog = true">
-							Edit
+							Chỉnh sửa
 						</Button>
 					</template>
 				</ListItem>
@@ -53,11 +53,11 @@
 				></div>
 				<Dialog
 					:options="{
-						title: 'Update App Description',
+						title: 'Cập nhật mô tả ứng dụng',
 						size: '5xl',
 						actions: [
 							{
-								label: 'Save Changes',
+								label: 'Lưu thay đổi',
 								variant: 'solid',
 								loading: $resources.updateAppDescription.loading,
 								onClick: () => $resources.updateAppDescription.submit()
@@ -91,7 +91,7 @@
 				:loading="$resources.fetchReadme.loading"
 				@click="$resources.fetchReadme.submit()"
 			>
-				Fetch Readme
+				Tìm nạp Readme
 			</Button>
 		</template>
 	</Card>
@@ -122,7 +122,7 @@ export default {
 					summary: description
 				},
 				onSuccess() {
-					this.notifySuccess('App Summary Updated!');
+					this.notifySuccess('Tóm tắt ứng dụng đã được cập nhật!');
 					this.showEditSummaryDialog = false;
 				}
 			};
@@ -136,7 +136,7 @@ export default {
 					description: long_description
 				},
 				onSuccess() {
-					this.notifySuccess('App Description Updated!');
+					this.notifySuccess('Mô tả ứng dụng đã được cập nhật!');
 					this.showEditDescriptionDialog = false;
 				}
 			};
@@ -147,8 +147,8 @@ export default {
 				params: { name: this.app.name },
 				onSuccess() {
 					notify({
-						title: 'Successfully fetched latest readme',
-						message: 'Long description updated!',
+						title: 'Tìm nạp thành công Readme mới nhất.',
+						message: 'Mô tả chi tiết đã được cập nhật!',
 						icon: 'check',
 						color: 'green'
 					});
