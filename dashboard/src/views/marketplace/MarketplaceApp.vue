@@ -29,7 +29,7 @@
 							icon-left="external-link"
 							label="Xem trên Marketplace"
 							class="ml-2"
-							:link="`/marketplace/apps/${app.name}`"
+							:link="`/${app.route}`"
 						/>
 					</template>
 				</Breadcrumbs>

@@ -2,7 +2,7 @@
 	<div>
 		<header class="sticky top-0 z-10 border-b bg-white px-5 pt-2.5">
 			<Breadcrumbs
-				:items="[{ label: 'Settings', route: { name: 'SettingsScreen' } }]"
+				:items="[{ label: 'Cài đặt', route: { name: 'SettingsScreen' } }]"
 			/>
 			<Tabs :tabs="tabs" class="-mb-px pl-0.5" />
 		</header>
@@ -29,16 +29,16 @@ export default {
 		tabs() {
 			let tabRoute = subRoute => `/settings/${subRoute}`;
 			let tabs = [
-				{ label: 'Profile', route: 'profile' },
+				{ label: 'Hồ sơ', route: 'profile' },
 				{
-					label: 'Team',
+					label: 'Nhóm',
 					route: 'team',
 					condition: () =>
 						$account.user.name === $account.team.user ||
 						$account.user.user_type === 'System User'
 				},
-				{ label: 'Developer', route: 'developer' },
-				{ label: 'Partner', route: 'partner' }
+				{ label: 'Phát triển', route: 'developer' },
+				{ label: 'Đối tác', route: 'partner' }
 			].filter(tab => (tab.condition ? tab.condition() : true));
 
 			return tabs.map(tab => {
@@ -57,15 +57,15 @@ export default {
 			}
 
 			if (team.name !== user.name) {
-				if (team.team_title) subtitle += `Team: ${team.team_title}`;
-				else subtitle += `Team: ${team.name}`;
-				subtitle += ` &middot; Member: ${user.name} `;
+				if (team.team_title) subtitle += `Nhóm: ${team.team_title}`;
+				else subtitle += `Nhóm: ${team.name}`;
+				subtitle += ` &middot; Thành viên: ${user.name} `;
 			} else {
 				subtitle += `<span>${team.name}</span> `;
 			}
 
 			if (team.erpnext_partner) {
-				subtitle += `&middot; <span>ERPNext Partner</span>`;
+				subtitle += `&middot; <span>ERPNext Đối tác</span>`;
 			}
 
 			let userTeamMember = team.team_members.filter(
@@ -79,7 +79,7 @@ export default {
 					day: 'numeric',
 					year: 'numeric'
 				});
-				subtitle += `&middot; <span>Member since ${memberSince}</span>`;
+				subtitle += `&middot; <span>Thành viên từ ${memberSince}</span>`;
 			}
 
 			return subtitle;

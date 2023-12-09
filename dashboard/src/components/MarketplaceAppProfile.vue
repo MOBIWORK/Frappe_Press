@@ -105,7 +105,7 @@
 		<ChangeAppBranchDialog
 			v-if="showBranchChangeDialog"
 			:show="showBranchChangeDialog"
-			:app="app.name"
+			:app="app"
 			:source="selectedSource"
 			:version="selectedVersion"
 			:activeBranch="activeBranch"
@@ -208,6 +208,7 @@ export default {
 				{
 					label: 'Thay đổi nhánh',
 					onClick: () => {
+						console.log(source.source);
 						this.selectedSource = source.source;
 						this.selectedVersion = source.version;
 						this.activeBranch = source.source_information.branch;

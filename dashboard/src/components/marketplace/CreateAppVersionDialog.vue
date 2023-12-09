@@ -22,7 +22,7 @@
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 				<div>
 					<span class="mb-2 block text-sm leading-4 text-gray-700">
-						Version
+						Phiên bản
 					</span>
 					<select class="form-select block w-full" v-model="selectedVersion">
 						<option v-for="version in versions" :key="version">
@@ -32,7 +32,7 @@
 				</div>
 				<div>
 					<span class="mb-2 block text-sm leading-4 text-gray-700">
-						Branch
+						Nhánh
 					</span>
 					<select class="form-select block w-full" v-model="selectedBranch">
 						<option v-for="branch in branchList()" :key="branch">
