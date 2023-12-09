@@ -2,10 +2,10 @@
 	<Dialog
 		v-if="source"
 		:options="{
-			title: 'Add New App Release',
+			title: `Thay đổi nhánh cho ${app.title}`,
 			actions: [
 				{
-					label: 'Change Branch',
+					label: 'Thay đổi nhánh',
 					variant: 'solid',
 					loading: $resources.changeBranch.loading,
 					onClick: () => $resources.changeBranch.submit()
@@ -47,7 +47,7 @@ export default {
 			return {
 				url: 'press.api.marketplace.change_branch',
 				params: {
-					name: this.app,
+					name: this.app.name,
 					source: this.source,
 					version: this.version,
 					to_branch: this.selectedBranch
@@ -57,7 +57,7 @@ export default {
 				},
 				validate() {
 					if (this.selectedBranch == this.app.branch) {
-						return 'Please select a different branch';
+						return 'Vui lòng chọn một nhánh khác';
 					}
 				}
 			};
