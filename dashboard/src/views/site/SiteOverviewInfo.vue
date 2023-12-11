@@ -21,7 +21,7 @@
 					<div class="text-right">
 						<div class="text-base text-gray-600">Ngày tạo</div>
 						<div class="text-base font-medium text-gray-900">
-							{{ formatDate(info.created_on, 'DATE_FULL') }}
+							{{ $date(info.created_on).toFormat('dd-MM-yyyy') }}
 						</div>
 					</div>
 					<div v-if="info.last_deployed" class="text-right">
@@ -74,7 +74,7 @@
 							class="shrink-0"
 							:disabled="!permissions.deactivate"
 						>
-							Ngưng hoạt động trang web
+							Ngưng hoạt động
 						</Button>
 					</Tooltip>
 				</template>

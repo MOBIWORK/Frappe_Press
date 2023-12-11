@@ -1,16 +1,17 @@
 <template>
 	<Card
 		v-if="referralLink"
-		title="Refer & Earn"
-		subtitle="Your unique referral link"
+		title="Giới thiệu và kiếm tiền"
+		subtitle="Liên kết giới thiệu duy nhất của bạn"
 	>
 		<div class="space-y-4">
 			<ClickToCopyField :textContent="referralLink" />
 			<h3 class="text-base text-gray-700">
-				When someone sign's up using the above link and spends at least
-				{{ minimumSpentAmount }} on MBW Cloud, you
+				Khi ai đó đăng ký bằng liên kết trên và chi ít nhất
+				{{ minimumSpentAmount }} cho MBW Cloud, Bạn
 				<strong
-					>get {{ creditAmountInTeamCurrency }} in MBW Cloud Credits</strong
+					>nhận được {{ creditAmountInTeamCurrency }} trong tin dụng MBW
+					Cloud</strong
 				>!
 			</h3>
 		</div>

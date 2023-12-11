@@ -1,5 +1,8 @@
 <template>
-	<Card title="API Access" subtitle="API key associated with your account">
+	<Card
+		title="Truy cập API"
+		subtitle="Khóa API được liên kết với tài khoản của bạn"
+	>
 		<div v-if="$account.user.api_key">
 			<p class="font-mono text-sm text-gray-800">
 				<ClickToCopyField :textContent="$account.user.api_key" />
@@ -10,30 +13,31 @@
 				v-if="!$account.user.api_key"
 				@click="showCreateSecretDialog = true"
 			>
-				Create New API Key
+				Tạo khóa API mới
 			</Button>
 			<Button
 				v-if="$account.user.api_key"
 				@click="showCreateSecretDialog = true"
 			>
-				Regenerate API Secret
+				Tạo lại mã bí mật API
 			</Button>
 		</template>
 		<Dialog
-			:options="{ title: 'API Access' }"
+			:options="{ title: 'Truy cập API' }"
 			v-model="showCreateSecretDialog"
 			v-on:close="createSecretdialogClosed"
 		>
 			<template v-slot:body-content>
 				<div v-if="!$resources.createSecret.data">
 					<p class="text-base">
-						API key and API secret pairs can be used to access the
+						Các cặp khóa và mã bí mật API có thể được sử dụng để truy cập vào
 						<a href="/docs/api" class="underline">MBW Cloud API</a>.
 					</p>
 				</div>
 				<div v-if="$resources.createSecret.data">
 					<p class="text-base">
-						Please copy the API secret now. You won’t be able to see it again!
+						Vui lòng sao chép mã bí mật API ngay bây giờ. Bạn sẽ không thể nhìn
+						thấy nó lại!
 					</p>
 					<label class="block pt-2">
 						<span class="mb-2 block text-sm leading-4 text-gray-700"
@@ -63,7 +67,7 @@
 					v-if="!$account.user.api_key && !$resources.createSecret.data"
 					:loading="$resources.createSecret.loading"
 				>
-					Create New API Key
+					Tạo mã khóa API mới
 				</Button>
 				<Button
 					class="w-full"
@@ -72,7 +76,7 @@
 					v-if="$account.user.api_key && !$resources.createSecret.data"
 					:loading="$resources.createSecret.loading"
 				>
-					Regenerate API Secret
+					Tạo lại mã bí mật API
 				</Button>
 			</template>
 		</Dialog>
@@ -99,7 +103,7 @@ export default {
 				url: 'press.api.account.create_api_secret',
 				onSuccess() {
 					notify({
-						title: 'Created new API Secret',
+						title: 'Đã tạo mã bí mật API mới',
 						icon: 'check',
 						color: 'green'
 					});

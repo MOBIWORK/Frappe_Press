@@ -1,8 +1,8 @@
 <template>
 	<Dialog
 		:options="{
-			title: `Editing permissions for ${
-				type === 'group' ? 'group' : 'member'
+			title: `Chỉnh sửa quyền cho ${
+				type === 'group' ? 'nhóm' : 'thành viên'
 			} ${name}`,
 			size: '3xl'
 		}"
@@ -16,16 +16,16 @@
 		<template v-slot:body-content>
 			<Input
 				class="mb-2"
-				placeholder="Search"
+				placeholder="Tìm kiếm"
 				v-on:input="e => updateSearchTerm(e)"
 			/>
 			<LoadingText v-if="$resources.options.loading" />
-			<div v-else class="flex flex-col max-h-96 overflow-auto">
+			<div v-else class="flex max-h-96 flex-col overflow-auto">
 				<div v-if="options.length === 0" class="mt-4 text-center">
 					<span class="text-gray-500">
-						No options available to add permissions, let's create somes sites!
+						Không có tùy chọn nào để thêm quyền, hãy tạo một số trang web!
 						<router-link :to="'/sites/new'" class="text-gray-900">
-							Click here
+							Nhấp vào đây
 						</router-link>
 					</span>
 				</div>
@@ -43,7 +43,7 @@
 					<Input
 						class="pt-4"
 						type="checkbox"
-						label="Select All"
+						label="Chọn tất cả"
 						@change="val => toggleSelectAll(option, index, val)"
 					/>
 					<div class="grid grid-cols-4 gap-4 py-4">
@@ -66,7 +66,7 @@
 				@click="$resources.updatePermissions.submit()"
 				:disabled="options.length === 0"
 			>
-				Save
+				Lưu
 			</Button>
 		</template>
 	</Dialog>
@@ -113,7 +113,7 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: 'Permissions Updated',
+						title: 'Quyền đã được cập nhật',
 						color: 'green',
 						icon: 'check'
 					});

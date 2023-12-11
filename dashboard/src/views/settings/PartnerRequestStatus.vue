@@ -1,5 +1,8 @@
 <template>
-	<Card title="Partner Request Status" v-if="!$account.team.erpnext_partner">
+	<Card
+		title="Trạng thái yêu cầu của đối tác"
+		v-if="!$account.team.erpnext_partner"
+	>
 		<template #actions>
 			<Badge
 				:variant="'subtle'"
@@ -12,35 +15,32 @@
 		<div class="flex items-center">
 			<div v-if="$account.team.partnership_date">
 				<span class="text-base">
-					Customer Partnership Start Date:
+					Ngày bắt đầu hợp tác với khách hàng:
 					<span class="font-semibold">{{
-						$date($account.team.partnership_date).toLocaleString({
-							month: 'long',
-							day: 'numeric',
-							year: 'numeric'
-						})
+						$date($account.team.partnership_date).toFormat('dd-MM-yyyy')
 					}}</span>
 				</span>
 			</div>
 			<div v-else>
 				<span class="text-base">
-					To set Customer Partnership Start Date, click on Edit button</span
+					Để đặt ngày bắt đầu hợp tác với khách hàng, nhấp vào nút `Chỉnh
+					sửa`</span
 				>
 			</div>
 			<div class="ml-auto">
 				<Button icon-left="edit" @click="showDateEditDialog = true">
-					Edit
+					Chỉnh sửa
 				</Button>
 			</div>
 		</div>
 
 		<Dialog
 			:options="{
-				title: 'Update Customer Partnership Start Date',
+				title: 'Cập nhật ngày bắt đầu hợp tác với khách hàng',
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Save Changes',
+						label: 'Lưu thay đổi',
 						onClick: () => $resources.updatePartnershipDate.submit()
 					}
 				]
@@ -49,10 +49,10 @@
 		>
 			<template v-slot:body-content>
 				<FormControl
-					label="Enter Partnership Start Date"
+					label="Nhập ngày bắt đầu hợp tác"
 					type="date"
 					v-model="partnerDate"
-					description="This date will be used to calculate your partner's target achievement."
+					description="Ngày này sẽ được sử dụng để tính toán việc đạt được mục tiêu của đối tác của bạn."
 				/>
 				<ErrorMessage
 					class="mt-2"

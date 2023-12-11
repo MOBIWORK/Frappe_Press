@@ -1,11 +1,11 @@
 <template>
 	<Card
-		title="Group Permissions"
-		subtitle="Create a group or permission and assign it to your team members"
+		title="Quyền của nhóm"
+		subtitle="Tạo một nhóm hoặc quyền và gán nó cho các thành viên trong đội của bạn"
 	>
 		<template #actions>
 			<Button v-if="showManageTeamButton" @click="showAddGroupDialog = true">
-				Add New Group
+				Thêm nhóm mới
 			</Button>
 		</template>
 		<div class="max-h-96 divide-y">
@@ -41,10 +41,10 @@
 
 	<Dialog
 		:options="{
-			title: 'Add New Group',
+			title: 'Thêm nhóm mới',
 			actions: [
 				{
-					label: 'Create Group',
+					label: 'Tạo nhóm',
 					variant: 'solid',
 					loading: $resources.addGroup.loading,
 					onClick: () => $resources.addGroup.submit({ title: groupName })
@@ -92,8 +92,9 @@ export default {
 				this.showManageMemberDialog = false;
 				this.memberEmail = null;
 				notify({
-					title: 'Invite Sent!',
-					message: 'They will receive an email shortly to join your team.',
+					title: 'Lời mời đã được gửi!',
+					message:
+						'Họ sẽ nhận được một email trong thời gian ngắn để tham gia vào đội của bạn.',
 					color: 'green',
 					icon: 'check'
 				});
@@ -103,14 +104,15 @@ export default {
 			url: 'press.api.account.add_permission_group',
 			validate() {
 				if (this.groupName.length == 0) {
-					return 'Group name is required.';
+					return 'Tên nhóm là bắt buộc.';
 				}
 			},
 			onSuccess(r) {
 				this.$resources.groups.fetch();
 				notify({
-					title: 'Group Created!',
-					message: 'You can now assign this group to your team members',
+					title: 'Nhóm đã được tạo!',
+					message:
+						'Bạn có thể gán nhóm này cho các thành viên trong đội của bạn ngay bây giờ',
 					color: 'green',
 					icon: 'check'
 				});
@@ -124,8 +126,8 @@ export default {
 			onSuccess() {
 				this.$resources.groups.fetch();
 				notify({
-					title: 'Group Removed!',
-					message: 'Permissions have been removed from all team members',
+					title: 'Nhóm đã bị xóa!',
+					message: 'Quyền đã được loại bỏ khỏi tất cả các thành viên trong đội',
 					color: 'green',
 					icon: 'check'
 				});
@@ -135,9 +137,9 @@ export default {
 	methods: {
 		removeGroup(group) {
 			this.$confirm({
-				title: 'Remove Group',
-				message: `Are you sure you want to remove ${group.title} ?`,
-				actionLabel: 'Remove',
+				title: 'Xóa nhóm',
+				message: `Bạn có chắc chắn muốn xóa ${group.title} ?`,
+				actionLabel: 'Xóa',
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.removeGroup.submit({ name: group.name });
@@ -148,7 +150,7 @@ export default {
 		dropdownItems(group) {
 			return [
 				{
-					label: 'Manage Members',
+					label: 'Quản lý thành viên',
 					icon: 'users',
 					onClick: () => {
 						this.group = group;
@@ -156,7 +158,7 @@ export default {
 					}
 				},
 				{
-					label: 'Edit Permissions',
+					label: 'Chỉnh sửa quyền',
 					icon: 'edit',
 					onClick: () => {
 						this.group = group;
@@ -164,7 +166,7 @@ export default {
 					}
 				},
 				{
-					label: 'Remove',
+					label: 'Xóa',
 					icon: 'trash-2',
 					onClick: () => this.removeGroup(group)
 				}

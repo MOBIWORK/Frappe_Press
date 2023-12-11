@@ -1,8 +1,8 @@
 <template>
-	<Card title="Email Notifications">
+	<Card title="Thông báo email">
 		<template #actions>
 			<Button icon-left="edit" @click="showEmailsEditDialog = true">
-				Edit
+				Chỉnh sửa
 			</Button>
 		</template>
 		<ListItem
@@ -15,10 +15,10 @@
 		</ListItem>
 		<Dialog
 			:options="{
-				title: 'Edit Emails',
+				title: 'Chỉnh sửa email',
 				actions: [
 					{
-						label: 'Save Changes',
+						label: 'Lưu thay đổi',
 						variant: 'solid',
 						onClick: () => $resources.changeEmail.submit()
 					}
@@ -72,8 +72,8 @@ export default {
 	computed: {
 		fieldLabelMap() {
 			return {
-				invoices: 'Send invoices to',
-				marketplace_notifications: 'Send marketplace emails to'
+				invoices: 'Gửi hóa đơn đến',
+				marketplace_notifications: 'Gửi email marketplace đến'
 			};
 		}
 	}

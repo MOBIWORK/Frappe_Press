@@ -1,5 +1,5 @@
 <template>
-	<Card title="Profile">
+	<Card title="Hồ sơ">
 		<div class="flex items-center border-b pb-3">
 			<div class="relative">
 				<Avatar
@@ -24,7 +24,7 @@
 								:class="{ 'opacity-50': uploading }"
 							>
 								<span v-if="uploading">{{ progress }}%</span>
-								<span v-else>Edit</span>
+								<span v-else>Sửa</span>
 							</button>
 						</div>
 					</template>
@@ -38,28 +38,28 @@
 			</div>
 			<div class="ml-auto">
 				<Button icon-left="edit" @click="showProfileEditDialog = true">
-					Edit
+					Chỉnh sửa
 				</Button>
 			</div>
 		</div>
 		<div>
 			<ListItem
-				title="Become Marketplace Developer"
-				subtitle="Become a marketplace app publisher"
+				title="Trở thành nhà phát triển Marketplace"
+				subtitle="Trở thành nhà xuất bản ứng dụng trên marketplace"
 				v-if="showBecomePublisherButton"
 			>
 				<template #actions>
 					<Button @click="confirmPublisherAccount()">
-						<span>Become a Publisher</span>
+						<span>Trở thành nhà xuất bản</span>
 					</Button>
 				</template>
 			</ListItem>
 			<ListItem
-				:title="teamEnabled ? 'Disable Account' : 'Enable Account'"
+				:title="teamEnabled ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản'"
 				:subtitle="
 					teamEnabled
-						? 'Disable your account and stop billing'
-						: 'Enable your account and resume billing'
+						? 'Vô hiệu hóa tài khoản của bạn và dừng việc lập hóa đơn'
+						: 'kích hoạt tài khoản của bạn và tiếp tục việc lập hóa đơn'
 				"
 			>
 				<template #actions>
@@ -75,7 +75,7 @@
 						"
 					>
 						<span :class="{ 'text-red-600': teamEnabled }">{{
-							teamEnabled ? 'Disable' : 'Enable'
+							teamEnabled ? 'Vô hiệu hóa' : 'Kích hoạt'
 						}}</span>
 					</Button>
 				</template>
@@ -83,11 +83,11 @@
 		</div>
 		<Dialog
 			:options="{
-				title: 'Update Profile Information',
+				title: 'Cập nhật thông tin hồ sơ',
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Save Changes',
+						label: 'Lưu thay đổi',
 						onClick: () => $resources.updateProfile.submit()
 					}
 				]
@@ -96,8 +96,8 @@
 		>
 			<template v-slot:body-content>
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<FormControl label="First Name" v-model="$account.user.first_name" />
-					<FormControl label="Last Name" v-model="$account.user.last_name" />
+					<FormControl label="Họ" v-model="$account.user.last_name" />
+					<FormControl label="Tên" v-model="$account.user.first_name" />
 				</div>
 				<ErrorMessage class="mt-4" :message="$resources.updateProfile.error" />
 			</template>
@@ -105,10 +105,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Disable Account',
+				title: 'Vô hiệu hóa tài khoản',
 				actions: [
 					{
-						label: 'Disable Account',
+						label: 'Vô hiệu hóa',
 						variant: 'solid',
 						theme: 'red',
 						loading: $resources.disableAccount.loading,
@@ -120,16 +120,17 @@
 		>
 			<template v-slot:body-content>
 				<div class="prose text-base">
-					By confirming this action:
+					Bằng cách xác nhận hành động này:
 					<ul>
-						<li>Your account will be disabled</li>
+						<li>Tài khoản của bạn sẽ bị vô hiệu hóa</li>
 						<li>
-							Your active sites will be suspended immediately and will be
-							deleted after a week.
+							Các trang web đang hoạt động của bạn sẽ bị đình chỉ ngay lập tức
+							và sẽ bị xóa sau một tuần.
 						</li>
-						<li>Your account billing will be stopped</li>
+						<li>Việc thanh toán tài khoản của bạn sẽ bị ngừng</li>
 					</ul>
-					You can enable your account later anytime. Do you want to continue?
+					Bạn có thể kích hoạt tài khoản của mình sau này bất cứ lúc nào. Bạn có
+					muốn tiếp tục?
 				</div>
 				<ErrorMessage class="mt-2" :message="$resources.disableAccount.error" />
 			</template>
@@ -137,10 +138,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Enable Account',
+				title: 'Kích hoạt tài khoản',
 				actions: [
 					{
-						label: 'Enable Account',
+						label: 'Kích hoạt',
 						variant: 'solid',
 						loading: $resources.enableAccount.loading,
 						onClick: () => $resources.enableAccount.submit()
@@ -151,13 +152,13 @@
 		>
 			<template v-slot:body-content>
 				<div class="prose text-base">
-					By confirming this action:
+					Xác nhận hành động này:
 					<ul>
-						<li>Your account will be enabled</li>
-						<li>Your suspended sites will become active</li>
-						<li>Your account billing will be resumed</li>
+						<li>Tài khoản của bạn sẽ được kích hoạt</li>
+						<li>Các trang web bị đình chỉ của bạn sẽ hoạt động</li>
+						<li>Việc lập hóa đơn cho tài khoản của bạn sẽ được tiếp tục</li>
 					</ul>
-					Do you want to continue?
+					Bạn có muốn tiếp tục không?
 				</div>
 				<ErrorMessage class="mt-2" :message="$resources.enableAccount.error" />
 			</template>
@@ -215,8 +216,8 @@ export default {
 					this.showFinalizeInvoicesDialog = true;
 				} else {
 					notify({
-						title: 'Account disabled',
-						message: 'Your account was disabled successfully',
+						title: 'Tài khoản đã bị vô hiệu hóa',
+						message: 'Tài khoản của bạn đã được vô hiệu hóa thành công',
 						icon: 'check',
 						color: 'green'
 					});
@@ -228,8 +229,8 @@ export default {
 			url: 'press.api.account.enable_account',
 			onSuccess() {
 				notify({
-					title: 'Account enabled',
-					message: 'Your account was enabled successfully',
+					title: 'Tài khoản đã được kích hoạt',
+					message: 'Tài khoản của bạn đã được kích hoạt thành công',
 					icon: 'check',
 					color: 'green'
 				});
@@ -264,17 +265,17 @@ export default {
 		},
 		notifySuccess() {
 			notify({
-				title: 'Updated profile information',
+				title: 'Thông tin hồ sơ đã được cập nhật',
 				icon: 'check',
 				color: 'green'
 			});
 		},
 		confirmPublisherAccount() {
 			this.$confirm({
-				title: 'Become a marketplace app developer?',
+				title: 'Trở thành nhà phát triển ứng dụng marketplace?',
 				message:
-					'You will be able to publish apps to our Marketplace upon confirmation.',
-				actionLabel: 'Yes',
+					'Sau khi xác nhận, bạn sẽ có thể xuất bản ứng dụng lên Marketplace của chúng tôi.',
+				actionLabel: 'Có',
 				action: closeDialog => {
 					this.$resources.becomePublisher.submit();
 					closeDialog();

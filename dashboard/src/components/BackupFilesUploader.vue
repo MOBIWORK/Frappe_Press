@@ -31,7 +31,7 @@
 							>
 								{{
 									uploading
-										? `Uploading ${progress}%`
+										? `Đang tải lên ${progress}%`
 										: success
 										? formatBytes(fileObj.size)
 										: error
@@ -43,11 +43,11 @@
 						<template #actions>
 							<Button
 								:loading="uploading"
-								loadingText="Uploading..."
+								loadingText="Đang tải lên..."
 								@click="openFileSelector()"
 								v-if="!success"
 							>
-								Upload
+								Tải lên
 							</Button>
 							<GreenCheckIcon class="w-5" v-if="success" />
 						</template>
@@ -74,7 +74,7 @@ export default {
 					ext: 'application/x-gzip,application/sql,.sql',
 					title: 'Database Backup',
 					description:
-						'Upload the database backup file. Usually file name ends in .sql.gz or .sql',
+						'Tải lên tệp sao lưu database. Thông thường, tên tệp kết thúc bằng .sql.gz hoặc .sql',
 					file: null
 				},
 				{
@@ -83,7 +83,7 @@ export default {
 					ext: 'application/x-tar',
 					title: 'Public Files',
 					description:
-						'Upload the public files backup. Usually file name ends in -files.tar',
+						'Tải lên tệp sao lưu các tệp public. Thông thường, tên tệp kết thúc bằng -files.tar',
 					file: null
 				},
 				{
@@ -92,7 +92,7 @@ export default {
 					ext: 'application/x-tar',
 					title: 'Private Files',
 					description:
-						'Upload the private files backup. Usually file name ends in -private-files.tar',
+						'Tải lên tệp sao lưu các tệp private. Thông thường, tên tệp kết thúc bằng -private-files.tar',
 					file: null
 				},
 				{
@@ -101,7 +101,7 @@ export default {
 					ext: 'application/json',
 					title: 'Site Config',
 					description:
-						'Upload the site config files backup. Usually file name ends in -site_config_backup.json',
+						'Tải lên tệp sao lưu các tệp site config. Thông thường, tên tệp kết thúc bằng -site_config_backup.json',
 					file: null
 				}
 			]
@@ -117,7 +117,7 @@ export default {
 			if (type === 'database') {
 				if (!file.name.endsWith('.sql.gz') && !file.name.endsWith('.sql')) {
 					throw new Error(
-						'Database backup file should end with the name "database.sql.gz" or "database.sql"'
+						'Tệp sao lưu database nên kết thúc bằng tên "database.sql.gz" hoặc "database.sql"'
 					);
 				}
 				if (
@@ -127,17 +127,17 @@ export default {
 						'application/sql'
 					].includes(file.type)
 				) {
-					throw new Error('Invalid database backup file');
+					throw new Error('Tệp sao lưu database không hợp lệ');
 				}
 			}
 			if (['public', 'private'].includes(type)) {
 				if (file.type != 'application/x-tar') {
-					throw new Error(`Invalid ${type} files backup file`);
+					throw new Error(`Tệp sao lưu ${type} không hợp lệ`);
 				}
 			}
 			if (type === 'config') {
 				if (file.type != 'application/json') {
-					throw new Error(`Invalid ${type} files backup file`);
+					throw new Error(`Tệp sao lưu ${type} không hợp lệ`);
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="Frappe Partner"
-		subtitle="Frappe Partner associated with your account"
+		title="Đối tác MBW"
+		subtitle="Đối tác MBW được liên kết với tài khoản của bạn"
 		v-if="!$account.team.erpnext_partner"
 	>
 		<div>
@@ -14,14 +14,14 @@
 
 			<div class="py-4">
 				<h3 class="text-base text-gray-700" v-if="$account.parent_team">
-					Only parent team can link with Frappe Partner.
+					Chỉ nhóm cha mới có thể kết nối với đối tác MBW.
 				</h3>
 				<h3
 					class="text-base text-gray-700"
 					v-if="!$account.partner_email && !$account.parent_team"
 				>
-					Have a Frappe Partner Referral Code? Click on
-					<strong>Add Partner Code</strong> to link with your Partner team.
+					Có mã giới thiệu đối tác MBW không? Nhấp vào
+					<strong>Thêm mã đối tác</strong> để liên kết với nhóm đối tác của bạn.
 				</h3>
 			</div>
 		</div>
@@ -30,16 +30,16 @@
 				@click="showPartnerReferralDialog = true"
 				v-if="!$account.partner_email"
 			>
-				Add Partner Code
+				Thêm mã đối tác
 			</Button>
 		</template>
 		<Dialog
-			:options="{ title: 'Partner Referral Code' }"
+			:options="{ title: 'Mã giới thiệu đối tác' }"
 			v-model="showPartnerReferralDialog"
 		>
 			<template v-slot:body-content>
 				<FormControl
-					label="Enter Partner Referral Code"
+					label="Nhập mã giới thiệu đối tác"
 					type="input"
 					v-model="referralCode"
 					placeholder="e.g. rGjw3hJ81b"
@@ -48,7 +48,7 @@
 				<ErrorMessage class="mt-2" :message="$resources.addPartner.error" />
 				<div class="mt-1">
 					<div v-if="partnerExists" class="text-sm text-green-600" role="alert">
-						Referral Code {{ referralCode }} belongs to {{ partner }}
+						Mã giới thiệu {{ referralCode }} thuộc về {{ partner }}
 					</div>
 					<ErrorMessage :message="errorMessage" />
 				</div>
@@ -57,10 +57,10 @@
 				<Button
 					variant="solid"
 					:loading="$resources.addPartner.loading"
-					loadingText="Saving..."
+					loadingText="Đang lưu..."
 					@click="$resources.addPartner.submit()"
 				>
-					Add partner
+					Thêm đối tác
 				</Button>
 			</template>
 		</Dialog>
@@ -90,7 +90,7 @@ export default {
 				onSuccess(res) {
 					this.showPartnerReferralDialog = false;
 					notify({
-						title: 'Email sent to Partner',
+						title: 'Email đã được gửi đến đối tác',
 						icon: 'check',
 						color: 'green'
 					});
@@ -115,7 +115,7 @@ export default {
 				this.partner = partnerName;
 				this.partnerExists = true;
 			} else {
-				this.errorMessage = `${code} is Invalid Referral Code`;
+				this.errorMessage = `${code} là mã giới thiệu không hợp lệ`;
 			}
 		}
 	}

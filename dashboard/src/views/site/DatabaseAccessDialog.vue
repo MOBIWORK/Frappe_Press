@@ -1,6 +1,6 @@
 <template>
 	<Dialog
-		:options="{ title: 'Access Database' }"
+		:options="{ title: 'Truy cập Database' }"
 		v-if="site"
 		:modelValue="Boolean(site) && show"
 		@close="dialogClosed"
@@ -12,24 +12,25 @@
 			<div v-else-if="!databaseAccessInfo?.is_available_on_current_plan">
 				<div>
 					<p class="text-base">
-						Database access is not available on your current plan. Please
-						upgrade your plan to access your site database.
+						Truy cập database không khả dụng trên gói dịch vụ hiện tại của bạn.
+						Vui lòng nâng cấp gói dịch vụ để truy cập database trang web của
+						bạn.
 					</p>
 
 					<Button
 						class="mt-4 w-full"
 						variant="solid"
 						@click="showChangePlanDialog = true"
-						>Upgrade Site Plan</Button
+						>Nâng cấp gói dịch vụ trang web</Button
 					>
 				</div>
 
 				<Dialog
 					:options="{
-						title: 'Upgrade Plan',
+						title: 'Nâng cấp gói',
 						actions: [
 							{
-								label: 'Submit',
+								label: 'Gửi',
 								variant: 'solid',
 								loading: $resources.changePlan.loading,
 								onClick: () => $resources.changePlan.submit()
@@ -55,11 +56,11 @@
 					<div v-if="databaseAccessInfo.is_database_access_enabled">
 						<div>
 							<p class="mb-2 text-base font-semibold text-gray-700">
-								Using an Analytics or Business Intelligence Tool
+								Sử dụng một công cụ phân tích hoặc kinh doanh thông minh
 							</p>
 							<p class="mb-2 text-base">
-								Use following credentials with your analytics or business
-								intelligence tool
+								Sử dụng các thông tin đăng nhập sau với công cụ phân tích hoặc
+								kinh doanh thông minh của bạn
 							</p>
 							<p class="ml-1 font-mono text-sm">
 								Host: {{ databaseAccessInfo.credentials.host }}
@@ -79,25 +80,25 @@
 						</div>
 						<div class="pb-2 pt-5">
 							<p class="mb-2 text-base font-semibold text-gray-700">
-								Using MariaDB Client
+								Sử dụng MariaDB Client
 							</p>
 							<p class="mb-2 text-base">
 								<span
-									>Run this command in your terminal to access MariaDB
+									>Chạy lệnh sau trong terminal của bạn để truy cập MariaDB
 									console</span
 								>
 							</p>
 							<ClickToCopyField class="ml-1" :textContent="dbAccessCommand" />
 							<p class="mt-3 text-sm">
-								Note: You should have a
-								<span class="font-mono">mariadb</span> client installed on your
-								computer.
+								Lưu ý: Bạn cần có
+								<span class="font-mono">mariadb</span> client được cài đặt trên
+								máy tính của bạn.
 							</p>
 						</div>
 					</div>
 					<div v-else>
 						<p class="mb-2 text-sm">
-							Database console access is disabled for this site.
+							Truy cập bảng điều khiển database đã bị tắt cho trang web này.
 						</p>
 					</div>
 				</div>
@@ -121,13 +122,13 @@
 							for="enable-read-write-access"
 							class="ml-1 text-sm text-gray-900"
 						>
-							Enable Read-Write Access
+							Bật quyền truy cập Read-Write
 						</label>
 						<ErrorMessage
 							class="mt-2"
 							:message="
 								(enableReadWriteAccess &&
-									'Your credentials can be used to modify or wipe your database') ||
+									'Thông tin đăng nhập của bạn có thể được sử dụng để sửa đổi hoặc xóa database của bạn.') ||
 								error
 							"
 						/>
@@ -143,9 +144,9 @@
 						"
 						variant="solid"
 						class="mt-2 w-full"
-						>Enable
+						>Bật
 						{{ enableReadWriteAccess ? 'Read-Write' : 'Read-Only' }}
-						Access</Button
+						Truy cập</Button
 					>
 
 					<Button
@@ -158,7 +159,7 @@
 							$resources.disableDatabaseAccess.loading || pollingAgentJob
 						"
 						class="w-full"
-						>Disable Access</Button
+						>Tắt truy cập</Button
 					>
 				</div>
 			</div>
@@ -238,7 +239,7 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: `Plan changed to ${this.selectedPlan.plan_title}`,
+						title: `Gói đã được thay đổi thành ${this.selectedPlan.plan_title}`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -302,7 +303,7 @@ export default {
 					this.$resources.fetchDatabaseAccessInfo.fetch();
 				} else if (message.status === 'Failure') {
 					this.pollingAgentJob = false;
-					this.error = 'Something went wrong. Please try again.';
+					this.error = 'Đã xảy ra lỗi. Vui lòng thử lại.';
 				} else {
 					setTimeout(() => {
 						this.pollDatabaseAccessJob(jobName);
