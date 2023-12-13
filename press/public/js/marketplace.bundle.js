@@ -60,7 +60,7 @@ function saveInput(e) {
 }
 const processChange = debounce((e) => saveInput(e));
 
-searchInput.addEventListener('keyup', (e) => processChange(e));
+searchInput.addEventListener('input', (e) => processChange(e));
 
 // searchInput.addEventListener('input', (e) => {
 // 	// TODO: Debounce/Throttle

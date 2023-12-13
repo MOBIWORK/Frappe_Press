@@ -79,31 +79,31 @@ def setup_account(
 ):
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw("Invalid or Expired Key")
+        frappe.throw("Khóa không hợp lệ hoặc đã hết hạn")
 
     if not user_exists:
         if not first_name:
-            frappe.throw("First Name is required")
+            frappe.throw("Tên là bắt buộc")
 
         if not last_name:
-            frappe.throw("Last Name is required")
+            frappe.throw("Họ là bắt buộc")
 
         if not password and not oauth_signup:
-            frappe.throw("Password is required")
+            frappe.throw("Mật khẩu là bắt buộc")
 
         if not is_invitation and not country:
-            frappe.throw("Country is required")
+            frappe.throw("Quốc gia là bắt buộc")
 
         if not is_invitation and country:
             all_countries = frappe.db.get_all("Country", pluck="name")
             country = find(all_countries, lambda x: x.lower()
                            == country.lower())
             if not country:
-                frappe.throw("Please provide a valid country name")
+                frappe.throw("Vui lòng cung cấp tên quốc gia hợp lệ")
 
     if not accepted_user_terms:
         frappe.throw(
-            "Please accept our Terms of Service & Privacy Policy to continue")
+            "Vui lòng chấp nhận Điều khoản Dịch vụ và Chính sách Quyền riêng tư của chúng tôi để tiếp tục")
 
     # if the request is authenticated, set the user to Administrator
     frappe.set_user("Administrator")
@@ -111,6 +111,7 @@ def setup_account(
     team = account_request.team
     email = account_request.email
     role = account_request.role
+    frappe.throw("My Error")
 
     if signup_values:
         account_request.saas_signup_values = json.dumps(

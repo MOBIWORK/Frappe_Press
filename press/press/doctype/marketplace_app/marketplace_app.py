@@ -18,6 +18,7 @@ from press.marketplace.doctype.marketplace_app_plan.marketplace_app_plan import 
 from press.press.doctype.marketplace_app.utils import get_rating_percentage_distribution
 from frappe.utils.safe_exec import safe_exec
 from frappe.utils import get_datetime
+from pypika import Order
 
 
 class MarketplaceApp(WebsiteGenerator):
@@ -251,13 +252,32 @@ class MarketplaceApp(WebsiteGenerator):
         context.plans = self.get_plans()
 
         user_reviews = self.get_user_reviews()
+
+        DeveloperReviewReply = frappe.qb.DocType("Developer Review Reply")
+        user = frappe.qb.DocType("User")
+
         for review in user_reviews:
-            review["developer_reply"] = frappe.get_all(
-                "Developer Review Reply",
-                filters={"review": review.name},
-                pluck="description",
-                order_by="creation asc",
+            query = (
+                frappe.qb.from_(DeveloperReviewReply)
+                .join(user)
+                .on(user.name == DeveloperReviewReply.developer)
+                .select(
+                    DeveloperReviewReply.description,
+                    user.full_name.as_("user_name"),
+                    user.user_image,
+                    DeveloperReviewReply.creation
+                )
+                .where(DeveloperReviewReply.review == review.name)
+                .orderby(DeveloperReviewReply.creation, order=Order.desc)
             )
+            review["developer_reply"] = query.run(as_dict=True)
+
+            # review["developer_reply"] = frappe.get_all(
+            #     "Developer Review Reply",
+            #     filters={"review": review.name},
+            #     pluck="description",
+            #     order_by="creation asc",
+            # )
 
         ratings_summary = self.get_user_ratings_summary(user_reviews)
 
@@ -280,8 +300,10 @@ class MarketplaceApp(WebsiteGenerator):
                 app_user_review.creation,
                 app_user_review.reviewer,
                 user.full_name.as_("user_name"),
+                user.user_image,
             )
             .where(app_user_review.app == self.name)
+            .orderby(app_user_review.creation, order=Order.desc)
         )
         return query.run(as_dict=True)
 
@@ -342,34 +364,34 @@ class MarketplaceApp(WebsiteGenerator):
     def total_active_sites(self):
         return frappe.db.sql(
             """
-			SELECT
-				count(*)
-			FROM
-				tabSite site
-			LEFT JOIN
-				`tabSite App` app
-			ON
-				app.parent = site.name
-			WHERE
-				site.status = "Active" AND app.app = %s
-		""",
+            SELECT
+                count(*)
+            FROM
+                tabSite site
+            LEFT JOIN
+                `tabSite App` app
+            ON
+                app.parent = site.name
+            WHERE
+                site.status = "Active" AND app.app = %s
+        """,
             (self.app,),
         )[0][0]
 
     def total_active_benches(self):
         return frappe.db.sql(
             """
-			SELECT
-				count(*)
-			FROM
-				tabBench bench
-			LEFT JOIN
-				`tabBench App` app
-			ON
-				app.parent = bench.name
-			WHERE
-				bench.status = "Active" AND app.app = %s
-		""",
+            SELECT
+                count(*)
+            FROM
+                tabBench bench
+            LEFT JOIN
+                `tabBench App` app
+            ON
+                app.parent = bench.name
+            WHERE
+                bench.status = "Active" AND app.app = %s
+        """,
             (self.app,),
         )[0][0]
 
