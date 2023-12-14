@@ -1,11 +1,9 @@
 <template>
 	<div>
 		<div v-if="publisherProfileInfo && !publisherProfileInfo.profile_created">
-			<Alert title="You have not created your profile yet.">
+			<Alert title="Bạn chưa tạo hồ sơ của mình.">
 				<template #actions>
-					<Button variant="solid" @click="showEditDialog = true">
-						Create
-					</Button>
+					<Button variant="solid" @click="showEditDialog = true"> Tạo </Button>
 				</template>
 			</Alert>
 		</div>
@@ -13,7 +11,7 @@
 		<Button
 			v-if="$resources.getPublisherProfileInfo.loading"
 			:loading="true"
-			loadingText="Loading..."
+			loadingText="Đang tải..."
 		></Button>
 
 		<div class="grid grid-cols-1 gap-5 md:grid-cols-2">

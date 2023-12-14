@@ -133,7 +133,9 @@ export default {
 				{
 					label: 'Hỗ trợ và Tài liệu',
 					icon: 'help-circle',
-					onClick: () => (window.location.href = '/support')
+					onClick: () =>
+						(window.location.href =
+							'https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page')
 				},
 				{
 					label: 'Cài đặt',

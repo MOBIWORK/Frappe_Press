@@ -69,14 +69,14 @@
 				</div>
 				<div class="mt-3 space-y-3 px-2">
 					<a
-						href="/support/tickets"
+						href="https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page"
 						target="_blank"
 						class="block rounded-md px-3 pt-4 text-base font-medium focus:outline-none"
 					>
 						Hỗ trợ
 					</a>
 					<a
-						href="/docs"
+						href="https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page"
 						target="_blank"
 						class="block rounded-md px-3 text-base font-medium focus:outline-none"
 					>

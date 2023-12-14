@@ -60,6 +60,7 @@ class Team(Document):
     def validate(self):
         self.validate_duplicate_members()
         self.set_team_currency()
+        self.set_team_payment_mode()
         self.set_default_user()
         self.set_billing_name()
         self.set_partner_email()
@@ -159,7 +160,7 @@ class Team(Document):
 
         team.save(ignore_permissions=True)
 
-        team.create_stripe_customer()
+        # team.create_stripe_customer()
 
         if account_request.referrer_id:
             team.create_referral_bonus(account_request.referrer_id)
@@ -216,7 +217,12 @@ class Team(Document):
 
     def set_team_currency(self):
         if not self.currency and self.country:
-            self.currency = "INR" if self.country == "India" else "USD"
+            # self.currency = "INR" if self.country == "India" else "USD"
+            self.currency = "VND" if self.country == "Vietnam" else "USD"
+
+    def set_team_payment_mode(self):
+        if not self.payment_mode:
+            self.payment_mode = "Prepaid Credits"
 
     def get_user_list(self):
         return [row.user for row in self.team_members]
@@ -248,8 +254,8 @@ class Team(Document):
                 if frappe.db.count("Stripe Payment Method", {"team": self.name}) == 0:
                     frappe.throw("No card added")
             if self.payment_mode == "Prepaid Credits":
-                if self.get_balance() <= 0:
-                    frappe.throw("Account does not have sufficient balance")
+                if self.get_balance() < 0:
+                    frappe.throw("Tài khoản không có đủ số dư")
 
         if not self.is_new() and not self.default_payment_method:
             # if default payment method is unset

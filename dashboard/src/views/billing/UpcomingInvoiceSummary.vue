@@ -1,5 +1,5 @@
 <template>
-	<Card title="Invoice Summary" :subtitle="subtitle">
+	<Card title="Tóm tắt hóa đơn" :subtitle="subtitle">
 		<InvoiceUsageTable :invoiceDoc="invoiceDoc" />
 	</Card>
 </template>
@@ -14,14 +14,14 @@ export default {
 	computed: {
 		subtitle() {
 			if (!this.invoiceDoc) {
-				return 'No upcoming invoice';
+				return 'Không có hóa đơn';
 			}
 			let start = this.$date(this.invoiceDoc.period_start);
 			let end = this.$date(this.invoiceDoc.period_end);
 
-			return `Current month's total forecast (${start.toFormat(
-				'd MMM'
-			)} - ${end.toFormat('d MMM yyyy')})`;
+			return `Dự báo tổng cộng cho tháng hiện tại (${start.toFormat(
+				'dd/mm'
+			)} - ${end.toFormat('dd/mm/yyyy')})`;
 		}
 	}
 };

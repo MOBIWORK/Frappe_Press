@@ -29,7 +29,7 @@
 
 		<FormControl
 			v-if="step == 'Get Amount'"
-			label="Tổng Số tiền + Thuế GST (nếu áp dụng)"
+			label="Tổng số tiền + Thuế (nếu áp dụng)"
 			disabled
 			v-model="total"
 			name="total"
@@ -45,7 +45,8 @@
 			:message="$resources.createPaymentIntent.error || errorMessage"
 		/>
 		<div class="mt-4 flex w-full justify-between">
-			<StripeLogo />
+			<!-- <StripeLogo /> -->
+			<PayOSLogo />
 			<div v-if="step == 'Get Amount'">
 				<Button
 					variant="solid"
@@ -70,13 +71,15 @@
 	</div>
 </template>
 <script>
-import StripeLogo from '@/components/StripeLogo.vue';
+// import StripeLogo from '@/components/StripeLogo.vue';
+import PayOSLogo from '@/components/PayOSLogo.vue';
 import { loadStripe } from '@stripe/stripe-js';
 
 export default {
 	name: 'BuyPrepaidCredits',
 	components: {
-		StripeLogo
+		// StripeLogo,
+		PayOSLogo
 	},
 	props: {
 		minimumAmount: {

@@ -4,7 +4,7 @@
 			:class="
 				hasForgotPassword || hasResetPassword
 					? 'grid grid-cols-1'
-					: 'grid h-full grid-cols-1 md:grid-cols-2'
+					: 'grid min-h-screen grid-cols-1 md:grid-cols-2'
 			"
 		>
 			<div

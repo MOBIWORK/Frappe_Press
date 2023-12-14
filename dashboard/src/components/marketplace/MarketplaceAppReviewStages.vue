@@ -1,8 +1,8 @@
 <template>
 	<CardWithDetails
 		v-if="reviewStages"
-		title="Review Steps"
-		subtitle="Complete all the steps before submitting for a review"
+		title="Xem xét các bước"
+		subtitle="Hoàn thành tất cả các bước trước khi gửi đề xuất để xem xét"
 	>
 		<ListItem
 			v-for="step in steps"
@@ -17,7 +17,7 @@
 		</ListItem>
 		<template #actions>
 			<Button v-if="showButton()" @click="$resources.startReview.submit()">
-				Ready for Review
+				Sẵn sàng để xem xét
 			</Button>
 		</template>
 		<template #details>
@@ -25,14 +25,14 @@
 				<div class="h-full px-6 py-5">
 					<div class="flex justify-between">
 						<div>
-							<h2 class="text-xl font-semibold">Review Communication</h2>
+							<h2 class="text-xl font-semibold">Xem xét giao tiếp</h2>
 							<p class="mt-1.5 text-base text-gray-600">
-								Chat with the developer assigned for review
+								Trò chuyện với nhà phát triển được phân công để xem xét
 							</p>
 						</div>
 
 						<div>
-							<Button @click="showReplyDialog = true"> Reply </Button>
+							<Button @click="showReplyDialog = true"> Trả lời </Button>
 						</div>
 					</div>
 					<div class="mt-4 h-full overflow-auto py-5">
@@ -68,7 +68,7 @@
 			title: 'Reply',
 			actions: [
 				{
-					label: 'Send',
+					label: 'Gửi',
 					variant: 'solid',
 					onClick: () => $resources.addReply.submit()
 				}
@@ -141,8 +141,8 @@ export default {
 				onSuccess() {
 					this.showReplyDialog = false;
 					notify({
-						title: 'Reply Queued',
-						message: 'Message reply is queued for sending',
+						title: 'Trả lời đang Chờ',
+						message: 'Trả lời tin nhắn đã được đưa vào hàng đợi để gửi đi',
 						icon: 'check',
 						color: 'green'
 					});
@@ -158,23 +158,24 @@ export default {
 			return [
 				{
 					key: 'logo',
-					title: 'Add a Logo',
-					description: "Make sure it's atleast 300x300 in dimension"
+					title: 'Thêm logo',
+					description: 'Đảm bảo rằng nó có kích thước ít nhất là 300x300'
 				},
 				{
 					key: 'description',
-					title: 'Add Description',
-					description: 'Add Short and Long description for your app'
+					title: 'Thêm mô tả',
+					description: 'Thêm mô tả ngắn và mô tả dài cho ứng dụng của bạn'
 				},
 				{
 					key: 'links',
-					title: 'Add Links',
-					description: 'Make sure you add all the links for your app'
+					title: 'Thêm liên kết',
+					description:
+						'Hãy chắc chắn bạn đã thêm tất cả các liên kết cho ứng dụng của bạn'
 				},
 				{
 					key: 'publish',
-					title: 'Publish a Release',
-					description: 'Publish your first release from the Releases tab'
+					title: 'Xuất bản một phiên bản',
+					description: 'Xuất bản phiên bản đầu tiên của bạn từ tab Phiên bản'
 				}
 			];
 		},

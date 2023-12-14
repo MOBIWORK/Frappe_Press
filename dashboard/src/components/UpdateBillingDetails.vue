@@ -21,7 +21,7 @@
 			<FormControl
 				class="mt-4"
 				v-model="billingInformation.billing_name"
-				label="Tên thanh toán"
+				label="Tên công ty"
 			/>
 			<AddressForm
 				ref="address-form"

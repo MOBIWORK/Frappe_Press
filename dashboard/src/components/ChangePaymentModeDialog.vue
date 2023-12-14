@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Change Payment Mode',
+			title: 'Thay đổi phương thức thanh toán',
 			actions: [
 				{
-					label: 'Change',
+					label: 'Thay đổi',
 					variant: 'solid',
 					loading: $resources.changePaymentMode.loading,
 					onClick: () => $resources.changePaymentMode.submit()
@@ -16,12 +16,12 @@
 	>
 		<template v-slot:body-content>
 			<FormControl
-				label="Select Payment Mode"
+				label="Chọn lại thanh toán"
 				type="select"
 				:options="paymentModeOptions"
 				v-model="paymentMode"
 			/>
-			<p class="mt-2 text-base text-gray-600 mb-5">
+			<p class="mb-5 mt-2 text-base text-gray-600">
 				{{ paymentModeDescription }}
 			</p>
 			<ErrorMessage
@@ -37,7 +37,7 @@
 	<PrepaidCreditsDialog
 		v-if="showPrepaidCreditsDialog"
 		v-model:show="showPrepaidCreditsDialog"
-		:minimumAmount="$account.team.currency == 'INR' ? 800 : 10"
+		:minimumAmount="1000"
 		@success="
 			() => {
 				$resources.upcomingInvoice.reload();
@@ -99,8 +99,8 @@ export default {
 						this.paymentMode == 'Prepaid Credits' &&
 						this.$account.balance === 0
 					) {
-						this.$emit('update:modelValue', false);
-						this.showPrepaidCreditsDialog = true;
+						// this.$emit('update:modelValue', false);
+						// this.showPrepaidCreditsDialog = true;
 					}
 
 					if (
@@ -117,16 +117,18 @@ export default {
 		paymentModeDescription() {
 			return {
 				Card: `Your card will be charged for monthly subscription`,
-				'Prepaid Credits': `You will be charged from your account balance for monthly subscription`,
+				'Prepaid Credits': `Bạn sẽ bị tính phí từ số dư tài khoản của mình cho đăng ký hàng tháng`,
 				'Partner Credits': `You will be charged from your partner credits on frappe.io`,
 				'Paid By Partner': `Your partner will be charged for monthly subscription`
 			}[this.paymentMode];
 		},
 		paymentModeOptions() {
-			if (this.$account.team.erpnext_partner) {
-				return ['Card', 'Prepaid Credits', 'Partner Credits'];
-			}
-			return ['Card', 'Prepaid Credits', 'Paid By Partner'];
+			// if (this.$account.team.erpnext_partner) {
+			// 	return ['Card', 'Prepaid Credits', 'Partner Credits'];
+			// }
+			// return ['Card', 'Prepaid Credits', 'Paid By Partner'];
+
+			return ['Prepaid Credits'];
 		}
 	}
 };

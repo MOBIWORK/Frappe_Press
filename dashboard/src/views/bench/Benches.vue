@@ -274,11 +274,13 @@ export default {
 	},
 	methods: {
 		showBillingDialog() {
-			if (!this.$account.hasBillingInfo) {
-				this.showAddCardDialog = true;
-			} else {
-				this.$router.replace('/benches/new');
-			}
+			// if (!this.$account.hasBillingInfo) {
+			// 	this.showAddCardDialog = true;
+			// } else {
+			// 	this.$router.replace('/benches/new');
+			// }
+
+			this.$router.replace('/benches/new');
 		},
 		dropdownItems(bench) {
 			return [

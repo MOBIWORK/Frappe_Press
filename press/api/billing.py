@@ -44,7 +44,7 @@ def upcoming_invoice():
 
     return {
         "upcoming_invoice": upcoming_invoice,
-        "available_credits": fmt_money(team.get_balance(), 2, team.currency),
+        "available_credits": f'{fmt_money(team.get_balance(), 0, "")} {team.currency}',
     }
 
 

@@ -4,16 +4,14 @@
 			<table class="text w-full text-sm">
 				<thead>
 					<tr class="text-gray-600">
-						<th class="border-b py-3 pr-2 text-left font-normal">
-							Description
-						</th>
-						<th class="border-b py-3 pr-2 text-left font-normal">Site</th>
+						<th class="border-b py-3 pr-2 text-left font-normal">Mô tả</th>
+						<th class="border-b py-3 pr-2 text-left font-normal">Trang web</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
 						>
-							Rate
+							Tỉ lệ
 						</th>
-						<th class="border-b py-3 pr-2 text-right font-normal">Amount</th>
+						<th class="border-b py-3 pr-2 text-right font-normal">Số tiền</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -36,7 +34,7 @@
 					<tr v-if="doc.total_discount_amount > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Total Without Discount
+							Tổng số tiền chưa giảm giá
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -47,7 +45,7 @@
 					<tr v-if="doc.total_discount_amount > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Total Discount Amount
+							Tổng số tiền đã giảm giá
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -62,7 +60,7 @@
 					<tr v-if="doc.gst > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Total (Without Tax)
+							Tổng cộng (Chưa tính thuế)
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -83,7 +81,7 @@
 					</tr>
 					<tr>
 						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">Grand Total</td>
+						<td class="pb-2 pr-2 pt-4 text-right font-semibold">Tổng cộng</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
@@ -97,14 +95,14 @@
 					<template v-if="doc.total !== doc.amount_due && doc.docstatus == 1">
 						<tr>
 							<td></td>
-							<td class="pr-2 text-right">Applied Balance:</td>
+							<td class="pr-2 text-right">Số dư đã áp dụng:</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
 								- {{ doc.formatted.applied_credits }}
 							</td>
 						</tr>
 						<tr>
 							<td></td>
-							<td class="pr-2 text-right">Amount Due:</td>
+							<td class="pr-2 text-right">Số tiền đến hạn:</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
 								{{ doc.formatted.amount_due }}
 							</td>
@@ -114,7 +112,7 @@
 			</table>
 		</div>
 		<div class="py-20 text-center" v-if="$resources.doc.loading">
-			<Button :loading="true">Loading</Button>
+			<Button :loading="true">Đang tải</Button>
 		</div>
 	</div>
 </template>

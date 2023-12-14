@@ -20,7 +20,7 @@
 		<PrepaidCreditsDialog
 			v-if="showPrepaidCreditsDialog"
 			v-model:show="showPrepaidCreditsDialog"
-			:minimum-amount="$account.team.currency === 'INR' ? 10 : 1"
+			:minimum-amount="$account.team.currency === 'VND' ? 1000 : 10"
 			@success="handleAddPrepaidCreditsSuccess"
 		/>
 	</Alert>

@@ -12,14 +12,21 @@
 			</p>
 		</template>
 		<template v-slot:body-content>
-			<BuyPrepaidCredits
+			<!-- <BuyPrepaidCredits
 				v-if="paymentGateway === 'stripe'"
+				:minimumAmount="minimumAmount"
+				@success="$emit('success')"
+				@cancel="$emit('update:show', false)"
+			/> -->
+
+			<BuyPrepaidCredits
+				v-if="paymentGateway === 'payos'"
 				:minimumAmount="minimumAmount"
 				@success="$emit('success')"
 				@cancel="$emit('update:show', false)"
 			/>
 
-			<div v-if="paymentGateway === 'razorpay'">
+			<!-- <div v-if="paymentGateway === 'razorpay'">
 				<FormControl
 					:label="`Số tiền (Số tiền tối thiểu: ${minimumAmount})`"
 					class="mb-2"
@@ -61,14 +68,14 @@
 						</Button>
 					</div>
 				</div>
-			</div>
+			</div> -->
 
 			<div>
 				<div
 					v-if="!paymentGateway"
 					class="grid grid-cols-1 gap-2 sm:grid-cols-2"
 				>
-					<Button
+					<!-- <Button
 						v-if="
 							$account.team.currency === 'INR' || $account.team.razorpay_enabled
 						"
@@ -80,12 +87,19 @@
 							src="../assets/razorpay.svg"
 							alt="Razorpay Logo"
 						/>
-					</Button>
-					<Button @click="paymentGateway = 'stripe'">
+					</Button> -->
+					<!-- <Button class="p-5" @click="paymentGateway = 'stripe'">
 						<img
 							class="h-7 w-24"
 							src="../assets/stripe.svg"
 							alt="Stripe Logo"
+						/>
+					</Button> -->
+					<Button class="p-5" @click="paymentGateway = 'payos'">
+						<img
+							class="h-7 w-24"
+							src="../assets/logo_payos.svg"
+							alt="payOS Logo"
 						/>
 					</Button>
 				</div>
@@ -117,11 +131,18 @@ export default {
 		razorpayCheckoutJS.async = true;
 		document.head.appendChild(razorpayCheckoutJS);
 
+		// if (
+		// 	this.$account.team.currency === 'USD' &&
+		// 	!this.$account.team.razorpay_enabled
+		// ) {
+		// 	this.paymentGateway = 'stripe';
+		// }
+
 		if (
-			this.$account.team.currency === 'USD' &&
+			this.$account.team.currency === 'VND' &&
 			!this.$account.team.razorpay_enabled
 		) {
-			this.paymentGateway = 'stripe';
+			this.paymentGateway = 'payos';
 		}
 
 		this.updateTotal();

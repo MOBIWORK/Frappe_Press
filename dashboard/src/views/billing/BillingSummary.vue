@@ -6,7 +6,7 @@
 					<div class="rounded-md border p-4">
 						<div class="mb-2 text-base">Số tiền thanh toán hiện tại</div>
 						<div class="text-2xl font-medium">
-							{{ upcomingInvoice ? upcomingInvoice.formatted.total : '0.00' }}
+							{{ upcomingInvoice ? upcomingInvoice.formatted.total : '0' }}
 						</div>
 					</div>
 					<div class="rounded-md border p-4">
@@ -20,10 +20,15 @@
 							>
 						</div>
 						<div class="text-2xl font-medium">
-							{{
+							<!-- {{
 								($account.team.currency == 'INR' ? '₹' : '$') +
 								' ' +
 								$resources.unpaidAmountDue.data
+							}} -->
+							{{
+								$resources.unpaidAmountDue.data +
+								' ' +
+								($account.team.currency == 'VND' ? 'VND' : '')
 							}}
 						</div>
 					</div>
@@ -168,7 +173,8 @@ export default {
 		},
 		minimumAmount() {
 			const unpaidAmount = this.$resources.unpaidAmountDue.data;
-			const minimumDefault = $account.team.currency == 'INR' ? 800 : 10;
+			// const minimumDefault = $account.team.currency == 'INR' ? 800 : 10;
+			const minimumDefault = 1000;
 
 			return unpaidAmount && unpaidAmount > minimumDefault
 				? unpaidAmount

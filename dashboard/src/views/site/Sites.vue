@@ -31,7 +31,7 @@
 						</template>
 					</Alert>
 				</div>
-				<AlertBillingInformation />
+				<!-- <AlertBillingInformation /> -->
 				<template v-if="showUnpaidInvoiceAlert">
 					<Alert
 						v-if="latestUnpaidInvoice.payment_mode === 'Prepaid Credits'"
@@ -335,11 +335,12 @@ export default {
 	},
 	methods: {
 		showBillingDialog() {
-			if (!this.$account.hasBillingInfo) {
-				this.showAddCardDialog = true;
-			} else {
-				this.$router.replace('/sites/new');
-			}
+			// if (!this.$account.hasBillingInfo) {
+			// 	this.showAddCardDialog = true;
+			// } else {
+			// 	this.$router.replace('/sites/new');
+			// }
+			this.$router.replace('/sites/new');
 		},
 		onAgentJobUpdate(data) {
 			if (!(data.name === 'New Site' || data.name === 'New Site from Backup'))
