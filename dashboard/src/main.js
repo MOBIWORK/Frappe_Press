@@ -81,8 +81,6 @@ if (import.meta.env.DEV) {
 	app.mount('#app');
 }
 
-// app.mount('#app');
-
 app.config.globalProperties.$dayjs = dayjs;
 app.config.errorHandler = (error, instance) => {
 	if (instance) {
