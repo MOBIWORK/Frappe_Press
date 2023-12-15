@@ -1,7 +1,7 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Cập nhật chi tiết thanh toán',
+			title: 'Cập nhật thông tin thanh toán',
 			actions: [
 				{
 					label: 'Xác nhận',

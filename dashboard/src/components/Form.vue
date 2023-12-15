@@ -23,11 +23,10 @@
 		<div>
 			<FormControl
 				label="Thành phố"
-				type="autocomplete"
+				:type="modelValue['country'] == 'Vietnam' ? 'autocomplete' : 'text'"
 				:options="optionsCity"
 				name="city"
 				:modelValue="modelValue['city']"
-				disabled="false"
 				required="true"
 				placeholder=""
 				:onUpdate:modelValue="value => onChangeIn(value, 'city')"
@@ -90,7 +89,9 @@ export default {
 			this.$emit('update:modelValue', values);
 		},
 		checkRequiredIn(field, value) {
-			value = value?.value;
+			if (this.modelValue.country == 'Vietnam') {
+				value = value?.value;
+			}
 
 			if (!value) {
 				this.requiredFieldNotSet.push(field);

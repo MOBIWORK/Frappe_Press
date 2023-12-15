@@ -7,7 +7,7 @@
 				@click="
 					isDefaultPaymentModeCard
 						? (showPrepaidCreditsDialog = true)
-						: (showCardDialog = true)
+						: (editBillingDetails = true)
 				"
 				class="whitespace-nowrap"
 			>
@@ -16,7 +16,14 @@
 				}}
 			</Button>
 		</template>
-		<BillingInformationDialog v-model="showCardDialog" v-if="showCardDialog" />
+		<!-- <BillingInformationDialog v-model="showCardDialog" v-if="showCardDialog" /> -->
+		<UpdateBillingDetails
+			v-model="editBillingDetails"
+			@updated="
+				editBillingDetails = false;
+				$resources.billingDetails.reload();
+			"
+		/>
 		<PrepaidCreditsDialog
 			v-if="showPrepaidCreditsDialog"
 			v-model:show="showPrepaidCreditsDialog"
@@ -30,18 +37,26 @@ import { defineAsyncComponent } from 'vue';
 
 export default {
 	name: 'AlertBillingInformation',
+	emits: ['updated'],
 	components: {
 		BillingInformationDialog: defineAsyncComponent(() =>
 			import('./BillingInformationDialog.vue')
 		),
 		PrepaidCreditsDialog: defineAsyncComponent(() =>
 			import('./PrepaidCreditsDialog.vue')
+		),
+		UpdateBillingDetails: defineAsyncComponent(() =>
+			import('@/components/UpdateBillingDetails.vue')
 		)
+	},
+	resources: {
+		billingDetails: 'press.api.billing.details'
 	},
 	data() {
 		return {
 			showCardDialog: false,
-			showPrepaidCreditsDialog: false
+			showPrepaidCreditsDialog: false,
+			editBillingDetails: false
 		};
 	},
 	methods: {
