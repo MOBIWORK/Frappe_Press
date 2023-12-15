@@ -68,20 +68,20 @@ if (window.press_frontend_posthog_host?.includes('https://')) {
 	}
 }
 
-// if (import.meta.env.DEV) {
-// 	request({
-// 		url: '/api/method/press.www.dashboard.get_context_for_dev'
-// 	}).then(values => {
-// 		for (let key in values) {
-// 			window[key] = values[key];
-// 		}
-// 		app.mount('#app');
-// 	});
-// } else {
-// 	app.mount('#app');
-// }
+if (import.meta.env.DEV) {
+	request({
+		url: '/api/method/press.www.dashboard.get_context_for_dev'
+	}).then(values => {
+		for (let key in values) {
+			window[key] = values[key];
+		}
+		app.mount('#app');
+	});
+} else {
+	app.mount('#app');
+}
 
-app.mount('#app');
+// app.mount('#app');
 
 app.config.globalProperties.$dayjs = dayjs;
 app.config.errorHandler = (error, instance) => {

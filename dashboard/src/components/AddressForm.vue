@@ -5,6 +5,7 @@
 			:fields="fields"
 			:modelValue="address"
 			@update:modelValue="$emit('update:address', $event)"
+			:fieldNotSet="fieldNotSet"
 		/>
 		<div class="mt-4" v-show="address.country == 'India'">
 			<FormControl
@@ -40,7 +41,7 @@
 
 <script>
 import Form from '@/components/Form.vue';
-import { indianStates } from '@/utils/billing';
+import { vietnamStates, vietnamCity } from '@/utils/billing';
 
 export default {
 	name: 'AddressForm',
@@ -51,6 +52,7 @@ export default {
 	},
 	data() {
 		return {
+			fieldNotSet: [],
 			gstApplicable: true
 		};
 	},
@@ -64,16 +66,24 @@ export default {
 			url: 'press.api.account.country_list',
 			auto: true,
 			onSuccess() {
-				let country = this.countryList.find(
-					d => d.label === this.$account.team.country
-				);
-				if (country) {
-					this.update('country', country.value);
-				}
+				// let country = this.countryList.find(
+				// 	d => d.label === this.$account.team.country
+				// );
+				// if (country) {
+				// 	this.update('country', country.value);
+				// }
+				this.update('country', 'Vietnam');
 			}
 		}
 	},
 	methods: {
+		getVietnamCity(parent = '') {
+			return vietnamCity.map(d => ({
+				label: d.value,
+				value: d.value
+			}));
+		},
+
 		update(key, value) {
 			this.$emit('update:address', {
 				...this.address,
@@ -83,13 +93,23 @@ export default {
 		async validateValues() {
 			let { country } = this.address;
 			let is_india = country == 'India';
-			let values = this.fields
+			let valueExists = this.fields
 				.flat()
-				.filter(df => df.fieldname != 'gstin' || is_india)
-				.map(df => this.address[df.fieldname]);
+				.filter(df => df.fieldname != 'gstin' || is_india);
+			let values = valueExists.map(df => this.address[df.fieldname]);
+
+			let fieldNotSetNew = valueExists
+				.filter(df => !this.address[df.fieldname])
+				.map(df => df.fieldname);
+
+			if (!this.address['city']) {
+				fieldNotSetNew.push('city');
+				values.push(this.address['city']);
+			}
+			this.fieldNotSet = fieldNotSetNew;
 
 			if (!values.every(Boolean)) {
-				return 'Please fill required values';
+				return 'Vui lòng điền đầy đủ thông tin';
 			}
 
 			try {
@@ -108,46 +128,75 @@ export default {
 				value: d.name
 			}));
 		},
-		indianStates() {
-			return indianStates.map(d => ({
-				label: d,
-				value: d
+		vietnamCity() {
+			return vietnamCity.map(d => ({
+				label: d.value,
+				value: d.value
+			}));
+		},
+		vietnamStates() {
+			return vietnamStates.map(d => ({
+				label: d.value,
+				value: d.value
 			}));
 		},
 		fields() {
 			return [
+				// {
+				// 	fieldtype: 'Autocomplete',
+				// 	label: 'Quốc gia',
+				// 	fieldname: 'country',
+				// 	options: this.countryList,
+				// 	required: 1
+				// },
 				{
-					fieldtype: 'Select',
-					label: 'Country',
-					fieldname: 'country',
-					options: this.countryList,
+					fieldtype: 'Email',
+					label: 'Email',
+					fieldname: 'email_id',
 					required: 1
 				},
 				{
 					fieldtype: 'Data',
-					label: 'Address',
+					label: 'Số điện thoại',
+					fieldname: 'phone',
+					required: 1
+				},
+				{
+					fieldtype: 'Data',
+					label: 'Mã số thuế',
+					fieldname: 'tax_code',
+					required: 1
+				},
+				{
+					fieldtype: 'Data',
+					label: 'Địa chỉ kinh doanh',
 					fieldname: 'address',
 					required: 1
 				},
 				{
-					fieldtype: 'Data',
-					label: 'City',
-					fieldname: 'city',
-					required: 1
-				},
-				{
-					fieldtype: this.address.country === 'India' ? 'Select' : 'Data',
-					label: 'State / Province / Region',
+					fieldtype:
+						this.address.country === 'Vietnam' ? 'Autocomplete' : 'Data',
+					label: 'Tỉnh thành',
 					fieldname: 'state',
 					required: 1,
-					options: this.address.country === 'India' ? this.indianStates : null
-				},
-				{
-					fieldtype: 'Data',
-					label: 'Postal Code',
-					fieldname: 'postal_code',
-					required: 1
+					options:
+						this.address.country === 'Vietnam' ? this.vietnamStates : null
 				}
+				// {
+				// 	fieldtype:
+				// 		this.address.country === 'Vietnam' ? 'Autocomplete' : 'Data',
+				// 	label: 'Thành phố',
+				// 	fieldname: 'city',
+				// 	required: 1,
+				// 	options: this.address.country === 'Vietnam' ? this.vietnamCity : null
+				// }
+
+				// {
+				// 	fieldtype: 'Data',
+				// 	label: 'Mã bưu điện',
+				// 	fieldname: 'postal_code',
+				// 	required: 1
+				// }
 			];
 		}
 	}

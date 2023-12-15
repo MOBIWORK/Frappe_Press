@@ -736,6 +736,10 @@ def get_billing_information(timezone=None):
 @frappe.whitelist()
 def update_billing_information(billing_details):
     billing_details = frappe._dict(billing_details)
+    if type(billing_details.state) == dict:
+        billing_details.state = billing_details.state.get('value')
+    if type(billing_details.city) == dict:
+        billing_details.city = billing_details.city.get('value')
     team = get_current_team(get_doc=True)
     team.update_billing_details(billing_details)
 

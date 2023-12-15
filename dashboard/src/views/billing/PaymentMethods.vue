@@ -1,7 +1,7 @@
 <template>
 	<div class="space-y-5">
 		<AccountBillingDetails />
-		<AccountBillingCards />
+		<!-- <AccountBillingCards /> -->
 	</div>
 </template>
 

@@ -128,7 +128,7 @@ export default {
 			// }
 			// return ['Card', 'Prepaid Credits', 'Paid By Partner'];
 
-			return ['Prepaid Credits'];
+			return [{ label: 'Tín dụng trả trước', value: 'Prepaid Credits' }];
 		}
 	}
 };

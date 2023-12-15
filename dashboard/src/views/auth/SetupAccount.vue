@@ -134,8 +134,8 @@
 								<label class="text-base" for="country">Quốc gia</label>
 							</div>
 							<FormControl
+								type="autocomplete"
 								id="country"
-								type="select"
 								size="lg"
 								variant="outline"
 								placeholder="---"

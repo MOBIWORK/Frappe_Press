@@ -15,7 +15,7 @@
 		/>
 		<div class="divide-y" v-if="$resources.billingDetails.data">
 			<ListItem
-				title="Tên chủ thẻ"
+				title="Tên công ty"
 				:description="$resources.billingDetails.data.billing_name"
 			/>
 			<ListItem

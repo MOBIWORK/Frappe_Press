@@ -486,6 +486,9 @@ class Team(Document):
                 "address_line1": billing_details.address,
                 "city": billing_details.city,
                 "state": billing_details.state,
+                "email_id": billing_details.email_id,
+                "phone": billing_details.phone,
+                "tax_code": billing_details.tax_code,
                 "pincode": billing_details.postal_code,
                 "country": billing_details.country,
                 "gstin": billing_details.gstin,
@@ -499,8 +502,8 @@ class Team(Document):
         self.save()
         self.reload()
 
-        self.update_billing_details_on_stripe(address_doc)
-# self.update_billing_details_on_frappeio()
+        # self.update_billing_details_on_stripe(address_doc)
+        # self.update_billing_details_on_frappeio()
         self.update_billing_details_on_draft_invoices()
 
     def update_billing_details_on_draft_invoices(self):
@@ -512,6 +515,9 @@ class Team(Document):
             frappe.get_doc("Invoice", draft_invoice).save()
 
     def update_billing_details_on_frappeio(self):
+        if frappe.flags.in_install:
+            return
+
         try:
             frappeio_client = get_frappe_io_connection()
         except FrappeioServerNotSet as e:
@@ -989,13 +995,13 @@ def get_team_members(team):
     if member_emails:
         users = frappe.db.sql(
             """
-				select u.name, u.first_name, u.last_name, GROUP_CONCAT(r.`role`) as roles
-				from `tabUser` u
-				left join `tabHas Role` r
-				on (r.parent = u.name)
-				where ifnull(u.name, '') in %s
-				group by u.name
-			""",
+                select u.name, u.first_name, u.last_name, GROUP_CONCAT(r.`role`) as roles
+                from `tabUser` u
+                left join `tabHas Role` r
+                on (r.parent = u.name)
+                where ifnull(u.name, '') in %s
+                group by u.name
+            """,
             [member_emails],
             as_dict=True,
         )
@@ -1021,11 +1027,11 @@ def get_child_team_members(team):
     if child_team_members:
         child_teams = frappe.db.sql(
             """
-				select t.name, t.team_title, t.parent_team, t.user
-				from `tabTeam` t
-				where ifnull(t.name, '') in %s
-				and t.enabled = 1
-			""",
+                select t.name, t.team_title, t.parent_team, t.user
+                from `tabTeam` t
+                where ifnull(t.name, '') in %s
+                and t.enabled = 1
+            """,
             [child_team_members],
             as_dict=True,
         )

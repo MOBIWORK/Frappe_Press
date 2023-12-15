@@ -174,11 +174,12 @@ def details():
     address = None
     if team.billing_address:
         address = frappe.get_doc("Address", team.billing_address)
+        country = "Việt Nam" if address.country == "Vietnam" else address.country
         address_parts = [
             address.address_line1,
-            address.city,
-            address.state,
-            address.country,
+            'thành phố ' + address.city,
+            'tỉnh ' + address.state,
+            country,
             address.pincode,
         ]
         billing_address = ", ".join([d for d in address_parts if d])

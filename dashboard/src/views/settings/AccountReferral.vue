@@ -10,7 +10,7 @@
 				Khi ai đó đăng ký bằng liên kết trên và chi ít nhất
 				{{ minimumSpentAmount }} cho MBW Cloud, Bạn
 				<strong
-					>nhận được {{ creditAmountInTeamCurrency }} trong tin dụng MBW
+					>nhận được {{ creditAmountInTeamCurrency }} trong tín dụng MBW
 					Cloud</strong
 				>!
 			</h3>

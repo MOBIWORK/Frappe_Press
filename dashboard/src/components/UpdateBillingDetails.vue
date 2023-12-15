@@ -51,8 +51,11 @@ export default {
 		return {
 			billingInformation: {
 				address: '',
-				city: '',
 				state: '',
+				city: '',
+				email_id: '',
+				phone: '',
+				tax_code: '',
 				postal_code: '',
 				country: '',
 				gstin: '',
@@ -68,6 +71,9 @@ export default {
 				if ('country' in (billingInformation || {})) {
 					Object.assign(this.billingInformation, {
 						address: billingInformation.address_line1,
+						email_id: billingInformation.email_id,
+						phone: billingInformation.phone,
+						tax_code: billingInformation.tax_code,
 						city: billingInformation.city,
 						state: billingInformation.state,
 						postal_code: billingInformation.pincode,
@@ -90,6 +96,8 @@ export default {
 				onSuccess() {
 					this.$emit('update:show', false);
 					notify({
+						icon: 'check',
+						color: 'green',
 						title: 'Địa chỉ đã được cập nhật thành công!'
 					});
 					this.$emit('updated');
