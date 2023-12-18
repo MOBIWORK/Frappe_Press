@@ -33,7 +33,7 @@ def checks():
         test_browser_assets()
         test_signup_flow()
     except Exception as e:
-        click.secho(f"Có lỗi xảy ra: {e}", fg="yellow")
+        click.secho(f"An error occurred: {e}", fg="yellow")
         return
 
 

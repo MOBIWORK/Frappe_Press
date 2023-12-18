@@ -211,11 +211,29 @@ function getApps() {
 				}
 
 				if (app.subscription_type == 'Freemium') {
-					badge = '{{ badge_purple("Freemium") }}';
+					badge = `
+						<span
+							class="inline-block px-3 py-1 text-sm text-purple-800 rounded-md cursor-default bg-purple-200"
+						>
+							Freemium
+						</span>
+					`;
 				} else if (app.subscription_type == 'Paid') {
-					badge = '{{ badge_green("Paid") }}';
+					badge = `
+						<span
+							class="inline-block px-3 py-1 text-sm text-green-800 rounded-md cursor-default bg-green-200"
+						>
+							Paid
+						</span>
+					`;
 				} else {
-					badge = '{{ badge_gray("Free") }}';
+					badge = `
+						<span
+							class="inline-block px-3 py-1 text-sm text-gray-100 rounded-md cursor-default bg-gray-400"
+						>
+							Free
+						</span>
+					`;
 				}
 
 				if (app.image) {
