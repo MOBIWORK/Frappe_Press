@@ -54,7 +54,7 @@
 		</div>
 	</div>
 	<div class="text-center" v-else>
-		<Button :loading="true">Loading</Button>
+		<Button :loading="true">Đang tải</Button>
 	</div>
 </template>
 

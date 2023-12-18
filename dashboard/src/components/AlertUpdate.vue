@@ -1,22 +1,23 @@
 <template>
 	<Alert :title="alertTitle" v-if="show">
 		<span v-if="deployInformation.deploy_in_progress"
-			>A deploy for this bench is in progress</span
+			>Quá trình triển khai cho bench này đang được tiến hành</span
 		>
 		<span v-else-if="bench.status == 'Active'">
-			A new update is available for your bench. Would you like to deploy the
-			update now?
+			Có bản cập nhật mới cho bench của bạn. Bạn có muốn triển khai cập nhật
+			ngay bây giờ không?
 		</span>
 		<span v-else>
-			Your bench is not deployed yet. You can add more apps to your bench before
-			deploying. If you want to deploy now, click on the Show Updates button.
+			Bench của bạn chưa được triển khai. Bạn có thể thêm nhiều ứng dụng khác
+			vào bench trước khi triển khai. Nếu bạn muốn triển khai ngay bây giờ, hãy
+			nhấp vào nút `Hiển thị cập nhật`.
 		</span>
 		<template #actions>
 			<Button
 				v-if="deployInformation.deploy_in_progress"
 				variant="solid"
 				:route="`/benches/${bench.name}/deploys/${deployInformation.last_deploy.name}`"
-				>View Progress</Button
+				>Xem tiến trình</Button
 			>
 			<Button
 				v-else
@@ -28,7 +29,7 @@
 					}
 				"
 			>
-				Show Updates
+				Hiển thị cập nhật
 			</Button>
 		</template>
 
@@ -36,8 +37,8 @@
 			:options="{
 				title:
 					step == 'Apps'
-						? 'Select the apps you want to update'
-						: 'Select the sites you want to update'
+						? 'Chọn các ứng dụng bạn muốn cập nhật'
+						: 'Chọn các trang web bạn muốn cập nhật'
 			}"
 			v-model="showDeployDialog"
 		>
@@ -58,7 +59,7 @@
 			</template>
 			<template v-slot:actions>
 				<Button v-if="step == 'Sites'" class="w-full" @click="step = 'Apps'">
-					Back
+					Quay lại
 				</Button>
 				<Button
 					v-if="step == 'Sites'"
@@ -67,10 +68,10 @@
 					@click="$resources.deploy.submit()"
 					:loading="$resources.deploy.loading"
 				>
-					{{ selectedSites.length > 0 ? 'Update' : 'Skip and Deploy' }}
+					{{ selectedSites.length > 0 ? 'Cập nhật' : 'Bỏ qua và Triển khai' }}
 				</Button>
 				<Button v-else variant="solid" class="w-full" @click="step = 'Sites'">
-					Next
+					Tiếp theo
 				</Button>
 			</template>
 		</Dialog>
@@ -122,7 +123,7 @@ export default {
 						this.selectedApps.length === 0 &&
 						this.deployInformation.removed_apps.length === 0
 					) {
-						return 'You must select atleast 1 app to proceed with update.';
+						return 'Bạn phải chọn ít nhất 1 ứng dụng để tiếp tục cập nhật.';
 					}
 				},
 				onSuccess(new_candidate_name) {
@@ -133,7 +134,7 @@ export default {
 						last_deploy: { name: new_candidate_name, status: 'Running' }
 					});
 					notify({
-						title: 'Updates scheduled successfully',
+						title: 'Cập nhật đã được lên lịch thành công',
 						icon: 'check',
 						color: 'green'
 					});
@@ -154,7 +155,7 @@ export default {
 			return (
 				this.$resources.deploy.error ||
 				(this.bench.team !== $account.team.name
-					? "Current Team doesn't have enough permissions"
+					? 'Nhóm hiện tại không có đủ quyền hạn'
 					: '')
 			);
 		},
@@ -163,7 +164,7 @@ export default {
 		},
 		alertTitle() {
 			if (this.deployInformation && this.deployInformation.deploy_in_progress) {
-				return 'Deploy in Progress';
+				return 'Triển khai đang được tiến hành';
 			}
 			return this.bench.status == 'Active' ? 'Update Available' : 'Deploy';
 		}

@@ -1,5 +1,8 @@
 <template>
-	<CardWithDetails title="Security Updates" subtitle="Pending security updates">
+	<CardWithDetails
+		title="Cập nhật bảo mật"
+		subtitle="Cập nhật bảo mật đang chờ"
+	>
 		<div>
 			<router-link
 				v-for="sec_update in $resources.updates.data"
@@ -26,10 +29,10 @@
 			<div class="py-3" v-if="$resources.updates.hasNextPage">
 				<Button
 					:loading="$resources.updates.list.loading"
-					loadingText="Loading..."
+					loadingText="Đang tải..."
 					@click="$resources.updates.next()"
 				>
-					Load more
+					Tải thêm
 				</Button>
 			</div>
 		</div>

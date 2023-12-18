@@ -34,133 +34,156 @@ def generate_pagination(current_page, total_pages):
 def get_context(context):
     # TODO: Caching, Pagination, Filtering, Sorting
     args = frappe.request.args
-    pageCurren = args.get('page') if args.get(
-        'page') and int(args.get('page')) > 1 else '1'
-    pageSize = args.get('page_size') if args.get(
-        'page_size') and int(args.get('page_size')) > 1 else '18'
-    skipRow = str(int(pageSize) * (int(pageCurren)-1))
     category = args.get('category', '')
-    text_search = args.get('text_search', '')
-    context.text_search = text_search
+    type_overview = args.get('type_overview', '')
     context.category = category
+    context.type_overview = type_overview
 
-    context.no_cache = 1
-    str_query = """
+    if category:
+        pageCurren = args.get('page') if args.get(
+            'page') and int(args.get('page')) > 1 else '1'
+        pageSize = args.get('page_size') if args.get(
+            'page_size') and int(args.get('page_size')) > 1 else '18'
+        skipRow = str(int(pageSize) * (int(pageCurren)-1))
+        text_search = args.get('text_search', '')
+        context.text_search = text_search
+        context.category = category
+
+        context.no_cache = 1
+        str_query = """
+            SELECT
+                COUNT(*) AS total_apps
+            FROM
+                `tabMarketplace App` marketplace
+        """
+
+        if category:
+            str_query += """
+                INNER JOIN
+                `tabMarketplace App Categories` categories
+                ON
+                    categories.parent = marketplace.name
+            """
+
+        str_query += """
+            WHERE
+                marketplace.status = "Published"
+        """
+
+        if text_search:
+            str_query += f"""
+            AND
+                marketplace.name LIKE '%{text_search}%'
+            """
+        if category:
+            str_query += f"""
+            AND
+                categories.category = '{category}'
+            """
+        str_query += """;"""
+
+        total_all_published_apps = frappe.db.sql(str_query,
+                                                 as_dict=True,
+                                                 )[0].get('total_apps')
+
+        if pageSize:
+            totalPage = math.ceil(total_all_published_apps/int(pageSize))
+        else:
+            totalPage = 0
+
+        pagination_list = generate_pagination(int(pageCurren), totalPage)
+
+        context.pagination = {
+            "total_page": totalPage,
+            "page_curren": int(pageCurren),
+            "page_size": int(pageSize),
+            "pagination_list": pagination_list
+        }
+
+        str_query = """
         SELECT
-            COUNT(*) AS total_apps
-        FROM
-            `tabMarketplace App` marketplace
-    """
-
-    if category:
-        str_query += """
-            INNER JOIN
-            `tabMarketplace App Categories` categories
+                marketplace.name,
+                marketplace.title,
+                marketplace.image,
+                marketplace.route,
+                marketplace.description,
+                marketplace.subscription_type,
+                COUNT(*) AS total_installs
+            FROM
+                `tabMarketplace App` marketplace
+            LEFT JOIN
+                `tabSite App` site
             ON
-                categories.parent = marketplace.name
+                site.app = marketplace.app
         """
 
-    str_query += """
-        WHERE
-            marketplace.status = "Published"
-    """
+        if category:
+            str_query += """
+                INNER JOIN
+                `tabMarketplace App Categories` categories
+                ON
+                    categories.parent = marketplace.name
+            """
 
-    if text_search:
-        str_query += f"""
-        AND
-            marketplace.name LIKE '%{text_search}%'
-        """
-    if category:
-        str_query += f"""
-        AND
-            categories.category = '{category}'
-        """
-    str_query += """;"""
-
-    total_all_published_apps = frappe.db.sql(str_query,
-                                             as_dict=True,
-                                             )[0].get('total_apps')
-
-    if pageSize:
-        totalPage = math.ceil(total_all_published_apps/int(pageSize))
-    else:
-        totalPage = 0
-
-    pagination_list = generate_pagination(int(pageCurren), totalPage)
-
-    context.pagination = {
-        "total_page": totalPage,
-        "page_curren": int(pageCurren),
-        "page_size": int(pageSize),
-        "pagination_list": pagination_list
-    }
-
-    str_query = """
-    SELECT
-            marketplace.name,
-            marketplace.title,
-            marketplace.image,
-            marketplace.route,
-            marketplace.description,
-            marketplace.subscription_type,
-            COUNT(*) AS total_installs
-        FROM
-            `tabMarketplace App` marketplace
-        LEFT JOIN
-            `tabSite App` site
-        ON
-            site.app = marketplace.app
-    """
-
-    if category:
         str_query += """
-            INNER JOIN
-            `tabMarketplace App Categories` categories
-            ON
-                categories.parent = marketplace.name
+            WHERE
+                marketplace.status = "Published"
         """
 
-    str_query += """
-        WHERE
-            marketplace.status = "Published"
-    """
+        if text_search:
+            str_query += f"""
+            AND
+                marketplace.name LIKE '%{text_search}%'
+            """
 
-    if text_search:
+        if category:
+            str_query += f"""
+            AND
+                categories.category = '{category}'
+            """
+
         str_query += f"""
-        AND
-            marketplace.name LIKE '%{text_search}%'
+            GROUP BY
+                marketplace.name
+            ORDER BY
+                total_installs DESC
+            OFFSET {skipRow} ROWS
+            FETCH NEXT {pageSize} ROWS ONLY;
         """
-
-    if category:
-        str_query += f"""
-        AND
-            categories.category = '{category}'
-        """
-
-    str_query += f"""
-        GROUP BY
-            marketplace.name
-        ORDER BY
-            total_installs DESC
-        OFFSET {skipRow} ROWS
-          FETCH NEXT {pageSize} ROWS ONLY;
-    """
-    all_published_apps = frappe.db.sql(
-        str_query,
-        as_dict=True,
-    )
-    for app in all_published_apps:
-        info_app = frappe.get_doc(
-            "Marketplace App",
-            {"name": app.get('name')}
+        all_published_apps = frappe.db.sql(
+            str_query,
+            as_dict=True,
         )
-        user_reviews = info_app.get_user_reviews()
-        ratings_summary = info_app.get_user_ratings_summary(user_reviews)
-        app['ratings_summary'] = ratings_summary
+        for app in all_published_apps:
+            info_app = frappe.get_doc(
+                "Marketplace App",
+                {"name": app.get('name')}
+            )
+            user_reviews = info_app.get_user_reviews()
+            ratings_summary = info_app.get_user_ratings_summary(user_reviews)
+            app['ratings_summary'] = ratings_summary
 
-    context.apps = all_published_apps
+        context.apps = all_published_apps
 
-    if not category:
+        str_query = f"""
+            SELECT
+                category.name,
+                category.full_name
+            FROM
+                `tabMarketplace App Category` category
+            WHERE
+                category.name = '{category}';
+        """
+
+        detail_category = {}
+        list_category = frappe.db.sql(
+            str_query,
+            as_dict=True,
+        )
+        if len(list_category):
+            info_category = list_category[0]
+        context.info_category = info_category
+    else:
         # lay category hien thi
         str_query = """
             SELECT
@@ -172,7 +195,7 @@ def get_context(context):
             WHERE
                 category.show_in_dashboard = 1
             ORDER BY
-                level DESC
+                level DESC;
         """
         categories_show = frappe.db.sql(
             str_query,
@@ -226,6 +249,7 @@ def get_context(context):
 
             info_item = {
                 'name_display': cate.get('full_name'),
+                'name_category': cate.get('name'),
                 'data': most_used_apps
             }
             apps_show.append(info_item)
@@ -233,30 +257,30 @@ def get_context(context):
         context.apps_show = apps_show
 
     ###
-    for app in all_published_apps:
-        app["categories"] = frappe.db.get_all(
-            "Marketplace App Categories", {"parent": app["name"]}, pluck="category"
-        )
+    # for app in all_published_apps:
+    #     app["categories"] = frappe.db.get_all(
+    #         "Marketplace App Categories", {"parent": app["name"]}, pluck="category"
+    #     )
 
     context.categories = sorted(
         frappe.db.get_all("Marketplace App Categories",
                           pluck="category", distinct=True)
     )
-    if "Featured" in context.categories:
-        context.categories.remove("Featured")
-        context.categories.insert(0, "Featured")
+    # if "Featured" in context.categories:
+    #     context.categories.remove("Featured")
+    #     context.categories.insert(0, "Featured")
 
-    featured_apps = frappe.get_all(
-        "Featured App",
-        filters={"parent": "Marketplace Settings"},
-        pluck="app",
-        order_by="idx",
-    )
+    # featured_apps = frappe.get_all(
+    #     "Featured App",
+    #     filters={"parent": "Marketplace Settings"},
+    #     pluck="app",
+    #     order_by="idx",
+    # )
 
-    context.featured_apps = sorted(
-        filter(lambda x: x.name in featured_apps, all_published_apps),
-        key=lambda y: featured_apps.index(y.name),
-    )
+    # context.featured_apps = sorted(
+    #     filter(lambda x: x.name in featured_apps, all_published_apps),
+    #     key=lambda y: featured_apps.index(y.name),
+    # )
 
     context.metatags = {
         "title": "MBW Cloud Marketplace",

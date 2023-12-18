@@ -20,7 +20,7 @@
 						<Button
 							v-if="bench?.status === 'Active'"
 							icon-left="plus"
-							label="New Site"
+							label="Trang web mới"
 							@click="$router.push(`/${this.bench.name}/new`)"
 						/>
 						<Dropdown :options="benchActions">

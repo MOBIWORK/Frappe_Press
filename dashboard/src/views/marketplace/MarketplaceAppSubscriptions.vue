@@ -68,7 +68,7 @@ const appSubscriptions = createResource({
 		</div>
 
 		<div v-else-if="appSubscriptions.loading">
-			<Button :loading="true">Loading</Button>
+			<Button :loading="true">Đang tải</Button>
 		</div>
 
 		<ErrorMessage :message="appSubscriptions.error" />

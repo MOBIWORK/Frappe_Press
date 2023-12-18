@@ -41,10 +41,10 @@
 			<Button
 				v-if="$resources.requestLogs.data && $resources.requestLogs.data.length"
 				:loading="$resources.requestLogs.loading"
-				loadingText="Loading..."
+				loadingText="Đang tải..."
 				@click="start += 10"
 			>
-				Load more
+				Tải thêm
 			</Button>
 		</Card>
 	</div>

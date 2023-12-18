@@ -26,10 +26,10 @@
 			<div class="py-3" v-if="$resources.plays.hasNextPage">
 				<Button
 					:loading="$resources.plays.list.loading"
-					loadingText="Loading..."
+					loadingText="Đang tải..."
 					@click="$resources.plays.next()"
 				>
-					Load more
+					Tải thêm
 				</Button>
 			</div>
 		</div>

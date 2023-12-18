@@ -1,7 +1,7 @@
 <template>
 	<div class="px-4 py-4 text-base sm:px-8">
 		<Button v-if="$resources.opionsForQuickInstall" :loading="true"
-			>Loading</Button
+			>Đang tải</Button
 		>
 		<div v-else>
 			<h1 class="mb-4 text-xl font-semibold">
@@ -33,7 +33,7 @@
 					</div>
 
 					<template v-slot:actions>
-						<Button variant="solid" route="/sites/new">New Site</Button>
+						<Button variant="solid" route="/sites/new">Trang web mới</Button>
 					</template>
 				</Card>
 

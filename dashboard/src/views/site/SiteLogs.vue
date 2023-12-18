@@ -25,9 +25,9 @@
 			<Button
 				v-if="$resources.logs.loading"
 				:loading="true"
-				loading-text="Loading..."
+				loading-text="Đang tải..."
 			/>
-			<span v-else class="text-base text-gray-600">No logs</span>
+			<span v-else class="text-base text-gray-600">Không có log</span>
 		</div>
 		<template #details>
 			<SiteLogsDetail :site="site" :logName="logName" />

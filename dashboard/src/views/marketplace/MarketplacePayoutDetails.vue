@@ -18,37 +18,35 @@ const payout = createResource({
 </script>
 <template>
 	<div>
-		<Button v-if="payout.loading" :loading="true">Loading</Button>
+		<Button v-if="payout.loading" :loading="true">Đang tải</Button>
 
 		<div v-if="payout.data">
 			<table class="text w-full text-sm">
 				<thead>
 					<tr class="text-gray-600">
-						<th class="border-b py-3 pr-2 text-left font-normal">
-							Description
+						<th class="border-b py-3 pr-2 text-left font-normal">Mô tả</th>
+						<th
+							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
+						>
+							Đánh giá
 						</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
 						>
-							Rate
+							Tổng số tiền
 						</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
 						>
-							Total Amount
+							Phí
 						</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
 						>
-							Fee
-						</th>
-						<th
-							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
-						>
-							Commission
+							Hoa hồng
 						</th>
 						<th class="border-b py-3 pr-2 text-right font-normal">
-							Net Amount
+							Số tiền ròng
 						</th>
 					</tr>
 				</thead>
@@ -82,9 +80,9 @@ const payout = createResource({
 						<td></td>
 						<td></td>
 						<td></td>
-						<td class="pt-4 pb-2 pr-2 text-right font-semibold">Grand Total</td>
+						<td class="pb-2 pr-2 pt-4 text-right font-semibold">Tổng cộng</td>
 						<td
-							class="whitespace-nowrap pt-4 pb-2 pr-2 text-right font-semibold"
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
 							${{ round(payout.data.net_total_usd, 2) }} + ₹{{
 								round(payout.data.net_total_inr, 2)

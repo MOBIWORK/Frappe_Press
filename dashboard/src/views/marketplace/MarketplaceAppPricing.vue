@@ -99,7 +99,7 @@ function resetCurrentEditingPlan() {
 
 <template>
 	<div>
-		<Card title="Gói giá" subtitle="Thiết lập gói giá cho ứng dụng này">
+		<Card title="Giá gói" subtitle="Thiết lập giá gói  cho ứng dụng này">
 			<div class="m-4">
 				<div class="flex justify-center" v-if="appPlans.loading">
 					<Button :loading="true">Đang tải</Button>

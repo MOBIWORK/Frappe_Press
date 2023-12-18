@@ -128,13 +128,13 @@ export default {
 		dropdownItems(bench) {
 			return [
 				{
-					label: 'New Site',
+					label: 'Trang web mới',
 					onClick: () => {
 						this.$router.push(`/${bench.name}/new`);
 					}
 				},
 				{
-					label: 'View Versions',
+					label: 'Xem các phiên bản',
 					onClick: () => {
 						this.$router.push(`/benches/${bench.name}/versions`);
 					}

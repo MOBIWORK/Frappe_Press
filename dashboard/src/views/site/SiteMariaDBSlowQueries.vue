@@ -40,16 +40,16 @@
 			<Button
 				v-if="$resources.slowQueries.data && $resources.slowQueries.data.length"
 				:loading="$resources.slowQueries.loading"
-				loadingText="Loading..."
+				loadingText="Đang tải..."
 				@click="max_lines += 20"
 			>
-				Load more
+				Tải thêm
 			</Button>
 		</Card>
 	</div>
 	<div class="flex justify-center" v-else>
 		<span class="mt-16 text-base text-gray-700">
-			Your plan doesn't support this feature. Please upgrade your plan.
+			Gói của bạn không hỗ trợ tính năng này. Vui lòng nâng cấp gói của bạn
 		</span>
 	</div>
 </template>

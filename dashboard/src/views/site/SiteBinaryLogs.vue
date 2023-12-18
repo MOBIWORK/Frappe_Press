@@ -31,16 +31,16 @@
 			<Button
 				v-if="$resources.binaryLogs.data && $resources.binaryLogs.data.length"
 				:loading="$resources.binaryLogs.loading"
-				loadingText="Loading..."
+				loadingText="Đang tải..."
 				@click="max_lines += 10"
 			>
-				Load more
+				Tải thêm
 			</Button>
 		</Card>
 	</div>
 	<div class="flex justify-center" v-else>
 		<span class="mt-16 text-base text-gray-700">
-			Your plan doesn't support this feature. Please upgrade your plan.
+			Gói của bạn không hỗ trợ tính năng này. Vui lòng nâng cấp gói của bạn.
 		</span>
 	</div>
 </template>
@@ -57,19 +57,19 @@ export default {
 			filters: [
 				{
 					name: 'pattern',
-					label: 'Search:',
+					label: 'Tìm kiếm:',
 					type: 'text',
 					value: this.pattern
 				},
 				{
 					name: 'start_datetime',
-					label: 'From:',
+					label: 'Từ:',
 					type: 'datetime-local',
 					value: ''
 				},
 				{
 					name: 'end_datetime',
-					label: 'To:',
+					label: 'Đến:',
 					type: 'datetime-local',
 					value: ''
 				}

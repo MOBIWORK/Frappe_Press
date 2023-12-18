@@ -1,20 +1,20 @@
 <template>
 	<div>
 		<div v-if="!$resources.getSiteAutoUpdateInfo.loading && !autoUpdateEnabled">
-			<Alert title="Auto updates are disabled for this site.">
+			<Alert title="Cập nhật tự động đã bị tắt cho trang web này.">
 				<template #actions>
 					<Button
 						variant="solid"
 						@click="enableAutoUpdate"
 						:loading="$resources.enableAutoUpdate.loading"
-						loadingText="Enabling"
-						>Enable</Button
+						loadingText="Đang bật"
+						>Bật</Button
 					>
 				</template>
 			</Alert>
 		</div>
 		<div v-else class="md:grid md:grid-cols-2">
-			<Card title="Auto Update">
+			<Card title="Tự đông cập nhật">
 				<template
 					#actions
 					v-if="!$resources.getSiteAutoUpdateInfo.loading && autoUpdateEnabled"
@@ -23,10 +23,12 @@
 					<Button
 						@click="disableAutoUpdate"
 						:loading="$resources.disableAutoUpdate.loading"
-						loadingText="Disabling"
-						>Disable Auto Updates</Button
+						loadingText="Đang tắt"
+						>Tắ tự động cập nhật</Button
 					>
-					<Button icon-left="edit" @click="showEditDialog = true">Edit</Button>
+					<Button icon-left="edit" @click="showEditDialog = true"
+						>Chỉnh sửa</Button
+					>
 				</template>
 
 				<div
@@ -34,24 +36,24 @@
 					v-if="!$resources.getSiteAutoUpdateInfo.loading && autoUpdateEnabled"
 				>
 					<ListItem
-						title="Update cycle"
+						title="Chu kỳ cập nhật"
 						:description="
-							siteAutoUpdateInfo.update_trigger_frequency || 'Not Set'
+							siteAutoUpdateInfo.update_trigger_frequency || 'Chưa đặt'
 						"
 					/>
 
 					<!-- For weekly updates only -->
 					<ListItem
 						v-if="siteAutoUpdateInfo.update_trigger_frequency === 'Weekly'"
-						title="On day of the week"
+						title="Vào ngày trong tuần"
 						:description="siteAutoUpdateInfo.update_on_weekday"
 					/>
 
 					<ListItem
-						title="Update time"
+						title="Thời gian cập nhật"
 						:description="
 							getFormattedTime(siteAutoUpdateInfo.update_trigger_time) ||
-							'Not Set'
+							'Chưa đặt'
 						"
 					/>
 
@@ -59,28 +61,28 @@
 					<div v-if="siteAutoUpdateInfo.update_trigger_frequency === 'Monthly'">
 						<ListItem
 							v-if="!siteAutoUpdateInfo.update_end_of_month"
-							title="On day of the month"
+							title="Vào ngày trong tháng"
 							:description="
 								siteAutoUpdateInfo.update_on_day_of_month.toString()
 							"
 						/>
 						<ListItem
 							v-else
-							title="On day of the month"
-							description="End of the month"
+							title="Vào ngày trong tháng"
+							description="Cuối tháng"
 						/>
 					</div>
 
 					<!-- Last triggered At -->
 					<ListItem
 						v-if="siteAutoUpdateInfo.auto_update_last_triggered_on"
-						title="Last updated on"
+						title="Cập nhật lần cuối vào"
 						:description="siteAutoUpdateInfo.auto_update_last_triggered_on"
 					/>
 					<ListItem
 						v-else
-						title="Last updated on"
-						description="Never triggered"
+						title="Cập nhật lần cuối vào"
+						description="Không bao giờ kích hoạt"
 					/>
 				</div>
 
@@ -90,7 +92,7 @@
 					v-if="!$resources.getSiteAutoUpdateInfo.loading && !autoUpdateEnabled"
 				>
 					<h3 class="text-sm text-gray-800">
-						Auto updates are disabled for this site.
+						Cập nhật tự động đã bị tắt cho trang web này.
 					</h3>
 					<Button
 						class="mt-3"
@@ -98,7 +100,7 @@
 						@click="enableAutoUpdate"
 						:loading="this.$resources.enableAutoUpdate.loading"
 						loadingText="Enabling"
-						>Enable Auto Updates</Button
+						>Bật cập nhật tự động</Button
 					>
 				</div>
 
@@ -107,7 +109,7 @@
 					v-if="$resources.getSiteAutoUpdateInfo.loading"
 					class="py-10 text-center"
 				>
-					<Button :loading="true">Loading</Button>
+					<Button :loading="true">Đang tải</Button>
 				</div>
 
 				<Dialog
@@ -115,7 +117,7 @@
 						title: 'Schedule Auto Updates',
 						actions: [
 							{
-								label: 'Save Changes',
+								label: 'Lưu thay đổi',
 								variant: 'solid',
 								loading: $resources.updateAutoUpdateInfo.loading,
 								onClick: () => $resources.updateAutoUpdateInfo.submit()
@@ -129,7 +131,7 @@
 						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 							<FormControl
 								type="select"
-								label="Update Frequency"
+								label="Tần suất cập nhật"
 								:options="frequencyOptions"
 								v-model="updateFrequency"
 							/>
@@ -137,14 +139,14 @@
 							<FormControl
 								type="select"
 								:options="timeOptions"
-								label="Update time"
+								label="Thời gian cập nhật"
 								v-model="updateTime"
 							/>
 
 							<FormControl
 								v-if="updateFrequency === 'Weekly'"
 								type="select"
-								label="Day of the week"
+								label="Ngày trong tuần"
 								:options="weekDayOptions"
 								v-model="weekDay"
 							/>
@@ -153,13 +155,13 @@
 								v-if="updateFrequency === 'Monthly'"
 								type="select"
 								:options="monthDayOptions"
-								label="Day of the month"
+								label="Ngày trong tháng"
 								v-model.number="monthDay"
 							/>
 							<FormControl
 								v-if="updateFrequency === 'Monthly'"
 								type="checkbox"
-								label="Update end of month"
+								label="Cập nhật cuối tháng"
 								:checked="endOfMonth"
 								v-model="endOfMonth"
 							/>
@@ -177,7 +179,8 @@
 				</Dialog>
 
 				<h4 class="mt-2 text-base text-gray-600">
-					<strong>Note:</strong> All times are in IST (UTC + 5:30 hours).
+					<strong>Chú ý:</strong> Tất cả các thời gian đều ở múi giờ IST (UTC +
+					5:30 giờ).
 				</h4>
 
 				<ErrorMessage

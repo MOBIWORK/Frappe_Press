@@ -40,7 +40,7 @@
 					$resources.deadlockReport.data.length
 				"
 				:loading="$resources.deadlockReport.loading"
-				loadingText="Loading..."
+				loadingText="Đang tải..."
 				@click="max_lines += 10"
 			>
 				Load more

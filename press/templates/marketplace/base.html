@@ -10,6 +10,7 @@
 
 		<link rel="stylesheet" href="/assets/press/css/marketplace-next.css" />
 		<link rel="stylesheet" href="/assets/press/marketplace/custom_style.css" />
+		<link rel="stylesheet" href="/assets/press/marketplace/add_tailwind.css" />
 		<link
 			rel="shortcut icon"
 			href="/assets/press/dashboard/favicon.png"
@@ -23,7 +24,7 @@
 		<div>{%- block body -%} {%- endblock -%}</div>
 		{% include "templates/marketplace/footer.html" %}
 		<div id="section-back-top" class="fixed bottom-0 right-0 hidden w-full">
-			<div class="container mx-auto">
+			<div class="container px-0 mx-auto xl:px-14">
 				<div class="flex justify-end pb-24 px-4">
 					<button class="box-shadow-custom button-to-top">
 						<img
@@ -41,6 +42,7 @@
 	<script src="/assets/press/js/custom_marketplace.js"></script>
 	<script>
 		feather.replace();
+
 		document.addEventListener('DOMContentLoaded', function () {
 			var backToTopButton = document.getElementById('section-back-top');
 

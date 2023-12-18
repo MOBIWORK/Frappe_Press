@@ -94,7 +94,7 @@
 			<Button
 				v-if="$resources.backups.loading"
 				:loading="true"
-				loading-text="Loading"
+				loading-text="Đang tải"
 			/>
 			<span v-else> Không tìm thấy bản sao lưu nào </span>
 		</div>

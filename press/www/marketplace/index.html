@@ -1,8 +1,9 @@
 {% extends "templates/marketplace/base.html" %} {%- from
-"templates/marketplace/macros.html" import badge_gray, badge_green,badge_purple,
+"templates/marketplace/macros.html" import breadcrumbs, badge_gray, badge_green,badge_purple,
 empty_app -%} {%- block body -%}
 <div class="section-body">
-	<div class="container px-4 mx-auto my-8">
+	<div class="container px-4 xl:px-14 mx-auto my-8">
+		{%- if not type_overview -%}
 		<div
 			class="relative overflow-hidden z-10 flex items-center justify-center header-body text-center px-4 rounded-2xl"
 		>
@@ -124,9 +125,15 @@ empty_app -%} {%- block body -%}
 				</p>
 			</div>
 		</div>
-		<div class="flex flex-wrap sm:flex-nowrap mt-10">
+		{%- else -%}
+		<div class="mt-5">
+			{{ breadcrumbs([ { 'label': 'Chợ ứng dụng', 'url': '/marketplace' }, {
+			'label': 'Tổng quan', 'url': '#' }, {'label': info_category.full_name, 'url': '#' } ]) }}
+		</div>
+		{%- endif -%}
+		<div class="flex flex-wrap sm:flex-nowrap {{ 'mt-10' if not type_overview }}">
+			{%- if not type_overview -%}
 			<div class="w-80 block mt-5">
-				<!-- <h2 class="text-xl text-gray-800 font-semibold">Phân loại</h2> -->
 				<div class="flex flex-col mt-4">
 					<div
 						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-600 rounded-lg"
@@ -152,26 +159,20 @@ empty_app -%} {%- block body -%}
 					{%- endfor -%}
 				</div>
 			</div>
+			{%- endif -%}
 
-			{%- if category == "" -%}
-			<div class="flex flex-row">
-				<input
-					type="text"
-					class="hidden placeholder-gray-500 rounded-md border-0 bg-gray-100 py-1 px-2 text-base leading-5 focus:bg-gray-200 focus:shadow-none focus:ring-0 w-full sm:mt-0 sm:w-60 h-8"
-					id="app-search-input"
-					placeholder="Search for apps"
-					value="{{ text_search }}"
-				/>
-			</div>
+			{%- if not category -%}
 			<div class="w-full mt-5">
 				{%- if apps_show -%} {%- for app_show in apps_show -%}
 				<div class="mb-12">
 					<div class="flex flex-col sm:flex-row sm:justify-between mb-8">
-						<h2 class="text-2xl font-bold text-gray-800">
+						<h2 class="text-2xl font-bold text-gray-800 mb-2">
 							{{ app_show.name_display }}
 						</h2>
 						{%- if app_show.data -%}
-						<div class="text-base cursor-pointer text-blue-600">Xem thêm</div>
+						<a href="/marketplace/?type_overview=detail&category={{ app_show.name_category }}">
+							<div class="text-base cursor-pointer text-blue-600">Xem thêm</div>
+						</a>
 						{%- endif -%}
 					</div>
 					{%- if app_show.data -%}
@@ -246,43 +247,180 @@ empty_app -%} {%- block body -%}
 					</div>
 					{%- endif -%}
 				</div>
-				{%- endfor -%} {%- else -%}
-				<div>
-					{{ empty_app('Ứng dụng đang phát triển', "Sau khi phát triển, các ứng
-					dụng sẽ hiển thị tại đây") }}
-				</div>
-				{%- endif -%}
+				{%- endfor -%} {%- else -%} {{ empty_app('Ứng dụng đang phát triển',
+				"Sau khi phát triển, các ứng dụng sẽ hiển thị tại đây") }} {%- endif -%}
 			</div>
 			{%- else -%}
 			<div class="w-full mt-5 mb-12">
 				<div>
 					<div class="flex flex-col sm:flex-row sm:justify-between mb-8">
-						<h2 class="text-2xl font-bold text-gray-800">Ứng dụng</h2>
+						<h2 class="text-2xl font-bold text-gray-800 mb-2">{{ info_category.full_name if type_overview else 'Ứng dụng' }}</h2>
 						<div class="flex flex-row">
 							<input
 								type="text"
 								class="placeholder-gray-500 rounded-md border-0 bg-gray-100 py-1 px-2 text-base leading-5 focus:bg-gray-200 focus:shadow-none focus:ring-0 block w-full sm:mt-0 sm:w-60 h-8"
 								id="app-search-input"
-								placeholder="Search for apps"
+								placeholder="Tìm kiếm ứng dụng"
 								value="{{ text_search }}"
 							/>
 						</div>
 					</div>
+					{%- if pagination.total_page -%}
 					<div
 						id="all-apps-list"
-						class="all-apps-list grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-2"
-					></div>
-					{%- if pagination.total_page -%} {%- else -%} {%- if text_search -%}
-					<div id="no-results-message">
-						<p class="text-gray-700">Không tìm thấy ứng dụng nào.</p>
+						class="all-apps-list grid grid-cols-1 gap-6 lg:grid-cols-3 {{ 'xl:grid-cols-4 md:grid-cols-2' if not type_overview else 'xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3' }} sm:grid-cols-2"
+					>
+						{%- for app in apps -%}
+						<a
+							href="/{{ app.route }}"
+							id="{{app.name}}"
+							data-title="{{ app.title }}"
+							data-description="{{ app.description }}"
+							data-categories="{{ app.categories }}"
+							class="app-card flex flex-col hover:border-red-200 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-red-500 focus:shadow-outline"
+						>
+							<div>
+								<div class="mb-2">
+									{%- if app.subscription_type == 'Freemium'-%} {{
+									badge_purple('Freemium') }} {%- elif app.subscription_type ==
+									'Paid'-%} {{ badge_green('Paid') }} {%- else -%} {{
+									badge_gray('Free') }} {%- endif -%}
+								</div>
+								<div class="flex">
+									{%- if app.image -%}
+									<img
+										alt="{{app.title}} Logo"
+										src="{{ app.image }}"
+										class="image-app rounded-lg"
+									/>
+									{%- else -%}
+									<div
+										class="flex items-center justify-center text-gray-600 font-bold image-app border border-gray-200 rounded-lg text-title"
+									>
+										{{app.title[0]}}
+									</div>
+									{%- endif -%}
+								</div>
+								<h3 class="mt-3 font-semibold text-gray-800">
+									{{ app.title }}
+								</h3>
+							</div>
+							<div class="flex items-center text-base text-gray-700 my-2">
+								<div class="flex items-center">
+									<img
+										class="h-4 opacity-80"
+										src="/assets/press/images/icon_star.svg"
+									/>
+									<span class="ml-1">{{ app.ratings_summary.avg_rating }}</span>
+								</div>
+								<div class="flex items-center">
+									<img
+										class="h-4 opacity-80"
+										src="/assets/press/images/tally.svg"
+									/>
+								</div>
+								<div class="ml-2 flex items-center">
+									{{ app.ratings_summary.total_num_reviews }} {{ 'review' if
+									app.ratings_summary.total_num_reviews == 1 else 'reviews'}}
+								</div>
+							</div>
+							<p class="text-base text-gray-500 line-clamp-2">
+								{{ app.description }}
+							</p>
+						</a>
+						{%- endfor -%}
+					</div>
+					<div class="mt-8">
+						<ul class="page flex flex-wrap list-none justify-end overflow-x-auto">
+							{%- if pagination.page_curren == 1 -%}
+							<li class="mr-2">
+								<a class="opacity p-2 text-gray-700"
+									><img src="/assets/press/images/icon_skipprevious.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a class="opacity p-2 text-gray-700"
+									><img src="/assets/press/images/icon_arrowleft.svg"
+								/></a>
+							</li>
+							{%- else -%}
+							<li class="mr-2">
+								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}" class="p-2 text-gray-700"
+									><img src="/assets/press/images/icon_skipprevious.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren - 1 }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
+									><img src="/assets/press/images/icon_arrowleft.svg"
+								/></a>
+							</li>
+							{%- endif -%}
+
+							{%- if pagination.total_page > 5 -%}
+								{%- for x in pagination.pagination_list -%}
+								{%- if x == "..." -%}
+								<li class="mr-2">
+									<a class="{{ "active" if x == pagination.page_curren }} p-2 text-gray-900"
+										>{{ x }}</a
+									>
+								</li>
+								{%- else -%}
+								<li class="mr-2">
+									<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ x }}&page_size={{ pagination.page_size }}" class="{{ "active" if x == pagination.page_curren }} p-2 text-gray-900"
+										>{{ x }}</a
+									>
+								</li>
+								{%- endif -%}
+								{%- endfor -%}
+							{%- else -%}
+							{%- for i in range(1,pagination.total_page + 1) -%}
+							<li class="mr-2">
+								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ i }}&page_size={{ pagination.page_size }}" class="{{ "active" if i == pagination.page_curren }} p-2 text-gray-900"
+									>{{ i }}</a
+								>
+							</li>
+							{%- endfor -%}
+							{%- endif -%}
+
+							{%- if pagination.page_curren == pagination.total_page -%}
+							<li class="mr-2">
+								<a class="opacity p-2 text-gray-700"
+									><img src="/assets/press/images/icon_arrowright.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a class="opacity p-2 text-gray-700"
+									><img src="/assets/press/images/icon_skipnext.svg"
+								/></a>
+							</li>
+							{%- else -%}
+							<li class="mr-2">
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren + 1 }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
+									><img src="/assets/press/images/icon_arrowright.svg"
+								/></a>
+							</li>
+							<li class="mr-2">
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.total_page }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
+									><img src="/assets/press/images/icon_skipnext.svg"
+								/></a>
+							</li>
+							{%- endif -%}
+							<!-- Thêm các liên kết khác tương ứng với số trang -->
+						</ul>
 					</div>
 					{%- else -%}
-					<div>
-						{{ empty_app('Ứng dụng đang phát triển', "Sau khi phát triển, các
-						ứng dụng sẽ hiển thị tại đây") }}
-					</div>
-					{%- endif -%} {%- endif -%}
+						{%- if text_search -%}
+						<div id="no-results-message">
+							<p class="text-gray-700">Không tìm thấy ứng dụng nào.</p>
+						</div>
+						{%- else -%}
+						<div id="empty-card">
+							{{ empty_app('Ứng dụng đang phát triển', "Sau khi phát triển, các ứng dụng sẽ hiển thị tại đây") }}
+						</div>
+						{%- endif -%}
+					{%- endif -%}
 				</div>
+				<div id="breakpoint-load"></div>
 			</div>
 			{%- endif -%}
 		</div>

@@ -32,7 +32,7 @@
 		</template>
 
 		<div v-if="!plan" class="flex items-center justify-center py-20">
-			<Button :loading="true" loading-text="Loading" />
+			<Button :loading="true" loading-text="Đang tải" />
 		</div>
 		<div v-else>
 			<div

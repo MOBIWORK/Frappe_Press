@@ -85,7 +85,7 @@
 								@click="nextStep(activeStep, next)"
 								:class="{ 'mt-2': hasPrevious }"
 								:loading="loadingPlans"
-								loadingText="Loading"
+								loadingText="Đang tải"
 							>
 								Tiếp theo
 							</Button>

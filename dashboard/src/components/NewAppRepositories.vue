@@ -48,19 +48,19 @@
 									<Button
 										type="white"
 										:loading="repositoryResource.loading"
-										loadingText="Loading branches..."
+										loadingText="Đang tải các nhánh..."
 										icon-right="chevron-down"
 									>
-										{{ selectedBranch || 'Select branch' }}
+										{{ selectedBranch || 'Chọn nhánh' }}
 									</Button>
 								</template>
 							</Dropdown>
 						</div>
 					</button>
 					<p class="mt-4 text-sm text-gray-700">
-						Don't see your repository here?
+						Không thấy kho của bạn ở đây?
 						<Link :href="installation.url" class="font-medium">
-							Add from GitHub
+							Thêm từ GitHub
 						</Link>
 					</p>
 				</div>
