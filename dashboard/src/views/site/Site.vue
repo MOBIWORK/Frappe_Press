@@ -17,7 +17,7 @@
 						<Button
 							v-if="site?.status === 'Active'"
 							icon-left="external-link"
-							label="Visit Site"
+							label="Truy cập trang web"
 							:link="`https://${site?.name}`"
 						/>
 						<Dropdown :options="siteActions">
@@ -58,7 +58,7 @@
 					:variant="'solid'"
 					class="mr-1"
 				>
-					Activate
+					Kích hoạt
 				</Button>
 				<div class="mb-10 flex flex-row justify-between md:hidden">
 					<div class="flex flex-row">
@@ -101,10 +101,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Login As Administrator',
+				title: 'Đăng nhập với tư cách Quản trị viên',
 				actions: [
 					{
-						label: 'Proceed',
+						label: 'Tiếp tục',
 						variant: 'solid',
 						onClick: proceedWithLoginAsAdmin
 					}
@@ -114,7 +114,7 @@
 		>
 			<template v-slot:body-content>
 				<FormControl
-					label="Reason for logging in as Administrator"
+					label="Lý do đăng nhập với tư cách Quản trị viên"
 					type="textarea"
 					v-model="reasonForAdminLogin"
 					required
@@ -125,10 +125,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Transfer Site to Team',
+				title: 'Chuyển giao trang web cho nhóm',
 				actions: [
 					{
-						label: 'Submit',
+						label: 'Gửi',
 						variant: 'solid',
 						onClick: () =>
 							$resources.transferSite.submit({
@@ -142,7 +142,7 @@
 		>
 			<template #body-content>
 				<FormControl
-					label="Enter title of the child team"
+					label="Nhập tiêu đề của nhóm con"
 					v-model="emailOfChildTeam"
 					required
 				/>
@@ -236,8 +236,8 @@ export default {
 					this.showTransferSiteDialog = false;
 					this.emailOfChildTeam = null;
 					notify({
-						title: 'Site Transferred to Child Team',
-						message: 'Site Transferred to Child Team',
+						title: 'Trang web đã được chuyển giao cho nhóm con',
+						message: 'Trang web đã được chuyển giao cho nhóm con',
 						color: 'green',
 						icon: 'check'
 					});
@@ -318,9 +318,9 @@ export default {
 		},
 		onActivateClick() {
 			this.$confirm({
-				title: 'Activate Site',
-				message: `Are you sure you want to activate this site?`,
-				actionLabel: 'Activate',
+				title: 'Kích hoạt trang web',
+				message: `Bạn có chắc chắn muốn kích hoạt trang web này không?`,
+				actionLabel: 'Kích hoạt',
 				action: () => this.activate()
 			});
 		},
@@ -329,8 +329,8 @@ export default {
 				name: this.site.name
 			});
 			notify({
-				title: 'Site activated successfully!',
-				message: 'You can now access your site',
+				title: 'Trang web đã được kích hoạt thành công!',
+				message: 'Bạn có thể truy cập trang web của mình ngay bây giờ',
 				icon: 'check',
 				color: 'green'
 			});
@@ -351,7 +351,7 @@ export default {
 		siteActions() {
 			return [
 				{
-					label: 'View in Desk',
+					label: 'Xem trên Desk',
 					icon: 'external-link',
 					condition: () => this.$account.user.user_type === 'System User',
 					onClick: () => {
@@ -362,7 +362,7 @@ export default {
 					}
 				},
 				{
-					label: 'Manage Bench',
+					label: 'Quản lý Bench',
 					icon: 'tool',
 					route: `/benches/${this.site?.group}`,
 					condition: () => this.site?.group,
@@ -371,7 +371,7 @@ export default {
 					}
 				},
 				{
-					label: 'Login As Administrator',
+					label: 'Đăng nhập với tư cách Quản trị viên',
 					icon: 'external-link',
 					loading: this.$resources.loginAsAdmin.loading,
 					condition: () => this.site?.status === 'Active',
@@ -386,21 +386,21 @@ export default {
 					}
 				},
 				{
-					label: 'Impersonate Team',
+					label: 'Nhóm mạo danh',
 					icon: 'tool',
 					condition: () => this.$account.user.user_type === 'System User',
 					onClick: async () => {
 						await this.$account.switchTeam(this.site?.team);
 						notify({
-							title: 'Switched Team',
-							message: `Switched to ${this.site?.team}`,
+							title: 'Chuyển nhóm',
+							message: `Chuyển đến ${this.site?.team}`,
 							icon: 'check',
 							color: 'green'
 						});
 					}
 				},
 				{
-					label: 'Transfer Site',
+					label: 'Chuyển giao trang web',
 					icon: 'tool',
 					loading: this.$resources.transferSite.loading,
 					condition: () =>
@@ -410,25 +410,25 @@ export default {
 					}
 				},
 				{
-					label: 'Change Bench',
+					label: 'Thay đổi Bench',
 					icon: 'package',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showChangeGroupDialog = true)
 				},
 				{
-					label: 'Change Region',
+					label: 'Thay đổi khu vực',
 					icon: 'globe',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showChangeRegionDialog = true)
 				},
 				{
-					label: 'Upgrade Version',
+					label: 'Nâng cấp phiên bản',
 					icon: 'arrow-up',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showVersionUpgradeDialog = true)
 				},
 				{
-					label: 'Change Server',
+					label: 'Thay đổi Server',
 					icon: 'server',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showChangeServerDialog = true)

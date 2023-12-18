@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Move Site to another Bench',
+			title: 'Di chuyển trang web sang bench khác',
 			actions: [
 				{
-					label: 'Submit',
+					label: 'Xác nhận',
 					loading: this.$resources.changeGroup.loading,
 					disabled: !$resources.changeGroupOptions?.data?.length,
 					variant: 'solid',
@@ -25,7 +25,7 @@
 			/>
 			<FormControl
 				v-else-if="$resources.changeGroupOptions.data.length > 0"
-				label="Select Bench"
+				label="Chọn Bench"
 				type="select"
 				:options="
 					$resources.changeGroupOptions.data.map(group => ({
@@ -36,7 +36,7 @@
 				v-model="targetGroup"
 			/>
 			<p v-else class="text-md text-base text-gray-800">
-				There are no other benches that you own for this site to move to.
+				Không có bench khác mà bạn sở hữu cho trang web này để di chuyển đến.
 			</p>
 			<ErrorMessage class="mt-3" :message="$resources.changeGroup.error" />
 		</template>
@@ -84,8 +84,8 @@ export default {
 						).title;
 
 					notify({
-						title: 'Scheduled Bench Change',
-						message: `Site scheduled to be moved to <b>${destinationGroupTitle}</b>`,
+						title: 'Thay bench đã Được lên lịch',
+						message: `Trang web đã được lên lịch để được di chuyển đến <b>${destinationGroupTitle}</b>`,
 						color: 'green',
 						icon: 'check'
 					});

@@ -1,7 +1,7 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Change Region'
+			title: 'Thay đổi Khu vực'
 		}"
 		v-model="show"
 		@close="resetValues"
@@ -15,8 +15,8 @@
 				v-else-if="$resources.changeRegionOptions.data.regions.length < 2"
 				class="text-base text-gray-600"
 			>
-				You have only one region available. Add more regions to the current
-				bench from bench settings to change the region of this site.
+				Bạn chỉ có một khu vực khả dụng. Thêm nhiều khu vực khác từ cài đặt
+				bench hiện tại để thay đổi khu vực của trang web này.
 			</p>
 			<div v-else>
 				<RichSelect
@@ -33,13 +33,14 @@
 				<FormControl
 					class="mt-4"
 					v-if="$resources.changeRegionOptions.data?.regions?.length > 0"
-					label="Schedule Site Migration (IST)"
+					label="Lên lịch migrate trang web (IST)"
 					type="datetime-local"
 					:min="new Date().toISOString().slice(0, 16)"
 					v-model="targetDateTime"
 				/>
 				<p class="mt-4 text-sm text-gray-500">
-					Changing region may cause a downtime between 30 minutes to 1 hour
+					Thay đổi khu vực có thể gây gián đoạn trong khoảng từ 30 phút đến 1
+					giờ
 				</p>
 			</div>
 			<ErrorMessage class="mt-3" :message="$resources.changeRegion.error" />
@@ -61,7 +62,7 @@
 					})
 				"
 			>
-				Submit
+				Xác nhận
 			</Button>
 		</template>
 	</Dialog>
@@ -123,7 +124,7 @@ export default {
 						this.$resources.changeRegionOptions.data.current_region ===
 						this.selectedRegion
 					)
-						return 'Site is already in this region';
+						return 'Trang web đã ở trong khu vực này rồi';
 				},
 				onSuccess() {
 					const regionName =
@@ -132,8 +133,8 @@ export default {
 						)?.title || this.selectedRegion;
 
 					notify({
-						title: 'Scheduled Region Change',
-						message: `Site <b>${this.site?.hostname}</b> scheduled to be moved to <b>${regionName}</b>`,
+						title: 'Lên lịch thay đổi khu vực',
+						message: `Trang web <b>${this.site?.hostname}</b> đã được lên lịch để được di chuyển đến <b>${regionName}</b>`,
 						color: 'green',
 						icon: 'check'
 					});

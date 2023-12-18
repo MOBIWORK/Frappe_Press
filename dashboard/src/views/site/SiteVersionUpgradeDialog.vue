@@ -2,17 +2,17 @@
 	<Dialog
 		v-model="show"
 		@close="resetValues"
-		:options="{ title: 'Upgrade Site Version' }"
+		:options="{ title: 'Nâng cấp phiên bản trang web' }"
 	>
 		<template #body-content>
 			<div class="space-y-4">
 				<p v-if="site?.is_public && nextVersion" class="text-base">
-					The site <b>{{ site.host_name }}</b> will be upgraded to
+					Trang web <b>{{ site.host_name }}</b> sẽ được nâng cấp lên
 					<b>{{ nextVersion }}</b>
 				</p>
 				<FormControl
 					v-else-if="privateReleaseGroups.length > 0 && nextVersion"
-					:label="`Please select a ${nextVersion} bench to upgrade your site from ${site.frappe_version}`"
+					:label="`Vui lòng chọn một bench ${nextVersion} để nâng cấp trang web từ ${site.frappe_version}`"
 					class="w-full"
 					type="select"
 					:options="privateReleaseGroups"
@@ -28,7 +28,7 @@
 				<FormControl
 					class="mt-4"
 					v-if="(site.is_public && nextVersion) || benchHasCommonServer"
-					label="Schedule Site Migration"
+					label="Lên lịch di chuyển trang web"
 					type="datetime-local"
 					:min="new Date().toISOString().slice(0, 16)"
 					v-model="targetDateTime"
@@ -51,7 +51,7 @@
 				v-if="!site.is_public"
 				class="mb-2 w-full"
 				:disabled="benchHasCommonServer || !privateReleaseGroup"
-				label="Add Server to Bench"
+				label="Thêm server vào bench"
 				@click="$resources.addServerToReleaseGroup.submit()"
 				:loading="
 					$resources.addServerToReleaseGroup.loading ||
@@ -61,7 +61,7 @@
 			<Button
 				class="w-full"
 				variant="solid"
-				label="Upgrade"
+				label="Nâng cấp"
 				:disabled="
 					(!benchHasCommonServer || !privateReleaseGroup) && !site.is_public
 				"
@@ -115,15 +115,15 @@ export default {
 		},
 		message() {
 			if (this.site.frappe_version === this.site.latest_frappe_version) {
-				return 'This site is already on the latest version.';
+				return 'Trang web này đã ở trên phiên bản mới nhất.';
 			} else if (!this.privateReleaseGroup) {
 				return '';
 			} else if (!this.site.is_public && !this.privateReleaseGroups.length)
-				return `Your team don't own any private benches available to upgrade this site to ${this.nextVersion}.`;
+				return `Nhóm của bạn không sở hữu bất kỳ bench riêng nào có sẵn để nâng cấp trang web này lên ${this.nextVersion}.`;
 			else if (!this.site.is_public && !this.benchHasCommonServer)
-				return `The selected bench and your site doesn't have a common server. Please add site's server to the bench.`;
+				return `Bench đã chọn và trang web của bạn không có server chung. Vui lòng thêm server của trang web vào bench.`;
 			else if (!this.site.is_public && this.benchHasCommonServer)
-				return `The selected bench and your site have a common server. You can proceed with the upgrade to ${this.nextVersion}.`;
+				return `Bench đã chọn và trang web của bạn có server chung. Bạn có thể tiếp tục với việc nâng cấp lên ${this.nextVersion}.`;
 			else return '';
 		},
 		datetimeInIST() {
@@ -146,8 +146,8 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: 'Site Version Upgrade',
-						message: `Scheduled site upgrade for <b>${this.site?.host_name}</b> to <b>${this.nextVersion}</b>`,
+						title: 'Nâng cấp phiên bản trang web',
+						message: `Lên lịch nâng cấp trang web cho <b>${this.site?.host_name}</b> đến <b>${this.nextVersion}</b>`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -180,8 +180,8 @@ export default {
 				},
 				onSuccess(data) {
 					notify({
-						title: 'Server Added to the Bench',
-						message: `Added a server to <b>${this.privateReleaseGroup}</b> bench. Please wait for the bench to complete the deploy.`,
+						title: 'Server đã được thêm vào Bench',
+						message: `Đã thêm một server vào bench <b>${this.privateReleaseGroup}</b>. Vui lòng đợi cho đến khi bench hoàn tất việc triển khai.`,
 						icon: 'check',
 						color: 'green'
 					});
