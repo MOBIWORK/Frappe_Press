@@ -1,9 +1,9 @@
 <template>
 	<div>
-		<label class="text-lg font-semibold"> Chọn một tên máy chủ </label>
+		<label class="text-lg font-semibold"> Chọn một tên miền </label>
 		<p class="text-base text-gray-700">
-			Đặt tên độc đáo cho trang web của bạn. Chỉ có thể chứa các ký tự chữ và số
-			cũng như dấu gạch ngang.
+			Đặt tên cho trang web của bạn. Chỉ có thể chứa các ký tự chữ và số cũng
+			như dấu gạch ngang.
 		</p>
 		<div class="mt-4 flex">
 			<input

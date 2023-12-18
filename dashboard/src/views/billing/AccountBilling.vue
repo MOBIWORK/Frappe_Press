@@ -33,7 +33,7 @@ export default {
 				{ label: 'Tổng quan', route: 'overview' },
 				{ label: 'Hóa đơn', route: 'invoices' },
 				{ label: 'Phương thức thanh toán', route: 'payment' },
-				{ label: 'Số dư tín dụng', route: 'credit-balance' }
+				{ label: 'Số dư tiền nạp', route: 'credit-balance' }
 			];
 
 			return tabs.map(tab => {
