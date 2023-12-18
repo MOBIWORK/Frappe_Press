@@ -3,10 +3,10 @@
 		<slot v-bind="{ showDialog }"></slot>
 		<Dialog
 			:options="{
-				title: 'Drop Site',
+				title: 'Xóa trang web',
 				actions: [
 					{
-						label: site.archive_failed ? 'Force Drop Site' : 'Drop Site',
+						label: site.archive_failed ? 'Ép buộc xóa' : 'Xóa',
 						variant: 'solid',
 						theme: 'red',
 						loading: $resources.dropSite.loading,
@@ -18,13 +18,13 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					Are you sure you want to drop your site? The site will be archived and
-					all of its files and Offsite Backups will be deleted. This action
-					cannot be undone.
+					Bạn có chắc chắn muốn xóa trang web không? Trang web sẽ được lưu trữ
+					và tất cả các tệp tin và bản sao lưu ngoại vi sẽ bị xóa. Hành động này
+					không thể được hoàn tác.
 				</p>
 				<p class="mt-4 text-base">
-					Please type
-					<span class="font-semibold">{{ site.name }}</span> to confirm.
+					Vui lòng nhập
+					<span class="font-semibold">{{ site.name }}</span> để xác nhận.
 				</p>
 				<FormControl class="mt-4 w-full" v-model="confirmSiteName" />
 				<div class="mt-4">
@@ -67,7 +67,7 @@ export default {
 				},
 				validate() {
 					if (this.site?.name !== this.confirmSiteName) {
-						return 'Please type the site name to confirm';
+						return 'Vui lòng nhập tên trang web để xác nhận';
 					}
 				}
 			};

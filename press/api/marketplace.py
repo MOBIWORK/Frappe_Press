@@ -4,6 +4,7 @@
 
 import json
 import frappe
+import math
 
 from typing import Dict, List
 from frappe.core.utils import find
@@ -1134,12 +1135,121 @@ def fetch_readme(name):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_marketplace_apps():
-    apps = frappe.cache().get_value("marketplace_apps")
-    if not apps:
-        apps = frappe.get_all(
-            "Marketplace App", {"status": "Published"}, [
-                "name", "title", "route"]
+def get_marketplace_apps(**args):
+    try:
+        pageCurren = args.get('page') if args.get(
+            'page') and int(args.get('page')) > 1 else '1'
+        pageSize = args.get('page_size') if args.get(
+            'page_size') and int(args.get('page_size')) > 1 else '18'
+        skipRow = str(int(pageSize) * (int(pageCurren)-1))
+        category = args.get('category', '')
+        text_search = args.get('text_search', '')
+        str_query = """
+            SELECT
+                COUNT(*) AS total_apps
+            FROM
+                `tabMarketplace App` marketplace
+        """
+
+        if category:
+            str_query += """
+                INNER JOIN
+                `tabMarketplace App Categories` categories
+                ON
+                    categories.parent = marketplace.name
+            """
+
+        str_query += """
+            WHERE
+                marketplace.status = "Published"
+        """
+
+        if text_search:
+            str_query += f"""
+            AND
+                marketplace.name LIKE '%{text_search}%'
+            """
+        if category:
+            str_query += f"""
+            AND
+                categories.category = '{category}'
+            """
+        str_query += """;"""
+
+        total_all_published_apps = frappe.db.sql(str_query,
+                                                 as_dict=True,
+                                                 )[0].get('total_apps')
+
+        if pageSize:
+            totalPage = math.ceil(total_all_published_apps/int(pageSize))
+        else:
+            totalPage = 0
+
+        check_page = totalPage > int(pageCurren)
+
+        str_query = """
+        SELECT
+                marketplace.name,
+                marketplace.title,
+                marketplace.image,
+                marketplace.route,
+                marketplace.description,
+                marketplace.subscription_type,
+                COUNT(*) AS total_installs
+            FROM
+                `tabMarketplace App` marketplace
+            LEFT JOIN
+                `tabSite App` site
+            ON
+                site.app = marketplace.app
+        """
+
+        if category:
+            str_query += """
+                INNER JOIN
+                `tabMarketplace App Categories` categories
+                ON
+                    categories.parent = marketplace.name
+            """
+
+        str_query += """
+            WHERE
+                marketplace.status = "Published"
+        """
+
+        if text_search:
+            str_query += f"""
+            AND
+                marketplace.name LIKE '%{text_search}%'
+            """
+
+        if category:
+            str_query += f"""
+            AND
+                categories.category = '{category}'
+            """
+
+        str_query += f"""
+            GROUP BY
+                marketplace.name
+            ORDER BY
+                total_installs DESC
+            OFFSET {skipRow} ROWS
+            FETCH NEXT {pageSize} ROWS ONLY;
+        """
+        all_published_apps = frappe.db.sql(
+            str_query,
+            as_dict=True,
         )
-        frappe.cache().set_value("marketplace_apps", apps, expires_in_sec=60 * 60 * 24 * 7)
-    return apps
+        for app in all_published_apps:
+            info_app = frappe.get_doc(
+                "Marketplace App",
+                {"name": app.get('name')}
+            )
+            user_reviews = info_app.get_user_reviews()
+            ratings_summary = info_app.get_user_ratings_summary(user_reviews)
+            app['ratings_summary'] = ratings_summary
+
+        return {'data': all_published_apps, 'check_page': check_page}
+    except Exception as ex:
+        print(ex)

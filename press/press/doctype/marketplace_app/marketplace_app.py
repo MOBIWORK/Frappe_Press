@@ -61,7 +61,7 @@ class MarketplaceApp(WebsiteGenerator):
         )
         if len(self.screenshots) > max_allowed_screenshots:
             frappe.throw(
-                f"You cannot add more than {max_allowed_screenshots} screenshots for an app."
+                f"Bạn không thể thêm nhiều hơn {max_allowed_screenshots} ảnh chụp màn hình cho một ứng dụng."
             )
 
     def change_branch(self, source, version, to_branch):

@@ -1,67 +1,146 @@
-{% extends "templates/marketplace/base.html" %} {%- block body -%}
+{% extends "templates/marketplace/base.html" %} {%- from
+"templates/marketplace/macros.html" import badge_gray, badge_green,badge_purple,
+empty_app -%} {%- block body -%}
 <div class="section-body">
-	<div class="container px-4 mx-auto my-5">
-		<div class="relative z-10 flex items-center justify-center header-body text-center px-4 rounded-2xl">
-			<div class="absolute header-body-section-1">
-				<svg xmlns="http://www.w3.org/2000/svg" width="364" height="65" viewBox="0 0 364 65" fill="none">
-				<path d="M939.692 64.3105C1064.41 68.9102 1165.35 49.5104 1211.54 35.3496C1251.96 19.8042 1278.42 11.3927 1302 0H0C19.0857 3.19423 35.2205 7.16438 112.59 21.9336C200.16 38.6501 274.095 49.4015 393.102 52.3853C490.776 54.8342 587.488 44.7191 677.463 45.8904C767.439 47.0616 783.798 58.5609 939.692 64.3105Z" fill="url(#paint0_linear_382_104118)"/>
+	<div class="container px-4 mx-auto my-8">
+		<div
+			class="relative overflow-hidden z-10 flex items-center justify-center header-body text-center px-4 rounded-2xl"
+		>
+			<svg
+				class="absolute header-body-section-1 rounded-tr-2xl"
+				xmlns="http://www.w3.org/2000/svg"
+				width="364"
+				height="65"
+				viewBox="0 0 364 65"
+				fill="none"
+			>
+				<path
+					d="M939.692 64.3105C1064.41 68.9102 1165.35 49.5104 1211.54 35.3496C1251.96 19.8042 1278.42 11.3927 1302 0H0C19.0857 3.19423 35.2205 7.16438 112.59 21.9336C200.16 38.6501 274.095 49.4015 393.102 52.3853C490.776 54.8342 587.488 44.7191 677.463 45.8904C767.439 47.0616 783.798 58.5609 939.692 64.3105Z"
+					fill="url(#paint0_linear_382_104118)"
+				/>
 				<defs>
-				<linearGradient id="paint0_linear_382_104118" x1="871" y1="-46.5196" x2="824.802" y2="157.587" gradientUnits="userSpaceOnUse">
-				<stop stop-color="#D24545"/>
-				<stop offset="0.940899" stop-color="#D2454D" stop-opacity="0"/>
-				</linearGradient>
+					<linearGradient
+						id="paint0_linear_382_104118"
+						x1="871"
+						y1="-46.5196"
+						x2="824.802"
+						y2="157.587"
+						gradientUnits="userSpaceOnUse"
+					>
+						<stop stop-color="#D24545" />
+						<stop offset="0.940899" stop-color="#D2454D" stop-opacity="0" />
+					</linearGradient>
 				</defs>
-				</svg>
-			</div>
-			<div class="absolute header-body-section-2">
-				<svg xmlns="http://www.w3.org/2000/svg" width="406" height="50" viewBox="0 0 406 50" fill="none">
-					<path d="M-533.692 0.530356C-658.407 -3.00787 -759.353 11.9151 -805.543 22.808C-845.96 34.766 -872.423 41.2364 -896 50H406C386.914 47.5429 370.78 44.4889 293.41 33.128C205.84 20.2691 131.905 11.9988 12.898 9.70362C-84.776 7.81985 -181.488 15.6007 -271.463 14.6997C-361.439 13.7988 -377.798 4.95313 -533.692 0.530356Z" fill="url(#paint0_linear_382_104107)"/>
-					<defs>
-					  <linearGradient id="paint0_linear_382_104107" x1="-465" y1="85.7843" x2="-420.769" y2="-112.449" gradientUnits="userSpaceOnUse">
-						<stop stop-color="#D24545"/>
-						<stop offset="0.940899" stop-color="#D24545" stop-opacity="0"/>
-					  </linearGradient>
-					</defs>
-				  </svg>
-			</div>
-			<div class="absolute header-body-section-3">
-				<svg xmlns="http://www.w3.org/2000/svg" width="770" height="44" viewBox="0 0 770 44" fill="none">
-					<path opacity="0.4" d="M814.111 0.721284C922.159 -4.0907 1009.61 16.2045 1049.63 31.0189C1084.65 47.2818 1107.57 56.0815 1128 68H0C16.5351 64.6583 30.5136 60.505 97.5432 45.054C173.41 27.566 237.465 16.3184 340.568 13.1969C425.188 10.635 508.976 21.2169 586.927 19.9916C664.878 18.7664 679.051 6.73626 814.111 0.721284Z" fill="url(#paint0_linear_382_104117)"/>
-					<defs>
-					  <linearGradient id="paint0_linear_382_104117" x1="792.851" y1="90.0019" x2="727.189" y2="-127.625" gradientUnits="userSpaceOnUse">
-						<stop stop-color="#D24556"/>
-						<stop offset="0.71875" stop-color="#D24545" stop-opacity="0"/>
-					  </linearGradient>
-					</defs>
-				  </svg>
-			</div>
+			</svg>
+
+			<svg
+				class="absolute header-body-section-2 rounded-bl-2xl"
+				xmlns="http://www.w3.org/2000/svg"
+				width="406"
+				height="50"
+				viewBox="0 0 406 50"
+				fill="none"
+			>
+				<path
+					d="M-533.692 0.530356C-658.407 -3.00787 -759.353 11.9151 -805.543 22.808C-845.96 34.766 -872.423 41.2364 -896 50H406C386.914 47.5429 370.78 44.4889 293.41 33.128C205.84 20.2691 131.905 11.9988 12.898 9.70362C-84.776 7.81985 -181.488 15.6007 -271.463 14.6997C-361.439 13.7988 -377.798 4.95313 -533.692 0.530356Z"
+					fill="url(#paint0_linear_382_104107)"
+				/>
+				<defs>
+					<linearGradient
+						id="paint0_linear_382_104107"
+						x1="-465"
+						y1="85.7843"
+						x2="-420.769"
+						y2="-112.449"
+						gradientUnits="userSpaceOnUse"
+					>
+						<stop stop-color="#D24545" />
+						<stop offset="0.940899" stop-color="#D24545" stop-opacity="0" />
+					</linearGradient>
+				</defs>
+			</svg>
+
+			<svg
+				class="absolute header-body-section-3 rounded-br-2xl"
+				xmlns="http://www.w3.org/2000/svg"
+				width="770"
+				height="44"
+				viewBox="0 0 770 44"
+				fill="none"
+			>
+				<path
+					opacity="0.4"
+					d="M814.111 0.721284C922.159 -4.0907 1009.61 16.2045 1049.63 31.0189C1084.65 47.2818 1107.57 56.0815 1128 68H0C16.5351 64.6583 30.5136 60.505 97.5432 45.054C173.41 27.566 237.465 16.3184 340.568 13.1969C425.188 10.635 508.976 21.2169 586.927 19.9916C664.878 18.7664 679.051 6.73626 814.111 0.721284Z"
+					fill="url(#paint0_linear_382_104117)"
+				/>
+				<defs>
+					<linearGradient
+						id="paint0_linear_382_104117"
+						x1="792.851"
+						y1="90.0019"
+						x2="727.189"
+						y2="-127.625"
+						gradientUnits="userSpaceOnUse"
+					>
+						<stop stop-color="#D24556" />
+						<stop offset="0.71875" stop-color="#D24545" stop-opacity="0" />
+					</linearGradient>
+				</defs>
+			</svg>
+			<svg
+				class="absolute header-body-section-4 rounded-br-2xl"
+				xmlns="http://www.w3.org/2000/svg"
+				width="620"
+				height="50"
+				viewBox="0 0 620 50"
+				fill="none"
+			>
+				<path
+					opacity="0.4"
+					d="M814.111 0.721284C922.159 -4.0907 1009.61 16.2045 1049.63 31.0189C1084.65 47.2818 1107.57 56.0815 1128 68H0C16.5351 64.6583 30.5136 60.505 97.5432 45.054C173.41 27.566 237.465 16.3184 340.568 13.1969C425.188 10.635 508.976 21.2169 586.927 19.9916C664.878 18.7664 679.051 6.73626 814.111 0.721284Z"
+					fill="url(#paint0_linear_382_104116)"
+				/>
+				<defs>
+					<linearGradient
+						id="paint0_linear_382_104116"
+						x1="792.851"
+						y1="90.0019"
+						x2="717.747"
+						y2="-165.203"
+						gradientUnits="userSpaceOnUse"
+					>
+						<stop stop-color="#D2454D" />
+						<stop offset="1" stop-color="#D2454D" stop-opacity="0" />
+					</linearGradient>
+				</defs>
+			</svg>
 			<div>
 				<h1 class="text-3xl font-bold text-gray-900">
 					Hệ sinh thái ứng dụng cho doanh nghiệp
 				</h1>
 				<p class="mx-auto mt-4 text-gray-600">
-					Các sản phẩm của MBW Fapper cloud đẩy nhanh hành trình từ ý tưởng đến hiện
-					thực của bạn.
+					Các sản phẩm của MBW Fapper cloud đẩy nhanh hành trình từ ý tưởng đến
+					hiện thực của bạn.
 				</p>
 			</div>
 		</div>
-		<div class="flex flex-wrap sm:flex-nowrap pb-36">
+		<div class="flex flex-wrap sm:flex-nowrap mt-10">
 			<div class="w-80 block mt-5">
-				<h2 class="text-xl text-gray-800 font-semibold">Phân loại</h2>
+				<!-- <h2 class="text-xl text-gray-800 font-semibold">Phân loại</h2> -->
 				<div class="flex flex-col mt-4">
 					<div
-						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-700 rounded-lg"
+						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-600 rounded-lg"
 					>
 						<button
 							class="category-button w-full text-left rounded py-1 pl-2"
 							value=""
 						>
-							Tất cả
+							Tổng quan
 						</button>
 					</div>
 					{%- for category in categories -%}
 					<div
-						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-700 rounded-lg"
+						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-600 rounded-lg"
 					>
 						<button
 							class="category-button w-full text-left rounded py-1 pl-2"
@@ -74,36 +153,112 @@
 				</div>
 			</div>
 
-			<div class="w-full pb-36 mt-5">
+			{%- if category == "" -%}
+			<div class="flex flex-row">
+				<input
+					type="text"
+					class="hidden placeholder-gray-500 rounded-md border-0 bg-gray-100 py-1 px-2 text-base leading-5 focus:bg-gray-200 focus:shadow-none focus:ring-0 w-full sm:mt-0 sm:w-60 h-8"
+					id="app-search-input"
+					placeholder="Search for apps"
+					value="{{ text_search }}"
+				/>
+			</div>
+			<div class="w-full mt-5">
+				{%- if apps_show -%} {%- for app_show in apps_show -%}
+				<div class="mb-12">
+					<div class="flex flex-col sm:flex-row sm:justify-between mb-8">
+						<h2 class="text-2xl font-bold text-gray-800">
+							{{ app_show.name_display }}
+						</h2>
+						{%- if app_show.data -%}
+						<div class="text-base cursor-pointer text-blue-600">Xem thêm</div>
+						{%- endif -%}
+					</div>
+					{%- if app_show.data -%}
+					<div
+						class="all-apps-list grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-2"
+					>
+						{%- for app in app_show.data -%}
+						<a
+							href="/{{ app.route }}"
+							id="{{app.name}}"
+							data-title="{{ app.title }}"
+							data-description="{{ app.description }}"
+							data-categories="{{ app.categories }}"
+							class="app-card flex flex-col hover:border-red-200 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-red-500 focus:shadow-outline"
+						>
+							<div>
+								<div class="mb-2">
+									{%- if app.subscription_type == 'Freemium'-%} {{
+									badge_purple('Freemium') }} {%- elif app.subscription_type ==
+									'Paid'-%} {{ badge_green('Paid') }} {%- else -%} {{
+									badge_gray('Free') }} {%- endif -%}
+								</div>
+								<div class="flex">
+									{%- if app.image -%}
+									<img
+										alt="{{app.title}} Logo"
+										src="{{ app.image }}"
+										class="image-app rounded-lg"
+									/>
+									{%- else -%}
+									<div
+										class="flex items-center justify-center text-gray-600 font-bold image-app border border-gray-200 rounded-lg text-title"
+									>
+										{{app.title[0]}}
+									</div>
+									{%- endif -%}
+								</div>
+								<h3 class="mt-3 font-semibold text-gray-800">
+									{{ app.title }}
+								</h3>
+							</div>
+							<div class="flex items-center text-base text-gray-700 my-2">
+								<div class="flex items-center">
+									<img
+										class="h-4 opacity-80"
+										src="/assets/press/images/icon_star.svg"
+									/>
+									<span class="ml-1">{{ app.ratings_summary.avg_rating }}</span>
+								</div>
+								<div class="flex items-center">
+									<img
+										class="h-4 opacity-80"
+										src="/assets/press/images/tally.svg"
+									/>
+								</div>
+								<div class="ml-2 flex items-center">
+									{{ app.ratings_summary.total_num_reviews }} {{ 'review' if
+									app.ratings_summary.total_num_reviews == 1 else 'reviews'}}
+								</div>
+							</div>
+							<p class="text-base text-gray-500 line-clamp-2">
+								{{ app.description }}
+							</p>
+						</a>
+					</div>
+					{%- endfor -%} {%- else -%}
+					<div class="text-center">
+						<p class="text-lg mb-2">Ứng dụng đang phát triển</p>
+						<p class="text-base text-gray-800">
+							Sau khi phát triển, các ứng dụng sẽ hiển thị tại đây
+						</p>
+					</div>
+					{%- endif -%}
+				</div>
+				{%- endfor -%} {%- else -%}
 				<div>
-					<div class="flex flex-col sm:flex-row sm:justify-between">
-						<h2 class="text-xl font-bold text-gray-800 mb-4">Ứng dụng</h2>
+					{{ empty_app('Ứng dụng đang phát triển', "Sau khi phát triển, các ứng
+					dụng sẽ hiển thị tại đây") }}
+				</div>
+				{%- endif -%}
+			</div>
+			{%- else -%}
+			<div class="w-full mt-5 mb-12">
+				<div>
+					<div class="flex flex-col sm:flex-row sm:justify-between mb-8">
+						<h2 class="text-2xl font-bold text-gray-800">Ứng dụng</h2>
 						<div class="flex flex-row">
-							<!-- <button
-								style="max-height: 32px;"
-								id="remove-category"
-								class="hidden bg-gray-100 border-gray-700 text-sm text-gray-700 items-center px-2 mx-2 rounded-lg transition hover:shadow"
-							>
-								<span
-									id="remove-category-name"
-									class="block items-center mr-1"
-								></span>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="18"
-									height="18"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									class="feather feather-x"
-								>
-									<line x1="18" y1="6" x2="6" y2="18"></line>
-									<line x1="6" y1="6" x2="18" y2="18"></line>
-								</svg>
-							</button> -->
 							<input
 								type="text"
 								class="placeholder-gray-500 rounded-md border-0 bg-gray-100 py-1 px-2 text-base leading-5 focus:bg-gray-200 focus:shadow-none focus:ring-0 block w-full sm:mt-0 sm:w-60 h-8"
@@ -115,136 +270,21 @@
 					</div>
 					<div
 						id="all-apps-list"
-						class="grid grid-cols-1 gap-8 mt-8 md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-2"
-					>
-						{%- for app in apps -%}
-						<a
-							href="/{{ app.route }}"
-							id="{{app.name}}"
-							data-title="{{ app.title }}"
-							data-description="{{ app.description }}"
-							data-categories="{{ app.categories }}"
-							class="app-card flex flex-col border border-gray-100 hover:border-red-200 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-red-500 focus:shadow-outline"
-						>
-							<div>
-								<div class="flex items-center">
-									{%- if app.image -%}
-									<img
-										alt="{{app.title}} Logo"
-										src="{{ app.image }}"
-										class="w-10 h-10 border border-gray-200 rounded-lg"
-									/>
-									{%- else -%}
-									<div class="flex items-center justify-center text-gray-600 font-bold w-10 h-10 border border-gray-200 rounded-lg">
-										{{app.title[0]}}
-									</div>
-									{%- endif -%}
-									<h3 class="ml-3 font-semibold">{{ app.title }}</h3>
-								</div>
-								<p class="mt-4 text-base text-gray-500 line-clamp">
-									{{ app.description }}
-								</p>
-							</div>
-							<span
-								class="flex flex-row items-center text-sm mt-3 text-gray-600"
-							>
-								<!-- <i class="w-4 h-4 mr-2" data-feather="download"></i> -->
-								<img src="/assets/press/images/icon_download.svg" />
-								<span class="ml-1"
-									>{{ app.total_installs | number_k_format }} {{ 'install' if
-									app.total_installs == 1 else 'installs' }}</span
-								>
-							</span>
-						</a>
-						{%- endfor -%}
-					</div>
-					{%- if pagination.total_page -%}
-					<div class="mt-8">
-						<ul class="page flex flex-wrap list-none justify-end overflow-x-auto">
-							{%- if pagination.page_curren == 1 -%}
-							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipprevious.svg"
-								/></a>
-							</li>
-							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowleft.svg"
-								/></a>
-							</li>
-							{%- else -%}
-							<li class="mr-2">
-								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipprevious.svg"
-								/></a>
-							</li>
-							<li class="mr-2">
-								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren - 1 }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowleft.svg"
-								/></a>
-							</li>
-							{%- endif -%}
-
-							{%- if pagination.total_page > 5 -%}
-								{%- for x in pagination.pagination_list -%}
-								{%- if x == "..." -%}
-								<li class="mr-2">
-									<a class="{{ "active" if x == pagination.page_curren }} p-2 text-gray-900"
-										>{{ x }}</a
-									>
-								</li>
-								{%- else -%}
-								<li class="mr-2">
-									<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ x }}&page_size={{ pagination.page_size }}" class="{{ "active" if x == pagination.page_curren }} p-2 text-gray-900"
-										>{{ x }}</a
-									>
-								</li>
-								{%- endif -%}
-								{%- endfor -%}
-							{%- else -%}
-							{%- for i in range(1,pagination.total_page + 1) -%}
-							<li class="mr-2">
-								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ i }}&page_size={{ pagination.page_size }}" class="{{ "active" if i == pagination.page_curren }} p-2 text-gray-900"
-									>{{ i }}</a
-								>
-							</li>
-							{%- endfor -%}
-							{%- endif -%}
-
-							{%- if pagination.page_curren == pagination.total_page -%}
-							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowright.svg"
-								/></a>
-							</li>
-							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipnext.svg"
-								/></a>
-							</li>
-							{%- else -%}
-							<li class="mr-2">
-								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren + 1 }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowright.svg"
-								/></a>
-							</li>
-							<li class="mr-2">
-								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.total_page }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipnext.svg"
-								/></a>
-							</li>
-							{%- endif -%}
-							<!-- Thêm các liên kết khác tương ứng với số trang -->
-						</ul>
-					</div>
-					{%- else -%}
+						class="all-apps-list grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-2"
+					></div>
+					{%- if pagination.total_page -%} {%- else -%} {%- if text_search -%}
 					<div id="no-results-message">
 						<p class="text-gray-700">Không tìm thấy ứng dụng nào.</p>
 					</div>
-					{%- endif -%}
-
+					{%- else -%}
+					<div>
+						{{ empty_app('Ứng dụng đang phát triển', "Sau khi phát triển, các
+						ứng dụng sẽ hiển thị tại đây") }}
+					</div>
+					{%- endif -%} {%- endif -%}
 				</div>
 			</div>
+			{%- endif -%}
 		</div>
 	</div>
 </div>

@@ -7,8 +7,11 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "full_name",
   "description",
-  "slug"
+  "slug",
+  "level",
+  "show_in_dashboard"
  ],
  "fields": [
   {
@@ -20,11 +23,28 @@
    "fieldname": "slug",
    "fieldtype": "Data",
    "label": "Slug"
+  },
+  {
+   "default": "0",
+   "fieldname": "level",
+   "fieldtype": "Int",
+   "label": "Level"
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full name"
+  },
+  {
+   "default": "0",
+   "fieldname": "show_in_dashboard",
+   "fieldtype": "Check",
+   "label": "Show In Dashboard"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-14 16:39:22.547107",
+ "modified": "2023-12-16 15:50:41.328881",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Marketplace App Category",

@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Drop Bench',
+			title: 'Xóa Bench',
 			actions: [
 				{
-					label: 'Drop Bench',
+					label: 'Xóa Bench',
 					variant: 'solid',
 					theme: 'red',
 					loading: $resources.dropBench.loading,
@@ -16,13 +16,13 @@
 	>
 		<template v-slot:body-content>
 			<p class="text-base">
-				Are you sure you want to drop this bench? All the sites on this bench
-				should be dropped manually before dropping the bench. This action cannot
-				be undone.
+				Bạn có chắc chắn muốn xóa bỏ bench này không? Tất cả các trang web trên
+				bench này nên được xóa bỏ thủ công trước khi xóa bench. Hành động này
+				không thể được hoàn tác.
 			</p>
 			<p class="mt-4 text-base">
-				Please type
-				<span class="font-semibold">{{ bench.title }}</span> to confirm.
+				Vui lòng nhập
+				<span class="font-semibold">{{ bench.title }}</span> để xác nhân.
 			</p>
 			<FormControl class="mt-4 w-full" v-model="confirmBenchName" />
 			<ErrorMessage class="mt-2" :message="$resources.dropBench.error" />
@@ -52,7 +52,7 @@ export default {
 				},
 				validate() {
 					if (this.bench?.title !== this.confirmBenchName) {
-						return 'Please type the bench name correctly to confirm';
+						return 'Vui lòng nhập tên bench để xác nhận';
 					}
 				}
 			};

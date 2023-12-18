@@ -56,7 +56,7 @@ function saveInput(e) {
 		new_str_search = `?text_search=${searchText}`;
 	}
 
-	location.href = '/marketplace' + new_str_search;
+	console.log(new_str_search);
 }
 const processChange = debounce((e) => saveInput(e));
 
@@ -114,7 +114,7 @@ function updateAppList(results) {
 	for (let result of results) {
 		let app = document.getElementById(result.item.name);
 		app.style.display = '';
-		document.querySelector('#all-apps-list').appendChild(app);
+		document.querySelector('.all-apps-list').appendChild(app);
 	}
 }
 
@@ -182,3 +182,110 @@ if (category != null && category.length > 0) {
 } else if (category == null || category == '') {
 	updateCategories('');
 }
+
+function getApps() {
+	fetch('/api/method/press.api.marketplace.get_marketplace_apps')
+		.then((response) => {
+			// Check if the request was successful (status code 200-299)
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			// Parse the response body as JSON
+			return response.json();
+		})
+		.then((data) => {
+			// Handle the parsed data
+			const elementApps = document.getElementById('all-apps-list');
+			const apps = data.message.data;
+			var html = '';
+			var textReiew = '';
+			var badge = '';
+			var image = '';
+
+			apps.forEach((app) => {
+				if (app.ratings_summary.total_num_reviews == 1) {
+					textReiew = 'review';
+				} else {
+					textReiew = 'reviews';
+				}
+
+				if (app.subscription_type == 'Freemium') {
+					badge = '{{ badge_purple("Freemium") }}';
+				} else if (app.subscription_type == 'Paid') {
+					badge = '{{ badge_green("Paid") }}';
+				} else {
+					badge = '{{ badge_gray("Free") }}';
+				}
+
+				if (app.image) {
+					image = `
+						<img
+							alt="${app.title} Logo"
+							src="${app.image}"
+							class="image-app rounded-lg"
+						/>
+					`;
+				} else {
+					image = `
+						<div
+							class="flex items-center justify-center text-gray-600 font-bold image-app border border-gray-200 rounded-lg text-title"
+						>
+							${app.title[0]}
+						</div>
+					`;
+				}
+
+				html += `
+				<a
+					href="/${app.route}"
+					id="${app.name}"
+					data-title="${app.title}"
+					data-description="${app.description}"
+					data-categories="${app.categories}"
+					class="app-card flex flex-col hover:border-red-200 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-red-500 focus:shadow-outline"
+				>
+					<div>
+						<div class="mb-2">
+							${badge}
+						</div>
+						<div class="flex">
+							${image}
+						</div>
+						<h3 class="mt-3 font-semibold text-gray-800">
+							${app.title}
+						</h3>
+					</div>
+					<div class="flex items-center text-base text-gray-700 my-2">
+						<div class="flex items-center">
+							<img
+								class="h-4 opacity-80"
+								src="/assets/press/images/icon_star.svg"
+							/>
+							<span class="ml-1">${app.ratings_summary.avg_rating}</span>
+						</div>
+						<div class="flex items-center">
+							<img
+								class="h-4 opacity-80"
+								src="/assets/press/images/tally.svg"
+							/>
+						</div>
+						<div class="ml-2 flex items-center">
+							${app.ratings_summary.total_num_reviews} ${textReiew}
+						</div>
+					</div>
+					<p class="text-base text-gray-500 line-clamp-2">
+						${app.description}
+					</p>
+				</a>
+				`;
+			});
+			elementApps.innerHTML = html;
+		})
+		.catch((error) => {
+			// Handle errors that occurred during the fetch
+			console.error('Fetch error:', error);
+		});
+}
+
+getApps();

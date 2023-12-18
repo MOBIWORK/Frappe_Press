@@ -95,17 +95,6 @@ def get_context(context):
         "pagination_list": pagination_list
     }
 
-    # totalPage = 10
-    # pageCurren = 5
-    # pagination_list = generate_pagination(pageCurren, totalPage)
-    # print(pagination_list)
-    # context.pagination = {
-    #     "total_page": totalPage,
-    #     "page_curren": int(pageCurren),
-    #     "page_size": int(pageSize),
-    #     "pagination_list": pagination_list
-    # }
-
     str_query = """
     SELECT
             marketplace.name,
@@ -113,6 +102,7 @@ def get_context(context):
             marketplace.image,
             marketplace.route,
             marketplace.description,
+            marketplace.subscription_type,
             COUNT(*) AS total_installs
         FROM
             `tabMarketplace App` marketplace
@@ -159,8 +149,90 @@ def get_context(context):
         str_query,
         as_dict=True,
     )
+    for app in all_published_apps:
+        info_app = frappe.get_doc(
+            "Marketplace App",
+            {"name": app.get('name')}
+        )
+        user_reviews = info_app.get_user_reviews()
+        ratings_summary = info_app.get_user_ratings_summary(user_reviews)
+        app['ratings_summary'] = ratings_summary
 
     context.apps = all_published_apps
+
+    if not category:
+        # lay category hien thi
+        str_query = """
+            SELECT
+                category.name,
+                category.full_name,
+                category.level
+            FROM
+                `tabMarketplace App Category` category
+            WHERE
+                category.show_in_dashboard = 1
+            ORDER BY
+                level DESC
+        """
+        categories_show = frappe.db.sql(
+            str_query,
+            as_dict=True,
+        )
+
+        apps_show = []
+        for cate in categories_show:
+            name_cate = cate.get('name')
+
+            str_query = f"""
+                SELECT
+                    marketplace.name,
+                    marketplace.title,
+                    marketplace.image,
+                    marketplace.route,
+                    marketplace.description,
+                    marketplace.subscription_type,
+                    marketplace.level
+                FROM
+                    `tabMarketplace App` marketplace
+                INNER JOIN
+                `tabMarketplace App Categories` categories
+                ON
+                    categories.parent = marketplace.name
+                WHERE
+                    marketplace.status = "Published"
+                AND
+                    categories.category = '{name_cate}'
+                GROUP BY
+                    marketplace.name
+                ORDER BY
+                    level DESC
+                OFFSET 0 ROWS
+                FETCH NEXT 4 ROWS ONLY;
+            """
+
+            most_used_apps = frappe.db.sql(
+                str_query,
+                as_dict=True,
+            )
+            for app in most_used_apps:
+                info_app = frappe.get_doc(
+                    "Marketplace App",
+                    {"name": app.get('name')}
+                )
+                user_reviews = info_app.get_user_reviews()
+                ratings_summary = info_app.get_user_ratings_summary(
+                    user_reviews)
+                app['ratings_summary'] = ratings_summary
+
+            info_item = {
+                'name_display': cate.get('full_name'),
+                'data': most_used_apps
+            }
+            apps_show.append(info_item)
+
+        context.apps_show = apps_show
+
+    ###
     for app in all_published_apps:
         app["categories"] = frappe.db.get_all(
             "Marketplace App Categories", {"parent": app["name"]}, pluck="category"
@@ -187,7 +259,7 @@ def get_context(context):
     )
 
     context.metatags = {
-        "title": "Frappe Cloud Marketplace",
-        "description": "One Click Apps for your Frappe Sites",
+        "title": "MBW Cloud Marketplace",
+        "description": "One Click Apps for your MBW Sites",
         "og:type": "website",
     }
