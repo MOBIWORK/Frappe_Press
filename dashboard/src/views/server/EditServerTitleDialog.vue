@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Edit Title',
+			title: 'Chỉnh sửa tiêu đề',
 			actions: [
 				{
-					label: 'Update',
+					label: 'Cập nhật',
 					variant: 'solid',
 					loading: $resources.editTitle.loading,
 					onClick: () => $resources.editTitle.submit()
@@ -39,7 +39,7 @@ export default {
 				},
 				validate() {
 					if (this.serverTitle === this.server?.title) {
-						return 'No changes in server title';
+						return 'Không có thay đổi trong tiêu đề máy chủ';
 					}
 				},
 				onSuccess() {

@@ -38,6 +38,7 @@ def get_context(context):
     type_overview = args.get('type_overview', '')
     context.category = category
     context.type_overview = type_overview
+    context.no_cache = 1
 
     if category:
         pageCurren = args.get('page') if args.get(
@@ -49,7 +50,6 @@ def get_context(context):
         context.text_search = text_search
         context.category = category
 
-        context.no_cache = 1
         str_query = """
             SELECT
                 COUNT(*) AS total_apps

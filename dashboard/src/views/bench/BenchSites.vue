@@ -130,7 +130,7 @@
 		</Table>
 	</div>
 
-	<Dialog :options="{ title: 'Apps', size: 'xl' }" v-model="showAppsDialog">
+	<Dialog :options="{ title: 'Ứng dụng', size: 'xl' }" v-model="showAppsDialog">
 		<template #body-content>
 			<ListItem
 				class="mb-3 flex items-center rounded-md border px-4 py-3 shadow ring-1 ring-gray-300"
@@ -163,10 +163,10 @@
 
 	<Dialog
 		:options="{
-			title: 'Login As Administrator',
+			title: 'Đăng nhập với tư cách Quản trị viên',
 			actions: [
 				{
-					label: 'Proceed',
+					label: 'Tiếp tục',
 					variant: 'solid',
 					onClick: proceedWithLoginAsAdmin
 				}

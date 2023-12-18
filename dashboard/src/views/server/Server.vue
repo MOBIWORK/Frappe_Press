@@ -183,7 +183,7 @@ export default {
 		serverActions() {
 			return [
 				{
-					label: 'Edit Title',
+					label: 'Chỉnh sửa tiêu đề',
 					icon: 'edit',
 					onClick: () => (this.showEditTitleDialog = true)
 				},

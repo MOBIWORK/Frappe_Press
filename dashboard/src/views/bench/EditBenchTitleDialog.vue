@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Edit Title',
+			title: 'Chỉnh sửa tiêu đề',
 			actions: [
 				{
-					label: 'Update',
+					label: 'Cập nhật',
 					variant: 'solid',
 					loading: $resources.editTitle.loading,
 					onClick: () => $resources.editTitle.submit()
@@ -39,7 +39,7 @@ export default {
 				},
 				validate() {
 					if (this.benchTitle === this.bench?.title) {
-						return 'No changes in bench title';
+						return 'Không có thay đổi trong tiêu đề bench';
 					}
 				},
 				onSuccess() {
