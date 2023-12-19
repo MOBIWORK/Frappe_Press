@@ -23,10 +23,13 @@
 		{% include "templates/marketplace/navbar.html" %}
 		<div>{%- block body -%} {%- endblock -%}</div>
 		{% include "templates/marketplace/footer.html" %}
-		<div id="section-back-top" class="fixed bottom-0 right-0 hidden w-full">
-			<div class="container px-0 mx-auto xl:px-14">
+		<div id="section-back-top" class="fixed bottom-0 right-0 w-full">
+			<div class="container px-4 mx-auto xl:px-14">
 				<div class="flex justify-end pb-24 px-4">
-					<button class="box-shadow-custom button-to-top">
+					<button
+						id="button-to-top"
+						class="hidden box-shadow-custom button-to-top"
+					>
 						<img
 							class="h-8 w-8 opacity-80"
 							src="/assets/press/images/arrow_top.svg"
@@ -44,15 +47,12 @@
 		feather.replace();
 
 		document.addEventListener('DOMContentLoaded', function () {
-			var backToTopButton = document.getElementById('section-back-top');
+			var backToTopButton = document.getElementById('button-to-top');
 
 			// Hiển thị hoặc ẩn nút khi cuộn
 			window.addEventListener('scroll', function () {
 				// Khi scrollTop vượt qua một ngưỡng cụ thể, hiển thị nút
-				if (
-					document.body.scrollTop > 20 ||
-					document.documentElement.scrollTop > 20
-				) {
+				if (this.scrollY > 20) {
 					backToTopButton.style.display = 'block';
 				} else {
 					backToTopButton.style.display = 'none';
@@ -61,8 +61,10 @@
 
 			// Cuộn lên đầu khi click vào nút
 			backToTopButton.addEventListener('click', function () {
-				document.body.scrollTop = 0;
-				document.documentElement.scrollTop = 0;
+				window.scrollTo({
+					top: 0,
+					behavior: 'smooth',
+				});
 			});
 		});
 	</script>

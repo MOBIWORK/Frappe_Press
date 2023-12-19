@@ -4,7 +4,7 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 <title>{{ app.title }} - MBW Cloud Marketplace</title>
 {%- endblock -%} {%- block body -%}
 <div>
-	<div class="container mx-auto px-4 sm:px-8 xl:px-14">
+	<div class="container mx-auto px-4 xl:px-14">
 		<div class="mt-5">
 			{{ breadcrumbs([ { 'label': 'Chợ ứng dụng', 'url': '/marketplace' }, {
 			'label': app.title, 'url': '' } ]) }}
@@ -465,7 +465,7 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 	<div>
 		<div class="grid grid-cols-6 gap-5 px-5 py-4">
 			<div class="col-span-6 lg:col-span-5">
-				<div class="flex flex-wrap md:flex-nowrap">
+				<div class="flex flex-wrap md:flex-nowrap justify-center sm:justify-start">
 					<div class="mb-2">
 						{{ app_image(app, '') }}
 					</div>
@@ -1003,7 +1003,7 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 			itemsShow = images
 		}else{
 			if(idNew == images.length){
-				itemsShow = images.slice(-2)
+				itemsShow = [...images.slice(-1),images[0]]
 			}else{
 				itemsShow = images.slice(idNew-1, idNew+1)
 			}
