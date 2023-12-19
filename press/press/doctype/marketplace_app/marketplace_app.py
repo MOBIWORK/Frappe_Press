@@ -506,7 +506,7 @@ def get_plans_for_app(
         plan_discount_percent = app_plan.discount_percent
         plan_data["discounted"] = plan_discount_percent > 0
         plan_prices = frappe.db.get_value(
-            "Plan", app_plan.plan, ["plan_title", "price_usd", "price_inr"], as_dict=True
+            "Plan", app_plan.plan, ["plan_title", "price_usd", "price_inr", 'price_vnd'], as_dict=True
         )
 
         plan_data.update(plan_prices)
@@ -514,7 +514,7 @@ def get_plans_for_app(
 
         plans.append(plan_data)
 
-    plans.sort(key=lambda x: x["price_usd"])
+    plans.sort(key=lambda x: x["price_vnd"])
     plans.sort(key=lambda x: x["enabled"], reverse=True)  # Enabled Plans First
 
     return plans

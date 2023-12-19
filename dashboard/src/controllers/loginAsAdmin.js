@@ -12,15 +12,15 @@ export function loginAsAdmin(siteName) {
 		validate() {
 			// hack to display the toast
 			notify({
-				title: 'Attempting to login as Administrator',
-				message: `Please wait...`,
+				title: 'Đang cố gắng đăng nhập với tư cách Quản trị viên',
+				message: `Vui lòng đợi...`,
 				icon: 'alert-circle',
 				color: 'yellow'
 			});
 		},
 		onError(err) {
 			notify({
-				title: 'Could not login as Administrator',
+				title: 'Không thể đăng nhập với tư cách Quản trị viên',
 				message: err.messages.join('\n'),
 				color: 'red',
 				icon: 'x'

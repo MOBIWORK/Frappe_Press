@@ -79,6 +79,9 @@
 	position: fixed;
 }
 
+.h-80 {
+	height: 20rem /* 320px */;
+}
 .h-screen {
 	height: 100vh;
 }

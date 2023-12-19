@@ -30,8 +30,9 @@ const payouts = createResource({
 					<span>Ngày đến hạn</span>
 					<span class="hidden md:inline">Phương thức thanh toán</span>
 					<span class="hidden md:inline">Trạng thái</span>
-					<span>Net INR</span>
-					<span>Net USD</span>
+					<!-- <span>Net INR</span>
+					<span>Net USD</span> -->
+					<span>VND</span>
 					<span></span>
 				</div>
 
@@ -59,7 +60,7 @@ const payouts = createResource({
 						<Badge :label="payout.status" />
 					</div>
 
-					<div>₹{{ round(payout.net_total_inr, 2) }}</div>
+					<!-- <div>₹{{ round(payout.net_total_inr, 2) }}</div> -->
 
 					<div>${{ round(payout.net_total_usd, 2) }}</div>
 

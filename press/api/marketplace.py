@@ -760,7 +760,7 @@ def create_app_plan(marketplace_app: str, plan_data: Dict):
 def update_app_plan(app_plan_name: str, updated_plan_data: Dict):
 
     if not updated_plan_data.get("plan_title"):
-        frappe.throw("Plan title is required")
+        frappe.throw("Tiêu đề không được để trống")
 
     app_plan_doc = frappe.get_doc("Marketplace App Plan", app_plan_name)
     plan_name = app_plan_doc.plan
@@ -781,6 +781,7 @@ def update_app_plan(app_plan_name: str, updated_plan_data: Dict):
         # Update the price in the plan itself
         plan_doc.update(
             {
+                "price_vnd": updated_plan_data.get("price_vnd"),
                 "price_inr": updated_plan_data.get("price_inr"),
                 "price_usd": updated_plan_data.get("price_usd"),
                 "plan_title": updated_plan_data.get("plan_title", plan_doc.plan_title),
@@ -801,7 +802,7 @@ def reset_features_for_plan(
     app_plan_doc.features = []
     for feature in feature_list:
         if not feature:
-            frappe.throw("Feature cannot be empty string")
+            frappe.throw("Tính năng không được để trống")
         app_plan_doc.append("features", {"description": feature})
 
     if save:
@@ -812,6 +813,7 @@ def create_new_plan(app: str, data: Dict) -> Plan:
     return frappe.get_doc(
         {
             "doctype": "Plan",
+            "price_vnd": data.get("price_vnd"),
             "price_inr": data.get("price_inr"),
             "price_usd": data.get("price_usd"),
             "plan_title": data.get("plan_title"),

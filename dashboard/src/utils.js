@@ -67,13 +67,25 @@ let utils = {
 		$formatCPUTime(duration) {
 			return duration / 1000000;
 		},
+		$formatMoney(price) {
+			const VND = new Intl.NumberFormat('vi-VN', {
+				style: 'currency',
+				currency: 'VND'
+			});
+
+			return VND.format(price).split('₫')[0].trim();
+		},
 		$planTitle(plan) {
-			let india = this.$account.team.country == 'India';
-			let currency = india ? '₹' : '$';
-			let price_field = india ? 'price_inr' : 'price_usd';
+			let vietnam = this.$account.team.country == 'Vietnam';
+			let price_field = vietnam ? 'price_vnd' : 'price_usd';
+			let currency = vietnam ? 'VND' : '$';
 			let price =
 				plan.block_monthly == 1 ? plan[price_field] * 12 : plan[price_field];
-			return price > 0 ? `${currency}${price}` : plan.plan_title;
+			let price_string = this.$formatMoney(price);
+			let display_price = vietnam
+				? `${price_string} ${currency}`
+				: `${currency}${price_string}`;
+			return price > 0 ? `${display_price}` : plan.plan_title;
 		},
 		trialEndsInDaysText(date) {
 			let diff = this.$date(date).diff(DateTime.local(), ['days']).toObject();

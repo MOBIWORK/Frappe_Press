@@ -71,7 +71,7 @@ export default async function call(method, args) {
 		if (!e.messages.length) {
 			e.messages = error._error_message
 				? [error._error_message]
-				: ['Internal Server Error'];
+				: ['Có lỗi xảy ra'];
 		}
 		updateState(this, null, e.messages.join('\n'));
 

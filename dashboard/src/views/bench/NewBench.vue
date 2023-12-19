@@ -76,8 +76,7 @@
 						for="region-consent"
 						class="ml-1 text-sm font-semibold text-gray-900"
 					>
-						Tôi đồng ý rằng các luật pháp của khu vực được tôi chọn sẽ áp dụng
-						đối với tôi và Frappe.
+						Tôi đồng ý với các chính sách của MBW.
 					</label>
 				</div>
 

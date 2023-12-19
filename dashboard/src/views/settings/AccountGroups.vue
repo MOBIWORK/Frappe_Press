@@ -104,7 +104,7 @@ export default {
 			url: 'press.api.account.add_permission_group',
 			validate() {
 				if (this.groupName.length == 0) {
-					return 'Tên nhóm là bắt buộc.';
+					return 'Tên nhóm không được để trống.';
 				}
 			},
 			onSuccess(r) {

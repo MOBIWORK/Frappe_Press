@@ -28,7 +28,7 @@
 							{{
 								$resources.unpaidAmountDue.data +
 								' ' +
-								($account.team.currency == 'VND' ? 'VND' : '')
+								($account.team.currency == 'VND' ? 'VND' : '$')
 							}}
 						</div>
 					</div>

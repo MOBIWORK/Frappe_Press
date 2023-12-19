@@ -89,7 +89,6 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 			class="fixed inset-0 h-screen w-screen bg-gray-900 bg-opacity-75 transition-opacity"
 		></div>
 		<div
-			style="margin-top: 8vh"
 			class="flex items-end justify-center p-4 text-center sm:items-center sm:p-0"
 		>
 			<div
@@ -121,7 +120,7 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 					class="container bg-white px-4 py-4 pt-5 sm:p-6 sm:pb-4"
 				>
 					<div class="sm:flex sm:items-start">
-						<div class="mt-3 sm:text-left">
+						<div class="mt-3 sm:text-left overflow-auto">
 							<div class="pb-2">{{ app_plans_list(plans, 1) }}</div>
 						</div>
 					</div>
@@ -630,13 +629,17 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 				</div>
 				<div class="mb-2">
 					<div class="pr-5 py-4">
-						<h5 class="text-lg font-semibold text-gray-900">Categories</h5>
+						<h5 class="text-lg font-semibold text-gray-900">Subscription</h5>
 						<div class="mt-2">
-							<!-- Hard-coded for now -->
 							{%- if app.subscription_type == 'Freemium'-%} {{ badge_green('Freemium')
 							}} {%- elif app.subscription_type == 'Paid'-%} {{ badge_green('Paid') }}
-							{%- else -%} {{ badge_gray('Free') }} {%- endif -%} {%- for category in
-							app.categories -%}
+							{%- else -%} {{ badge_gray('Free') }} {%- endif -%}
+						</div>
+					</div>
+					<div class="pr-5 py-4">
+						<h5 class="text-lg font-semibold text-gray-900">Categories</h5>
+						<div class="mt-2">
+							{%- for category in app.categories -%}
 							<div class="inline-flex flex-row mr-2">
 								{{ badge_gray(category.category) }}
 							</div>
@@ -913,17 +916,21 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 	</div>
 	{%- endif -%}
 </div>
-{% endmacro %} {% macro app_plans_list(plans, type=0) %} {%- if type == 0 -%}
-<div class="mx-auto grid grid-cols-1 gap-5 lg:grid-cols-4 sm:grid-cols-2">
-	{%- set count = namespace(value=0) -%} {%- for plan in plans if count.value<3
-	-%} {%- set count.value = count.value+1 -%} {{ app_plan_card(plan) }} {%-
-	endfor -%}
-</div>
-{%- else -%}
-<div class="mx-auto pb-4 flex flex-nowrap overflow-auto">
-	{%- for plan in plans -%} <div class="{{ "mr-5" if not loop.last}}">{{ app_plan_card(plan, type) }}</div> {%- endfor -%}
-</div>
-{%- endif -%} {% endmacro %} {% macro app_plan_card(plan, type=0) %}
+{% endmacro %}
+{% macro app_plans_list(plans, type=0) %}
+	{%- if type == 0 -%}
+		<div class="mx-auto grid grid-cols-1 gap-5 lg:grid-cols-4 sm:grid-cols-2">
+			{%- set count = namespace(value=0) -%} {%- for plan in plans if count.value<4
+			-%} {%- set count.value = count.value+1 -%} {{ app_plan_card(plan) }} {%-
+			endfor -%}
+		</div>
+	{%- else -%}
+		<div class="mx-auto pb-4 flex flex-nowrap overflow-auto">
+			{%- for plan in plans -%} <div class="{{ "mr-5" if not loop.last}}">{{ app_plan_card(plan, type) }}</div> {%- endfor -%}
+		</div>
+	{%- endif -%}
+{% endmacro %}
+{% macro app_plan_card(plan, type=0) %}
 <div
 	class="{{ "w-60" if type == 1 else "" }} h-full flex flex-col justify-between rounded-2xl border border-gray-100 p-5 hover:border-red-300"
 >
@@ -934,7 +941,7 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 			{%- else -%}
 
 			<span class="flex">
-				{{ frappe.utils.rounded(plan.price_usd) }}
+				{{ frappe.utils.fmt_money(plan.price_vnd, 0) }}
 				<span class="text-2xl font-semibold ml-1">đ</span>
 				<span class="flex text-base font-normal text-gray-600 items-center ml-3">
 					/ tháng
@@ -961,7 +968,9 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 		</a>
 	</div>
 </div>
-{% endmacro %} {% macro feature_list(features) %}
+{% endmacro %}
+
+{% macro feature_list(features) %}
 <div class="max-h-80 overflow-auto">
 	<ul class="space-y-2 text-sm text-gray-700">
 		{%- for feature in features -%}

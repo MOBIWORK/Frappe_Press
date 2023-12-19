@@ -59,7 +59,8 @@ export default {
 			this.$router.replace(route);
 		},
 		isTabSelected(tab) {
-			return this.$route.path.startsWith(tab.route);
+			let route_path = decodeURIComponent(this.$route.path);
+			return route_path.startsWith(tab.route);
 		}
 	}
 };

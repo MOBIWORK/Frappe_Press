@@ -83,7 +83,7 @@ body {
 
 .divider {
 	position: relative;
-	z-index: 8;
+	/* z-index: 8; */
 	margin-top: 20px;
 	margin-bottom: 20px;
 	height: 1px;
@@ -211,11 +211,8 @@ body {
 }
 
 .button-to-top {
-	display: flex;
 	padding: 10px;
 	border-radius: 50%;
-	justify-content: center;
-	align-items: center;
 }
 
 .logo-app {

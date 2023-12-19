@@ -31,7 +31,7 @@
 					<span v-else>
 						{{ $planTitle(plan) }}
 						<span class="text-base font-normal text-gray-600">
-							{{ plan.block_monthly === 1 ? '/year' : '/mo' }}
+							{{ plan.block_monthly === 1 ? '/năm' : '/tháng' }}
 						</span>
 					</span>
 				</div>

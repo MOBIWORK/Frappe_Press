@@ -68,7 +68,7 @@
 							<FormControl
 								type="checkbox"
 								v-model="agreedToRegionConsent"
-								label="Tôi đồng ý rằng các luật pháp của khu vực được tôi chọn sẽ áp dụng đối với tôi và Frappe."
+								label="Tôi đồng ý với các chính sách của MBW."
 							/>
 						</div>
 

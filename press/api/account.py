@@ -83,23 +83,23 @@ def setup_account(
 
     if not user_exists:
         if not first_name:
-            frappe.throw("Tên là bắt buộc")
+            frappe.throw("Tên không được để trống")
 
         if not last_name:
-            frappe.throw("Họ là bắt buộc")
+            frappe.throw("Họ không được để trống")
 
         if not password and not oauth_signup:
-            frappe.throw("Mật khẩu là bắt buộc")
+            frappe.throw("Mật khẩu không được để trống")
 
         if not is_invitation and not country:
-            frappe.throw("Quốc gia là bắt buộc")
+            frappe.throw("Quốc gia không được để trống")
 
         if not is_invitation and country:
             all_countries = frappe.db.get_all("Country", pluck="name")
             country = find(all_countries, lambda x: x.lower()
                            == country.lower())
             if not country:
-                frappe.throw("Vui lòng cung cấp tên quốc gia hợp lệ")
+                frappe.throw("Vui lòng chọn tên quốc gia hợp lệ")
 
     if not accepted_user_terms:
         frappe.throw(

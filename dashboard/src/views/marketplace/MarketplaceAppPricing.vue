@@ -8,6 +8,7 @@ const showEditPlanDialog = ref(false);
 const currentEditingPlan = reactive({
 	price_inr: 0,
 	price_usd: 0,
+	price_vnd: 0,
 	features: [''],
 	plan_title: '',
 	enabled: true
@@ -37,7 +38,7 @@ const createAppPlan = createResource({
 	url: 'press.api.marketplace.create_app_plan',
 	validate() {
 		if (!currentEditingPlan.plan_title) {
-			return 'Plan name is required';
+			return 'Yêu cầu nhập tên gói';
 		}
 	},
 	onSuccess() {
@@ -50,6 +51,7 @@ function editPlan(plan) {
 	if (plan) {
 		Object.assign(currentEditingPlan, plan);
 		currentEditingPlan.enabled = Boolean(plan.enabled);
+		currentEditingPlan.price_vnd = plan.price_vnd;
 		currentEditingPlan.features = Array.from(plan.features); // Non-reference copy
 	}
 	showEditPlanDialog.value = true;
@@ -87,6 +89,7 @@ function resetCurrentEditingPlan() {
 	Object.assign(currentEditingPlan, {
 		price_inr: 0,
 		price_usd: 0,
+		price_vnd: 0,
 		features: [''],
 		plan_title: '',
 		enabled: true
@@ -99,7 +102,7 @@ function resetCurrentEditingPlan() {
 
 <template>
 	<div>
-		<Card title="Giá gói" subtitle="Thiết lập giá gói  cho ứng dụng này">
+		<Card title="Giá gói" subtitle="Thiết lập giá gói cho ứng dụng này">
 			<div class="m-4">
 				<div class="flex justify-center" v-if="appPlans.loading">
 					<Button :loading="true">Đang tải</Button>
@@ -155,7 +158,7 @@ function resetCurrentEditingPlan() {
 					</div>
 					<div class="mb-4">
 						<FormControl
-							placeholder="My Pro Plan"
+							placeholder="Nhập tên gói"
 							label="Tên"
 							v-model="currentEditingPlan.plan_title"
 						></FormControl>
@@ -164,13 +167,17 @@ function resetCurrentEditingPlan() {
 						<h3 class="mb-4 text-lg font-semibold">Giá đăng ký</h3>
 						<div class="grid grid-cols-2 gap-2">
 							<FormControl
+								label="Giá VND"
+								v-model="currentEditingPlan.price_vnd"
+							></FormControl>
+							<!-- <FormControl
 								label="Giá INR"
 								v-model="currentEditingPlan.price_inr"
 							></FormControl>
 							<FormControl
 								label="Giá USD"
 								v-model="currentEditingPlan.price_usd"
-							></FormControl>
+							></FormControl> -->
 						</div>
 					</div>
 					<div>
