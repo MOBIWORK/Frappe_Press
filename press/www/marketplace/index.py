@@ -44,7 +44,7 @@ def get_context(context):
         pageCurren = args.get('page') if args.get(
             'page') and int(args.get('page')) > 1 else '1'
         pageSize = args.get('page_size') if args.get(
-            'page_size') and int(args.get('page_size')) > 1 else '18'
+            'page_size') and int(args.get('page_size')) > 1 else '20'
         skipRow = str(int(pageSize) * (int(pageCurren)-1))
         text_search = args.get('text_search', '')
         context.text_search = text_search
