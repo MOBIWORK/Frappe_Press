@@ -76,7 +76,7 @@ let utils = {
 			return VND.format(price).split('₫')[0].trim();
 		},
 		$planTitle(plan) {
-			let vietnam = this.$account.team.country == 'Vietnam';
+			let vietnam = true;
 			let price_field = vietnam ? 'price_vnd' : 'price_usd';
 			let currency = vietnam ? 'VND' : '$';
 			let price =

@@ -218,7 +218,7 @@ class Team(Document):
     def set_team_currency(self):
         if not self.currency and self.country:
             # self.currency = "INR" if self.country == "India" else "USD"
-            self.currency = "VND" if self.country == "Vietnam" else "USD"
+            self.currency = "VND"
 
     def set_team_payment_mode(self):
         if not self.payment_mode:
@@ -419,7 +419,7 @@ class Team(Document):
 
         if not self.free_credits_allocated:
             # allocate free credits on signup
-            credits_field = "free_credits_inr" if self.currency == "INR" else "free_credits_usd"
+            credits_field = "free_credits_vnd" if self.currency == "VND" else "free_credits_usd"
             credit_amount = frappe.db.get_single_value(
                 "Press Settings", credits_field)
             if not credit_amount:
@@ -484,7 +484,7 @@ class Team(Document):
         address_doc.update(
             {
                 "address_line1": billing_details.address,
-                "city": billing_details.city,
+                "county": billing_details.county,
                 "state": billing_details.state,
                 "email_id": billing_details.email_id,
                 "phone": billing_details.phone,
@@ -557,34 +557,34 @@ class Team(Document):
             address={
                 "line1": address.address_line1,
                 "postal_code": address.pincode,
-                "city": address.city,
+                "county": address.county,
                 "state": address.state,
                 "country": country_code.upper(),
             },
         )
 
     def create_payment_method(self, payment_method_id, set_default=False):
-        stripe = get_stripe()
-        payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
+        # stripe = get_stripe()
+        # payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
 
-        doc = frappe.get_doc(
-            {
-                "doctype": "Stripe Payment Method",
-                "stripe_payment_method_id": payment_method["id"],
-                "last_4": payment_method["card"]["last4"],
-                "name_on_card": payment_method["billing_details"]["name"],
-                "expiry_month": payment_method["card"]["exp_month"],
-                "expiry_year": payment_method["card"]["exp_year"],
-                "brand": payment_method["card"]["brand"] or "",
-                "team": self.name,
-            }
-        )
-        doc.insert()
+        # doc = frappe.get_doc(
+        #     {
+        #         "doctype": "Stripe Payment Method",
+        #         "stripe_payment_method_id": payment_method["id"],
+        #         "last_4": payment_method["card"]["last4"],
+        #         "name_on_card": payment_method["billing_details"]["name"],
+        #         "expiry_month": payment_method["card"]["exp_month"],
+        #         "expiry_year": payment_method["card"]["exp_year"],
+        #         "brand": payment_method["card"]["brand"] or "",
+        #         "team": self.name,
+        #     }
+        # )
+        # doc.insert()
 
         # unsuspend sites on payment method added
         self.unsuspend_sites(reason="Payment method added")
         if set_default:
-            doc.set_default()
+            # doc.set_default()
             self.reload()
 
         # allocate credits if not already allocated
@@ -593,7 +593,7 @@ class Team(Document):
         capture("added_card_or_prepaid_credits",
                 "fc_signup", self.account_request)
 
-        return doc
+        # return doc
 
     def get_payment_methods(self):
         return frappe.db.get_all(

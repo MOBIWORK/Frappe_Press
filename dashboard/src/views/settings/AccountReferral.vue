@@ -33,10 +33,15 @@ export default {
 			return '';
 		},
 		minimumSpentAmount() {
-			return this.$account.team.country == 'India' ? '₹1800' : '$25';
+			return (
+				this.$formatMoney(this.$account.feature_flags.credit_on_spending) +
+				' VND'
+			);
 		},
 		creditAmountInTeamCurrency() {
-			return this.$account.team.country == 'India' ? '₹750' : '$10';
+			return (
+				this.$formatMoney(this.$account.feature_flags.referral_income) + ' VND'
+			);
 		}
 	}
 };

@@ -22,35 +22,34 @@
 		</div>
 		<div>
 			<FormControl
-				label="Thành phố"
+				label="Quận huyện"
 				:type="modelValue['country'] == 'Vietnam' ? 'autocomplete' : 'text'"
-				:options="optionsCity"
-				name="city"
-				:modelValue="modelValue['city']"
+				:options="optionsCounty"
+				name="county"
+				:modelValue="modelValue['county']"
 				required="true"
 				placeholder=""
-				:onUpdate:modelValue="value => onChangeIn(value, 'city')"
-				:onblur="e => checkRequiredIn('city', e)"
+				:onUpdate:modelValue="value => onChangeIn(value, 'county')"
+				:onblur="e => checkRequiredIn('county', e)"
 			/>
 			<ErrorMessage
 				class="mt-1"
-				v-if="requiredFieldNotSet.includes('city')"
-				message="Thành phố không được để trống"
+				v-if="requiredFieldNotSet.includes('county')"
+				message="Quận huyện không được để trống"
 			/>
 		</div>
 	</div>
 </template>
 
 <script>
-import { vietnamCity } from '@/utils/billing';
-
 export default {
 	name: 'Form',
 	props: ['fields', 'modelValue', 'fieldNotSet'],
 	emits: ['update:modelValue'],
 	data() {
 		return {
-			optionsCity: [],
+			optionsCounty: [],
+			optionsCountyAll: [],
 			requiredFieldNotSet: []
 		};
 	},
@@ -59,10 +58,28 @@ export default {
 			this.requiredFieldNotSet = newFieldNotSet;
 		}
 	},
-
+	resources: {
+		async stateList() {
+			const response = await fetch(
+				'https://provinces.open-api.vn/api/?depth=2'
+			);
+			const data = await response.json();
+			let countys = [];
+			data.forEach(el => {
+				el.districts.forEach(ct => {
+					countys.push({
+						value: ct.name,
+						parent: el.name
+					});
+				});
+			});
+			this.optionsCountyAll = countys;
+			this.optionsCounty = this.vietnamCounty(this.modelValue?.state);
+		}
+	},
 	methods: {
-		vietnamCity(parent) {
-			let ops = vietnamCity.filter(d => d.parent == parent);
+		vietnamCounty(parent) {
+			let ops = this.optionsCountyAll.filter(d => d.parent == parent);
 			return ops.map(d => ({
 				label: d.value,
 				value: d.value
@@ -81,9 +98,9 @@ export default {
 				[fieldname]: value
 			});
 			if (fieldname == 'state') {
-				this.optionsCity = this.vietnamCity(value?.value);
-				if ('city' in values) {
-					values['city'] = '';
+				this.optionsCounty = this.vietnamCounty(value?.value);
+				if ('county' in values) {
+					values['county'] = '';
 				}
 			}
 			this.$emit('update:modelValue', values);

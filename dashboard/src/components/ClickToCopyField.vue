@@ -19,7 +19,7 @@ export default {
 			const clipboard = window.navigator.clipboard;
 			clipboard.writeText(this.textContent).then(() => {
 				notify({
-					title: 'Copied to clipboard!',
+					title: 'Đã sao chép vào bảng tạm!',
 					icon: 'check',
 					color: 'green'
 				});

@@ -52,7 +52,7 @@ export default {
 			billingInformation: {
 				address: '',
 				state: '',
-				city: '',
+				county: '',
 				email_id: '',
 				phone: '',
 				tax_code: '',
@@ -74,7 +74,7 @@ export default {
 						email_id: billingInformation.email_id,
 						phone: billingInformation.phone,
 						tax_code: billingInformation.tax_code,
-						city: billingInformation.city,
+						county: billingInformation.county,
 						state: billingInformation.state,
 						postal_code: billingInformation.pincode,
 						country: billingInformation.country,
@@ -99,6 +99,11 @@ export default {
 						icon: 'check',
 						color: 'green',
 						title: 'Địa chỉ đã được cập nhật thành công!'
+					});
+
+					const result = this.$call('press.api.billing.setup_intent_success', {
+						setup_intent: {},
+						address: this.billingInformation
 					});
 					this.$emit('updated');
 				},

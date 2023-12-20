@@ -41,18 +41,18 @@ def signup(email, product=None, referrer=None):
     ) or [0, 0]
 
     if exists and not enabled:
-        frappe.throw(_("Account {0} has been deactivated").format(email))
+        frappe.throw(_("Tài khoản {0} đã bị vô hiệu hóa").format(email))
     elif exists and enabled:
-        frappe.throw(_("Account {0} is already registered").format(email))
+        frappe.throw(_("Tài khoản {0} đã được đăng ký trước đó").format(email))
     else:
         ar = frappe.get_doc(
             {
                 "doctype": "Account Request",
                 "email": email,
                 "role": "Press Admin",
-                        "referrer_id": referrer,
-                        "saas_product": product,
-                        "send_email": True,
+                "referrer_id": referrer,
+                "saas_product": product,
+                "send_email": True,
             }
         ).insert()
 
@@ -425,6 +425,9 @@ def get():
         "Site", {"team": team_doc.name, "status": ("!=", "Archived")}
     )
 
+    press_setting = frappe.db.get_value(
+        'Press Settings', 'Press Settings', ['verify_cards_with_micro_charge', 'enabled_refer_earn', 'credit_on_spending', 'referral_income'], as_dict=True)
+
     return {
         "user": frappe.get_doc("User", user),
         "ssh_key": get_ssh_key(user),
@@ -436,11 +439,7 @@ def get():
         "balance": team_doc.get_balance(),
         "parent_team": team_doc.parent_team or "",
         "saas_site_request": team_doc.get_pending_saas_site_request(),
-        "feature_flags": {
-            "verify_cards_with_micro_charge": frappe.db.get_single_value(
-                "Press Settings", "verify_cards_with_micro_charge"
-            )
-        },
+        "feature_flags": press_setting,
         "partner_email": team_doc.partner_email or "",
         "partner_billing_name": partner_billing_name,
         "number_of_sites": number_of_sites,
@@ -738,8 +737,8 @@ def update_billing_information(billing_details):
     billing_details = frappe._dict(billing_details)
     if type(billing_details.state) == dict:
         billing_details.state = billing_details.state.get('value')
-    if type(billing_details.city) == dict:
-        billing_details.city = billing_details.city.get('value')
+    if type(billing_details.county) == dict:
+        billing_details.county = billing_details.county.get('value')
     team = get_current_team(get_doc=True)
     team.update_billing_details(billing_details)
 

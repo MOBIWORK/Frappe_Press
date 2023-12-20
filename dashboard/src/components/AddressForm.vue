@@ -41,7 +41,7 @@
 
 <script>
 import Form from '@/components/Form.vue';
-import { vietnamStates, vietnamCity } from '@/utils/billing';
+// import { vietnamStates, vietnamCity } from '@/utils/billing';
 
 export default {
 	name: 'AddressForm',
@@ -53,7 +53,8 @@ export default {
 	data() {
 		return {
 			fieldNotSet: [],
-			gstApplicable: true
+			gstApplicable: true,
+			optionsState: []
 		};
 	},
 	watch: {
@@ -62,6 +63,20 @@ export default {
 		}
 	},
 	resources: {
+		async stateList() {
+			const response = await fetch(
+				'https://provinces.open-api.vn/api/?depth=2'
+			);
+			const data = await response.json();
+			let states = [];
+			data.forEach(el => {
+				states.push({
+					label: el.name,
+					value: el.name
+				});
+			});
+			this.optionsState = states;
+		},
 		countryList: {
 			url: 'press.api.account.country_list',
 			auto: true,
@@ -77,13 +92,6 @@ export default {
 		}
 	},
 	methods: {
-		getVietnamCity(parent = '') {
-			return vietnamCity.map(d => ({
-				label: d.value,
-				value: d.value
-			}));
-		},
-
 		update(key, value) {
 			this.$emit('update:address', {
 				...this.address,
@@ -102,9 +110,9 @@ export default {
 				.filter(df => !this.address[df.fieldname])
 				.map(df => df.fieldname);
 
-			if (!this.address['city']) {
-				fieldNotSetNew.push('city');
-				values.push(this.address['city']);
+			if (!this.address['county']) {
+				fieldNotSetNew.push('county');
+				values.push(this.address['county']);
 			}
 			this.fieldNotSet = fieldNotSetNew;
 
@@ -126,18 +134,6 @@ export default {
 			return (this.$resources.countryList.data || []).map(d => ({
 				label: d.name,
 				value: d.name
-			}));
-		},
-		vietnamCity() {
-			return vietnamCity.map(d => ({
-				label: d.value,
-				value: d.value
-			}));
-		},
-		vietnamStates() {
-			return vietnamStates.map(d => ({
-				label: d.value,
-				value: d.value
 			}));
 		},
 		fields() {
@@ -179,14 +175,13 @@ export default {
 					label: 'Tỉnh thành',
 					fieldname: 'state',
 					required: 1,
-					options:
-						this.address.country === 'Vietnam' ? this.vietnamStates : null
+					options: this.address.country === 'Vietnam' ? this.optionsState : null
 				}
 				// {
 				// 	fieldtype:
 				// 		this.address.country === 'Vietnam' ? 'Autocomplete' : 'Data',
 				// 	label: 'Thành phố',
-				// 	fieldname: 'city',
+				// 	fieldname: 'county',
 				// 	required: 1,
 				// 	options: this.address.country === 'Vietnam' ? this.vietnamCity : null
 				// }

@@ -177,8 +177,8 @@ def details():
         country = "Việt Nam" if address.country == "Vietnam" else address.country
         address_parts = [
             address.address_line1,
-            'thành phố ' + address.city,
-            'tỉnh ' + address.state,
+            address.county,
+            address.state,
             country,
             address.pincode,
         ]
@@ -469,17 +469,23 @@ def after_card_add():
 
 @frappe.whitelist()
 def setup_intent_success(setup_intent, address=None):
-    setup_intent = frappe._dict(setup_intent)
+    # setup_intent = frappe._dict(setup_intent)
+    # team = get_current_team(True)
+    # clear_setup_intent()
+    # payment_method = team.create_payment_method(
+    #     setup_intent.payment_method, set_default=True
+    # )
+
     team = get_current_team(True)
     clear_setup_intent()
     payment_method = team.create_payment_method(
-        setup_intent.payment_method, set_default=True
+        '', set_default=True
     )
     if address:
         address = frappe._dict(address)
         team.update_billing_details(address)
 
-    return {"payment_method_name": payment_method.name}
+    return {"payment_method_name": 'Prepaid Credits'}
 
 
 @frappe.whitelist()

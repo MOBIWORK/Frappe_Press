@@ -2,7 +2,9 @@
 	<div class="space-y-5">
 		<AccountProfile />
 		<AccountEmails />
-		<AccountReferral />
+		<AccountReferral
+			v-if="this.$account.feature_flags.enabled_refer_earn == 1"
+		/>
 	</div>
 </template>
 

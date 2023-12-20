@@ -6,7 +6,7 @@
 					<div class="rounded-md border p-4">
 						<div class="mb-2 text-base">Số tiền thanh toán hiện tại</div>
 						<div class="text-2xl font-medium">
-							{{ upcomingInvoice ? upcomingInvoice.formatted.total : '0' }}
+							{{ upcomingInvoice ? upcomingInvoice.formatted.total : '0 VND' }}
 						</div>
 					</div>
 					<div class="rounded-md border p-4">
@@ -65,7 +65,7 @@
 				</div>
 
 				<a
-					href="https://frappecloud.com/payment-options"
+					href="https://doc.mbwcloud.com/User_Guide_MBWCloud/lựa-chọn-thanh-toán"
 					target="_blank"
 					class="text-sm text-gray-700 underline"
 				>

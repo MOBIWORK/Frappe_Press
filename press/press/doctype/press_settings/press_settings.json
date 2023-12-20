@@ -24,6 +24,10 @@
   "stripe_webhook_secret",
   "column_break_26",
   "stripe_secret_key",
+  "free_credits_vnd",
+  "credit_on_spending",
+  "referral_income",
+  "enabled_refer_earn",
   "free_credits_inr",
   "free_credits_usd",
   "ngrok_auth_token",
@@ -266,14 +270,18 @@
    "label": "Stripe Secret Key"
   },
   {
+   "default": "0",
    "fieldname": "free_credits_inr",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Credits on Signup (INR)",
    "options": "INR"
   },
   {
+   "default": "0",
    "fieldname": "free_credits_usd",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Credits on Signup (USD)",
    "options": "USD"
   },
@@ -1046,11 +1054,38 @@
   {
    "fieldname": "section_break_rgly",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "free_credits_vnd",
+   "fieldtype": "Currency",
+   "label": "Credits on Signup (VND)",
+   "options": "VND"
+  },
+  {
+   "default": "0",
+   "fieldname": "credit_on_spending",
+   "fieldtype": "Currency",
+   "label": "Credit on Spending (VND))",
+   "options": "VND"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled_refer_earn",
+   "fieldtype": "Check",
+   "label": "Enabled Refer & Earn"
+  },
+  {
+   "default": "0",
+   "fieldname": "referral_income",
+   "fieldtype": "Currency",
+   "label": "Referral income",
+   "options": "VND"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-11-16 17:44:48.449246",
+ "modified": "2023-12-20 14:09:00.199961",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

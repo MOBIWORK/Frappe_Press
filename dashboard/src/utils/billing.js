@@ -125,6 +125,8 @@ export const vietnamCity = [
 	{ value: 'Gia Nghĩa', parent: 'Đắk Nông' }
 ];
 
+export const vietnamCounty = [{ value: 'Bà Rịa', parent: 'Bà Rịa – Vũng Tàu' }];
+
 export const vietnamStates = [
 	{ value: 'An Giang', key: 1 },
 	{ value: 'Bà Rịa – Vũng Tàu', key: 2 },
