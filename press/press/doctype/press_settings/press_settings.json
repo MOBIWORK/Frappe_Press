@@ -14,6 +14,10 @@
   "invoicing_column",
   "gst_percentage",
   "stripe_settings_section",
+  "payos_webhook_url",
+  "payos_client_id",
+  "payos_api_key",
+  "payos_checksum_key",
   "stripe_inr_plan_id",
   "stripe_publishable_key",
   "create_stripe_plans",
@@ -213,7 +217,7 @@
   {
    "fieldname": "stripe_settings_section",
    "fieldtype": "Section Break",
-   "label": "Stripe Settings"
+   "label": "PayOs Settings"
   },
   {
    "fieldname": "stripe_inr_plan_id",
@@ -224,11 +228,13 @@
   {
    "fieldname": "stripe_publishable_key",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe Publishable Key"
   },
   {
    "fieldname": "create_stripe_plans",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Create Stripe Plans"
   },
   {
@@ -246,6 +252,7 @@
   {
    "fieldname": "create_stripe_webhook",
    "fieldtype": "Button",
+   "hidden": 1,
    "label": "Create Stripe Webhook"
   },
   {
@@ -267,6 +274,7 @@
   {
    "fieldname": "stripe_secret_key",
    "fieldtype": "Password",
+   "hidden": 1,
    "label": "Stripe Secret Key"
   },
   {
@@ -289,6 +297,7 @@
    "description": "Sign up on ngrok.com to get one for free",
    "fieldname": "ngrok_auth_token",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Ngrok Auth Token"
   },
   {
@@ -1079,13 +1088,33 @@
    "default": "0",
    "fieldname": "referral_income",
    "fieldtype": "Currency",
-   "label": "Referral income",
+   "label": "Referral income (VND)",
    "options": "VND"
+  },
+  {
+   "fieldname": "payos_client_id",
+   "fieldtype": "Data",
+   "label": "Client Id"
+  },
+  {
+   "fieldname": "payos_api_key",
+   "fieldtype": "Data",
+   "label": "Api Key"
+  },
+  {
+   "fieldname": "payos_checksum_key",
+   "fieldtype": "Data",
+   "label": "Checksum Key"
+  },
+  {
+   "fieldname": "payos_webhook_url",
+   "fieldtype": "Data",
+   "label": "Webhook Url"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-12-20 14:09:00.199961",
+ "modified": "2023-12-20 16:31:52.002871",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",
