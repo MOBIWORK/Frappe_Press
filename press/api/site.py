@@ -608,6 +608,7 @@ def get_plans(name=None, rg=None):
             "plan_title",
             "price_usd",
             "price_inr",
+            "price_vnd",
             "cpu_time_per_day",
             "max_storage_usage",
             "max_database_usage",
@@ -616,7 +617,7 @@ def get_plans(name=None, rg=None):
             "`tabHas Role`.role",
         ],
         filters=filters,
-        order_by="price_usd asc",
+        order_by="price_vnd asc",
     )
     plans = group_children_in_result(plans, {"role": "roles"})
 
