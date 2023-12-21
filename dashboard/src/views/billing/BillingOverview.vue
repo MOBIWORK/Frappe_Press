@@ -1,7 +1,10 @@
 <template>
 	<div class="space-y-5">
-		<AlertBillingInformation />
-		<BillingSummary />
+		<AlertBillingInformation
+			v-if="!checkRefresh"
+			@updated="checkRefresh = !checkRefresh"
+		/>
+		<BillingSummary :checkRefresh="checkRefresh" />
 	</div>
 </template>
 
@@ -14,6 +17,11 @@ export default {
 	pageMeta() {
 		return {
 			title: 'Billing - MBW Cloud'
+		};
+	},
+	data() {
+		return {
+			checkRefresh: false
 		};
 	},
 	props: ['invoiceName'],

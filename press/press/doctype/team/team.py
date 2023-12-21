@@ -485,6 +485,7 @@ class Team(Document):
             {
                 "address_line1": billing_details.address,
                 "county": billing_details.county,
+                'city': billing_details.state,
                 "state": billing_details.state,
                 "email_id": billing_details.email_id,
                 "phone": billing_details.phone,

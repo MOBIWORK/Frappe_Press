@@ -22,6 +22,7 @@
 			@updated="
 				editBillingDetails = false;
 				$resources.billingDetails.reload();
+				this.$emit('updated');
 			"
 		/>
 		<PrepaidCreditsDialog
@@ -39,9 +40,9 @@ export default {
 	name: 'AlertBillingInformation',
 	emits: ['updated'],
 	components: {
-		BillingInformationDialog: defineAsyncComponent(() =>
-			import('./BillingInformationDialog.vue')
-		),
+		// BillingInformationDialog: defineAsyncComponent(() =>
+		// 	import('./BillingInformationDialog.vue')
+		// ),
 		PrepaidCreditsDialog: defineAsyncComponent(() =>
 			import('./PrepaidCreditsDialog.vue')
 		),

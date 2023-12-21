@@ -222,6 +222,7 @@
   {
    "fieldname": "stripe_inr_plan_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe INR Plan ID",
    "read_only": 1
   },
@@ -240,12 +241,14 @@
   {
    "fieldname": "stripe_product_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe Product ID",
    "read_only": 1
   },
   {
    "fieldname": "stripe_usd_plan_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe USD Plan ID",
    "read_only": 1
   },
@@ -258,12 +261,14 @@
   {
    "fieldname": "stripe_webhook_endpoint_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe Webhook Endpoint ID",
    "read_only": 1
   },
   {
    "fieldname": "stripe_webhook_secret",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe Webhook Secret",
    "read_only": 1
   },
@@ -309,6 +314,7 @@
   {
    "fieldname": "razorpay_key_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Razorpay Key ID"
   },
   {
@@ -1114,7 +1120,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-12-20 16:31:52.002871",
+ "modified": "2023-12-21 08:40:22.250029",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

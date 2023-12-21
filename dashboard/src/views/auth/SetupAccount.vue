@@ -275,6 +275,7 @@ export default {
 				},
 				auto: true,
 				onSuccess(res) {
+					console.log(res);
 					if (res && res.email) {
 						this.email = res.email;
 						this.firstName = res.first_name;
@@ -285,7 +286,10 @@ export default {
 						this.isInvitation = res.is_invitation;
 						this.invitedByParentTeam = res.invited_by_parent_team;
 						this.oauthSignup = res.oauth_signup;
-						this.countries = res.countries;
+						this.countries = res.countries.map(el => ({
+							label: el,
+							value: el
+						}));
 						this.saasProduct = res.saas_product;
 					}
 				}

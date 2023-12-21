@@ -1,5 +1,5 @@
 <template>
-	<Card title="Advanced features" v-if="$account.hasRole('Press Admin')">
+	<Card title="Các tính năng nâng cao" v-if="$account.hasRole('Press Admin')">
 		<div class="flex flex-col space-y-4">
 			<FormControl
 				v-for="field in fields"
@@ -15,7 +15,7 @@
 				@click="$resources.updateFeatureFlags.submit()"
 				:loading="$resources.updateFeatureFlags.loading"
 			>
-				Save changes
+				Lưu thay đổi
 			</Button>
 		</div>
 	</Card>
@@ -24,14 +24,14 @@
 import { FormControl } from 'frappe-ui';
 
 let fields = [
-	{ label: 'Enable private benches', fieldname: 'benches_enabled' },
+	{ label: 'Bật bench riêng tư', fieldname: 'benches_enabled' },
 	//{ label: 'Enable servers', fieldname: 'servers_enabled' },
 	//{
 	//label: 'Enable self-hosted servers',
 	//fieldname: 'self_hosted_servers_enabled'
 	//},
 	{
-		label: 'Enable security portal',
+		label: 'Bật cổng bảo mật',
 		fieldname: 'security_portal_enabled'
 	}
 ];

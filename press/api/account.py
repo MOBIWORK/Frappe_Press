@@ -82,6 +82,9 @@ def setup_account(
         frappe.throw("Khóa không hợp lệ hoặc đã hết hạn")
 
     if not user_exists:
+        if type(country) == dict:
+            country = country.get('value')
+
         if not first_name:
             frappe.throw("Tên không được để trống")
 
@@ -111,7 +114,6 @@ def setup_account(
     team = account_request.team
     email = account_request.email
     role = account_request.role
-    frappe.throw("My Error")
 
     if signup_values:
         account_request.saas_signup_values = json.dumps(

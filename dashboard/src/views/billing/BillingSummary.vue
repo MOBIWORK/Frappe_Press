@@ -109,6 +109,7 @@ import InvoiceUsageTable from '@/components/InvoiceUsageTable.vue';
 
 export default {
 	name: 'BillingSummary',
+	props: ['checkRefresh'],
 	components: {
 		InvoiceUsageTable,
 		PlanIcon,
@@ -132,6 +133,11 @@ export default {
 				url: 'press.api.billing.total_unpaid_amount',
 				auto: true
 			};
+		}
+	},
+	watch: {
+		checkRefresh: function () {
+			this.$resources.upcomingInvoice.reload();
 		}
 	},
 	data() {

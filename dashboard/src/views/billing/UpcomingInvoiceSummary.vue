@@ -19,7 +19,7 @@ export default {
 			let start = this.$date(this.invoiceDoc.period_start);
 			let end = this.$date(this.invoiceDoc.period_end);
 
-			return `Dự báo tổng cộng cho tháng hiện tại (${start.toFormat(
+			return `Ước tính tổng cộng cho tháng hiện tại (${start.toFormat(
 				'dd/mm'
 			)} - ${end.toFormat('dd/mm/yyyy')})`;
 		}
