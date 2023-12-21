@@ -166,11 +166,11 @@ export default {
 						this.selectedRegion;
 
 					if (!this.selectedAppPlan) {
-						return 'Vui lòng chọn một kế hoạch cho máy chủ ứng dụng';
+						return 'Vui lòng chọn một gói cho máy chủ ứng dụng';
 					}
 
 					if (!this.selectedDBPlan) {
-						return 'Vui lòng chọn một kế hoạch cho máy chủ cơ sở dữ liệu';
+						return 'Vui lòng chọn một gói cho máy chủ database';
 					}
 
 					if (!this.selectedRegion) {
@@ -180,7 +180,7 @@ export default {
 					if (!this.agreedToRegionConsent) {
 						document.getElementById('region-consent').focus();
 
-						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo máy chủ';
+						return 'Vui lòng đồng ý với điều kiện trên để tạo máy chủ';
 					}
 
 					if (!canCreate) {

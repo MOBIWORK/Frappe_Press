@@ -36,7 +36,7 @@
 				<span class="font-semibold">
 					{{ $planTitle(plan) }}
 				</span>
-				<span v-if="plan.price_usd > 0"> /tháng</span>
+				<span v-if="plan.price_vnd > 0"> /tháng</span>
 			</div>
 			<div class="w-1/4 text-gray-700" :class="{ 'opacity-25': plan.disabled }">
 				{{ plan.cpu_time_per_day }}

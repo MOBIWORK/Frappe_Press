@@ -1,15 +1,15 @@
 <template>
 	<WizardCard>
 		<div class="mb-6 text-center">
-			<h1 class="text-2xl font-bold">Add a New App</h1>
-			<p class="text-base text-gray-700">Add an app to marketplace</p>
+			<h1 class="text-2xl font-bold">Thêm ứng dụng mới</h1>
+			<p class="text-base text-gray-700">Thêm ứng dụng vào marketplace</p>
 		</div>
 
 		<SelectAppFromGithub @onSelect="d => (app = d)" />
 
 		<div v-if="app">
 			<label class="mb-3 text-base" for="version-select"
-				>Compatible Frappe Version</label
+				>Phiên bản Frappe tương thích</label
 			>
 			<select
 				id="version-select"
@@ -28,7 +28,7 @@
 				@click="$resources.addApp.submit()"
 				variant="solid"
 				class="w-full"
-				>Add to marketplace</Button
+				>Thêm vào marketplace</Button
 			>
 		</div>
 	</WizardCard>

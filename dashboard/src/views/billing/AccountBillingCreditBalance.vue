@@ -39,11 +39,7 @@ export default {
 	},
 	methods: {
 		formatDate(d) {
-			return this.$date(d.creation).toLocaleString({
-				month: 'long',
-				day: 'numeric',
-				year: 'numeric'
-			});
+			return this.$date(d.creation).toFormat('dd-MM-yyyy');
 		},
 		getDescription(d) {
 			if (d.type === 'Applied To Invoice' && d.formatted.invoice_for) {

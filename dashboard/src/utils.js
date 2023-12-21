@@ -9,7 +9,7 @@ let utils = {
 			}
 			return plural;
 		},
-		$date(date, serverDatesTimezone = 'Asia/Kolkata') {
+		$date(date, serverDatesTimezone = 'Asia/Ho_Chi_Minh') {
 			// assuming all dates on the server are stored in our timezone
 
 			let localZone = DateTime.local().zoneName;

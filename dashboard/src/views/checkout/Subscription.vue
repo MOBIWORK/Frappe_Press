@@ -1,7 +1,7 @@
 <template>
 	<div class="min-h-screen bg-gray-50">
 		<LoginBox>
-			<h1 class="text-base text-gray-600">Manage Subscription</h1>
+			<h1 class="text-base text-gray-600">Quản lý đăng ký</h1>
 			<div class="mt-4">
 				<div class="text-xl font-medium text-gray-900">
 					{{ site }}
@@ -10,13 +10,13 @@
 					class="mt-1 text-base text-gray-700"
 					v-if="$resources.subscription.data?.trial_end_date"
 				>
-					Trial ends
+					Kết thúc dùng thử
 					{{
 						trialEndsInDaysText($resources.subscription.data?.trial_end_date)
 					}}
 				</div>
 			</div>
-			{{ success ? 'You have subscribed to the plan' : '' }}
+			{{ success ? 'Bạn đã đăng ký gói' : '' }}
 			<ErrorMessage class="mt-2" :message="$resources.subscription.error" />
 			<div class="mt-8" v-if="$resources.subscription.data">
 				<div>
@@ -27,15 +27,16 @@
 						<span class="text-sm font-medium text-gray-700">
 							{{
 								$resources.subscription.data.current_plan
-									? 'Change plan'
-									: 'Step 1: Select plan'
+									? 'Thay đổi gói'
+									: 'Bước 1: Chọn gói'
 							}}
 						</span>
 						<span
 							class="text-sm font-bold text-gray-900"
 							v-if="currentStep === 2"
 						>
-							{{ selectedPlan.plan_title }}<span class="font-normal">/mo</span>
+							{{ selectedPlan.plan_title
+							}}<span class="font-normal">/tháng</span>
 						</span>
 					</button>
 					<div class="mt-2 space-y-2" v-if="currentStep == 1">
@@ -55,12 +56,12 @@
 									<span class="text-base font-medium text-gray-900">
 										{{ plan.plan_title }}
 									</span>
-									<span class="text-base text-gray-600">/mo</span>
+									<span class="text-base text-gray-600">/tháng</span>
 								</div>
 								<Badge
 									v-if="$resources.subscription.data.current_plan == plan.name"
 								>
-									Current Plan
+									Gói hiện tại
 								</Badge>
 								<CheckCircleIcon
 									v-else-if="selectedPlan == plan"
@@ -70,7 +71,7 @@
 							<div class="mt-1 text-sm text-gray-600">
 								<span>
 									CPU {{ plan.cpu_time_per_day }}
-									{{ plan.cpu_time_per_day == 1 ? 'hour' : 'hours' }}/day
+									{{ plan.cpu_time_per_day == 1 ? 'hour' : 'hours' }}/ngày
 								</span>
 								<span class="mx-1"> &middot; </span>
 								<span>
@@ -84,7 +85,7 @@
 								variant="solid"
 								@click="currentStep = 2"
 							>
-								Next
+								Tiếp theo
 							</Button>
 							<Button
 								v-else-if="
@@ -95,7 +96,7 @@
 								:loading="$resources.setSubscriptionPlan.loading"
 								@click="$resources.setSubscriptionPlan.submit()"
 							>
-								Change plan
+								Thay đổi gói
 							</Button>
 						</div>
 					</div>
@@ -104,7 +105,7 @@
 					<div
 						class="rounded-sm bg-gray-100 p-2 text-sm font-medium text-gray-700"
 					>
-						Step 2: Setup billing
+						Bước 2: Thiết lập thanh toán
 					</div>
 					<StripeCard
 						class="mt-4"

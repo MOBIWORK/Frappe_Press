@@ -26,14 +26,8 @@
 					</div>
 					<div v-if="info.last_deployed" class="text-right">
 						<div class="text-base text-gray-600">Lần triển khai cuối cùng</div>
-
 						<div class="text-base font-medium text-gray-900">
-							{{
-								$date(info.last_deployed).toLocaleString({
-									month: 'long',
-									day: 'numeric'
-								})
-							}}
+							{{ $date(info.last_deployed).toFormat('dd-MM-yyyy') }}
 						</div>
 					</div>
 				</div>

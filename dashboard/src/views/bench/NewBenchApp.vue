@@ -1,8 +1,8 @@
 <template>
 	<WizardCard>
 		<div class="mb-6 text-center">
-			<h1 class="text-2xl font-bold">Add a New App</h1>
-			<p class="text-base text-gray-700">Add an app to your bench</p>
+			<h1 class="text-2xl font-bold">Thêm ứng dụng mới</h1>
+			<p class="text-base text-gray-700">Thêm một ứng dụng vào bench của bạn</p>
 		</div>
 
 		<SelectAppFromGithub @onSelect="d => (app = d)" />
@@ -13,7 +13,7 @@
 			v-if="app"
 			:loading="$resources.addApp.loading"
 			@click="$resources.addApp.submit()"
-			>Add to bench</Button
+			>Thêm vào bench</Button
 		>
 	</WizardCard>
 </template>

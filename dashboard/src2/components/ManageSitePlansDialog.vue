@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Change Plan',
+			title: 'Thay đổi gói',
 			actions: [
 				{
-					label: 'Change plan',
+					label: 'Thay đổi gói',
 					variant: 'solid',
 					onClick: changePlan,
 					disabled: !plan || ($site?.doc && plan === $site.doc.plan)
@@ -55,7 +55,7 @@ export default {
 				{
 					onSuccess: () => {
 						this.show = false;
-						this.$toast.success(`Plan changed to ${this.$site.doc.plan}`);
+						this.$toast.success(`Gói đã thay đổi sang ${this.$site.doc.plan}`);
 					}
 				}
 			);

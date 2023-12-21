@@ -7,7 +7,7 @@
 				<ErrorMessage
 					:message="
 						$resources.options.error === 'Bad credentials'
-							? 'Access token expired, reauthorization required'
+							? 'Token truy cập đã hết hạn, cần phải làm mới quyền truy cập'
 							: $resources.options.error
 					"
 				/>
@@ -19,7 +19,7 @@
 					@click="$resources.clearAccessToken.submit()"
 					:loading="$resources.clearAccessToken.loading"
 				>
-					Reauthorize GitHub</Button
+					Làm mới quyền truy cập GitHub</Button
 				>
 
 				<ErrorMessage :message="$resources.clearAccessToken.error" />
@@ -31,21 +31,21 @@
 					icon-left="github"
 					:link="options.installation_url + '?state=' + state"
 				>
-					Connect To GitHub
+					Kết nối với GitHub
 				</Button>
 			</div>
 		</div>
 		<div v-if="options">
 			<div v-if="options.authorized && options.installations.length > 0">
 				<div class="flex items-baseline justify-between border-b pb-1">
-					<label class="text-lg font-semibold"> Select a repository </label>
+					<label class="text-lg font-semibold"> Chọn một kho lưu trữ </label>
 					<span class="text-sm text-gray-600">
-						Don't see your organization?
+						Không thấy tổ chức của bạn?
 						<Link
 							:href="options.installation_url + '?state=' + state"
 							class="font-medium"
 						>
-							Add from GitHub
+							Thêm từ GitHub
 						</Link>
 					</span>
 				</div>
@@ -63,7 +63,7 @@
 					>
 						<div v-if="validatedApp" class="flex">
 							<GreenCheckIcon class="mr-2 w-4" />
-							Found {{ validatedApp.title }} ({{ validatedApp.name }})
+							Đã tìm thấy {{ validatedApp.title }} ({{ validatedApp.name }})
 						</div>
 					</div>
 				</div>
@@ -76,7 +76,7 @@
 						@click="$resources.validateApp.submit()"
 						:loading="$resources.validateApp.loading"
 					>
-						Validate App
+						Xác nhận ứng dụng
 					</Button>
 				</div>
 			</div>
