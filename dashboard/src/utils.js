@@ -81,9 +81,7 @@ let utils = {
 			let price =
 				plan.block_monthly == 1 ? plan[price_field] * 12 : plan[price_field];
 			let price_string = this.$formatMoney(price);
-			let display_price = vietnam
-				? `${price_string} ${currency}`
-				: `${currency}${price_string}`;
+			let display_price = `${price_string} ${currency}`;
 			return price > 0 ? `${display_price}` : plan.plan_title;
 		},
 		trialEndsInDaysText(date) {
