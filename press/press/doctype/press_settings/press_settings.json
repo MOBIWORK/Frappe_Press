@@ -14,10 +14,13 @@
   "invoicing_column",
   "gst_percentage",
   "stripe_settings_section",
-  "payos_webhook_url",
   "payos_client_id",
   "payos_api_key",
   "payos_checksum_key",
+  "payos_webhook_url",
+  "config_webhook_payos",
+  "payos_return_url",
+  "payos_cancel_url",
   "stripe_inr_plan_id",
   "stripe_publishable_key",
   "create_stripe_plans",
@@ -1116,11 +1119,26 @@
    "fieldname": "payos_webhook_url",
    "fieldtype": "Data",
    "label": "Webhook Url"
+  },
+  {
+   "fieldname": "config_webhook_payos",
+   "fieldtype": "Button",
+   "label": "Config Webhook PayOs"
+  },
+  {
+   "fieldname": "payos_return_url",
+   "fieldtype": "Data",
+   "label": "Return Url"
+  },
+  {
+   "fieldname": "payos_cancel_url",
+   "fieldtype": "Data",
+   "label": "Cancel Url"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-12-21 08:40:22.250029",
+ "modified": "2023-12-22 09:19:28.989249",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

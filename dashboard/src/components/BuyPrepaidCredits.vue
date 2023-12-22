@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<FormControl
-			v-if="step == 'Get Amount'"
+			v-if="step == 'Create order'"
 			class="mb-2"
 			label="Tín dụng"
 			v-model.number="creditsToBuy"
@@ -10,7 +10,7 @@
 			type="number"
 			:min="minimumAmount"
 		/>
-		<label
+		<!-- <label
 			class="block"
 			:class="{
 				'h-0.5 opacity-0': step != 'Add Card Details',
@@ -25,10 +25,10 @@
 				ref="card-element"
 			></div>
 			<ErrorMessage class="mt-1" :message="cardErrorMessage" />
-		</label>
+		</label> -->
 
 		<FormControl
-			v-if="step == 'Get Amount'"
+			v-if="step == 'Create order'"
 			label="Tổng số tiền + Thuế (nếu áp dụng)"
 			disabled
 			v-model="total"
@@ -44,10 +44,39 @@
 			class="mt-2"
 			:message="$resources.createPaymentIntent.error || errorMessage"
 		/>
+		<div v-if="infoOrder">
+			<div>Thông tin hóa đơn đã được tạo:</div>
+			<div class="rounded-md border p-2">
+				<p>Mã hóa đơn: {{ infoOrder.order_code }}</p>
+				<p>Số tiền: {{ formatAmount() }} VND</p>
+				<p>Nội dung: {{ infoOrder.description }}</p>
+			</div>
+		</div>
+
 		<div class="mt-4 flex w-full justify-between">
 			<!-- <StripeLogo /> -->
 			<PayOSLogo />
-			<div v-if="step == 'Get Amount'">
+			<div v-if="step == 'Create order'">
+				<Button
+					variant="solid"
+					@click="$resources.createaOrder.submit()"
+					:loading="$resources.createaOrder.loading"
+				>
+					Tạo hóa đơn
+				</Button>
+			</div>
+			<div v-if="step == 'Get link payment'">
+				<Button @click="$emit('cancel')"> Hủy </Button>
+				<Button
+					class="ml-2"
+					variant="solid"
+					@click="$resources.getLinkPayment.submit()"
+					:loading="$resources.getLinkPayment.loading"
+				>
+					Đến link thanh toán
+				</Button>
+			</div>
+			<!-- <div v-if="step == 'Get Amount'">
 				<Button
 					variant="solid"
 					@click="$resources.createPaymentIntent.submit()"
@@ -64,9 +93,9 @@
 					@click="onBuyClick"
 					:loading="paymentInProgress"
 				>
-					Mua tín dụng
+					Sang link thanh toán
 				</Button>
-			</div>
+			</div> -->
 		</div>
 	</div>
 </template>
@@ -96,16 +125,59 @@ export default {
 	},
 	data() {
 		return {
-			step: 'Get Amount', // Get Amount / Add Card Details
+			step: 'Create order', // Get Amount / Add Card Details
 			clientSecret: null,
 			creditsToBuy: this.minimumAmount || null,
 			total: this.minimumAmount,
 			cardErrorMessage: null,
 			errorMessage: null,
-			paymentInProgress: false
+			paymentInProgress: false,
+			infoOrder: null
 		};
 	},
 	resources: {
+		createaOrder() {
+			return {
+				url: 'press.api.billing.create_order',
+				params: {
+					amount: this.creditsToBuy
+				},
+				validate() {
+					if (this.creditsToBuy < this.minimumAmount) {
+						return `Số tiền phải lớn hơn ${this.minimumAmount}`;
+					}
+				},
+				async onSuccess(data) {
+					this.step = 'Get link payment';
+					this.infoOrder = data.infoOrder;
+				},
+				onError(e) {
+					notify({
+						title: 'Có lỗi xảy ra vui lòng thử lại.',
+						color: 'red',
+						icon: 'x'
+					});
+				}
+			};
+		},
+		getLinkPayment() {
+			return {
+				url: 'press.api.billing.get_link_payment_payos',
+				params: {
+					order_code: this.infoOrder.order_code
+				},
+				async onSuccess(data) {
+					console.log(data);
+				},
+				onError(e) {
+					notify({
+						title: 'Có lỗi xảy ra vui lòng thử lại.',
+						color: 'red',
+						icon: 'x'
+					});
+				}
+			};
+		},
 		createPaymentIntent() {
 			return {
 				url: 'press.api.billing.create_payment_intent_for_buying_credits',
@@ -164,6 +236,9 @@ export default {
 		}
 	},
 	methods: {
+		formatAmount() {
+			return this.$formatMoney(this.infoOrder.amount);
+		},
 		updateTotal() {
 			if (this.$account.team.currency === 'INR') {
 				this.total = Number(

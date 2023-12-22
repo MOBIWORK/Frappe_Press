@@ -20,8 +20,8 @@ export default {
 			let end = this.$date(this.invoiceDoc.period_end);
 
 			return `Ước tính tổng cộng cho tháng hiện tại (${start.toFormat(
-				'dd/mm'
-			)} - ${end.toFormat('dd/mm/yyyy')})`;
+				'dd/MM'
+			)} - ${end.toFormat('dd/MM/yyyy')})`;
 		}
 	}
 };

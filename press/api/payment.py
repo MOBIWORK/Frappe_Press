@@ -16,5 +16,8 @@ def all():
 
 @frappe.whitelist(allow_guest=True)
 def webhook_payment(**data):
-    print(data)
-    return "done"
+    try:
+        print(data)
+        return {'desc': 'Success'}
+    except Exception as ex:
+        return {'desc': str(ex)}

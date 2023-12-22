@@ -561,7 +561,7 @@ def get_marketplace_subscriptions_for_site(site: str):
         subscription.app_image = marketplace_app_info.image
 
         subscription.plan_info = frappe.db.get_value(
-            "Plan", subscription.plan, ["price_usd", "price_inr"], as_dict=True
+            "Plan", subscription.plan, ["price_usd", "price_vnd", "price_inr"], as_dict=True
         )
 
         subscription.is_free = frappe.db.get_value(
@@ -730,6 +730,7 @@ def get_subscriptions_list(marketplace_app: str) -> List:
             app_sub.site,
             site.team.as_("user_contact"),
             app_sub.plan.as_("app_plan"),
+            plan.price_vnd.as_("price_vnd"),
             plan.price_usd.as_("price_usd"),
             plan.price_inr.as_("price_inr"),
             app_sub.status,

@@ -248,7 +248,7 @@ export default {
 						(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo trang web';
+						return 'Vui lòng đồng ý với chính sách trên để tạo trang web';
 					}
 
 					if (!canCreate) {

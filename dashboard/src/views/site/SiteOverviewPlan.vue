@@ -43,7 +43,7 @@
 				<div class="ml-4">
 					<h4 class="text-4xl font-semibold text-gray-900">
 						{{ $planTitle(plan.current_plan) }}
-						<span v-if="plan.current_plan.price_usd > 0" class="text-lg">
+						<span v-if="plan.current_plan.price_vnd > 0" class="text-lg">
 							/tháng
 						</span>
 					</h4>
@@ -153,11 +153,13 @@ export default {
 	},
 	methods: {
 		plan_title(plan) {
-			let india = this.$account.team.country == 'India';
-			let currency = india ? '₹' : '$';
-			let price_field = india ? 'price_inr' : 'price_usd';
+			// let india = this.$account.team.country == 'India';
+			// let currency = india ? '₹' : '$';
+			// let price_field = india ? 'price_inr' : 'price_usd';
+			let currency = 'VND';
+			let price_field = 'price_vnd';
 			let price = plan.current_plan[price_field];
-			return price > 0 ? `${currency}${price}` : plan.current_plan.plan_title;
+			return price > 0 ? `${price} ${currency}` : plan.current_plan.plan_title;
 		},
 
 		belowCurrentUsage(plan) {

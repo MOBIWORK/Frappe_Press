@@ -21,7 +21,7 @@
 			<div class="ml-4">
 				<h4 class="text-4xl font-semibold text-gray-900">
 					{{ $planTitle(plan) }}
-					<span v-if="plan.price_usd > 0" class="text-lg"> /tháng </span>
+					<span v-if="plan.price_vnd > 0" class="text-lg"> /tháng </span>
 				</h4>
 				<p class="text-base text-gray-700">
 					{{ plan.vcpu }} {{ $plural(plan.vcpu, 'vCPU', 'vCPUs') }} +

@@ -76,9 +76,8 @@ let utils = {
 			return VND.format(price).split('₫')[0].trim();
 		},
 		$planTitle(plan) {
-			let vietnam = true;
-			let price_field = vietnam ? 'price_vnd' : 'price_usd';
-			let currency = vietnam ? 'VND' : '$';
+			let price_field = 'price_vnd';
+			let currency = 'VND';
 			let price =
 				plan.block_monthly == 1 ? plan[price_field] * 12 : plan[price_field];
 			let price_string = this.$formatMoney(price);

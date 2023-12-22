@@ -96,7 +96,7 @@
 							{{
 								row.plan
 									? `${$planTitle(row.plan)}${
-											row.plan.price_usd > 0 ? '/mo' : ''
+											row.plan.price_vnd > 0 ? '/tháng' : ''
 									  }`
 									: ''
 							}}

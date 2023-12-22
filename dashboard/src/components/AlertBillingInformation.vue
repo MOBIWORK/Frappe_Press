@@ -11,9 +11,7 @@
 				"
 				class="whitespace-nowrap"
 			>
-				{{
-					isDefaultPaymentModeCard ? 'Thêm Số Dư' : 'Thêm thông tin thanh toán'
-				}}
+				{{ isDefaultPaymentModeCard ? 'Thêm Số Dư' : 'Xác nhận thông tin' }}
 			</Button>
 		</template>
 		<!-- <BillingInformationDialog v-model="showCardDialog" v-if="showCardDialog" /> -->
@@ -73,7 +71,7 @@ export default {
 			if (this.isDefaultPaymentModeCard) {
 				return 'Chúng tôi không thể xác minh thẻ của bạn bằng khoản phí vi mô. Vui lòng thêm một số số dư vào tài khoản của bạn để bắt đầu tạo trang web.';
 			} else {
-				return 'Bạn chưa thêm thông tin thanh toán của mình. Thêm nó để bắt đầu tạo trang web.';
+				return 'Bạn chưa xác nhận thông tin thanh toán của mình. Thêm nó để bắt đầu tạo trang web.';
 			}
 		}
 	}

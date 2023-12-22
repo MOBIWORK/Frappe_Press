@@ -26,7 +26,7 @@
 							<span class="font-medium text-gray-900">
 								{{ $format.planTitle(plan) }}
 							</span>
-							<span class="text-gray-700"> /mo</span>
+							<span class="text-gray-700"> /tháng</span>
 						</div>
 
 						<Tooltip
@@ -42,7 +42,7 @@
 						</Tooltip>
 					</div>
 					<div class="mt-1 text-sm text-gray-600">
-						${{ Number(plan.price_usd / 30).toFixed(2) }} /day
+						${{ Number(plan.price_vnd / 30).toFixed(2) }} /ngày
 					</div>
 				</div>
 				<div class="p-3 text-p-sm text-gray-800">

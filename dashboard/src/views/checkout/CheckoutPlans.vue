@@ -9,12 +9,12 @@
 					<div>
 						<span>
 							{{
-								subscription.currency === 'INR'
-									? '₹' + plan.price_inr
+								subscription.currency === 'VND'
+									? plan.price_vnd + ' VND'
 									: '$' + plan.price_usd
 							}}
 							<span class="text-base font-normal text-gray-600">
-								{{ plan.block_monthly === 1 ? '/year' : '/mo' }}
+								{{ plan.block_monthly === 1 ? '/năm' : '/tháng' }}
 							</span>
 						</span>
 					</div>
@@ -33,7 +33,7 @@
 				:loading="$resources.changeSitePlan.loading"
 			>
 				{{
-					subscription.current_plan === plan.name ? 'Current Plan' : 'Buy Now'
+					subscription.current_plan === plan.name ? 'Gói hiện tại' : 'Mua ngay'
 				}}
 			</Button>
 		</div>

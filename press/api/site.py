@@ -104,14 +104,14 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False):
     team = get_current_team(get_doc=True)
     if not team.enabled:
         frappe.throw(
-            "You cannot create a new site because your account is disabled")
+            "Bạn không thể tạo một trang web mới vì tài khoản của bạn đã bị vô hiệu hóa")
 
     files = site.get("files", {})
     share_details_consent = site.get("share_details_consent")
 
     domain = site.get("domain")
     if not (domain and frappe.db.exists("Root Domain", {"name": domain})):
-        frappe.throw("No root domain for site")
+        frappe.throw("Không có tên miền gốc cho trang web")
 
     cluster = site.get("cluster") or frappe.db.get_single_value(
         "Press Settings", "cluster"
@@ -221,14 +221,14 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False):
 
 
 def validate_plan(server, plan):
-    if frappe.db.get_value("Plan", plan, "price_usd") > 0:
+    if frappe.db.get_value("Plan", plan, "price_vnd") > 0:
         return
     if (
             frappe.session.data.user_type == "System User"
             or frappe.db.get_value("Server", server, "team") == get_current_team()
     ):
         return
-    frappe.throw("You are not allowed to use this plan")
+    frappe.throw("Bạn không được phép sử dụng gói này.")
 
 
 @frappe.whitelist()
@@ -248,7 +248,7 @@ def get_app_subscriptions(app_plans, team: str):
             team = get_current_team(get_doc=True)
             if not team.can_install_paid_apps():
                 frappe.throw(
-                    "You cannot install a Paid app on Free Credits. Please buy credits before trying to install again."
+                    "Vui lòng nạp tiền lần đầu trước khi cài đặt."
                 )
 
         new_subscription = frappe.get_doc(
@@ -644,7 +644,7 @@ def get_plans(name=None, rg=None):
 
     out = []
     for plan in plans:
-        if is_paywalled_bench and plan.price_usd == 10:
+        if is_paywalled_bench and plan.price_vnd == 10:
             continue
         if frappe.utils.has_common(plan["roles"], frappe.get_roles()):
             plan.pop("roles", "")
@@ -1024,7 +1024,7 @@ def get_installed_apps(site):
             app_source.app_image = marketplace_app_info.image
 
             app_source.plan_info = frappe.db.get_value(
-                "Plan", subscription.plan, ["price_usd", "price_inr"], as_dict=True
+                "Plan", subscription.plan, ["price_usd", "price_vnd", "price_inr"], as_dict=True
             )
 
             app_source.is_free = frappe.db.get_value(

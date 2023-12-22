@@ -9,10 +9,10 @@
 				}"
 			>
 				<div class="flex-1">
-					<Navbar class="sm:hidden" v-if="!$route.meta.isLoginPage" />
+					<Navbar class="md:hidden" v-if="!$route.meta.isLoginPage" />
 					<div class="mx-auto flex min-h-full flex-row justify-start">
 						<Sidebar
-							class="sticky top-0 hidden w-64 flex-shrink-0 sm:flex"
+							class="sticky top-0 hidden w-64 flex-shrink-0 md:flex"
 							v-if="$auth.isLoggedIn && !$route.meta.hideSidebar"
 						/>
 						<router-view v-slot="{ Component }" class="w-full sm:mr-0">

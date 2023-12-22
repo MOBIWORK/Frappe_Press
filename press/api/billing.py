@@ -21,6 +21,10 @@ from press.utils.billing import (
     GSTIN_FORMAT,
 )
 
+import random
+NUMBERCHOICE_HEAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+NUMBERCHOICE_BODY = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
 
 @frappe.whitelist()
 def get_publishable_key_and_setup_intent():
@@ -44,7 +48,7 @@ def upcoming_invoice():
 
     return {
         "upcoming_invoice": upcoming_invoice,
-        "available_credits": f'{fmt_money(team.get_balance(), 0)} {team.currency}',
+        "available_credits": f'{fmt_money(team.get_balance(), 0, team.currency)}',
     }
 
 
@@ -74,7 +78,7 @@ def balances():
         filters={
             "source": ("in", ("Prepaid Credits", "Transferred Credits", "Free Credits")),
             "team": team,
-            "docstatus": 1,
+            # "docstatus": 1,
         },
         limit=1,
     )
@@ -89,6 +93,7 @@ def balances():
         .on(bt.invoice == inv.name)
         .select(
             bt.name,
+            bt.docstatus,
             bt.creation,
             bt.amount,
             bt.currency,
@@ -98,7 +103,7 @@ def balances():
             bt.description,
             inv.period_start,
         )
-        .where((bt.docstatus == 1) & (bt.team == team))
+        .where((bt.team == team))
         .orderby(bt.creation, order=frappe.qb.desc)
     )
 
@@ -220,6 +225,70 @@ def create_payment_intent_for_micro_debit(payment_method_name):
         },
     )
     return {"client_secret": intent["client_secret"]}
+
+
+def generator_order_code(number=12):
+    order_code = ''
+    for i in range(number-1):
+        str_choice = random.choice(NUMBERCHOICE_BODY)
+        order_code += str_choice
+    order_code = random.choice(NUMBERCHOICE_HEAD) + order_code
+
+    return order_code
+
+
+@frappe.whitelist()
+def create_order(amount):
+    try:
+        team = get_current_team()
+        amount = round(amount)
+        remark = "Nap tien vao tai khoan"
+
+        # check orderCode exsists
+        order_code = generator_order_code()
+        checkOrder = frappe.db.exists('Balance Transaction', {
+            'order_code': order_code
+        })
+        while checkOrder:
+            order_code = generator_order_code()
+            checkOrder = frappe.db.exists('Balance Transaction', {
+                'order_code': order_code
+            })
+
+        doc = frappe.get_doc(
+            order_code=order_code,
+            doctype="Balance Transaction",
+            team=team,
+            type="Adjustment",
+            source='Prepaid Credits',
+            amount=amount,
+            description=remark,
+        )
+        doc.insert(ignore_permissions=True)
+
+        infoOrder = doc.as_dict()
+        return {
+            'infoOrder': infoOrder,
+            'desc': 'Success'
+        }
+    except Exception as ex:
+        return {
+            'desc': str(ex)
+        }
+
+
+@frappe.whitelist()
+def get_link_payment_payos(order_code):
+    try:
+        infoPayment = {'orderCode': order_code}
+        return {
+            'infoPayment': infoPayment,
+            'desc': 'Success'
+        }
+    except Exception as ex:
+        return {
+            'desc': str(ex)
+        }
 
 
 @frappe.whitelist()

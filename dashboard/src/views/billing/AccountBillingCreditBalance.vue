@@ -2,15 +2,16 @@
 	<Card title="Số dư tiền nạp" subtitle="Lịch sử số dư tiền nạp của bạn">
 		<div class="max-h-96 divide-y">
 			<div
-				class="grid grid-cols-4 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-4"
+				class="grid grid-cols-5 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-5"
 			>
 				<span class="hidden md:inline">Ngày</span>
 				<span class="col-span-2 md:col-span-1">Mô tả</span>
 				<span>Số tiền</span>
 				<span>Số dư</span>
+				<span>Trạng thái</span>
 			</div>
 			<div
-				class="grid grid-cols-4 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-4"
+				class="grid grid-cols-5 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-5"
 				v-for="d in $resources.balances.data"
 				:key="d.name"
 			>
@@ -27,6 +28,7 @@
 					{{ d.formatted.amount }}
 				</div>
 				<div class="whitespace-nowrap">{{ d.formatted.ending_balance }}</div>
+				<div>{{ getStatus(d) }}</div>
 			</div>
 		</div>
 	</Card>
@@ -38,6 +40,14 @@ export default {
 		balances: 'press.api.billing.balances'
 	},
 	methods: {
+		getStatus(d) {
+			var statusDoc = {
+				0: 'Chưa thanh toán',
+				1: 'Đã thanh toán',
+				2: 'Đã hủy'
+			};
+			return statusDoc[d.docstatus];
+		},
 		formatDate(d) {
 			return this.$date(d.creation).toFormat('dd-MM-yyyy');
 		},

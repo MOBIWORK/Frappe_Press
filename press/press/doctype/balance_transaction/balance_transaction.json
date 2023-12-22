@@ -16,7 +16,8 @@
   "ending_balance",
   "unallocated_amount",
   "allocated_to",
-  "invoice"
+  "invoice",
+  "order_code"
  ],
  "fields": [
   {
@@ -96,12 +97,17 @@
    "fieldtype": "Table",
    "label": "Allocated To",
    "options": "Balance Transaction Allocation"
+  },
+  {
+   "fieldname": "order_code",
+   "fieldtype": "Data",
+   "label": "Order Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2022-10-29 14:58:09.158731",
+ "modified": "2023-12-22 10:59:45.868624",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",
