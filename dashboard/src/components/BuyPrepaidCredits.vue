@@ -103,6 +103,7 @@
 // import StripeLogo from '@/components/StripeLogo.vue';
 import PayOSLogo from '@/components/PayOSLogo.vue';
 import { loadStripe } from '@stripe/stripe-js';
+import { notify } from '@/utils/toast';
 
 export default {
 	name: 'BuyPrepaidCredits',
@@ -148,8 +149,16 @@ export default {
 					}
 				},
 				async onSuccess(data) {
-					this.step = 'Get link payment';
-					this.infoOrder = data.infoOrder;
+					if (data.code == '00') {
+						this.step = 'Get link payment';
+						this.infoOrder = data.infoOrder;
+					} else {
+						notify({
+							title: 'Có lỗi xảy ra vui lòng thử lại.',
+							color: 'red',
+							icon: 'x'
+						});
+					}
 				},
 				onError(e) {
 					notify({
@@ -164,10 +173,19 @@ export default {
 			return {
 				url: 'press.api.billing.get_link_payment_payos',
 				params: {
-					order_code: this.infoOrder.order_code
+					info_order: this.infoOrder
 				},
 				async onSuccess(data) {
-					console.log(data);
+					if (data.code == '00') {
+						this.step = 'Get link payment';
+						window.location.href = data.infoPayment.checkoutUrl;
+					} else {
+						notify({
+							title: data.desc,
+							color: 'red',
+							icon: 'x'
+						});
+					}
 				},
 				onError(e) {
 					notify({

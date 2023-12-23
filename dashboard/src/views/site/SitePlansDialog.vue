@@ -1,11 +1,11 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Change Plan',
+			title: 'Thay đổi gói',
 			size: '3xl',
 			actions: [
 				{
-					label: 'Submit',
+					label: 'Xác nhận',
 					variant: 'solid',
 					loading: $resources.changePlan.loading,
 					onClick: () => {

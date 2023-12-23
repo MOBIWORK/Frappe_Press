@@ -17,7 +17,9 @@
   "unallocated_amount",
   "allocated_to",
   "invoice",
-  "order_code"
+  "order_code",
+  "checkout_url",
+  "payos_payment_status"
  ],
  "fields": [
   {
@@ -102,12 +104,24 @@
    "fieldname": "order_code",
    "fieldtype": "Data",
    "label": "Order Code"
+  },
+  {
+   "fieldname": "checkout_url",
+   "fieldtype": "Data",
+   "label": "Checkout Url"
+  },
+  {
+   "default": "PAID",
+   "fieldname": "payos_payment_status",
+   "fieldtype": "Select",
+   "label": "PayOs Payment Status",
+   "options": "CANCELLED\nPAID\nPENDING\nPROCESSING"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-22 10:59:45.868624",
+ "modified": "2023-12-23 09:35:58.826400",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",

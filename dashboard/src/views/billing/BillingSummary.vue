@@ -184,7 +184,7 @@ export default {
 		minimumAmount() {
 			const unpaidAmount = this.$resources.unpaidAmountDue.data;
 			// const minimumDefault = $account.team.currency == 'INR' ? 800 : 10;
-			const minimumDefault = 1000;
+			const minimumDefault = 2000;
 
 			return unpaidAmount && unpaidAmount > minimumDefault
 				? unpaidAmount

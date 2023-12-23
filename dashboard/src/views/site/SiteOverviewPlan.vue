@@ -26,7 +26,7 @@
 						}
 					"
 				>
-					{{ site.status == 'Suspended' ? 'Set Plan' : 'Change Plan' }}
+					{{ site.status == 'Suspended' ? 'Chọn gói' : 'Thay đổi gói' }}
 				</Button>
 			</Tooltip>
 		</template>

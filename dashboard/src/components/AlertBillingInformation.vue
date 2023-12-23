@@ -26,7 +26,7 @@
 		<PrepaidCreditsDialog
 			v-if="showPrepaidCreditsDialog"
 			v-model:show="showPrepaidCreditsDialog"
-			:minimum-amount="$account.team.currency === 'VND' ? 1000 : 10"
+			:minimum-amount="2000"
 			@success="handleAddPrepaidCreditsSuccess"
 		/>
 	</Alert>

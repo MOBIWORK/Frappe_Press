@@ -8,7 +8,7 @@ from itertools import groupby
 from frappe.utils import fmt_money
 from frappe.core.utils import find
 from press.press.doctype.team.team import has_unsettled_invoices
-from press.utils import get_current_team
+from press.utils import get_current_team, check_payos_settings
 from press.utils.billing import (
     clear_setup_intent,
     get_publishable_key,
@@ -20,6 +20,8 @@ from press.utils.billing import (
     validate_gstin_check_digit,
     GSTIN_FORMAT,
 )
+
+from payos import PayOS, ItemData, PaymentData
 
 import random
 NUMBERCHOICE_HEAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -73,6 +75,18 @@ def refresh_invoice_link(invoice):
 @frappe.whitelist()
 def balances():
     team = get_current_team()
+
+    bt = frappe.qb.DocType("Balance Transaction")
+    inv = frappe.qb.DocType("Invoice")
+
+    # delete payment is spam
+    query = (
+        frappe.qb.from_(bt)
+        .where((bt.team == team) & (bt.docstatus == 0) & (bt.checkout_url.isnull() | bt.checkout_url == '') & ((bt.order_code.notnull()) | (bt.order_code != '')))
+        .delete()
+    )
+    query.run(as_dict=True)
+
     has_bought_credits = frappe.db.get_all(
         "Balance Transaction",
         filters={
@@ -85,8 +99,6 @@ def balances():
     if not has_bought_credits:
         return []
 
-    bt = frappe.qb.DocType("Balance Transaction")
-    inv = frappe.qb.DocType("Invoice")
     query = (
         frappe.qb.from_(bt)
         .left_join(inv)
@@ -244,6 +256,13 @@ def create_order(amount):
         amount = round(amount)
         remark = "Nap tien vao tai khoan"
 
+        payos_settings = check_payos_settings()
+        if not payos_settings:
+            return {
+                'code': '1',
+                'desc': 'Chưa thể nạp tiền ngay lúc này'
+            }
+
         # check orderCode exsists
         order_code = generator_order_code()
         checkOrder = frappe.db.exists('Balance Transaction', {
@@ -268,25 +287,56 @@ def create_order(amount):
 
         infoOrder = doc.as_dict()
         return {
+            'code': '00',
             'infoOrder': infoOrder,
             'desc': 'Success'
         }
     except Exception as ex:
         return {
+            'code': '1',
             'desc': str(ex)
         }
 
 
 @frappe.whitelist()
-def get_link_payment_payos(order_code):
+def get_link_payment_payos(info_order):
     try:
-        infoPayment = {'orderCode': order_code}
+        payos_settings = check_payos_settings()
+        if not payos_settings:
+            return {
+                'code': '1',
+                'desc': 'Chưa thể nạp tiền ngay lúc này'
+            }
+
+        payOS = PayOS(client_id=payos_settings.get('payos_client_id'), api_key=payos_settings.get(
+            'payos_api_key'), checksum_key=payos_settings.get('payos_checksum_key'))
+
+        paymentData = PaymentData(
+            orderCode=int(info_order.get('order_code')),
+            amount=info_order.get('amount'),
+            description=info_order.get('description'),
+            cancelUrl=payos_settings.get('payos_cancel_url'),
+            returnUrl=payos_settings.get('payos_return_url')
+        )
+
+        paymentLinkData = payOS.createPaymentLink(paymentData=paymentData)
+        balance_transaction = frappe.get_doc(
+            "Balance Transaction", info_order.get('name'))
+        balance_transaction.checkout_url = paymentLinkData.checkoutUrl
+        balance_transaction.save(ignore_permissions=True)
+
         return {
-            'infoPayment': infoPayment,
+            'code': '00',
+            'infoPayment': {
+                "checkoutUrl": paymentLinkData.checkoutUrl,
+                "orderCode": paymentLinkData.orderCode,
+                "amount": paymentLinkData.amount
+            },
             'desc': 'Success'
         }
     except Exception as ex:
         return {
+            'code': '1',
             'desc': str(ex)
         }
 
