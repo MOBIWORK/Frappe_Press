@@ -57,7 +57,7 @@
 						<div class="text-2xl font-medium">
 							{{
 								$account.team.payment_mode == 'Prepaid Credits'
-									? 'Tín dụng trả trước'
+									? 'Trả trước'
 									: $account.team.payment_mode || 'Chưa đặt'
 							}}
 						</div>

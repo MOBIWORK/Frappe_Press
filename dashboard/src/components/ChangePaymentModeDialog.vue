@@ -16,7 +16,7 @@
 	>
 		<template v-slot:body-content>
 			<FormControl
-				label="Chọn lại thanh toán"
+				label="Chọn loại thanh toán"
 				type="select"
 				:options="paymentModeOptions"
 				v-model="paymentMode"
@@ -128,7 +128,7 @@ export default {
 			// }
 			// return ['Card', 'Prepaid Credits', 'Paid By Partner'];
 
-			return [{ label: 'Tín dụng trả trước', value: 'Prepaid Credits' }];
+			return [{ label: 'Trả trước', value: 'Prepaid Credits' }];
 		}
 	}
 };

@@ -51,11 +51,9 @@
 							})
 						}}
 					</Link>
-					<span v-if="invoice.type === 'Prepaid Credits'">
-						Tín dụng trả trước
-					</span>
+					<span v-if="invoice.type === 'Prepaid Credits'"> Trả trước </span>
 					<span v-if="invoice.type === 'Transferred Credits'">
-						Transferred Credits
+						Tín dụng đã chuyển
 					</span>
 				</span>
 				<span class="hidden md:inline">{{ invoice.formatted_total }}</span>

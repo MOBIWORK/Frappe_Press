@@ -103,12 +103,14 @@
   {
    "fieldname": "order_code",
    "fieldtype": "Data",
-   "label": "Order Code"
+   "label": "Order Code",
+   "read_only": 1
   },
   {
    "fieldname": "checkout_url",
    "fieldtype": "Data",
-   "label": "Checkout Url"
+   "label": "Checkout Url",
+   "read_only": 1
   },
   {
    "default": "PAID",
@@ -121,7 +123,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-23 09:35:58.826400",
+ "modified": "2023-12-25 11:04:16.591070",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",

@@ -42,8 +42,18 @@
 		</div>
 		<ErrorMessage
 			class="mt-2"
-			:message="$resources.createPaymentIntent.error || errorMessage"
+			:message="
+				$resources.createaOrder.data?.code == 1 &&
+				$resources.createaOrder.data?.desc
+			"
 		/>
+		<router-link
+			v-if="$resources.createaOrder.data?.code == 1"
+			class="text-sm underline"
+			to="credit-balance"
+		>
+			Đến thanh toán
+		</router-link>
 		<div v-if="infoOrder">
 			<div>Thông tin hóa đơn đã được tạo:</div>
 			<div class="rounded-md border p-2">
@@ -154,7 +164,7 @@ export default {
 						this.infoOrder = data.infoOrder;
 					} else {
 						notify({
-							title: 'Có lỗi xảy ra vui lòng thử lại.',
+							title: data.desc,
 							color: 'red',
 							icon: 'x'
 						});

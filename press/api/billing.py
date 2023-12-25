@@ -21,7 +21,7 @@ from press.utils.billing import (
     GSTIN_FORMAT,
 )
 
-from payos import PayOS, ItemData, PaymentData
+from payos import PayOS, PaymentData
 
 import random
 NUMBERCHOICE_HEAD = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -112,7 +112,8 @@ def balances():
             bt.source,
             bt.type,
             bt.ending_balance,
-            bt.description,
+            bt.checkout_url,
+            bt.payos_payment_status,
             inv.period_start,
         )
         .where((bt.team == team))
@@ -123,7 +124,9 @@ def balances():
     for d in data:
         d.formatted = dict(
             amount=fmt_money(d.amount, 0, d.currency),
-            ending_balance=fmt_money(d.ending_balance, 0, d.currency),
+            ending_balance=fmt_money(
+                d.ending_balance - d.amount, 0, d.currency) if d.docstatus == 2 else fmt_money(
+                d.ending_balance, 0, d.currency),
         )
 
         if d.period_start:
@@ -260,7 +263,22 @@ def create_order(amount):
         if not payos_settings:
             return {
                 'code': '1',
-                'desc': 'Chưa thể nạp tiền ngay lúc này'
+                'desc': 'Chưa thể nạp tiền ngay lúc này, vui lòng thử lại sau.'
+            }
+
+        # check exists pre payment
+        check_pre_payment = frappe.db.exists(
+            "Balance Transaction",
+            {
+                "team": team,
+                "payos_payment_status": "PENDING"
+            }
+        )
+
+        if check_pre_payment:
+            return {
+                'code': '1',
+                'desc': 'Vui lòng thanh toán giao dịch nạp tiền trước đó.'
             }
 
         # check orderCode exsists
@@ -279,9 +297,10 @@ def create_order(amount):
             doctype="Balance Transaction",
             team=team,
             type="Adjustment",
-            source='Prepaid Credits',
+            source='Transferred Credits',
             amount=amount,
             description=remark,
+            payos_payment_status='PROCESSING'
         )
         doc.insert(ignore_permissions=True)
 
@@ -299,13 +318,100 @@ def create_order(amount):
 
 
 @frappe.whitelist()
+def payos_return_cancel_order(order_code):
+    try:
+        name = frappe.db.get_value(
+            'Balance Transaction', {'order_code': order_code}, ['name'])
+
+        if not name:
+            return {
+                'code': '1',
+                'desc': 'Không tìm thấy giao dịch.'
+            }
+
+        balance_transaction = frappe.get_doc(
+            "Balance Transaction", name)
+        if balance_transaction.docstatus != 0 or balance_transaction.payos_payment_status == "CANCELLED":
+            return {
+                'code': '1',
+                'desc': "Giao dịch đã được hủy trước đó"
+            }
+
+        balance_transaction.payos_payment_status = 'CANCELLED'
+        balance_transaction.docstatus = 1
+        balance_transaction.save(ignore_permissions=True)
+
+        balance_transaction = frappe.get_doc(
+            "Balance Transaction", name)
+        balance_transaction.docstatus = 2
+        balance_transaction.save(ignore_permissions=True)
+
+        return {
+            'code': '00',
+            'desc': 'Success'
+        }
+    except Exception as ex:
+        return {
+            'code': '1',
+            'desc': str(ex)
+        }
+
+
+@frappe.whitelist()
+def cancel_order(name):
+    try:
+        payos_settings = check_payos_settings()
+        balance_transaction = frappe.get_doc(
+            "Balance Transaction", name)
+
+        if not payos_settings or not balance_transaction:
+            return {
+                'code': '1',
+                'desc': 'Chưa thể hủy giao dịch ngay lúc này, vui lòng thử lại sau.'
+            }
+
+        payOS = PayOS(client_id=payos_settings.get('payos_client_id'), api_key=payos_settings.get(
+            'payos_api_key'), checksum_key=payos_settings.get('payos_checksum_key'))
+
+        paymentLinkInfo = payOS.cancelPaymentLink(
+            orderId=balance_transaction.get('order_code'))
+        if paymentLinkInfo.status == "CANCELLED":
+            balance_transaction.payos_payment_status = 'CANCELLED'
+            balance_transaction.docstatus = 1
+            balance_transaction.save(ignore_permissions=True)
+
+            balance_transaction = frappe.get_doc(
+                "Balance Transaction", name)
+            balance_transaction.docstatus = 2
+            balance_transaction.save(ignore_permissions=True)
+
+            return {
+                'code': '00',
+                'desc': 'Success'
+            }
+        else:
+            return {
+                'code': '1',
+                'desc': 'Hủy thất bại.'
+            }
+    except Exception as ex:
+        return {
+            'code': '1',
+            'desc': str(ex)
+        }
+
+
+@frappe.whitelist()
 def get_link_payment_payos(info_order):
     try:
         payos_settings = check_payos_settings()
-        if not payos_settings:
+        balance_transaction = frappe.get_doc(
+            "Balance Transaction", info_order.get('name'))
+
+        if not payos_settings or not balance_transaction:
             return {
                 'code': '1',
-                'desc': 'Chưa thể nạp tiền ngay lúc này'
+                'desc': 'Chưa thể nạp tiền ngay lúc này, vui lòng thử lại sau.'
             }
 
         payOS = PayOS(client_id=payos_settings.get('payos_client_id'), api_key=payos_settings.get(
@@ -320,9 +426,8 @@ def get_link_payment_payos(info_order):
         )
 
         paymentLinkData = payOS.createPaymentLink(paymentData=paymentData)
-        balance_transaction = frappe.get_doc(
-            "Balance Transaction", info_order.get('name'))
         balance_transaction.checkout_url = paymentLinkData.checkoutUrl
+        balance_transaction.payos_payment_status = 'PENDING'
         balance_transaction.save(ignore_permissions=True)
 
         return {
