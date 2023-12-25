@@ -145,7 +145,7 @@ export default {
 	methods: {
 		getStatus(d) {
 			var statusCode = 3;
-			if (d.docstatus == 1 && d.payos_payment_status == 'PAID') {
+			if (d.docstatus == 1) {
 				statusCode = 1;
 			} else if (d.payos_payment_status == 'CANCELLED' || d.docstatus == 2) {
 				statusCode = 2;

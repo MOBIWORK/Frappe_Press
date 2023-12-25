@@ -69,6 +69,7 @@ def webhook_payment(**webhookBody):
             }
 
         balance_transaction.docstatus = 1
+        balance_transaction.payos_payment_status = "PAID"
         balance_transaction.save(ignore_permissions=True)
 
         doc_log.code = '00'
