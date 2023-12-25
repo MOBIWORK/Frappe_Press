@@ -37,7 +37,11 @@
 				</div>
 				<div
 					class="flex min-w-40 space-x-2"
-					v-if="d.payos_payment_status == 'PENDING' && d.checkout_url"
+					v-if="
+						d.docstatus == 0 &&
+						d.payos_payment_status == 'PENDING' &&
+						d.checkout_url
+					"
 				>
 					<Link :href="d.checkout_url" class="border-none">
 						<Button
