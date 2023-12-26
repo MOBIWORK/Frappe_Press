@@ -151,7 +151,7 @@ export default {
 			var statusCode = 3;
 			if (d.docstatus == 1) {
 				statusCode = 1;
-			} else if (d.payos_payment_status == 'CANCELLED' || d.docstatus == 2) {
+			} else if (d.docstatus == 2) {
 				statusCode = 2;
 			} else if (d.payos_payment_status == 'PENDING' && d.docstatus == 0) {
 				statusCode = 0;

@@ -113,6 +113,8 @@
   "column_break_95",
   "standby_queue_size",
   "integrations_tab",
+  "email_section",
+  "email_template_money_into_account",
   "telegram_section",
   "telegram_chat_id",
   "column_break_65",
@@ -1134,11 +1136,22 @@
    "fieldname": "payos_cancel_url",
    "fieldtype": "Data",
    "label": "Cancel Url"
+  },
+  {
+   "fieldname": "email_section",
+   "fieldtype": "Section Break",
+   "label": "Email"
+  },
+  {
+   "fieldname": "email_template_money_into_account",
+   "fieldtype": "Link",
+   "label": "Template Confirm Money Into Account",
+   "options": "Email Template"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-12-22 09:19:28.989249",
+ "modified": "2023-12-26 09:44:10.981771",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

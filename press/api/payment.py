@@ -4,8 +4,11 @@
 
 
 import frappe
+from frappe.utils import fmt_money
+
 from press.utils import check_payos_settings
 from payos import PayOS
+from jinja2 import Template
 
 
 @frappe.whitelist()
@@ -14,6 +17,77 @@ def all():
         "Payment", fields=["name"], filters={"user": frappe.session.user}
     )
     return payments
+
+
+def send_email_confirm_money_into_account(balance_transaction):
+    msg = ''
+    name_email_template = frappe.db.get_value(
+        "Press Settings", "Press Settings", "email_template_money_into_account"
+    )
+
+    if not balance_transaction:
+        return "Không tìm thấy giao dịch"
+
+    team_name = balance_transaction.team
+    if not team_name:
+        return 'Không tìm thấy người dùng'
+
+    if name_email_template:
+        email_template = frappe.db.get_value('Email Template', name_email_template, [
+            'subject', 'use_html', 'response_html', 'response'], as_dict=1)
+        if email_template:
+            if email_template.use_html:
+                content_email = email_template.response_html
+            else:
+                content_email = email_template.response
+
+            # Tạo đối tượng Jinja Template
+            template = Template(content_email)
+
+            check_billing_address = True
+            team = frappe.get_doc("Team", team_name)
+
+            if team and team.billing_address:
+                billing_details = frappe.get_doc(
+                    "Address", team.billing_address)
+                if not billing_details or not billing_details.email_id:
+                    check_billing_address = False
+            else:
+                check_billing_address = False
+
+            if check_billing_address:
+                # Thay thế giá trị của biến trong mẫu
+                transaction_type = "Nạp tiền vào TK trên MBW Cloud"
+                trading_code = balance_transaction.order_code
+                formattor_amount = fmt_money(
+                    balance_transaction.ending_balance, 0)
+                amount = f'+{formattor_amount} VNĐ'
+                transaction_information = 'Nap tien TK MBW Cloud tu PayOs'
+                rendered_email = template.render(
+                    customer_name=billing_details.address_title,
+                    transaction_type=transaction_type,
+                    trading_code=trading_code,
+                    amount=amount,
+                    transaction_information=transaction_information
+                )
+
+                frappe.sendmail(
+                    recipients=billing_details.email_id,
+                    subject=email_template.subject,
+                    template="confirm_money_into_account",
+                    args={
+                        "rendered_email": rendered_email,
+                    },
+                    now=True
+                )
+            else:
+                msg = 'Không có địa chỉ gửi email'
+        else:
+            msg = 'Không có mẫu Email Template'
+    else:
+        msg = 'Không có mẫu Email Template'
+
+    return msg
 
 
 @frappe.whitelist(allow_guest=True, methods=['POST'])
@@ -74,6 +148,14 @@ def webhook_payment(**webhookBody):
 
         doc_log.code = '00'
         doc_log.message = 'Thanh toán thành công.'
+
+        # send email template
+        balance_transaction = frappe.get_doc(
+            "Balance Transaction", name)
+        msg_send = send_email_confirm_money_into_account(
+            balance_transaction)
+
+        doc_log.message = msg_send
         doc_log.insert(ignore_permissions=True)
 
         return {
