@@ -297,7 +297,7 @@ def create_order(amount):
             doctype="Balance Transaction",
             team=team,
             type="Adjustment",
-            source='Transferred Credits',
+            source='Prepaid Credits',
             amount=amount,
             description=remark,
             payos_payment_status='PROCESSING'

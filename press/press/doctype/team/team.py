@@ -419,7 +419,8 @@ class Team(Document):
 
         if not self.free_credits_allocated:
             # allocate free credits on signup
-            credits_field = "free_credits_vnd" if self.currency == "VND" else "free_credits_usd"
+            # credits_field = "free_credits_vnd" if self.currency == "VND" else "free_credits_usd"
+            credits_field = "free_credits_vnd"
             credit_amount = frappe.db.get_single_value(
                 "Press Settings", credits_field)
             if not credit_amount:

@@ -163,8 +163,8 @@ export default {
 		},
 		getDescription(d) {
 			var typeSource = {
-				'Prepaid Credits': 'Trả trước',
-				'Transferred Credits': 'Tiền nạp',
+				'Prepaid Credits': 'Tiền trả trước',
+				'Transferred Credits': 'Tiền đã chuyển',
 				'Free Credits': 'Tiền ưu đãi'
 			};
 
