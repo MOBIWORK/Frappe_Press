@@ -257,7 +257,7 @@ def create_order(amount):
     try:
         team = get_current_team()
         amount = round(amount)
-        remark = "Nap tien TK MBW Cloud tu PayOs"
+        remark = "Nap tien TK MBW Cloud"
 
         payos_settings = check_payos_settings()
         if not payos_settings:
