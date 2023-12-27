@@ -42,21 +42,15 @@
 						</Tooltip>
 					</div>
 					<div class="mt-1 text-sm text-gray-600">
-						${{ Number(plan.price_vnd / 30).toFixed(2) }} /ngày
+						{{ Number(plan.price_vnd / 30).toFixed(2) }} VND /ngày
 					</div>
 				</div>
 				<div class="p-3 text-p-sm text-gray-800">
 					<div>
 						<span class="font-medium">{{ plan.cpu_time_per_day }} </span>
 						<span class="ml-1 text-gray-600">
-							{{
-								$format.plural(
-									plan.cpu_time_per_day,
-									'compute hour',
-									'compute hours'
-								)
-							}}
-							/ day
+							{{ $format.plural(plan.cpu_time_per_day, 'giờ', 'giờ') }}
+							/ ngày
 						</span>
 					</div>
 					<div>

@@ -78,8 +78,8 @@ export default {
 		getPlanFeatures(plan) {
 			let features = [
 				`${plan.cpu_time_per_day} ` +
-					this.$plural(plan.cpu_time_per_day, 'hour', 'hours') +
-					' CPU per day',
+					this.$plural(plan.cpu_time_per_day, 'giờ', 'giờ') +
+					' CPU mỗi ngày',
 				this.formatBytes(plan.max_database_usage, 0, 2) + ' Database',
 				this.formatBytes(plan.max_storage_usage, 0, 2) + ' Storge'
 			];

@@ -52,8 +52,8 @@
 						v-if="plan.current_plan.name != 'Unlimited'"
 					>
 						{{ plan.current_plan.cpu_time_per_day }}
-						{{ $plural(plan.current_plan.cpu_time_per_day, 'hour', 'hours') }}
-						of CPU / ngày
+						{{ $plural(plan.current_plan.cpu_time_per_day, 'giờ', 'giờ') }}
+						của CPU / ngày
 					</p>
 				</div>
 			</div>
@@ -177,7 +177,7 @@ export default {
 			return [
 				{
 					label: 'CPU',
-					value: `${this.plan.total_cpu_usage_hours} hours`
+					value: `${this.plan.total_cpu_usage_hours} giờ`
 				},
 				{
 					label: 'Database',
@@ -241,15 +241,15 @@ export default {
 						this.plan.current_plan.name === 'Unlimited'
 							? `${this.plan.total_cpu_usage_hours} ${this.$plural(
 									this.plan.current_plan.cpu_time_per_day,
-									'hour',
-									'hours'
+									'giờ',
+									'giờ'
 							  )}`
 							: `${this.plan.total_cpu_usage_hours} / ${
 									this.plan.current_plan.cpu_time_per_day
 							  } ${this.$plural(
 									this.plan.current_plan.cpu_time_per_day,
-									'hour',
-									'hours'
+									'giờ',
+									'giờ'
 							  )}`,
 					percentage:
 						(this.plan.total_cpu_usage_hours /

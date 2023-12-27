@@ -71,7 +71,7 @@
 							<div class="mt-1 text-sm text-gray-600">
 								<span>
 									CPU {{ plan.cpu_time_per_day }}
-									{{ plan.cpu_time_per_day == 1 ? 'hour' : 'hours' }}/ngày
+									giờ/ngày
 								</span>
 								<span class="mx-1"> &middot; </span>
 								<span>

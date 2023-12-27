@@ -1,8 +1,12 @@
 <template>
-	<Dialog :options="{ title: `Finalize Unsettled Invoices` }" modelValue="show">
+	<Dialog
+		:options="{ title: `Hoàn tất hóa đơn chưa thanh toán` }"
+		modelValue="show"
+	>
 		<template #body-content>
 			<div class="prose text-base">
-				You have unpaid invoices on your account for the following periods:
+				Bạn có hóa đơn chưa thanh toán trong tài khoản của mình cho các kỳ sau
+				đây:
 				<ul class="pt-2">
 					<li
 						class="font-semibold"
@@ -15,16 +19,14 @@
 							})
 						}}
 						-
-						{{
-							(invoice.currency === 'INR' ? '₹ ' : '$ ') + invoice.amount_due
-						}}
+						{{ invoice.amount_due + ' VND' }}
 					</li>
 				</ul>
-				Please finalize and settle them before removing all payment methods or
-				disabling the account. You can check the details of invoices and make
-				the payment from
-				<Link to="/billing/invoices/">here</Link>. It might take up to 2 hours
-				for the payment to reflect against your invoices.
+				Vui lòng hoàn tất và thanh toán các hóa đơn trước khi xóa tất cả các
+				phương thức thanh toán hoặc tắt tài khoản. Bạn có thể kiểm tra chi tiết
+				hóa đơn và thực hiện thanh toán từ
+				<Link to="/billing/invoices/">tại đây</Link>. Có thể mất đến 2 giờ để
+				thanh toán được cập nhật trong các hóa đơn của bạn.
 			</div>
 		</template>
 		<template #actions>
@@ -33,7 +35,7 @@
 				class="w-full"
 				@click="$resources.finalizeInvoices.submit()"
 			>
-				Finalize Invoices
+				Hoàn tất hóa đơn
 			</Button>
 		</template>
 	</Dialog>
