@@ -32,7 +32,7 @@ const payouts = createResource({
 					<span class="hidden md:inline">Trạng thái</span>
 					<!-- <span>Net INR</span>
 					<span>Net USD</span> -->
-					<span>VND</span>
+					<span>Net VND</span>
 					<span></span>
 				</div>
 
@@ -61,8 +61,9 @@ const payouts = createResource({
 					</div>
 
 					<!-- <div>₹{{ round(payout.net_total_inr, 2) }}</div> -->
+					<!-- <div>${{ round(payout.net_total_usd, 2) }}</div> -->
 
-					<div>${{ round(payout.net_total_usd, 2) }}</div>
+					<div>${{ round(payout.net_total_vnd, 0) }}</div>
 
 					<div>
 						<Button :route="`/marketplace/payouts/${payout.name}`"

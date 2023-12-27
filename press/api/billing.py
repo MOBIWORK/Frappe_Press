@@ -629,7 +629,7 @@ def get_invoice_usage(invoice):
     # a dict with formatted currency values for display
     out.formatted = make_formatted_doc(doc)
     out.invoice_pdf = doc.invoice_pdf or (
-        doc.currency == "USD" and doc.get_pdf())
+        doc.currency == "VND" and doc.get_pdf())
     return out
 
 

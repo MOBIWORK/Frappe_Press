@@ -24,6 +24,7 @@
   "section_break_12",
   "items",
   "section_break_14",
+  "net_total_vnd",
   "net_total_inr",
   "column_break_15",
   "net_total_usd",
@@ -151,12 +152,18 @@
    "fieldtype": "Check",
    "label": "Ignore Commission",
    "options": "0"
+  },
+  {
+   "fieldname": "net_total_vnd",
+   "fieldtype": "Currency",
+   "label": "Net Total VND",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-30 12:41:38.091177",
+ "modified": "2023-12-27 08:22:23.087246",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Payout Order",

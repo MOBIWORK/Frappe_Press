@@ -148,6 +148,7 @@
   "allow_developer_account",
   "threshold",
   "commission",
+  "vnd_rate",
   "usd_rate",
   "app_include_script",
   "plausible_column",
@@ -1147,11 +1148,17 @@
    "fieldtype": "Link",
    "label": "Template Confirm Money Into Account",
    "options": "Email Template"
+  },
+  {
+   "default": "0",
+   "fieldname": "vnd_rate",
+   "fieldtype": "Float",
+   "label": "Commission VND Rate"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-12-26 09:44:10.981771",
+ "modified": "2023-12-27 09:27:48.732159",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

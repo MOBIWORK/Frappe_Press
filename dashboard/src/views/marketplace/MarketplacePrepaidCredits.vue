@@ -12,14 +12,14 @@
 		<table v-if="$account.team" class="text w-full text-sm">
 			<thead>
 				<tr class="text-gray-600">
-					<th class="border-b text-left font-normal">App</th>
+					<th class="border-b text-left font-normal">Ứng dụng</th>
 					<th
 						class="whitespace-nowrap border-b py-2 pr-2 text-center font-normal"
 					>
-						Plan
+						Gói
 					</th>
 					<th class="border-b py-3 pr-2 text-right font-normal">
-						Amount /month
+						Số tiền /tháng
 					</th>
 				</tr>
 			</thead>
@@ -62,27 +62,27 @@
 
 		<div class="mt-4 flex-row" v-if="$account.team">
 			<div class="mb-3 flex justify-between">
-				<p>Subtotal</p>
+				<p>Tổng phụ</p>
 				<p class="text-lg">
 					{{ getCurrencySymbol() + subtotal }}
 				</p>
 			</div>
 
 			<div class="mb-3 flex justify-between">
-				<p>Discount</p>
+				<p>Giảm giá</p>
 				<p class="text-lg text-green-500">
 					{{ discount_percent == 0 ? '-' : discount_percent + '%' }}
 				</p>
 			</div>
 
 			<div class="flex justify-between">
-				GST (if applicable)
+				GST (nếu áp dụng)
 				<p class="text-lg text-red-500">{{ gstApplicable() ? '18%' : '-' }}</p>
 			</div>
 
 			<hr class="my-4" />
 			<div class="flex justify-between">
-				<p class="mb-3">Allocated Credits</p>
+				<p class="mb-3">Tín dụng đã phân bổ</p>
 				<p class="text-lg">
 					{{ creditsToBuy }}
 				</p>
@@ -91,7 +91,7 @@
 				class="flex justify-between"
 				v-if="$resources.subscriptions.data || planData"
 			>
-				<p class="mb-3 font-medium">Total</p>
+				<p class="mb-3 font-medium">Tổng cộng</p>
 				<p class="text-xl font-semibold">
 					{{ getCurrencySymbol() + getTotal() }}
 				</p>
@@ -111,14 +111,14 @@
 			@click="$resources.usePartnerCredits.submit()"
 			:loading="$resources.usePartnerCredits.loading"
 		>
-			Use Partner Credits
+			Sử dụng tín dụng đối tác
 		</Button>
 		<Button
 			class="w-full"
 			v-if="!$account.team.erpnext_partner && $account.balance >= creditsToBuy"
 			@click="step = 'Use Existing Credits'"
 		>
-			Use Existing Credits
+			Sử dụng tín dụng hiện tại
 		</Button>
 		<Button
 			class="mt-2 w-full"
@@ -126,18 +126,18 @@
 			@click="$resources.changePlan.submit()"
 			:loading="$resources.changePlan.loading"
 		>
-			Pay Amount
+			Thanh toán số tiền
 		</Button>
 	</div>
 
 	<!-- Use existing credits dialog -->
 	<div v-if="step == 'Use Existing Credits'">
 		<p class="text-base">
-			You current credit balance is
+			Số dư tín dụng hiện tại của bạn là
 			<span class="font-bold">{{ this.$account.balance }}</span
-			>. Choosing this option will apply the existing credits to the new
-			subscription. This might affect expiry of other active subscriptions. Are
-			you sure you want to proceed?
+			>. Chọn tùy chọn này sẽ áp dụng tín dụng hiện tại vào đăng ký mới. Điều
+			này có thể ảnh hưởng đến thời hạn của các đăng ký đang hoạt động khác. Bạn
+			có chắc chắn muốn tiếp tục không?
 		</p>
 		<div class="mt-6">
 			<Button
@@ -145,7 +145,7 @@
 				type="secondary"
 				@click="() => (this.step = 'Confirm Checkout')"
 			>
-				Back
+				Quay lại
 			</Button>
 			<Button
 				class="mt-2 w-full"
@@ -153,7 +153,7 @@
 				@click="$resources.useCredits.submit()"
 				:loading="$resources.useCredits.loading"
 			>
-				Confirm
+				Xác nhận
 			</Button>
 		</div>
 	</div>

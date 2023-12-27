@@ -52,6 +52,30 @@ const payout = createResource({
 				</thead>
 
 				<tbody>
+					<tr v-for="(row, i) in payout.data.vnd_items" :key="row.idx">
+						<td class="border-b py-3 pr-2">
+							{{ row.description || row.document_name }} -
+							<strong class="font-semibold">{{ row.site }}</strong>
+						</td>
+						<td class="border-b py-3 pr-2 text-right">
+							${{ row.rate }} x {{ row.quantity }}
+						</td>
+						<td class="border-b py-3 pr-2 text-right">
+							${{ row.total_amount }}
+						</td>
+						<td class="border-b py-3 pr-2 text-right">
+							${{ round(row.gateway_fee, 2) }}
+						</td>
+						<td class="border-b py-3 pr-2 text-right">
+							${{ round(row.commission, 2) }}
+						</td>
+						<td class="border-b py-3 pr-2 text-right">
+							${{ round(row.net_amount, 2) }}
+						</td>
+					</tr>
+				</tbody>
+
+				<tbody>
 					<tr v-for="(row, i) in payout.data.usd_items" :key="row.idx">
 						<td class="border-b py-3 pr-2">
 							{{ row.description || row.document_name }} -
@@ -84,9 +108,10 @@ const payout = createResource({
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							${{ round(payout.data.net_total_usd, 2) }} + ₹{{
+							<!-- ${{ round(payout.data.net_total_usd, 2) }} + ₹{{
 								round(payout.data.net_total_inr, 2)
-							}}
+							}} -->
+							{{ round(payout.data.net_total_vnd, 0) }} VND
 						</td>
 					</tr>
 				</tfoot>

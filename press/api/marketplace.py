@@ -835,6 +835,7 @@ def get_payouts_list() -> List[Dict]:
             "status",
             "due_date",
             "mode_of_payment",
+            "net_total_vnd",
             "net_total_inr",
             "net_total_usd",
         ],
@@ -869,13 +870,16 @@ def get_payout_details(name: str) -> Dict:
         "Payout Order",
         name,
         ["status", "due_date", "mode_of_payment",
-         "net_total_inr", "net_total_usd"],
+         "net_total_vnd", "net_total_inr", "net_total_usd"],
         as_dict=True,
     )
 
-    grouped_items = {"usd_items": [], "inr_items": [], **payout_order}
+    grouped_items = {"vnd_items": [], "usd_items": [],
+                     "inr_items": [], **payout_order}
     for item in order_items:
-        if item.currency == "INR":
+        if item.currency == "VND":
+            grouped_items["vnd_items"].append(item)
+        elif item.currency == "INR":
             grouped_items["inr_items"].append(item)
         else:
             grouped_items["usd_items"].append(item)

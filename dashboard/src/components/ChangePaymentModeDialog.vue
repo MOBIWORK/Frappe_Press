@@ -116,7 +116,7 @@ export default {
 	computed: {
 		paymentModeDescription() {
 			return {
-				Card: `Your card will be charged for monthly subscription`,
+				Card: `Thẻ của bạn sẽ bị tính phí cho đăng ký hàng tháng`,
 				'Prepaid Credits': `Bạn sẽ bị tính phí từ số dư tài khoản của mình cho đăng ký hàng tháng`,
 				'Partner Credits': `You will be charged from your partner credits on frappe.io`,
 				'Paid By Partner': `Your partner will be charged for monthly subscription`

@@ -11,7 +11,8 @@
   "team",
   "app",
   "total_usd",
-  "total_inr"
+  "total_inr",
+  "total_vnd"
  ],
  "fields": [
   {
@@ -38,11 +39,17 @@
    "fieldname": "total_inr",
    "fieldtype": "Currency",
    "label": "Total (INR)"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_vnd",
+   "fieldtype": "Currency",
+   "label": "Total (VND)"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-19 13:32:58.619981",
+ "modified": "2023-12-27 09:22:36.481304",
  "modified_by": "Administrator",
  "module": "Marketplace",
  "name": "Marketplace App Payment",

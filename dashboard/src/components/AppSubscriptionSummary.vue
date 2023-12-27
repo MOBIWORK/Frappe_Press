@@ -14,14 +14,14 @@
 				</div>
 				<div class="flex flex-col">
 					<div
-						class="rounded-md bg-blue-100 py-1 px-2 text-xs uppercase text-blue-500"
+						class="rounded-md bg-blue-100 px-2 py-1 text-xs uppercase text-blue-500"
 					>
 						Most popular
 					</div>
 					<p
 						class="mt-1 self-end text-right text-xl font-semibold text-gray-900"
 					>
-						$10<span class="text-base font-normal text-gray-600">/ Month</span>
+						$10<span class="text-base font-normal text-gray-600">/ Tháng</span>
 					</p>
 				</div>
 			</li>
@@ -38,7 +38,7 @@
 					<p
 						class="mt-1 self-center text-right text-xl font-semibold text-gray-900"
 					>
-						$49<span class="text-base font-normal text-gray-600">/ Month</span>
+						$49<span class="text-base font-normal text-gray-600">/ Tháng</span>
 					</p>
 				</div>
 			</li>
@@ -46,7 +46,7 @@
 				<div class="flex flex-row self-end">
 					<!-- Replace with app icon -->
 					<div
-						class="mr-3 h-10 w-10 self-center rounded-lg bg-indigo-400"
+						class="bg-indigo-400 mr-3 h-10 w-10 self-center rounded-lg"
 					></div>
 					<div class="flex flex-col">
 						<h4 class="text-lg font-medium text-gray-900">Frappe Healthcare</h4>
@@ -57,7 +57,7 @@
 					<p
 						class="mt-1 self-end text-right text-xl font-semibold text-gray-900"
 					>
-						$129<span class="text-base font-normal text-gray-600">/ Month</span>
+						$129<span class="text-base font-normal text-gray-600">/ Tháng</span>
 					</p>
 				</div>
 			</li>
