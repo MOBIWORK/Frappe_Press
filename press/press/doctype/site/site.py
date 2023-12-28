@@ -95,8 +95,7 @@ class Site(Document):
         site_regex = r"^[a-z0-9][a-z0-9-]*[a-z0-9]$"
         if not re.match(site_regex, self.subdomain):
             frappe.throw(
-                "Subdomain contains invalid characters. Use lowercase"
-                " characters, numbers and hyphens"
+                "Tên miền chứa các ký tự không hợp lệ. Sử dụng chữ thường, số và dấu gạch ngang"
             )
         if len(self.subdomain) > 32:
             frappe.throw("Subdomain too long. Use 32 or less characters")

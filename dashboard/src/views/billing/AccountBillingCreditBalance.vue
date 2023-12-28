@@ -17,13 +17,13 @@
 				:key="d.name"
 			>
 				<div class="hidden md:block">
-					{{ formatDate(d) }}
+					{{ this.$formatDate(d.creation) }}
 				</div>
 				<div class="col-span-2 whitespace-nowrap text-gray-700 md:col-span-1">
 					<div>
 						{{ getDescription(d) }}
 					</div>
-					<div class="md:hidden">{{ formatDate(d) }}</div>
+					<div class="md:hidden">{{ this.$formatDate(d.creation) }}</div>
 				</div>
 				<div class="whitespace-nowrap text-gray-700">
 					{{ d.formatted.amount }}
@@ -158,9 +158,7 @@ export default {
 			}
 			return statusCode;
 		},
-		formatDate(d) {
-			return this.$date(d.creation).toFormat('dd-MM-yyyy');
-		},
+
 		getDescription(d) {
 			var typeSource = {
 				'Prepaid Credits': 'Tiền trả trước',

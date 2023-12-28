@@ -26,13 +26,7 @@
 			>
 				<div>
 					<div>
-						{{
-							$date(invoice.date).toLocaleString({
-								month: 'long',
-								day: 'numeric',
-								year: 'numeric'
-							})
-						}}
+						{{ this.$formatDate(invoice.date) }}
 					</div>
 					<div class="mt-2 md:hidden">
 						{{ invoice.formatted_total }}
@@ -44,16 +38,13 @@
 						:to="'/billing/' + invoice.name + '/invoices'"
 					>
 						Hóa đơn cho
-						{{
-							$date(invoice.period_end).toLocaleString({
-								month: 'long',
-								year: 'numeric'
-							})
-						}}
+						{{ this.$formatDate(invoice.period_end) }}
 					</Link>
-					<span v-if="invoice.type === 'Prepaid Credits'"> Trả trước </span>
+					<span v-if="invoice.type === 'Prepaid Credits'">
+						Tiền trả trước
+					</span>
 					<span v-if="invoice.type === 'Transferred Credits'">
-						Tín dụng đã chuyển
+						Tiền đã chuyển
 					</span>
 				</span>
 				<span class="hidden md:inline">{{ invoice.formatted_total }}</span>
@@ -68,13 +59,7 @@
 							invoice.payment_date
 						"
 					>
-						{{
-							$date(invoice.payment_date).toLocaleString({
-								month: 'long',
-								day: 'numeric',
-								year: 'numeric'
-							})
-						}}
+						{{ this.$formatDate(invoice.payment_date) }}
 					</span>
 				</span>
 				<div class="flex items-center justify-end space-x-2">

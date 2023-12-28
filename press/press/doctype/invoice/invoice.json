@@ -43,6 +43,8 @@
   "section_break_15",
   "credit_allocations",
   "stripe_billing_section",
+  "payos_billing_section",
+  "payos_invoice_id",
   "stripe_invoice_id",
   "stripe_payment_intent_id",
   "stripe_invoice_url",
@@ -158,11 +160,13 @@
   {
    "fieldname": "stripe_billing_section",
    "fieldtype": "Section Break",
+   "hidden": 1,
    "label": "Stripe Billing"
   },
   {
    "fieldname": "stripe_invoice_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe Invoice ID",
    "no_copy": 1
   },
@@ -314,6 +318,7 @@
    "depends_on": "eval:doc.type == 'Prepaid Credits'",
    "fieldname": "stripe_payment_intent_id",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "Stripe Payment Intent ID",
    "no_copy": 1
   },
@@ -429,6 +434,16 @@
    "fieldtype": "Currency",
    "label": "Total Before Tax",
    "options": "currency"
+  },
+  {
+   "fieldname": "payos_billing_section",
+   "fieldtype": "Section Break",
+   "label": "PayOs Billing"
+  },
+  {
+   "fieldname": "payos_invoice_id",
+   "fieldtype": "Data",
+   "label": "PayOs Invoice ID"
   }
  ],
  "is_submittable": 1,
@@ -454,7 +469,7 @@
    "link_fieldname": "invoice"
   }
  ],
- "modified": "2023-11-14 12:52:53.654283",
+ "modified": "2023-12-27 16:48:40.217289",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice",

@@ -156,6 +156,11 @@ doc_events = {
             "press.press.doctype.team.team.process_stripe_webhook",
         ],
     },
+    "PayOs Webhook Log": {
+        "after_insert": [
+            "press.press.doctype.team.team.process_payos_webhook",
+        ],
+    },
     "Address": {"validate": "press.api.billing.validate_gst"},
     "Site": {"before_insert": "press.press.doctype.team.team.validate_site_creation"},
     "Marketplace App Subscription": {

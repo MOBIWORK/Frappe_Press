@@ -107,7 +107,7 @@
 								@click="$resources.newSite.submit()"
 								:loading="$resources.newSite.loading"
 							>
-								Tạo Trang web
+								Tạo trang web
 							</Button>
 						</div>
 					</div>

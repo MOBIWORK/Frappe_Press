@@ -32,6 +32,9 @@ let utils = {
 			}
 			return format;
 		},
+		$formatDate(d) {
+			return this.$date(d).toFormat('dd-MM-yyyy');
+		},
 		$formatDuration(value) {
 			// Remove decimal seconds
 			value = value.split('.')[0];

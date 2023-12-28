@@ -109,8 +109,7 @@
   {
    "fieldname": "checkout_url",
    "fieldtype": "Data",
-   "label": "Checkout Url",
-   "read_only": 1
+   "label": "Checkout Url"
   },
   {
    "default": "PAID",
@@ -123,7 +122,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-25 11:04:16.591070",
+ "modified": "2023-12-28 11:32:29.664908",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",
