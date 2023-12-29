@@ -467,10 +467,18 @@ def convert_user_timezone_to_utc(datetime):
 
 
 def check_payos_settings():
-    check_payos_settings = frappe.db.get_value(
-        "Press Settings", "Press Settings", ["payos_webhook_url", "payos_client_id", "payos_api_key", "payos_checksum_key", "payos_return_url", "payos_cancel_url"], as_dict=True)
+    fields = ["payos_webhook_url_current", "payos_client_id", "payos_api_key",
+              "payos_checksum_key", "payos_return_url", "payos_cancel_url"]
+    fields_check = []
+    payos_settings = frappe.db.get_value(
+        "Press Settings", "Press Settings", fields, as_dict=True)
 
-    for x in check_payos_settings.values():
-        if not x:
+    for x, y in payos_settings.items():
+        fields_check.append(x)
+        if not y:
             return None
-    return check_payos_settings
+    for i in fields:
+        if i not in fields_check:
+            return None
+
+    return payos_settings

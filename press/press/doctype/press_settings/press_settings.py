@@ -11,6 +11,7 @@ from frappe.utils import get_url
 
 from press.api.billing import get_stripe
 from press.telegram_utils import Telegram
+from press.utils import check_payos_settings
 
 from payos import PayOS
 
@@ -18,15 +19,19 @@ from payos import PayOS
 class PressSettings(Document):
     @frappe.whitelist()
     def config_webhook_payos(self):
+        fields = ["payos_client_id", "payos_api_key",
+                  "payos_checksum_key", "payos_webhook_url"]
         press_settings = frappe.db.get_value(
-            "Press Settings", "Press Settings", ["payos_webhook_url", "payos_client_id", "payos_api_key", "payos_checksum_key"], as_dict=True)
-        client_id = press_settings.get('payos_client_id')
-        api_key = press_settings.get('payos_api_key')
-        checksum_key = press_settings.get('payos_checksum_key')
-        payos_webhook_url = press_settings.get('payos_webhook_url')
+            "Press Settings", "Press Settings", fields, as_dict=True)
+
+        client_id = press_settings.payos_client_id
+        api_key = press_settings.payos_api_key
+        checksum_key = press_settings.payos_checksum_key
+        payos_webhook_url = press_settings.payos_webhook_url
+
         if not client_id or not api_key or not checksum_key:
             frappe.throw(
-                'Vui lòng thêm đầy đủ thông tin Client Id, Api Key, Checksum Key để thực hiện thiết lập Webhook PayOs.')
+                'Vui lòng cấu hình đầy đủ thông tin Client Id, Api Key, Checksum Key để thực hiện thiết lập Webhook PayOs.')
 
         try:
             payOS = PayOS(client_id=client_id, api_key=api_key,
@@ -35,7 +40,9 @@ class PressSettings(Document):
             if not payos_webhook_url:
                 frappe.throw(
                     'Vui lòng thêm đầy đủ thông tin Webhook Url để thực hiện thiết lập Webhook PayOs.')
-            payOS.confirmWebhook(payos_webhook_url)
+            payos_webhook_url_current = payOS.confirmWebhook(payos_webhook_url)
+            self.payos_webhook_url_current = payos_webhook_url_current
+            self.save()
         except Exception as ex:
             frappe.throw('Webhook Url không hợp lệ')
         frappe.msgprint('Thiết lập Webhook PayOs thành công.')
