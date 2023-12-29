@@ -117,9 +117,6 @@
   "email_section",
   "email_template_money_into_account",
   "ehoadon_section",
-  "ehoadon_tenantid",
-  "ehoadon_email",
-  "ehoadon_password",
   "telegram_section",
   "telegram_chat_id",
   "column_break_65",
@@ -1169,27 +1166,12 @@
   {
    "fieldname": "ehoadon_section",
    "fieldtype": "Section Break",
-   "label": "eHoaDon"
-  },
-  {
-   "fieldname": "ehoadon_tenantid",
-   "fieldtype": "Data",
-   "label": "Tenant Id"
-  },
-  {
-   "fieldname": "ehoadon_email",
-   "fieldtype": "Data",
-   "label": "Email"
-  },
-  {
-   "fieldname": "ehoadon_password",
-   "fieldtype": "Password",
-   "label": "Password"
+   "label": "eHoadon"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-12-29 11:38:40.147680",
+ "modified": "2023-12-29 14:23:05.059536",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

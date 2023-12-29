@@ -42,15 +42,17 @@
   "amount_paid",
   "section_break_15",
   "credit_allocations",
+  "electronic_bill_section",
+  "link_to_electronic_invoice",
   "stripe_billing_section",
-  "payos_billing_section",
-  "payos_invoice_id",
   "stripe_invoice_id",
   "stripe_payment_intent_id",
   "stripe_invoice_url",
   "frappe_invoice",
   "invoice_pdf",
   "frappe_partner_order",
+  "payos_billing_section",
+  "payos_invoice_id",
   "column_break_32",
   "transaction_amount",
   "transaction_net",
@@ -444,6 +446,17 @@
    "fieldname": "payos_invoice_id",
    "fieldtype": "Data",
    "label": "PayOs Invoice ID"
+  },
+  {
+   "fieldname": "electronic_bill_section",
+   "fieldtype": "Section Break",
+   "label": "Electronic Bill"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "link_to_electronic_invoice",
+   "fieldtype": "Data",
+   "label": "Link to electronic invoice"
   }
  ],
  "is_submittable": 1,
@@ -469,7 +482,7 @@
    "link_fieldname": "invoice"
   }
  ],
- "modified": "2023-12-27 16:48:40.217289",
+ "modified": "2023-12-29 14:22:06.389269",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice",
