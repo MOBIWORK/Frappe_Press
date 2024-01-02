@@ -13,9 +13,17 @@
 .right-0 {
 	right: 0px;
 }
+.right-4 {
+	right: 1rem /* 16px */;
+}
+
 .bottom-0 {
 	bottom: 0px;
 }
+.bottom-24 {
+	bottom: 6rem /* 96px */;
+}
+
 /* rounded */
 .rounded-xl {
 	border-radius: 1rem /* 16px */;
@@ -324,6 +332,9 @@
 }
 .mb-12 {
 	margin-bottom: 3rem /* 48px */;
+}
+.mb-24 {
+	margin-bottom: 6rem /* 96px */;
 }
 
 .m-2 {
@@ -920,9 +931,9 @@
 		padding-left: 3rem /* 48px */;
 		padding-right: 3rem /* 48px */;
 	}
-	.xl\:px-14 {
-		padding-left: 3.5rem /* 56px */;
-		padding-right: 3.5rem /* 56px */;
+	.xl\:mx-14 {
+		margin-left: 3.5rem /* 56px */;
+		margin-right: 3.5rem /* 56px */;
 	}
 }
 
@@ -930,5 +941,8 @@
 	.xl\:px-3 {
 		padding-left: 0.75rem /* 12px */;
 		padding-right: 0.75rem /* 12px */;
+	}
+	.xl\:right-14 {
+		right: 3.5rem /* 56px */;
 	}
 }
