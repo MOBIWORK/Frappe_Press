@@ -182,6 +182,8 @@ def get_context(context):
         )
         if len(list_category):
             info_category = list_category[0]
+        else:
+            info_category = None
         context.info_category = info_category
     else:
         # lay category hien thi

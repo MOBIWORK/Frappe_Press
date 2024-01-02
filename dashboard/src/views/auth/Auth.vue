@@ -215,7 +215,7 @@
 					</template>
 					<ErrorMessage class="mt-2" :message="$resources.signup.error" />
 				</form>
-				<div class="flex flex-col" v-if="!hasForgotPassword">
+				<!-- <div class="flex flex-col" v-if="!hasForgotPassword">
 					<div class="-mb-2 mt-6 border-t text-center">
 						<div class="-translate-y-1/2 transform">
 							<span
@@ -243,7 +243,7 @@
 							</div>
 						</Button>
 					</div>
-				</div>
+				</div> -->
 
 				<Dialog v-model="resetPasswordEmailSent">
 					<template #body-title>

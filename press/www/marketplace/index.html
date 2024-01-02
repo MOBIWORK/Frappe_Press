@@ -133,13 +133,13 @@ empty_app -%} {%- block body -%}
 		{%- endif -%}
 		<div class="flex flex-wrap sm:flex-nowrap {{ 'mt-10' if not type_overview }}">
 			{%- if not type_overview -%}
-			<div class="w-80 block mt-5">
-				<div class="flex flex-col mt-4">
+			<div class="w-80  mt-5">
+				<div class="flex flex-col sticky top-5 mt-4">
 					<div
-						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-600 rounded-lg"
+						class="-left-2 mr-8 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
 					>
 						<button
-							class="category-button w-full text-left rounded py-1 pl-2"
+							class="category-button w-full text-left rounded py-3 pl-5"
 							value=""
 						>
 							Tổng quan
@@ -147,10 +147,10 @@ empty_app -%} {%- block body -%}
 					</div>
 					{%- for category in categories -%}
 					<div
-						class="relative -left-2 mr-8 text-lg transition hover:bg-gray-50 text-gray-600 rounded-lg"
+						class="-left-2 mr-8 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
 					>
 						<button
-							class="category-button w-full text-left rounded py-1 pl-2"
+							class="category-button w-full text-left rounded py-3 pl-5"
 							value="{{ category }}"
 						>
 							{{ category }}
@@ -429,6 +429,6 @@ empty_app -%} {%- block body -%}
 		</div>
 	</div>
 </div>
-<span class="bg-gray-200"></span>
+<!-- <span class="bg-gray-200"></span> -->
 
 {{ include_script('marketplace.bundle.js') }} {%- endblock -%}

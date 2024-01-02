@@ -162,13 +162,19 @@
 								<span>{{ isInvitation ? 'Accept' : 'Submit' }}</span
 								>, you accept our -->
 								Tôi đã đọc và đồng ý với
-								<Link class="border-none" href="#" target="_blank"
+								<Link
+									class="border-none"
+									href="/thoa-thuan-su-dung-dich-vu"
+									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700"
 										>Điều khoản dịch vụ
 									</span></Link
 								>
 								và
-								<Link class="border-none" href="#" target="_blank"
+								<Link
+									class="border-none"
+									href="/chinh-sach-bao-mat-thong-tin"
+									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700">
 										Chính sách quyền riêng tư
 									</span></Link
