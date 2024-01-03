@@ -133,10 +133,10 @@ empty_app -%} {%- block body -%}
 		{%- endif -%}
 		<div class="flex flex-wrap sm:flex-nowrap {{ 'mt-10' if not type_overview }}">
 			{%- if not type_overview -%}
-			<div class="w-80  mt-5">
-				<div class="flex flex-col sticky top-5 mt-4">
+			<div class="w-80 mt-5 mr-5 section-slide-category">
+				<div style="max-height: calc(100vh);" class="flex flex-col sticky top-5 mt-4 overflow-y-auto">
 					<div
-						class="-left-2 mr-8 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
+						class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
 					>
 						<button
 							class="category-button w-full text-left rounded py-3 pl-5"
@@ -147,7 +147,7 @@ empty_app -%} {%- block body -%}
 					</div>
 					{%- for category in categories -%}
 					<div
-						class="-left-2 mr-8 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
+						class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
 					>
 						<button
 							class="category-button w-full text-left rounded py-3 pl-5"

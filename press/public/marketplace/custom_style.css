@@ -62,6 +62,10 @@ body {
 	text-decoration: underline;
 }
 
+.content-page img {
+	display: inline-block;
+}
+
 /* start scroll */
 /* width */
 ::-webkit-scrollbar {
@@ -77,14 +81,30 @@ body {
 /* Handle */
 ::-webkit-scrollbar-thumb {
 	opacity: 0.4;
-	background: #999da0;
+	background: #bfc1c2;
 	border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-	background: #969494;
+	background: #949393;
 }
+
+.section-slide-category ::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+.section-slide-category ::-webkit-scrollbar-thumb {
+	opacity: 0.4;
+	background: #e0e5e9;
+	border-radius: 5px;
+}
+
+.section-slide-category ::-webkit-scrollbar-thumb:hover {
+	background: #b6b6b6;
+}
+
 /* end scroll */
 
 .dropdown:hover .dropdown-menu {
