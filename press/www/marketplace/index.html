@@ -1,130 +1,43 @@
-{% extends "templates/marketplace/base.html" %} {%- from
+{% extends "templates/marketplace/base.html" %}
+{%- block style -%}
+<link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+{% for slide in slides %}
+<style>
+	{{ slide.style }}
+</style>
+{% endfor %}
+
+<style>
+	.splide .splide__arrow{
+		padding: 14px;
+		font-size: 24px;
+		background: inherit;
+		color: black
+	}
+	.splide .splide__arrow:hover{
+		background: rgb(230, 230, 230, 0.7);
+	}
+</style>
+{%- endblock -%}
+
+
+{%- from
 "templates/marketplace/macros.html" import breadcrumbs, badge_gray, badge_green,badge_purple,
 empty_app -%} {%- block body -%}
 <div class="section-body">
 	<div class="container px-4 xl:px-14 mx-auto my-8">
 		{%- if not type_overview -%}
-		<div
-			class="relative overflow-hidden z-10 flex items-center justify-center header-body text-center px-4 rounded-2xl"
-		>
-			<svg
-				class="absolute header-body-section-1 rounded-tr-2xl"
-				xmlns="http://www.w3.org/2000/svg"
-				width="364"
-				height="65"
-				viewBox="0 0 364 65"
-				fill="none"
-			>
-				<path
-					d="M939.692 64.3105C1064.41 68.9102 1165.35 49.5104 1211.54 35.3496C1251.96 19.8042 1278.42 11.3927 1302 0H0C19.0857 3.19423 35.2205 7.16438 112.59 21.9336C200.16 38.6501 274.095 49.4015 393.102 52.3853C490.776 54.8342 587.488 44.7191 677.463 45.8904C767.439 47.0616 783.798 58.5609 939.692 64.3105Z"
-					fill="url(#paint0_linear_382_104118)"
-				/>
-				<defs>
-					<linearGradient
-						id="paint0_linear_382_104118"
-						x1="871"
-						y1="-46.5196"
-						x2="824.802"
-						y2="157.587"
-						gradientUnits="userSpaceOnUse"
-					>
-						<stop stop-color="#D24545" />
-						<stop offset="0.940899" stop-color="#D2454D" stop-opacity="0" />
-					</linearGradient>
-				</defs>
-			</svg>
-
-			<svg
-				class="absolute header-body-section-2 rounded-bl-2xl"
-				xmlns="http://www.w3.org/2000/svg"
-				width="406"
-				height="50"
-				viewBox="0 0 406 50"
-				fill="none"
-			>
-				<path
-					d="M-533.692 0.530356C-658.407 -3.00787 -759.353 11.9151 -805.543 22.808C-845.96 34.766 -872.423 41.2364 -896 50H406C386.914 47.5429 370.78 44.4889 293.41 33.128C205.84 20.2691 131.905 11.9988 12.898 9.70362C-84.776 7.81985 -181.488 15.6007 -271.463 14.6997C-361.439 13.7988 -377.798 4.95313 -533.692 0.530356Z"
-					fill="url(#paint0_linear_382_104107)"
-				/>
-				<defs>
-					<linearGradient
-						id="paint0_linear_382_104107"
-						x1="-465"
-						y1="85.7843"
-						x2="-420.769"
-						y2="-112.449"
-						gradientUnits="userSpaceOnUse"
-					>
-						<stop stop-color="#D24545" />
-						<stop offset="0.940899" stop-color="#D24545" stop-opacity="0" />
-					</linearGradient>
-				</defs>
-			</svg>
-
-			<svg
-				class="absolute header-body-section-3 rounded-br-2xl"
-				xmlns="http://www.w3.org/2000/svg"
-				width="770"
-				height="44"
-				viewBox="0 0 770 44"
-				fill="none"
-			>
-				<path
-					opacity="0.4"
-					d="M814.111 0.721284C922.159 -4.0907 1009.61 16.2045 1049.63 31.0189C1084.65 47.2818 1107.57 56.0815 1128 68H0C16.5351 64.6583 30.5136 60.505 97.5432 45.054C173.41 27.566 237.465 16.3184 340.568 13.1969C425.188 10.635 508.976 21.2169 586.927 19.9916C664.878 18.7664 679.051 6.73626 814.111 0.721284Z"
-					fill="url(#paint0_linear_382_104117)"
-				/>
-				<defs>
-					<linearGradient
-						id="paint0_linear_382_104117"
-						x1="792.851"
-						y1="90.0019"
-						x2="727.189"
-						y2="-127.625"
-						gradientUnits="userSpaceOnUse"
-					>
-						<stop stop-color="#D24556" />
-						<stop offset="0.71875" stop-color="#D24545" stop-opacity="0" />
-					</linearGradient>
-				</defs>
-			</svg>
-			<svg
-				class="absolute header-body-section-4 rounded-br-2xl"
-				xmlns="http://www.w3.org/2000/svg"
-				width="620"
-				height="50"
-				viewBox="0 0 620 50"
-				fill="none"
-			>
-				<path
-					opacity="0.4"
-					d="M814.111 0.721284C922.159 -4.0907 1009.61 16.2045 1049.63 31.0189C1084.65 47.2818 1107.57 56.0815 1128 68H0C16.5351 64.6583 30.5136 60.505 97.5432 45.054C173.41 27.566 237.465 16.3184 340.568 13.1969C425.188 10.635 508.976 21.2169 586.927 19.9916C664.878 18.7664 679.051 6.73626 814.111 0.721284Z"
-					fill="url(#paint0_linear_382_104116)"
-				/>
-				<defs>
-					<linearGradient
-						id="paint0_linear_382_104116"
-						x1="792.851"
-						y1="90.0019"
-						x2="717.747"
-						y2="-165.203"
-						gradientUnits="userSpaceOnUse"
-					>
-						<stop stop-color="#D2454D" />
-						<stop offset="1" stop-color="#D2454D" stop-opacity="0" />
-					</linearGradient>
-				</defs>
-			</svg>
-			<div>
-				<h1 class="text-3xl font-bold text-gray-900">
-					Hệ sinh thái ứng dụng cho doanh nghiệp
-				</h1>
-				<p class="mx-auto mt-4 text-gray-600">
-					Các sản phẩm của MBW Fapper cloud đẩy nhanh hành trình từ ý tưởng đến
-					hiện thực của bạn.
-				</p>
+		<section class="splide" aria-label="Splide Basic HTML Example">
+			<div class="splide__track rounded-2xl">
+				  <ul class="splide__list">
+					{% for slide in slides %}
+					  <li class="splide__slide rounded-2xl">
+							{{ slide.content }}
+					  </li>
+					  {% endfor %}
+				  </ul>
 			</div>
-		</div>
+		  </section>
 		{%- else -%}
 		<div class="mt-5">
 			{{ breadcrumbs([ { 'label': 'Chợ ứng dụng', 'url': '/marketplace' }, {
@@ -134,7 +47,7 @@ empty_app -%} {%- block body -%}
 		<div class="flex flex-wrap sm:flex-nowrap {{ 'mt-10' if not type_overview }}">
 			{%- if not type_overview -%}
 			<div class="w-80 mt-5 mr-5 section-slide-category">
-				<div style="max-height: calc(100vh);" class="flex flex-col sticky top-5 mt-4 overflow-y-auto">
+				<div style="max-height: calc(100vh - 40px);" class="flex flex-col sticky top-5 mt-4 overflow-y-auto">
 					<div
 						class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
 					>
@@ -143,6 +56,16 @@ empty_app -%} {%- block body -%}
 							value=""
 						>
 							Tổng quan
+						</button>
+					</div>
+					<div
+						class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
+					>
+						<button
+							class="category-button w-full text-left rounded py-3 pl-5"
+							value="all_category"
+						>
+							Tất cả
 						</button>
 					</div>
 					{%- for category in categories -%}
@@ -432,3 +355,19 @@ empty_app -%} {%- block body -%}
 <!-- <span class="bg-gray-200"></span> -->
 
 {{ include_script('marketplace.bundle.js') }} {%- endblock -%}
+
+{%- block script -%}
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+<script>
+	document.addEventListener( 'DOMContentLoaded', function() {
+	  var splide = new Splide( '.splide', {
+		type: 'loop',
+  		perPage: 1,
+		autoplay: true,
+		pagination: false,
+		drag:false
+	  } );
+	  splide.mount();
+	} );
+  </script>
+{%- endblock -%}

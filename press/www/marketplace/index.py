@@ -40,6 +40,17 @@ def get_context(context):
     context.type_overview = type_overview
     context.no_cache = 1
 
+    if not type_overview:
+        slides = frappe.db.get_all(
+            'Marketplace Slide',
+            filters={
+                'enabled': 1
+            },
+            fields=['name', 'content', 'style'],
+            order_by='level asc'
+        )
+        context.slides = slides
+
     if category:
         pageCurren = args.get('page') if args.get(
             'page') and int(args.get('page')) > 1 else '1'
@@ -55,17 +66,10 @@ def get_context(context):
                 COUNT(*) AS total_apps
             FROM
                 `tabMarketplace App` marketplace
-        """
-
-        if category:
-            str_query += """
-                INNER JOIN
+            INNER JOIN
                 `tabMarketplace App Categories` categories
-                ON
-                    categories.parent = marketplace.name
-            """
-
-        str_query += """
+            ON
+                categories.parent = marketplace.name
             WHERE
                 marketplace.status = "Published"
         """
@@ -75,16 +79,18 @@ def get_context(context):
             AND
                 marketplace.name LIKE '%{text_search}%'
             """
-        if category:
+
+        if category != "all_category":
             str_query += f"""
             AND
                 categories.category = '{category}'
             """
         str_query += """;"""
 
-        total_all_published_apps = frappe.db.sql(str_query,
-                                                 as_dict=True,
-                                                 )[0].get('total_apps')
+        total_all_published_apps = frappe.db.sql(
+            str_query,
+            as_dict=True,
+        )[0].get('total_apps')
 
         if pageSize:
             totalPage = math.ceil(total_all_published_apps/int(pageSize))
@@ -115,17 +121,10 @@ def get_context(context):
                 `tabSite App` site
             ON
                 site.app = marketplace.app
-        """
-
-        if category:
-            str_query += """
-                INNER JOIN
+            INNER JOIN
                 `tabMarketplace App Categories` categories
-                ON
-                    categories.parent = marketplace.name
-            """
-
-        str_query += """
+            ON
+                categories.parent = marketplace.name
             WHERE
                 marketplace.status = "Published"
         """
@@ -136,7 +135,7 @@ def get_context(context):
                 marketplace.name LIKE '%{text_search}%'
             """
 
-        if category:
+        if category != "all_category":
             str_query += f"""
             AND
                 categories.category = '{category}'
@@ -197,7 +196,7 @@ def get_context(context):
             WHERE
                 category.show_in_dashboard = 1
             ORDER BY
-                level DESC;
+                level ASC;
         """
         categories_show = frappe.db.sql(
             str_query,
@@ -230,7 +229,7 @@ def get_context(context):
                 GROUP BY
                     marketplace.name
                 ORDER BY
-                    level DESC
+                    level ASC
                 OFFSET 0 ROWS
                 FETCH NEXT 4 ROWS ONLY;
             """
