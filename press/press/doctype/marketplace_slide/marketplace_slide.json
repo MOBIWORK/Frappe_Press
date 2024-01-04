@@ -7,10 +7,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "enabled",
   "level",
   "content",
-  "style",
-  "enabled"
+  "style"
  ],
  "fields": [
   {
@@ -40,7 +40,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-03 15:37:03.068022",
+ "modified": "2024-01-04 08:58:52.340924",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Marketplace Slide",

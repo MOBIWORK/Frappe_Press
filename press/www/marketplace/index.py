@@ -66,10 +66,17 @@ def get_context(context):
                 COUNT(*) AS total_apps
             FROM
                 `tabMarketplace App` marketplace
+        """
+
+        if category != "all_category":
+            str_query += f"""
             INNER JOIN
                 `tabMarketplace App Categories` categories
             ON
                 categories.parent = marketplace.name
+            """
+
+        str_query += """
             WHERE
                 marketplace.status = "Published"
         """
@@ -124,10 +131,17 @@ def get_context(context):
                 `tabSite App` site
             ON
                 site.app = marketplace.app
+        """
+
+        if category != "all_category":
+            str_query += f"""
             INNER JOIN
                 `tabMarketplace App Categories` categories
             ON
                 categories.parent = marketplace.name
+            """
+
+        str_query += """
             WHERE
                 marketplace.status = "Published"
         """
