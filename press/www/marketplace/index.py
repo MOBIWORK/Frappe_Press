@@ -85,7 +85,10 @@ def get_context(context):
             AND
                 categories.category = '{category}'
             """
-        str_query += """;"""
+        str_query += """
+            GROUP BY
+                marketplace.name;
+        """
 
         total_all_published_apps = frappe.db.sql(
             str_query,
