@@ -1,12 +1,10 @@
-{% extends "templates/emails/base.html" %}
-
-  {% block content %}
-    <td class="text-base leading-6 text-gray-900">
-    	<div class="p-8 bg-white">
-        	<div class="from-markdown">
-        		{{ message }}
-          </div>
-    	</div>
-    </td>
-  {% endblock %}
-
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/saas.html" %} {% block content %}
+<td class="text-base leading-6 text-gray-900">
+	<div class="p-8 bg-white from-markdown">
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
+		<p>{{ message }}</p>
+		{{ utils.separator() }} {{ utils.footer() }}
+	</div>
+</td>
+{% endblock %}

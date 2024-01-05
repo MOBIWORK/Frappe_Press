@@ -1,23 +1,19 @@
-{% extends "templates/emails/base.html" %} {% import
+{% extends "templates/emails/saas.html" %} {% import
 "templates/emails/macros.html" as utils %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p>Hello,</p>
-		<strong>
-			Attempted login to your MBW Cloud account from site: {{ site }}
-		</strong>
-		<p>Please confirm your email address by clicking the button below:</p>
-		{{ utils.button('Verify Account', login_url, true) }}
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
+		<p>Đăng nhập vào tài khoản MBW Cloud của bạn từ trang web: {{ site }}</p>
+		<p class="my-0">
+			Vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào nút bên dưới:
+		</p>
+		{{ utils.button('Xác thực tài khoản', login_url, true) }}
 		<p class="text-xs italic">
-			Note: This link can be used only once before expiry. If it's expired
-			please generate a new link
+			Lưu ý: Liên kết này chỉ có thể được sử dụng một lần trước khi hết hạn. Nếu
+			nó hết hạn vui lòng tạo một liên kết mới.
 		</p>
-		{{ utils.separator() }}
-		<p class="m-0">
-			Thanks,<br />
-			Team MBW
-		</p>
+		{{ utils.separator() }} {{ utils.footer() }}
 	</div>
 </td>
 

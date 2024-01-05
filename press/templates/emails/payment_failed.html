@@ -1,35 +1,36 @@
 {% import "templates/emails/macros.html" as utils %} {% extends
-"templates/emails/base.html" %} {% block content %}
+"templates/emails/saas.html" %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
-	<div class="p-8 bg-white">
+	<div class="p-8 bg-white from-markdown">
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
+
 		<p class="mb-4 font-bold">
-			{%- if subject -%} {{ subject }} {%- else -%} Payment of {{ amount }} for
-			MBW Cloud was unsuccessful. {%- endif -%}
+			{%- if subject -%} {{ subject }} {%- else -%} Thanh toán {{ amount }} cho
+			MBW Cloud không thành công. {%- endif -%}
 		</p>
 		{%- if card_not_added -%}
 		<p class="mb-6">
-			You haven't added a card for your MBW Cloud subscription. Your sites will
-			be suspended until you update your card details in your account.
+			Bạn chưa cập nhận thông tin thành toán. Trang web của bạn sẽ sẽ bị tạm
+			dừng cho đến khi bạn cập nhật chi tiết thành toán trong tài khoản của
+			mình.
 		</p>
 		{{ utils.button('Update Billing Settings', account_update_link) }} {%- else
 		-%}
 		<p class="mb-6">
-			We attempted to charge your card ending in
-			<strong>{{ last_4 }}</strong> for your MBW Cloud subscription, but were
-			unsuccessful. Please update your card details in your {{
-			utils.link('Billing Settings', account_update_link) }} or pay manually by
-			clicking the following link.
+			Vui lòng cập nhật thông tin thanh toán của bạn trong {{ utils.link('Cài
+			đặt thanh toán', account_update_link) }} hoặc thanh toán thủ công bằng
+			cách nhấp vào liên kết sau.
 		</p>
-		{{ utils.button('Pay Invoice Now', payment_link) }} {%- endif -%} {%- if
+		{{ utils.button('Thanh toán ngay', payment_link) }} {%- endif -%} {%- if
 		sites -%} {{ utils.separator() }}
-		<p class="mt-0 mb-2">Following sites were suspended:</p>
+		<p class="mt-0 mb-2">Các trang web sau đã bị tạm dừng:</p>
 		<ul class="list-disc">
 			{%- for site in sites -%}
 			<li class="text-sm font-medium">{{ site }}</li>
 			{%- endfor -%}
 		</ul>
-		{%- endif -%} {{ utils.separator() }} {{ utils.signature() }}
+		{%- endif -%} {{ utils.separator() }} {{ utils.footer() }}
 	</div>
 </td>
 

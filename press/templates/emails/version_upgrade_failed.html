@@ -1,16 +1,20 @@
-{% extends "templates/emails/base.html" %} 
-
-{% block content %}
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/saas.html" %} {% block content %}
 <td class="text-base leading-6 text-gray-900">
-	<div class="p-8 bg-white">
-        <p class="mb-4 font-bold">
-			Automated Version Upgrade Failed. Please resolve the issue and try again.
+	<div class="p-8 bg-white from-markdown">
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
+
+		<p class="mb-4 font-bold">
+			Nâng cấp phiên bản tự động không thành công. Vui lòng giải quyết vấn đề và
+			thử lại.
 		</p>
-        <p class="mb-6">
-            Site: {{ site }}
-            Traceback: <pre> {{ traceback }} </pre>
-            Output: <pre> {{ output }} </pre>
-        </p>
-    </div>
+		<p class="font-bold">Site:</p>
+		<pre>{{ site }}</pre>
+		<p class="font-bold">Traceback:</p>
+		<pre>{{ traceback }}</pre>
+		<p class="font-bold">Output:</p>
+		<pre>{{ output }}</pre>
+		{{ utils.separator() }} {{ utils.footer() }}
+	</div>
 </td>
 {% endblock %}

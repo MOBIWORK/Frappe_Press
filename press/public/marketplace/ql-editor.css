@@ -1,4 +1,14 @@
 :root {
+	--gray-900: #1f272e;
+	--gray-800: #333c44;
+	--gray-700: #505a62;
+	--gray-600: #687178;
+	--gray-500: #98a1a9;
+	--gray-400: #c0c6cc;
+	--gray-300: #dce0e3;
+	--gray-200: #ebeef0;
+	--gray-100: #f4f5f6;
+	--gray-50: #f9fafa;
 	--padding-xs: 5px;
 	--padding-sm: 10px;
 	--margin-xs: 5px;

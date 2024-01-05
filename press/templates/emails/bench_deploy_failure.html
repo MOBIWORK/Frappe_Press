@@ -1,23 +1,18 @@
-{% extends "templates/emails/base.html" %}
-{% import "templates/emails/macros.html" as utils %}
-
-{% block content %}
+{% extends "templates/emails/saas.html" %} {% import
+"templates/emails/macros.html" as utils %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
-    <div class="p-8 bg-white from-markdown">
-        <p>Hi,</p>
-        <p class="mb-4">
-            {{ message }}
-        </p>
-        <p>
-            If you have any concerns or questions, please do not hesitate to reach out to our support team at
-            {{ utils.link('support.frappe.io', 'https://support.frappe.io')}}
-        </p>
-        {{ utils.button('View Deploy Job', link, true) }}
-        {{ utils.separator() }}
-        {{ utils.signature() }}
-    </div>
+	<div class="p-8 bg-white from-markdown">
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
+		<p class="mb-4">{{ message }}</p>
+		<p>
+			Nếu bạn có bất kỳ lo ngại hoặc câu hỏi nào, đừng ngần ngại liên hệ với đội
+			hỗ trợ của chúng tôi tại {{ utils.link('mbwcloud.com/lien-he',
+			'https://mbwcloud.com/lien-he/')}}
+		</p>
+		{{ utils.button('Xem công việc triển khai', link, true) }} {{
+		utils.separator() }} {{ utils.footer() }}
+	</div>
 </td>
-
 
 {% endblock %}

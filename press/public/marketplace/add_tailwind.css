@@ -391,7 +391,10 @@
 	padding-top: 1.25rem /* 20px */;
 	padding-bottom: 1.25rem /* 20px */;
 }
-
+.py-8 {
+	padding-top: 2rem /* 32px */ !important;
+	padding-bottom: 2rem /* 32px */ !important;
+}
 .py-28 {
 	padding-top: 7rem /* 112px */;
 	padding-bottom: 7rem /* 112px */;

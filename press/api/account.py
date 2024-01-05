@@ -174,9 +174,9 @@ def send_login_link(email):
         print(f"One time login link for {email}")
         print(link)
         print()
-
+    subject = f"[MBWCloud] - Đăng nhập vào MBW Cloud bằng email {email} của bạn"
     frappe.sendmail(
-        subject="Login to MBW Cloud",
+        subject=subject,
         recipients=email,
         template="one_time_login_link",
         args={"link": link, "minutes": minutes},
@@ -628,10 +628,10 @@ def send_reset_password_email(email):
     if frappe.db.exists("User", email):
         frappe.db.set_value("User", email, "reset_password_key", key)
         url = get_url("/dashboard/reset-password/" + key)
-
+        subject = f"[MBWCloud] - Đặt lại mật khẩu cho email {email} của bạn"
         frappe.sendmail(
             recipients=email,
-            subject="Reset Password",
+            subject=subject,
             template="reset_password",
             args={"link": url},
             now=True,

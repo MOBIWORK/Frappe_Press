@@ -8,6 +8,7 @@ import json
 from frappe.model.document import Document
 from frappe.utils import random_string, get_url
 from press.utils import get_country_info
+from jinja2 import Template
 
 
 class AccountRequest(Document):
@@ -63,7 +64,7 @@ class AccountRequest(Document):
             print()
             return
 
-        subject = "Verify your email for Frappe"
+        subject = """[MBWCloud] - Xác minh email đăng ký {{ email_customer }} của bạn"""
         args = {}
 
         if self.saas_product:
@@ -72,15 +73,21 @@ class AccountRequest(Document):
             template = "verify_account"
 
             if self.invited_by and self.role != "Press Admin":
-                subject = f"You are invited by {self.invited_by} to join MBW Cloud"
+                subject = """[MBWCloud] - Bạn được {{ invited_by }} mời tham gia MBW Cloud"""
                 template = "invite_team_member"
+
+        template_subject = Template(subject)
+        subject = template_subject.render({
+            "email_customer": self.email,
+            "invited_by": self.invited_by
+        })
 
         args.update(
             {
                 "invited_by": self.invited_by,
                 "link": url,
                 # "image_path": "/assets/press/images/frappe-logo-black.png",
-                "image_path": "https://github.com/frappe/gameplan/assets/9355208/447035d0-0686-41d2-910a-a3d21928ab94",
+                "image_path": "https://admin.mbwcloud.com/assets/press/images/cropped-mbw.cloud_.10.png",
                 "read_pixel_path": get_url(
                     f"/api/method/press.utils.telemetry.capture_read_event?name={self.name}"
                 ),

@@ -119,9 +119,9 @@ class AppReleaseApprovalRequest(Document):
 
         frappe.sendmail(
             [publisher_email],
-            subject=f"MBW Cloud Marketplace: {marketplace_app.title}",
+            subject=f"[MBWCloud] - MBW Cloud Marketplace: {marketplace_app.title}",
             args={
-                "subject": "Update on your app release publish request",
+                "subject": "Cập nhật về yêu cầu xuất bản bản phát hành ứng dụng của bạn",
                 "status": self.status,
                 "rejection_reason": self.reason_for_rejection,
                 "commit_message": app_release.message,

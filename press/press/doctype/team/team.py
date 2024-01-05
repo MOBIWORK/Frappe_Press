@@ -963,10 +963,10 @@ class Team(Document):
             or self.user
         )
         payment_method = self.default_payment_method
-        last_4 = frappe.db.get_value(
-            "Stripe Payment Method", payment_method, "last_4")
+        # last_4 = frappe.db.get_value(
+        #     "Stripe Payment Method", payment_method, "last_4")
         account_update_link = frappe.utils.get_url("/dashboard")
-        subject = "Invoice Payment Failed for Frappe Cloud Subscription"
+        subject = "[MBWCloud] - Thanh toán hóa đơn không thành công khi đăng ký MBW Cloud"
 
         frappe.sendmail(
             recipients=email,
@@ -977,7 +977,7 @@ class Team(Document):
                 "payment_link": invoice.stripe_invoice_url,
                 "amount": invoice.get_formatted("amount_due"),
                 "account_update_link": account_update_link,
-                "last_4": last_4 or "",
+                # "last_4": last_4 or "",
                 "card_not_added": not payment_method,
                 "sites": sites,
                 "team": self,

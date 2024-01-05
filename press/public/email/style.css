@@ -92,6 +92,21 @@
 	@apply text-white bg-gray-900 rounded-lg;
 }
 
+.text-lg {
+	font-size: 1.125rem /* 18px */ !important;
+	line-height: 1.75rem /* 28px */ !important;
+}
+
+.mx-5 {
+	margin-left: 1.25rem /* 20px */ !important;
+	margin-right: 1.25rem /* 20px */ !important;
+}
+
+.px-5 {
+	padding-left: 1.25rem /* 20px */ !important;
+	padding-right: 1.25rem /* 20px */ !important;
+}
+
 /* purgecss end ignore */
 
 @tailwind utilities;

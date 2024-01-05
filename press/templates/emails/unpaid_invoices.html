@@ -1,20 +1,20 @@
 {% import "templates/emails/macros.html" as utils %} {% extends
-"templates/emails/base.html" %} {% block content %}
+"templates/emails/saas.html" %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
 		<p class="mb-4 font-bold">{{ subject }}</p>
 		<p class="mb-6">
 			Rất tiếc, chúng tôi phải thông báo rằng trang web của bạn đang được lưu
-			trữ trên MBW Cloud đã bị tạm thời <strong>đình chỉ</strong> do một hóa đơn
+			trữ trên MBW Cloud đã bị tạm thời <strong>dừng</strong> do một hóa đơn
 			chưa thanh toán.<br />
 			<br />
 			Để tiếp tục sử dụng trang web của bạn trên MBW Cloud, vui lòng thanh toán
 			hóa đơn của bạn bằng cách truy cập vào trang của bạn.
-			<!-- <a href="https://frappecloud.com/dashboard/billing/overview"
+			<a href="https://admin.mbwcloud.com/dashboard/billing/overview"
 				>MBW Cloud Dashboard.</a
-			> -->
-			<a href="#">MBW Cloud Dashboard.</a>
+			>
 			<br />
 			<br />
 			<strong
@@ -27,18 +27,19 @@
 			hủy và nếu bạn đã đăng ký gói, có khả năng bạn sẽ mất dữ liệu của mình
 			vĩnh viễn.<br />
 			<br />
-			Nếu bạn có bất kỳ lo ngại hoặc câu hỏi nào, vui lòng liên hệ đội hỗ trợ
+			Nếu bạn có bất kỳ lo ngại hoặc câu hỏi nào, vui lòng liên hệ
+			<a href="https://mbwcloud.com/lien-he/">đội hỗ trợ</a>
 			của chúng tôi.
 		</p>
 
 		{%- if sites -%} {{ utils.separator() }}
-		<p class="mt-0 mb-2">Các trang web sau đã bị đình chỉ:</p>
+		<p class="mt-0 mb-2">Các trang web sau đã bị dừng:</p>
 		<ul class="list-disc">
 			{%- for site in sites -%}
 			<li class="text-sm font-medium">{{ site }}</li>
 			{%- endfor -%}
 		</ul>
-		{%- endif -%} {{ utils.separator() }} {{ utils.signature() }}
+		{%- endif -%} {{ utils.separator() }} {{ utils.footer() }}
 	</div>
 </td>
 

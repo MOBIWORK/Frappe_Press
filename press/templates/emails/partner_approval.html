@@ -1,20 +1,17 @@
-{% import "templates/emails/macros.html" as utils %}
-{% extends "templates/emails/base.html" %}
-
-{% block content %}
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/saas.html" %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
-    <div class="p-8 bg-white from-markdown">
-        <p>Hello,</p>
-        <p>User {{ user }} has raised a request to link their team to your account.</p>
-        <p>
-           Confirm your consent by clicking on the following button.
-        </p>
-        {{ utils.button('Accept', link, true) }}
-        {{ utils.separator() }}
-        {{ utils.signature() }}
-    </div>
+	<div class="p-8 bg-white from-markdown">
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
+		<p>
+			Người dùng {{ user }} đã đưa ra yêu cầu liên kết nhóm của họ với tài khoản
+			của bạn.
+		</p>
+		<p class="my-0">Xác nhận sự đồng ý của bạn bằng cách nhấp vào nút sau.</p>
+		{{ utils.button('Chấp nhận', link, true) }} {{ utils.separator() }} {{
+		utils.footer() }}
+	</div>
 </td>
 
 {% endblock %}
-

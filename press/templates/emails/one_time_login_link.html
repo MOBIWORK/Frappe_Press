@@ -1,15 +1,15 @@
 {% import "templates/emails/macros.html" as utils %} {% extends
-"templates/emails/base.html" %} {% block content %}
+"templates/emails/saas.html" %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p>Hello,</p>
+		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
 		<p>
-			Click on the following button to login to your MBW Cloud dashboard. This
-			link will expire in {{ minutes }} minutes.
+			Nhấp vào nút sau để đăng nhập vào bảng điều khiển MBW Cloud của bạn. Liên
+			kết này sẽ hết hạn trong {{ minutes }} phút.
 		</p>
-		{{ utils.button('Login', link, true) }} {{ utils.separator() }} {{
-		utils.signature() }}
+		{{ utils.button('Đăng nhập', link, true) }} {{ utils.separator() }} {{
+		utils.footer() }}
 	</div>
 </td>
 
