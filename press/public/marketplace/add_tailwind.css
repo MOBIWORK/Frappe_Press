@@ -145,6 +145,9 @@
 .min-w-50 {
 	min-width: 18rem /* 288px */;
 }
+.min-w-max {
+	min-width: max-content;
+}
 
 .w-1\/2 {
 	width: 50%;
@@ -572,11 +575,6 @@
 .text-red-500 {
 	--tw-text-opacity: 1;
 	color: rgb(224 54 54 / var(--tw-text-opacity));
-}
-
-.text-blue-600 {
-	--tw-text-opacity: 1;
-	color: rgb(0 123 224 / var(--tw-text-opacity));
 }
 
 .underline {

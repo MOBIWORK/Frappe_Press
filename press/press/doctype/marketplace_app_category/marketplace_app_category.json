@@ -7,7 +7,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "full_name",
+  "content",
   "description",
   "slug",
   "level",
@@ -31,20 +31,21 @@
    "label": "Level"
   },
   {
-   "fieldname": "full_name",
-   "fieldtype": "Data",
-   "label": "Full name"
-  },
-  {
    "default": "0",
    "fieldname": "show_in_dashboard",
    "fieldtype": "Check",
    "label": "Show In Dashboard"
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "Code",
+   "label": "Content",
+   "options": "HTML"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-16 15:50:41.328881",
+ "modified": "2024-01-05 15:53:29.571715",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Marketplace App Category",

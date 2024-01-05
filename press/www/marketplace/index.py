@@ -188,7 +188,7 @@ def get_context(context):
         str_query = f"""
             SELECT
                 category.name,
-                category.full_name
+                category.content
             FROM
                 `tabMarketplace App Category` category
             WHERE
@@ -210,7 +210,7 @@ def get_context(context):
         str_query = """
             SELECT
                 category.name,
-                category.full_name,
+                category.content,
                 category.level
             FROM
                 `tabMarketplace App Category` category
@@ -270,7 +270,7 @@ def get_context(context):
                 app['ratings_summary'] = ratings_summary
 
             info_item = {
-                'name_display': cate.get('full_name'),
+                'content': cate.get('content'),
                 'name_category': cate.get('name'),
                 'data': most_used_apps
             }

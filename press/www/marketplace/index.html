@@ -41,7 +41,7 @@ empty_app -%} {%- block body -%}
 		{%- else -%}
 		<div class="mt-5">
 			{{ breadcrumbs([ { 'label': 'Chợ ứng dụng', 'url': '/marketplace' }, {
-			'label': 'Tổng quan', 'url': '/marketplace' }, {'label': info_category.full_name, 'url': '#' } ]) }}
+			'label': 'Tổng quan', 'url': '/marketplace' }, {'label': info_category.name, 'url': '#' } ]) }}
 		</div>
 		{%- endif -%}
 		<div class="flex flex-wrap sm:flex-nowrap {{ 'mt-10' if not type_overview }}">
@@ -89,13 +89,15 @@ empty_app -%} {%- block body -%}
 				{%- if apps_show -%} {%- for app_show in apps_show -%}
 				<div class="mb-12">
 					<div class="flex flex-col sm:flex-row sm:justify-between mb-8">
-						<h2 class="text-2xl font-bold text-gray-800 mb-2">
-							{{ app_show.name_display }}
-						</h2>
+						<div class="mr-2 mb-4">
+							{{ app_show.content }}
+						</div>
 						{%- if app_show.data -%}
-						<a href="/marketplace/?type_overview=detail&category={{ app_show.name_category }}">
-							<div class="text-base cursor-pointer text-blue-600">Xem thêm</div>
-						</a>
+						<div class="min-w-max">
+							<a class="text-base cursor-pointer text-blue-600 hover:bg-gray-100 p-3 rounded-2xl" href="/marketplace/?type_overview=detail&category={{ app_show.name_category }}">
+								Xem thêm
+							</a>
+						</div>
 						{%- endif -%}
 					</div>
 
@@ -180,7 +182,7 @@ empty_app -%} {%- block body -%}
 			<div class="w-full mt-5 mb-12">
 				<div>
 					<div class="flex flex-col sm:flex-row sm:justify-between mb-8">
-						<h2 class="text-2xl font-bold text-gray-800 mb-2">{{ info_category.full_name if type_overview else 'Ứng dụng' }}</h2>
+						<div class="mr-2 mb-2">{{ info_category.content if type_overview else 'Ứng dụng' }}</div>
 						<div class="flex flex-row">
 							<input
 								type="text"
