@@ -97,10 +97,14 @@ def get_context(context):
                 marketplace.name;
         """
 
-        total_all_published_apps = frappe.db.sql(
+        rs_query = frappe.db.sql(
             str_query,
             as_dict=True,
-        )[0].get('total_apps')
+        )
+        if rs_query:
+            total_all_published_apps = rs_query[0].get('total_apps')
+        else:
+            total_all_published_apps = 0
 
         if pageSize:
             totalPage = math.ceil(total_all_published_apps/int(pageSize))
