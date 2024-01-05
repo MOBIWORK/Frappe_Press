@@ -636,6 +636,7 @@ class Team(Document):
                 "currency",
                 "invoice_pdf",
                 "due_date as date",
+                "link_to_electronic_invoice"
             ],
             order_by="due_date desc",
         )

@@ -64,12 +64,12 @@
 				</span>
 				<div class="flex items-center justify-end space-x-2">
 					<Button
-						v-if="invoice.invoice_pdf"
+						v-if="invoice.link_to_electronic_invoice"
 						icon-left="download"
 						class="shrink-0"
-						:link="invoice.invoice_pdf"
+						:link="invoice.link_to_electronic_invoice"
 					>
-						<span class="text-sm">Tải xuống hóa đơn</span>
+						<span class="text-sm">Tải xuống</span>
 					</Button>
 					<Button
 						v-if="invoice.status != 'Paid' && invoice.stripe_invoice_url"
