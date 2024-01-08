@@ -71,9 +71,14 @@
 		font-size: theme('fontSize.sm') !important;
 	}
 
-	a {
+	/* a {
 		@apply text-gray-800 underline;
-	}
+	} */
+}
+
+a {
+	color: #15c;
+	text-decoration: underline;
 }
 
 .button {

@@ -134,6 +134,7 @@
 								<label class="text-base" for="country">Quốc gia</label>
 							</div>
 							<FormControl
+								class="custom-form-btn"
 								type="autocomplete"
 								id="country"
 								size="lg"
@@ -281,7 +282,6 @@ export default {
 				},
 				auto: true,
 				onSuccess(res) {
-					console.log(res);
 					if (res && res.email) {
 						this.email = res.email;
 						this.firstName = res.first_name;

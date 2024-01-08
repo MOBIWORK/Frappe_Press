@@ -32,3 +32,7 @@
 		height: 12px;
 	}
 }
+
+.custom-form-btn button {
+	height: 40px;
+}
