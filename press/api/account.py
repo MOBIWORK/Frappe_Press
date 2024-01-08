@@ -325,7 +325,7 @@ def validate_request_key(key, timezone=None):
             "email": account_request.email,
             "first_name": account_request.first_name,
             "last_name": account_request.last_name,
-            "country": 'vietnam',
+            "country": 'Vietnam',
             "countries": frappe.db.get_all("Country", pluck="name"),
             "user_exists": frappe.db.exists("User", account_request.email),
             "team": account_request.team,
