@@ -93,7 +93,7 @@ export default {
 				params: {
 					billing_details: this.billingInformation
 				},
-				onSuccess() {
+				async onSuccess() {
 					this.$emit('update:show', false);
 					notify({
 						icon: 'check',
@@ -101,9 +101,8 @@ export default {
 						title: 'Địa chỉ đã được cập nhật thành công!'
 					});
 
-					const result = this.$call('press.api.billing.setup_intent_success', {
-						setup_intent: {},
-						address: this.billingInformation
+					await this.$call('press.api.billing.setup_intent_success', {
+						setup_intent: {}
 					});
 					this.$emit('updated');
 				},

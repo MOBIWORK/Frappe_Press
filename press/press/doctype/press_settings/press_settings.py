@@ -19,15 +19,10 @@ from payos import PayOS
 class PressSettings(Document):
     @frappe.whitelist()
     def config_webhook_payos(self):
-        fields = ["payos_client_id", "payos_api_key",
-                  "payos_checksum_key", "payos_webhook_url"]
-        press_settings = frappe.db.get_value(
-            "Press Settings", "Press Settings", fields, as_dict=True)
-
-        client_id = press_settings.payos_client_id
-        api_key = press_settings.payos_api_key
-        checksum_key = press_settings.payos_checksum_key
-        payos_webhook_url = press_settings.payos_webhook_url
+        client_id = self.payos_client_id
+        api_key = self.payos_api_key
+        checksum_key = self.payos_checksum_key
+        payos_webhook_url = self.payos_webhook_url
 
         if not client_id or not api_key or not checksum_key:
             frappe.throw(
@@ -43,9 +38,11 @@ class PressSettings(Document):
             payos_webhook_url_current = payOS.confirmWebhook(payos_webhook_url)
             self.payos_webhook_url_current = payos_webhook_url_current
             self.save()
+            self.reload()
+
+            frappe.msgprint('Thiết lập Webhook PayOs thành công.')
         except Exception as ex:
             frappe.throw('Webhook Url không hợp lệ')
-        frappe.msgprint('Thiết lập Webhook PayOs thành công.')
 
     @frappe.whitelist()
     def create_stripe_webhook(self):

@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "team",
+  "team_name",
   "type",
   "source",
   "currency",
@@ -117,12 +118,18 @@
    "fieldtype": "Select",
    "label": "PayOs Payment Status",
    "options": "CANCELLED\nPAID\nPENDING\nPROCESSING"
+  },
+  {
+   "fetch_from": "team.user",
+   "fieldname": "team_name",
+   "fieldtype": "Data",
+   "label": "Team Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-28 11:32:29.664908",
+ "modified": "2024-01-11 11:41:02.473723",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",

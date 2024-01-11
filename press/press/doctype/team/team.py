@@ -478,16 +478,19 @@ class Team(Document):
             address_doc.address_title = billing_details.billing_name or self.billing_name
             address_doc.append(
                 "links",
-                {"link_doctype": self.doctype,
-                 "link_name": self.name, "link_title": self.name},
+                {
+                    "link_doctype": self.doctype,
+                    "link_name": self.name,
+                    "link_title": self.name
+                },
             )
 
         address_doc.update(
             {
                 "address_line1": billing_details.address,
-                "county": billing_details.county,
-                'city': billing_details.state,
                 "state": billing_details.state,
+                'city': billing_details.state,
+                "county": billing_details.county,
                 "email_id": billing_details.email_id,
                 "phone": billing_details.phone,
                 "tax_code": billing_details.tax_code,
@@ -1066,6 +1069,9 @@ def process_payos_webhook(doc, method):
     ):
         # ignore creating if already allocated
         return
+
+    # Give them free credits too (only first time)
+    team.allocate_free_credits()
 
     invoice = frappe.get_doc(
         doctype="Invoice",

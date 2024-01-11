@@ -1,7 +1,7 @@
 <template>
 	<div class="space-y-5">
 		<AlertBillingInformation
-			v-if="!checkRefresh"
+			v-if="checkRefresh"
 			@updated="checkRefresh = !checkRefresh"
 		/>
 		<BillingSummary :checkRefresh="checkRefresh" />
@@ -21,7 +21,7 @@ export default {
 	},
 	data() {
 		return {
-			checkRefresh: false
+			checkRefresh: true
 		};
 	},
 	props: ['invoiceName'],

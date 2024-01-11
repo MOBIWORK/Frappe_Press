@@ -2,8 +2,9 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Press Settings', {
-	config_webhook_payos(frm) {
-		frm.call('config_webhook_payos');
+	async config_webhook_payos(frm) {
+		await frm.call('config_webhook_payos');
+		frm.reload_doc();
 	},
 	create_stripe_webhook(frm) {
 		frm.call('create_stripe_webhook');
