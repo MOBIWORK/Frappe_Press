@@ -101,7 +101,7 @@
 			<div v-if="selectedApps.includes('erpnext')">
 				<FormControl
 					type="checkbox"
-					label="Tôi đồng ý nếu thông tin của tôi được chia sẻ với đối tác địa phương"
+					label="Tôi đã đọc và đồng ý với Điều khoản dịch vụ của MBW Cloud."
 					@change="
 						val => $emit('update:shareDetailsConsent', val.target.checked)
 					"

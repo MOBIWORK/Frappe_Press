@@ -59,7 +59,9 @@ export default {
 				postal_code: '',
 				country: '',
 				gstin: '',
-				billing_name: ''
+				billing_name: '',
+				number_of_employees: '',
+				areas_of_concern: ''
 			}
 		};
 	},
@@ -82,7 +84,9 @@ export default {
 							billingInformation.gstin == 'Not Applicable'
 								? ''
 								: billingInformation.gstin,
-						billing_name: billingInformation.billing_name
+						billing_name: billingInformation.billing_name,
+						number_of_employees: billingInformation.number_of_employees,
+						areas_of_concern: billingInformation.areas_of_concern
 					});
 				}
 			}

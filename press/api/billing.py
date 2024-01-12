@@ -859,3 +859,10 @@ def total_unpaid_amount():
         )[0]
         or 0
     )
+
+
+@frappe.whitelist()
+def get_all_category():
+    return frappe.get_all(
+        "Marketplace App Category"
+    )

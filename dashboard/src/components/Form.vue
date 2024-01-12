@@ -38,19 +38,46 @@
 				message="Quận huyện không được để trống"
 			/>
 		</div>
+
+		<div>
+			<label class="typo__label text-xs text-gray-600">Lĩnh vực quan tâm</label>
+			<multiselect
+				v-model="valueAreasOfConcern"
+				placeholder="Tìm kiếm lĩnh vực"
+				label="name"
+				track-by="name"
+				:options="optionsAreasOfConcern"
+				:multiple="true"
+				:show-labels="false"
+				@select="onChangeAreasOfConcern"
+				@remove="onChangeAreasOfConcern"
+			>
+				<template v-slot:noResult>
+					<span>Không tìm thấy lĩnh vực nào.</span>
+				</template>
+				<template v-slot:noOptions>
+					<span>Không có lĩnh vực nào.</span>
+				</template>
+			</multiselect>
+		</div>
 	</div>
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect';
+
 export default {
 	name: 'Form',
 	props: ['fields', 'modelValue', 'fieldNotSet'],
 	emits: ['update:modelValue'],
+	components: { Multiselect },
 	data() {
 		return {
 			optionsCounty: [],
 			optionsCountyAll: [],
-			requiredFieldNotSet: []
+			requiredFieldNotSet: [],
+			valueAreasOfConcern: null,
+			optionsAreasOfConcern: []
 		};
 	},
 	watch: {
@@ -59,6 +86,25 @@ export default {
 		}
 	},
 	resources: {
+		getAllCategory: {
+			url: 'press.api.billing.get_all_category',
+			auto: true,
+			onSuccess(data) {
+				if (this.modelValue['areas_of_concern']) {
+					let vals = this.modelValue['areas_of_concern'].split(';');
+					this.valueAreasOfConcern = vals.map(el => ({
+						name: el,
+						value: el
+					}));
+				}
+
+				this.optionsAreasOfConcern = data.map(el => ({
+					name: el.name,
+					value: el.name
+				}));
+			}
+		},
+
 		async stateList() {
 			const response = await fetch(
 				'https://provinces.open-api.vn/api/?depth=2'
@@ -78,6 +124,14 @@ export default {
 		}
 	},
 	methods: {
+		onChangeAreasOfConcern(value) {
+			let newValue = [];
+			this.valueAreasOfConcern.forEach(el => {
+				newValue.push(el.value);
+			});
+			newValue = newValue.join(';');
+			this.updateValue('areas_of_concern', newValue);
+		},
 		vietnamCounty(parent) {
 			let ops = this.optionsCountyAll.filter(d => d.parent == parent);
 			return ops.map(d => ({
@@ -166,3 +220,5 @@ export default {
 	}
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>

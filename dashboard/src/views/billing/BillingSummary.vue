@@ -64,13 +64,13 @@
 					</div>
 				</div>
 
-				<a
+				<!-- <a
 					href="https://doc.mbwcloud.com/User_Guide_MBWCloud/lựa-chọn-thanh-toán"
 					target="_blank"
 					class="text-sm text-gray-700 underline"
 				>
 					Các phương thức thanh toán khác
-				</a>
+				</a> -->
 				<ErrorMessage
 					:message="$resources.upcomingInvoice.error"
 					class="mt-3"

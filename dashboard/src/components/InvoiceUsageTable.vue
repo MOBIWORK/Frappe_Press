@@ -5,7 +5,7 @@
 				<thead>
 					<tr class="text-gray-600">
 						<th class="border-b py-3 pr-2 text-left font-normal">Mô tả</th>
-						<th class="border-b py-3 pr-2 text-left font-normal">Trang web</th>
+						<th class="border-b py-3 pr-2 text-left font-normal">Tổ chức</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
 						>

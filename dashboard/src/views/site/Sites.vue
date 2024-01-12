@@ -4,9 +4,7 @@
 			<header
 				class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 			>
-				<Breadcrumbs
-					:items="[{ label: 'Trang Web', route: { name: 'Sites' } }]"
-				>
+				<Breadcrumbs :items="[{ label: 'Tổ chức', route: { name: 'Sites' } }]">
 					<template v-if="this.$account.team.enabled" #actions>
 						<Button
 							variant="solid"
@@ -76,7 +74,7 @@
 				<div class="pb-20">
 					<div class="flex">
 						<div class="flex w-full space-x-2 pb-4">
-							<FormControl label="Tìm kiếm trang web" v-model="searchTerm">
+							<FormControl label="Tìm miền" v-model="searchTerm">
 								<template #prefix>
 									<FeatherIcon name="search" class="w-4 text-gray-600" />
 								</template>
@@ -88,22 +86,22 @@
 								:options="siteStatusFilterOptions"
 								v-model="site_status"
 							/>
-							<FormControl
+							<!-- <FormControl
 								v-if="$resources.siteTags.data.length > 0"
 								label="Thẻ"
 								class="mr-8"
 								type="select"
 								:options="siteTagFilterOptions"
 								v-model="site_tag"
-							/>
+							/> -->
 						</div>
 					</div>
 					<Table
 						:columns="[
-							{ label: 'Tên trang web', name: 'name', width: 2 },
+							{ label: 'Tên miền', name: 'name', width: 2 },
 							{ label: 'Trạng thái', name: 'status', width: 1 },
 							{ label: 'Khu vực', name: 'region', width: 0.5 },
-							{ label: 'Thẻ', name: 'tags', width: 1 },
+							// { label: 'Thẻ', name: 'tags', width: 1 },
 							{ label: 'Gói', name: 'plan', width: 1.5 },
 							{ label: '', name: 'actions', width: 0.5 }
 						]"

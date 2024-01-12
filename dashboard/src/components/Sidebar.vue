@@ -37,7 +37,7 @@
 							<span class="mr-1.5">
 								<FeatherIcon name="search" class="h-5 w-5 text-gray-700" />
 							</span>
-							<span class="text-sm">Search</span>
+							<span class="text-sm">Tìm kiếm</span>
 							<span class="ml-auto text-sm text-gray-500">
 								<template v-if="$platform === 'mac'">⌘K</template>
 								<template v-else>Ctrl+K</template>
@@ -176,7 +176,7 @@ export default {
 		items() {
 			return [
 				{
-					label: 'Trang Web',
+					label: 'Tổ chức',
 					route: '/sites',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/sites');
@@ -189,8 +189,8 @@ export default {
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/benches');
 					},
-					icon: FCIcons.BenchIcon
-					//condition: () => this.$account.team?.benches_enabled
+					icon: FCIcons.BenchIcon,
+					condition: () => this.$account.team?.benches_enabled
 				},
 				{
 					label: 'Servers',

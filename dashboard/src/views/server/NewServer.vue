@@ -46,7 +46,15 @@
 							for="region-consent"
 							class="ml-1 text-sm font-semibold text-gray-900"
 						>
-							Tôi đồng ý với các chính sách của MBW.
+							Tôi đã đọc và đồng ý với
+							<Link
+								class="border-none"
+								href="/thoa-thuan-su-dung-dich-vu"
+								target="_blank"
+								><span class="text-blue-500 hover:text-blue-700"
+									>Điều khoản dịch vụ
+								</span></Link
+							>.
 						</label>
 					</div>
 

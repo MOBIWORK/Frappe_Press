@@ -285,7 +285,7 @@ export default {
 		dropdownItems(bench) {
 			return [
 				{
-					label: 'Tạo trang web mới',
+					label: 'Tạo tổ chức mới',
 					onClick: () => {
 						this.$router.push({
 							name: 'NewBenchSite',

@@ -5,16 +5,16 @@
 		>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Trang Web', route: { name: 'Sites' } },
+					{ label: 'Tổ chức', route: { name: 'Sites' } },
 					{ label: 'Mới', route: { name: 'NewSite' } }
 				]"
 			/>
 		</header>
 		<WizardCard>
 			<div class="mb-2 text-center">
-				<h1 class="text-2xl font-bold">Tạo trang web mới</h1>
+				<h1 class="text-2xl font-bold">Tổ chức mới</h1>
 				<p v-if="benchTitle" class="text-base text-gray-700">
-					Trang web sẽ được tạo trên bench
+					Tổ chức sẽ được tạo trên bench
 					<span class="font-medium">{{ benchTitle }}</span>
 				</p>
 			</div>

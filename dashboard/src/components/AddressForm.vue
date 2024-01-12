@@ -7,7 +7,7 @@
 			@update:modelValue="$emit('update:address', $event)"
 			:fieldNotSet="fieldNotSet"
 		/>
-		<div class="mt-4" v-show="address.country == 'India'">
+		<!-- <div class="mt-4" v-show="address.country == 'India'">
 			<FormControl
 				label="GSTIN"
 				v-if="gstApplicable"
@@ -35,7 +35,7 @@
 			>
 				Add a GSTIN
 			</Button>
-		</div>
+		</div> -->
 	</div>
 </template>
 
@@ -161,6 +161,12 @@ export default {
 					fieldtype: 'Data',
 					label: 'Mã số thuế',
 					fieldname: 'tax_code',
+					required: 1
+				},
+				{
+					fieldtype: 'Int',
+					label: 'Số lượng nhân viên',
+					fieldname: 'number_of_employees',
 					required: 1
 				},
 				{

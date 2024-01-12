@@ -741,6 +741,12 @@ def update_billing_information(billing_details):
         billing_details.state = billing_details.state.get('value')
     if type(billing_details.county) == dict:
         billing_details.county = billing_details.county.get('value')
+    number_of_employees = str(billing_details.number_of_employees)
+    if number_of_employees.isnumeric():
+        billing_details.number_of_employees = int(number_of_employees)
+    else:
+        billing_details.number_of_employees = None
+
     team = get_current_team(get_doc=True)
     team.update_billing_details(billing_details)
 

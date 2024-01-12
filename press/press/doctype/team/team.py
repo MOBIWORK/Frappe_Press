@@ -485,20 +485,24 @@ class Team(Document):
                 },
             )
 
-        address_doc.update(
-            {
-                "address_line1": billing_details.address,
-                "state": billing_details.state,
-                'city': billing_details.state,
-                "county": billing_details.county,
-                "email_id": billing_details.email_id,
-                "phone": billing_details.phone,
-                "tax_code": billing_details.tax_code,
-                "pincode": billing_details.postal_code,
-                "country": billing_details.country,
-                "gstin": billing_details.gstin,
-            }
-        )
+        data_update = {
+            "address_line1": billing_details.address,
+            "areas_of_concern": billing_details.areas_of_concern,
+            "state": billing_details.state,
+            'city': billing_details.state,
+            "county": billing_details.county,
+            "email_id": billing_details.email_id,
+            "phone": billing_details.phone,
+            "tax_code": billing_details.tax_code,
+            "pincode": billing_details.postal_code,
+            "country": billing_details.country,
+            "gstin": billing_details.gstin,
+        }
+
+        if billing_details.number_of_employees or billing_details.number_of_employees == 0:
+            data_update['number_of_employees'] = billing_details.number_of_employees
+
+        address_doc.update(data_update)
         address_doc.save()
         address_doc.reload()
 
