@@ -4,9 +4,9 @@
 			<Breadcrumbs
 				:items="[{ label: 'Thanh toán', route: { name: 'BillingScreen' } }]"
 			/>
-			<Tabs :tabs="tabs" class="-mb-px pl-0.5" />
+			<Tabs :tabs="tabs" class="-mb-px pb-5 pl-0.5" />
 		</header>
-		<div class="mx-auto max-w-5xl py-5">
+		<div class="mx-auto px-5 py-5">
 			<router-view />
 		</div>
 	</div>

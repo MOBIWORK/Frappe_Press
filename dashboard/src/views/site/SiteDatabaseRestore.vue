@@ -4,7 +4,7 @@
 		title="Khôi phục, Di chuyển và Đặt lại"
 		:subtitle="
 			site.status === 'Suspended'
-				? 'Kích hoạt trang web để kích hoạt những hành động này'
+				? 'Kích hoạt tổ chức để kích hoạt những hành động này'
 				: ''
 		"
 	>
@@ -82,7 +82,7 @@
 				<div>
 					<h3 class="text-lg">Xóa Cache</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Xóa bộ nhớ cache của trang web của bạn
+						Xóa bộ nhớ cache của tổ chức của bạn
 					</p>
 				</div>
 				<Button
@@ -229,8 +229,8 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					Tất cả dữ liệu từ trang web của bạn sẽ bị mất. Bạn có chắc chắn muốn
-					đặt lại database không?
+					Tất cả dữ liệu từ tổ chức của bạn sẽ bị mất. Bạn có chắc chắn muốn đặt
+					lại database không?
 				</p>
 				<p class="mt-4 text-base">
 					Vui lòng nhập
@@ -302,7 +302,7 @@ export default {
 				},
 				validate() {
 					if (this.confirmSiteName !== this.site?.name) {
-						return 'Vui lòng nhập tên trang web để xác nhận.';
+						return 'Vui lòng nhập tên tổ chức để xác nhận.';
 					}
 				},
 				onSuccess(jobName) {
@@ -359,7 +359,7 @@ export default {
 			this.$confirm({
 				title: 'Xóa Cache',
 				message: `
-				<b>bench clear-cache</b> và <b>bench clear-website-cache</b> sẽ được thực hiện trên trang web của bạn. Bạn có chắc chắn muốn chạy các lệnh này không?
+				<b>bench clear-cache</b> và <b>bench clear-website-cache</b> sẽ được thực hiện trên tổ chức của bạn. Bạn có chắc chắn muốn chạy các lệnh này không?
 				`,
 				actionLabel: 'Xóa Cache',
 				actionColor: 'red',

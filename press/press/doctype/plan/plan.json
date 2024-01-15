@@ -16,6 +16,8 @@
   "price_vnd",
   "price_usd",
   "price_inr",
+  "num_of_empl_from",
+  "num_of_empl_to",
   "features_section",
   "cpu_time_per_day",
   "max_database_usage",
@@ -52,15 +54,19 @@
    "label": "Enabled"
   },
   {
+   "default": "0",
    "fieldname": "price_usd",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Price (USD)",
    "options": "USD",
    "reqd": 1
   },
   {
+   "default": "0",
    "fieldname": "price_inr",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Price (INR)",
    "options": "INR",
    "reqd": 1
@@ -215,11 +221,23 @@
    "label": "Price (VND)",
    "options": "VND",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "num_of_empl_from",
+   "fieldtype": "Int",
+   "label": "Number Of Employees From"
+  },
+  {
+   "default": "0",
+   "fieldname": "num_of_empl_to",
+   "fieldtype": "Int",
+   "label": "Number Of Employees To"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-19 11:28:53.013766",
+ "modified": "2024-01-13 08:20:10.025378",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Plan",

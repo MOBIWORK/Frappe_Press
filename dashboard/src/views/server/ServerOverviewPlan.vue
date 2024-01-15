@@ -1,7 +1,7 @@
 <template>
 	<Card
 		title="Gói"
-		:subtitle="'Nâng cấp hoặc hạ cấp kế hoạch của bạn dựa trên việc sử dụng của bạn'"
+		:subtitle="'Nâng cấp hoặc hạ cấp gói của bạn dựa trên việc sử dụng của bạn'"
 	>
 		<template #actions>
 			<Button

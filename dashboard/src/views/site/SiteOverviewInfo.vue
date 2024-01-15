@@ -1,8 +1,5 @@
 <template>
-	<Card
-		title="Thông tin trang web"
-		subtitle="Thông tin chung về trang web của bạn"
-	>
+	<Card title="Thông tin tổ chức" subtitle="Thông tin chung về tổ chức của bạn">
 		<div class="divide-y">
 			<div class="flex items-center py-3">
 				<Avatar
@@ -35,9 +32,9 @@
 
 			<ListItem
 				v-if="site.group && site.status !== 'Pending'"
-				title="Tự động cập nhật trang web"
+				title="Tự động cập nhật tổ chức"
 				class="overflow-x-hidden"
-				description="Lên lịch tự động cập nhật trang web khi có sẵn"
+				description="Lên lịch tự động cập nhật tổ chức khi có sẵn"
 			>
 				<template v-slot:actions>
 					<LoadingIndicator class="h-4 w-4" v-if="loading" />
@@ -52,15 +49,15 @@
 			</ListItem>
 			<ListItem
 				v-if="site.status == 'Active'"
-				title="Ngưng hoạt động trang web"
-				description="Trang web sẽ trở thành không hoạt động và sẽ không thể truy cập công khai"
+				title="Ngưng hoạt động tổ chức"
+				description="Tổ chức sẽ không hoạt động và sẽ không thể truy cập công khai"
 			>
 				<template v-slot:actions>
 					<Tooltip
 						:text="
 							!permissions.deactivate
 								? `Bạn không có đủ quyền để thực hiện hành động này`
-								: 'Ngưng hoạt động trang web'
+								: 'Ngưng hoạt động tổ chức'
 						"
 					>
 						<Button
@@ -68,7 +65,7 @@
 							class="shrink-0"
 							:disabled="!permissions.deactivate"
 						>
-							Ngưng hoạt động
+							Tắt
 						</Button>
 					</Tooltip>
 				</template>
@@ -76,8 +73,8 @@
 
 			<ListItem
 				v-if="['Inactive', 'Broken'].includes(site.status)"
-				title="Kích hoạt trang web"
-				description="Trang web sẽ trở nên hoạt động và có thể truy cập được"
+				title="Kích hoạt tổ chức"
+				description="Tổ chức sẽ hoạt động và có thể truy cập được"
 			>
 				<template v-slot:actions>
 					<Button
@@ -85,15 +82,15 @@
 						class="shrink-0"
 						:variant="site.status === 'Broken' ? 'solid' : 'subtle'"
 					>
-						Kích hoạt trang web
+						Kích hoạt
 					</Button>
 				</template>
 			</ListItem>
 
 			<ListItem
 				v-if="site.status !== 'Pending'"
-				title="Xóa trang web"
-				description="Một khi bạn xóa trang web, không có cách nào quay lại"
+				title="Xóa tổ chức"
+				description="Một khi bạn xóa tổ chức, không có cách nào quay lại"
 			>
 				<template v-slot:actions>
 					<SiteDrop :site="site" v-slot="{ showDialog }">
@@ -101,7 +98,7 @@
 							:text="
 								!permissions.drop
 									? `Bạn không có đủ quyền để thực hiện hành động này`
-									: 'Xóa trang web'
+									: 'Xóa tổ chức'
 							"
 						>
 							<Button
@@ -109,7 +106,7 @@
 								:disabled="!permissions.drop"
 								@click="showDialog"
 							>
-								Xóa trang web
+								Xóa
 							</Button>
 						</Tooltip>
 					</SiteDrop>
@@ -152,9 +149,9 @@ export default {
 		},
 		onDeactivateClick() {
 			this.$confirm({
-				title: 'Ngưng hoạt động trang web',
+				title: 'Ngưng hoạt động tổ chức',
 				message: `
-				Bạn có chắc chắn muốn ngưng hoạt động trang web này không? Trang web sẽ chuyển sang trạng thái không hoạt động. Nó sẽ không thể truy cập và các công việc nền sẽ không chạy. Bạn vẫn sẽ bị tính phí <strong>kể cả khi tắt</strong>.
+				Bạn có chắc chắn muốn ngưng hoạt động tổ chức này không? Tổ chức sẽ chuyển sang trạng thái không hoạt động. Nó sẽ không thể truy cập và các công việc nền sẽ không chạy. Bạn vẫn sẽ bị tính phí <strong>kể cả khi tắt</strong>.
 				`,
 				actionLabel: 'Ngưng hoạt động',
 				actionColor: 'red',
@@ -163,9 +160,9 @@ export default {
 		},
 		onActivateClick() {
 			this.$confirm({
-				title: 'Kích hoạt trang web',
-				message: `Bạn có chắc chắn muốn kích hoạt trang web này không?
-<br><br><strong>Ghi chú: Sử dụng điều này như một phương án cuối cùng nếu trang web gặp sự cố và không thể truy cập được.</strong>`,
+				title: 'Kích hoạt tổ chức',
+				message: `Bạn có chắc chắn muốn kích hoạt tổ chức này không?
+<br><br><strong>Ghi chú: Sử dụng điều này như một phương án cuối cùng nếu tổ chức gặp sự cố và không thể truy cập được.</strong>`,
 				actionLabel: 'Kích hoạt',
 				action: () => this.activate()
 			});
@@ -182,8 +179,8 @@ export default {
 				name: this.site.name
 			});
 			notify({
-				title: 'Trang web đã được kích hoạt thành công!',
-				message: 'Bạn có thể truy cập trang web của mình ngay bây giờ',
+				title: 'Tổ chức đã được kích hoạt thành công!',
+				message: 'Bạn có thể truy cập tổ chức của mình ngay bây giờ',
 				icon: 'check',
 				color: 'green'
 			});

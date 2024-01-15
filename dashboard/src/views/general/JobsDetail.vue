@@ -39,10 +39,10 @@ export default {
 		subtitle() {
 			if (!this.job) return;
 			if (this.job.status == 'Success') {
-				let when = this.formatDate(this.job.creation, 'relative');
-				return `Completed ${when} in ${this.$formatDuration(
-					this.job.duration,
-					'hh:mm:ss'
+				// let when = this.formatDate(this.job.creation, 'relative');
+				let when = this.$formatDateDetail(this.job.creation);
+				return `Hoàn thành lúc ${when} trong ${this.$formatDuration(
+					this.job.duration
 				)}`;
 			}
 			if (this.job.status == 'Undelivered') {

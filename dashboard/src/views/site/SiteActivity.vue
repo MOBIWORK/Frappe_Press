@@ -1,8 +1,8 @@
 <template>
 	<Card
 		class="h-full max-h-96 min-h-full"
-		title="Hoạt động trang web"
-		subtitle="Bản ghi các hoạt động được thực hiện trên trang web của bạn"
+		title="Hoạt động tổ chức"
+		subtitle="Các hoạt động được thực hiện trên tổ chức của bạn"
 	>
 		<div class="divide-y">
 			<ListItem
@@ -100,9 +100,9 @@ export default {
 		getDescription(activity) {
 			let description = '';
 			if (activity.reason) {
-				description += `Reason: ${activity.reason}\n`;
+				description += `Lý do: ${activity.reason}\n`;
 			}
-			description += this.formatDate(activity.creation);
+			description += this.$formatDateDetail(activity.creation);
 			return description;
 		}
 	}

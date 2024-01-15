@@ -39,10 +39,10 @@ export default {
 		subtitle() {
 			if (!this.play) return;
 			if (this.play.status == 'Success') {
-				let when = this.formatDate(this.play.creation, 'relative');
-				return `Completed ${when} in ${this.$formatDuration(
-					this.play.duration,
-					'hh:mm:ss'
+				// let when = this.formatDate(this.play.creation, 'relative');
+				let when = this.$formatDateDetail(this.job.creation);
+				return `Hoàn thành lúc ${when} trong ${this.$formatDuration(
+					this.play.duration
 				)}`;
 			}
 			if (this.play.status == 'Undelivered') {

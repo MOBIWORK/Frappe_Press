@@ -8,7 +8,10 @@
 				:key="job.name"
 				:to="jobRoute(job)"
 			>
-				<ListItem :title="job.job_type" :description="formatDate(job.creation)">
+				<ListItem
+					:title="job.job_type"
+					:description="this.$formatDateDetail(job.creation)"
+				>
 					<template v-slot:actions>
 						<Badge
 							v-if="

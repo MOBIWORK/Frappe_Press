@@ -20,16 +20,7 @@
 							>
 						</div>
 						<div class="text-2xl font-medium">
-							<!-- {{
-								($account.team.currency == 'INR' ? '₹' : '$') +
-								' ' +
-								$resources.unpaidAmountDue.data
-							}} -->
-							{{
-								$resources.unpaidAmountDue.data +
-								' ' +
-								($account.team.currency == 'VND' ? 'VND' : '$')
-							}}
+							{{ unpaidAmountDue }}
 						</div>
 					</div>
 					<div class="rounded-md border p-4">
@@ -48,6 +39,13 @@
 					</div>
 
 					<div class="rounded-md border p-4">
+						<div class="mb-2 text-base">Số tiền khả dụng</div>
+						<div class="text-2xl font-medium">
+							{{ availableBalances }}
+						</div>
+					</div>
+
+					<!-- <div class="rounded-md border p-4">
 						<div class="flex justify-between text-base">
 							<div>Phương thức thanh toán</div>
 							<Button @click="showChangeModeDialog = true" theme="gray"
@@ -56,12 +54,11 @@
 						</div>
 						<div class="text-2xl font-medium">
 							{{
-								$account.team.payment_mode == 'Prepaid Credits'
-									? 'Trả trước'
+								$account.team.payment_mode == 'Prepaid Credits' ? 'Trả trước'
 									: $account.team.payment_mode || 'Chưa đặt'
 							}}
 						</div>
-					</div>
+					</div> -->
 				</div>
 
 				<!-- <a
@@ -192,6 +189,16 @@ export default {
 		},
 		upcomingInvoice() {
 			return this.$resources.upcomingInvoice.data?.upcoming_invoice;
+		},
+		unpaidAmountDue() {
+			return this.$formatMoney(this.$resources.unpaidAmountDue.data) + ' VND';
+		},
+		availableBalances() {
+			let total =
+				this.$resources.upcomingInvoice.data?.num_available_credits -
+				this.$resources.unpaidAmountDue.data -
+				this.upcomingInvoice.total;
+			return this.$formatMoney(total) + ' VND';
 		},
 		availableCredits() {
 			if (this.$account.team.payment_mode === 'Partner Credits') {

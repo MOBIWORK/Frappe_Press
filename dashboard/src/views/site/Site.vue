@@ -5,7 +5,7 @@
 		>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Trang Web', route: { name: 'Sites' } },
+					{ label: 'Tổ chức', route: { name: 'Sites' } },
 					{
 						label: site?.host_name || site?.name,
 						route: { name: 'SiteOverview', params: { siteName: site?.name } }
@@ -17,7 +17,7 @@
 						<Button
 							v-if="site?.status === 'Active'"
 							icon-left="external-link"
-							label="Truy cập trang web"
+							label="Truy cập tổ chức"
 							:link="`https://${site?.name}`"
 						/>
 						<Dropdown :options="siteActions">
@@ -37,7 +37,7 @@
 					<h1 class="text-2xl font-bold">
 						{{ site.host_name || site.name }}
 					</h1>
-					<Badge class="ml-4" :label="site.status" />
+					<Badge class="ml-4" :label="this.$siteStatus(site.status)" />
 					<div
 						v-if="regionInfo"
 						class="ml-2 hidden cursor-default flex-row items-center self-end rounded-md bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-700 md:flex"
@@ -86,7 +86,7 @@
 					@plan-change="handlePlanChange"
 				/>
 			</div>
-			<Tabs :tabs="tabs">
+			<Tabs :tabs="tabs" :statusSite="site.status">
 				<router-view v-slot="{ Component, route }">
 					<component
 						v-if="site"
@@ -125,7 +125,7 @@
 
 		<Dialog
 			:options="{
-				title: 'Chuyển giao trang web cho nhóm',
+				title: 'Chuyển giao tổ chức cho nhóm',
 				actions: [
 					{
 						label: 'Gửi',
@@ -172,7 +172,7 @@ export default {
 	name: 'Site',
 	pageMeta() {
 		return {
-			title: `Trang Web - ${this.siteName} - MBW Cloud`
+			title: `Tổ chức - ${this.siteName} - MBW Cloud`
 		};
 	},
 	props: ['siteName'],
@@ -236,8 +236,8 @@ export default {
 					this.showTransferSiteDialog = false;
 					this.emailOfChildTeam = null;
 					notify({
-						title: 'Trang web đã được chuyển giao cho nhóm con',
-						message: 'Trang web đã được chuyển giao cho nhóm con',
+						title: 'Tổ chức đã được chuyển giao cho nhóm con',
+						message: 'Tổ chức đã được chuyển giao cho nhóm con',
 						color: 'green',
 						icon: 'check'
 					});
@@ -318,8 +318,8 @@ export default {
 		},
 		onActivateClick() {
 			this.$confirm({
-				title: 'Kích hoạt trang web',
-				message: `Bạn có chắc chắn muốn kích hoạt trang web này không?`,
+				title: 'Kích hoạt tổ chức',
+				message: `Bạn có chắc chắn muốn kích hoạt tổ chức này không?`,
 				actionLabel: 'Kích hoạt',
 				action: () => this.activate()
 			});
@@ -329,8 +329,8 @@ export default {
 				name: this.site.name
 			});
 			notify({
-				title: 'Trang web đã được kích hoạt thành công!',
-				message: 'Bạn có thể truy cập trang web của mình ngay bây giờ',
+				title: 'Tổ chức đã được kích hoạt thành công!',
+				message: 'Bạn có thể truy cập tổ chức của mình ngay bây giờ',
 				icon: 'check',
 				color: 'green'
 			});
@@ -400,7 +400,7 @@ export default {
 					}
 				},
 				{
-					label: 'Chuyển giao trang web',
+					label: 'Chuyển giao tổ chức',
 					icon: 'tool',
 					loading: this.$resources.transferSite.loading,
 					condition: () =>

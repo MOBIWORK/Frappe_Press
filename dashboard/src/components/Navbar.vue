@@ -111,7 +111,7 @@ export default {
 		items() {
 			return [
 				{
-					label: 'Trang Web',
+					label: 'Tổ chức',
 					route: '/sites',
 					highlight: () => {
 						return this.$route.fullPath.endsWith('/sites');
@@ -122,7 +122,8 @@ export default {
 					route: '/benches',
 					highlight: () => {
 						return this.$route.fullPath.endsWith('/benches');
-					}
+					},
+					condition: () => this.$account.team?.benches_enabled
 				},
 				{
 					label: 'Ứng dụng',

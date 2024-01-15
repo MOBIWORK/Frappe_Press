@@ -1,12 +1,12 @@
 <template>
 	<Alert
-		title="Kích hoạt trang web"
+		title="Kích hoạt tổ chức"
 		v-if="site.status == 'Active' && !site.setup_wizard_complete"
 	>
 		<span>
-			Vui lòng đăng nhập và hoàn thành hướng dẫn thiết lập trên trang web của
-			bạn. Dữ liệu phân tích sẽ chỉ được thu thập sau khi quá trình thiết lập
-			hoàn tất.
+			Vui lòng đăng nhập và hoàn thành hướng dẫn thiết lập trên tổ chức của bạn.
+			Dữ liệu phân tích sẽ chỉ được thu thập sau khi quá trình thiết lập hoàn
+			tất.
 		</span>
 		<template #actions>
 			<Button

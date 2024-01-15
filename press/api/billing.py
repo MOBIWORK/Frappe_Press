@@ -51,6 +51,8 @@ def upcoming_invoice():
     return {
         "upcoming_invoice": upcoming_invoice,
         "available_credits": f'{fmt_money(team.get_balance(), 0, team.currency)}',
+        "num_available_credits": team.get_balance(),
+        "available_balances": 0
     }
 
 
@@ -124,10 +126,14 @@ def balances():
     for d in data:
         d.formatted = dict(
             amount=fmt_money(d.amount, 0, d.currency),
-            ending_balance=fmt_money(
-                d.ending_balance - d.amount, 0, d.currency) if d.docstatus == 2 else fmt_money(
-                d.ending_balance, 0, d.currency),
         )
+        pre_balance = ''
+        ending_balance = ''
+        if d.ending_balance:
+            pre_balance = fmt_money(d.ending_balance - d.amount, 0, d.currency)
+            ending_balance = fmt_money(d.ending_balance, 0, d.currency)
+        d.formatted['pre_balance'] = pre_balance
+        d.formatted['ending_balance'] = ending_balance
 
         if d.period_start:
             d.formatted["invoice_for"] = d.period_start.strftime("%B %Y")

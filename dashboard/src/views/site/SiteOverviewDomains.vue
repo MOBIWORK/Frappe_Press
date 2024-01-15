@@ -3,8 +3,8 @@
 		title="Tên miền"
 		:subtitle="
 			domains.data && domains.data.length
-				? 'Tên miền trỏ đến trang web của bạn'
-				: 'Không có tên miền nào đang trỏ đến trang web của bạn'
+				? 'Tên miền trỏ đến tổ chức của bạn'
+				: 'Không có tên miền nào đang trỏ đến tổ chức của bạn'
 		"
 	>
 		<template #actions>
@@ -350,7 +350,7 @@ export default {
 			} else {
 				this.$confirm({
 					title: 'Đặt làm tên miền chính',
-					message: `Đặt làm chính sẽ làm cho <b>${domain}</b> trở thành URL chính cho trang web của bạn. Bạn có muốn tiếp tục không?`,
+					message: `Đặt làm chính sẽ làm cho <b>${domain}</b> trở thành URL chính cho tổ chức của bạn. Bạn có muốn tiếp tục không?`,
 					actionLabel: 'Đặt làm chính',
 					action: closeDialog => {
 						closeDialog();

@@ -23,7 +23,7 @@
 							{{ row.site || '-' }}
 						</td>
 						<td class="border-b py-3 pr-2 text-right">
-							{{ row.rate }} x {{ row.quantity }}
+							{{ this.$formatMoney(row.rate) }} x {{ row.quantity }}
 						</td>
 						<td class="border-b py-3 pr-2 text-right font-semibold">
 							{{ doc.formatted.items[i].amount }}

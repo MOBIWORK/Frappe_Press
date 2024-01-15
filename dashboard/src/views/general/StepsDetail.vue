@@ -10,7 +10,7 @@
 					/>
 					<div>
 						<h4 class="text-lg font-medium">
-							{{ title }}
+							{{ this.$formatTitleJob(title) }}
 						</h4>
 						<p class="mt-1 text-sm text-gray-600" v-if="subtitle">
 							{{ subtitle }}
@@ -91,7 +91,7 @@
 						:style="{ width: viewportWidth < 768 ? 'calc(100vw - 6rem)' : '' }"
 					>
 						<div class="max-w-md">
-							<pre>{{ step.output || 'No output' }}</pre>
+							<pre>{{ step.output || 'Chưa có kết quả' }}</pre>
 						</div>
 					</div>
 				</div>

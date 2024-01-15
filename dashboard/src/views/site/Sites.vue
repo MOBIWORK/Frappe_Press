@@ -21,7 +21,7 @@
 			<div class="my-5 space-y-2 px-5">
 				<div v-if="!$account.team.enabled">
 					<Alert title="Tài khoản của bạn đã bị vô hiệu hóa">
-						Cho phép tài khoản của bạn bắt đầu tạo trang web
+						Cho phép tài khoản của bạn bắt đầu tạo tổ chức
 						<template #actions>
 							<Button variant="solid" route="/settings/profile">
 								Kích hoạt Tài khoản
@@ -50,14 +50,14 @@
 
 					<Alert
 						v-else
-						title="Việc thanh toán hóa đơn cuối cùng của bạn không thành công."
+						title="Thanh toán hóa đơn cuối cùng của bạn không thành công."
 					>
 						Thanh toán ngay để không bị gián đoạn dịch vụ.
 						<template v-if="this.$resources.latestUnpaidInvoice.data" #actions>
 							<router-link
 								:to="{ path: '/billing', query: { invoiceStatus: 'Unpaid' } }"
 							>
-								<Button variant="solid"> Đến phần thanh toán </Button>
+								<Button variant="solid"> Đến thanh toán </Button>
 							</router-link>
 						</template>
 					</Alert>
@@ -74,7 +74,7 @@
 				<div class="pb-20">
 					<div class="flex">
 						<div class="flex w-full space-x-2 pb-4">
-							<FormControl label="Tìm miền" v-model="searchTerm">
+							<FormControl label="Tìm tên miền" v-model="searchTerm">
 								<template #prefix>
 									<FeatherIcon name="search" class="w-4 text-gray-600" />
 								</template>
@@ -123,14 +123,14 @@
 								<span v-if="!group.public" class="ml-2 text-gray-600">{{
 									group.version
 								}}</span>
-								<Button
+								<!-- <Button
 									v-if="!group.public"
 									variant="ghost"
 									class="ml-auto"
 									:route="{ name: 'Bench', params: { benchName: group.group } }"
 								>
 									Xem Bench
-								</Button>
+								</Button> -->
 								<div v-else class="h-7" />
 							</div>
 
@@ -221,7 +221,7 @@
 								v-else-if="$resources.allSites.fetched && rows.length === 0"
 								class="text-base text-gray-700"
 							>
-								Không có trang web
+								Không có tổ chức
 							</div>
 						</div>
 					</Table>
@@ -268,7 +268,7 @@ export default {
 	name: 'Sites',
 	pageMeta() {
 		return {
-			title: 'Trang Web - MBW Cloud'
+			title: 'Tổ chức - MBW Cloud'
 		};
 	},
 	props: ['bench'],
@@ -346,8 +346,8 @@ export default {
 			if (data.status === 'Success' && data.user === this.$account.user.name) {
 				this.reload();
 				notify({
-					title: 'Hoàn tất tạo trang web!',
-					message: 'Đăng nhập vào trang web của bạn và hoàn tất đạo cụ cài đặt',
+					title: 'Hoàn tất tạo tổ chức!',
+					message: 'Đăng nhập vào tổ chức của bạn và hoàn tất đạo cụ cài đặt',
 					icon: 'check',
 					color: 'green'
 				});
@@ -382,7 +382,7 @@ export default {
 		dropdownItems(site) {
 			return [
 				{
-					label: 'Truy cập trang web',
+					label: 'Truy cập tổ chức',
 					onClick: () => {
 						window.open(`https://${site.name}`, '_blank');
 					}
@@ -457,7 +457,7 @@ export default {
 			let groups = [];
 			for (let site of this.sites) {
 				if (site.public) {
-					site.title = 'Shared';
+					site.title = '';
 					site.group = 'Shared';
 				}
 				if (!seen.includes(site.group)) {

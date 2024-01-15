@@ -3,8 +3,8 @@
 		title="Gói"
 		:subtitle="
 			site.status == 'Suspended'
-				? 'Đặt kế hoạch để kích hoạt trang web bị tạm ngừng của bạn'
-				: 'Nâng cấp hoặc hạ cấp kế hoạch của bạn dựa trên việc sử dụng của bạn'
+				? 'Đặt gói để kích hoạt tổ chức bị tạm ngừng của bạn'
+				: 'Nâng cấp hoặc hạ cấp gói của bạn dựa trên việc sử dụng của bạn'
 		"
 		v-if="site.status != 'Inactive'"
 	>
@@ -53,7 +53,7 @@
 					>
 						{{ plan.current_plan.cpu_time_per_day }}
 						{{ $plural(plan.current_plan.cpu_time_per_day, 'giờ', 'giờ') }}
-						của CPU / ngày
+						CPU / ngày
 					</p>
 				</div>
 			</div>

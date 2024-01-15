@@ -3,7 +3,7 @@
 		<slot v-bind="{ showDialog }"></slot>
 		<Dialog
 			:options="{
-				title: 'Xóa trang web',
+				title: 'Xóa tổ chức',
 				actions: [
 					{
 						label: site.archive_failed ? 'Ép buộc xóa' : 'Xóa',
@@ -18,8 +18,8 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					Bạn có chắc chắn muốn xóa trang web không? Trang web sẽ được lưu trữ
-					và tất cả các tệp tin và bản sao lưu ngoại vi sẽ bị xóa. Hành động này
+					Bạn có chắc chắn muốn xóa tổ chức không? Tổ chức sẽ được lưu trữ và
+					tất cả các tệp tin và bản sao lưu ngoại vi sẽ bị xóa. Hành động này
 					không thể được hoàn tác.
 				</p>
 				<p class="mt-4 text-base">
@@ -67,7 +67,7 @@ export default {
 				},
 				validate() {
 					if (this.site?.name !== this.confirmSiteName) {
-						return 'Vui lòng nhập tên trang web để xác nhận';
+						return 'Vui lòng nhập tên tổ chức để xác nhận';
 					}
 				}
 			};

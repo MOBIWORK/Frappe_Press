@@ -1,7 +1,7 @@
 <template>
 	<CardWithDetails
 		title="Logs"
-		subtitle="Log có sẵn cho trang web của bạn"
+		subtitle="Log có sẵn cho tổ chức của bạn"
 		:showDetails="logName"
 	>
 		<div v-if="$resources.logs.data && $resources.logs.data.length">
@@ -15,7 +15,7 @@
 				<ListItem
 					:title="log.name"
 					:description="`${
-						formatDate(log.modified, (isUTC = true)) + '\n' + log.size
+						this.$formatDateDetail(log.modified) + '\n' + log.size
 					} kB`"
 				/>
 				<div class="border-b"></div>

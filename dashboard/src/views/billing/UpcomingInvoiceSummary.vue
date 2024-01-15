@@ -1,5 +1,5 @@
 <template>
-	<Card title="Tóm tắt hóa đơn" :subtitle="subtitle">
+	<Card title="Hóa đơn tạm tính" :subtitle="subtitle">
 		<InvoiceUsageTable :invoiceDoc="invoiceDoc" />
 	</Card>
 </template>

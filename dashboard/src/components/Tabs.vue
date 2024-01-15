@@ -45,6 +45,9 @@
 			</select>
 		</div>
 		<div class="w-full pt-5" v-if="$slots.default">
+			<Alert class="pb-2" title="" v-if="statusSite == 'Pending'">
+				<span> Đang tiến hành khởi tạo hệ thống, quý khách vui lòng chờ. </span>
+			</Alert>
 			<slot></slot>
 		</div>
 	</div>
@@ -53,7 +56,7 @@
 <script>
 export default {
 	name: 'Tabs',
-	props: ['tabs'],
+	props: ['tabs', 'statusSite'],
 	methods: {
 		changeTab(route) {
 			this.$router.replace(route);

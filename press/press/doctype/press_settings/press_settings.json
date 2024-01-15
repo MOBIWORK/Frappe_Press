@@ -11,8 +11,12 @@
   "column_break_2",
   "bench_configuration",
   "billing_tab",
-  "invoicing_column",
+  "tab_invoicing",
   "gst_percentage",
+  "tab_site_config",
+  "site_num_days_required",
+  "site_num_days_advance_warning",
+  "site_num_days_past_lock",
   "stripe_settings_section",
   "payos_client_id",
   "payos_api_key",
@@ -1065,11 +1069,6 @@
    "label": "Docker Remote Builder"
   },
   {
-   "fieldname": "invoicing_column",
-   "fieldtype": "Column Break",
-   "label": "Invoicing"
-  },
-  {
    "fieldname": "gst_percentage",
    "fieldtype": "Float",
    "label": "GST Percentage"
@@ -1167,11 +1166,36 @@
    "fieldname": "ehoadon_section",
    "fieldtype": "Section Break",
    "label": "eHoadon"
+  },
+  {
+   "fieldname": "site_num_days_required",
+   "fieldtype": "Int",
+   "label": "Number Of Days Required"
+  },
+  {
+   "fieldname": "site_num_days_advance_warning",
+   "fieldtype": "Int",
+   "label": "Number Of Days Of Advance Warning"
+  },
+  {
+   "fieldname": "site_num_days_past_lock",
+   "fieldtype": "Int",
+   "label": "Number Of Days Past The Lock"
+  },
+  {
+   "fieldname": "tab_site_config",
+   "fieldtype": "Section Break",
+   "label": "Site Config"
+  },
+  {
+   "fieldname": "tab_invoicing",
+   "fieldtype": "Section Break",
+   "label": "Invoicing"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2023-12-29 14:23:05.059536",
+ "modified": "2024-01-13 08:44:15.541716",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

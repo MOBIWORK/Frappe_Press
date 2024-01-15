@@ -6,6 +6,7 @@
 			>
 				<span class="hidden md:inline">Ngày</span>
 				<span class="col-span-2 md:col-span-1">Mô tả</span>
+				<span>Số dư trước</span>
 				<span>Số tiền</span>
 				<span>Số dư</span>
 				<span>Trạng thái</span>
@@ -24,6 +25,9 @@
 						{{ getDescription(d) }}
 					</div>
 					<div class="md:hidden">{{ this.$formatDate(d.creation) }}</div>
+				</div>
+				<div class="whitespace-nowrap text-gray-700">
+					{{ d.formatted.pre_balance }}
 				</div>
 				<div class="whitespace-nowrap text-gray-700">
 					{{ d.formatted.amount }}
@@ -161,8 +165,8 @@ export default {
 
 		getDescription(d) {
 			var typeSource = {
-				'Prepaid Credits': 'Tiền trả trước',
-				'Transferred Credits': 'Tiền đã chuyển',
+				'Prepaid Credits': 'Tiền đã nạp',
+				'Transferred Credits': 'Tiền chuyển đi',
 				'Free Credits': 'Tiền ưu đãi'
 			};
 

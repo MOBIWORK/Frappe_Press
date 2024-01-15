@@ -1,5 +1,5 @@
 <template>
-	<Card title="Hóa đơn cũ" :subtitle="subtitle" v-if="!invoiceName">
+	<Card title="Hóa đơn trước" :subtitle="subtitle" v-if="!invoiceName">
 		<template #actions>
 			<FormControl
 				v-if="$resources.pastInvoices.data?.length"

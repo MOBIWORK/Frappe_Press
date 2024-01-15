@@ -35,6 +35,20 @@ let utils = {
 		$formatDate(d) {
 			return this.$date(d).toFormat('dd-MM-yyyy');
 		},
+		$formatDateDetail(d) {
+			return this.$date(d).toFormat('dd-MM-yyyy hh:mm:ss');
+		},
+		$formatTitleJob(value) {
+			let nameTitle = {
+				'New Site': 'Tạo website',
+				'Install Apps': 'Đang cài app',
+				'Update Site Configuration': 'Cấu hình hệ thống',
+				'Enable Scheduler': 'Bật trình lập lịch',
+				'Bench Setup NGINX': 'Khởi tạo tên miền',
+				'Reload NGINX': 'Hoàn thành'
+			};
+			return nameTitle[value] || value;
+		},
 		$formatDuration(value) {
 			// Remove decimal seconds
 			value = value.split('.')[0];
@@ -47,9 +61,9 @@ let utils = {
 				.join(':');
 
 			const dateTime = Duration.fromISOTime(formattedDuration).toObject();
-			const hourString = dateTime.hours ? `${dateTime.hours}h` : '';
-			const minuteString = dateTime.minutes ? `${dateTime.minutes}m` : '';
-			const secondString = `${dateTime.seconds}s`;
+			const hourString = dateTime.hours ? `${dateTime.hours} giờ` : '';
+			const minuteString = dateTime.minutes ? `${dateTime.minutes} phút` : '';
+			const secondString = `${dateTime.seconds} giây`;
 
 			return `${hourString} ${minuteString} ${secondString}`;
 		},
@@ -109,9 +123,20 @@ let utils = {
 			}
 		},
 		$siteStatus(site) {
-			let status = site.status;
+			let statusSite = {
+				Active: 'Hoạt động',
+				Pending: 'Đang xử lý',
+				Installing: 'Đang cài đặt',
+				Updating: 'Đang cập nhật',
+				Inactive: 'Dừng hoạt động',
+				Broken: 'Lỗi',
+				Archived: 'Đã lưu trữ',
+				Suspended: 'Đình chỉ'
+			};
+			let status = statusSite[site.status] || site.status;
+
 			if (site.update_available && site.status == 'Active') {
-				status = 'Update Available';
+				status = 'Cập nhật có sẵn';
 			}
 
 			let usage = Math.max(
@@ -120,10 +145,10 @@ let utils = {
 				site.current_disk_usage
 			);
 			if (usage && usage >= 80 && status == 'Active') {
-				status = 'Attention Required';
+				status = 'Chú ý';
 			}
 			if (site.trial_end_date) {
-				status = 'Trial';
+				status = 'Dùng thử';
 			}
 			return status;
 		}

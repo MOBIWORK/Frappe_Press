@@ -1,7 +1,7 @@
 <template>
 	<Card
 		title="Ứng dụng"
-		subtitle="Các ứng dụng đã được cài đặt trên trang web của bạn"
+		subtitle="Các ứng dụng đã được cài đặt trên tổ chức của bạn"
 	>
 		<template #actions>
 			<Button
@@ -101,7 +101,7 @@
 
 		<Dialog
 			:options="{
-				title: 'Cài đặt một ứng dụng trên trang web của bạn',
+				title: 'Cài đặt một ứng dụng trên tổ chức của bạn',
 				position: 'top',
 				size: 'lg'
 			}"
@@ -484,7 +484,7 @@ export default {
 		confirmRemoveApp(app) {
 			this.$confirm({
 				title: 'Gỡ bỏ ứng dụng',
-				message: `Bạn có chắc chắn muốn gỡ bỏ ứng dụng ${app.title} khỏi trang web không?`,
+				message: `Bạn có chắc chắn muốn gỡ bỏ ứng dụng ${app.title} khỏi tổ chức không?`,
 				actionLabel: 'Gỡ bỏ ứng dụng',
 				actionColor: 'red',
 				action: closeDialog => {
