@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<Form
+			:size="size"
 			class="mt-4"
 			:fields="fields"
 			:modelValue="address"
@@ -45,7 +46,7 @@ import Form from '@/components/Form.vue';
 
 export default {
 	name: 'AddressForm',
-	props: ['address'],
+	props: ['address', 'size'],
 	emits: ['update:address'],
 	components: {
 		Form
@@ -53,8 +54,7 @@ export default {
 	data() {
 		return {
 			fieldNotSet: [],
-			gstApplicable: true,
-			optionsState: []
+			gstApplicable: true
 		};
 	},
 	watch: {
@@ -63,20 +63,6 @@ export default {
 		}
 	},
 	resources: {
-		async stateList() {
-			const response = await fetch(
-				'https://provinces.open-api.vn/api/?depth=2'
-			);
-			const data = await response.json();
-			let states = [];
-			data.forEach(el => {
-				states.push({
-					label: el.name,
-					value: el.name
-				});
-			});
-			this.optionsState = states;
-		},
 		countryList: {
 			url: 'press.api.account.country_list',
 			auto: true,
@@ -107,13 +93,28 @@ export default {
 			let values = valueExists.map(df => this.address[df.fieldname]);
 
 			let fieldNotSetNew = valueExists
-				.filter(df => !this.address[df.fieldname])
+				.filter(
+					df =>
+						this.address[df.fieldname] == undefined ||
+						this.address[df.fieldname] == null ||
+						this.address[df.fieldname] == ''
+				)
 				.map(df => df.fieldname);
 
-			if (!this.address['county']) {
-				fieldNotSetNew.push('county');
-				values.push(this.address['county']);
+			let fieldEx = ['state', 'county', 'enterprise'];
+			if (this.address['enterprise'] == 'Công ty') {
+				fieldEx.push('tax_code');
 			}
+			fieldEx.forEach(el => {
+				if (
+					this.address[el] == undefined ||
+					this.address[el] == null ||
+					this.address[el] == ''
+				) {
+					values.push(this.address[el]);
+					fieldNotSetNew.push(el);
+				}
+			});
 			this.fieldNotSet = fieldNotSetNew;
 
 			if (!values.every(Boolean)) {
@@ -146,43 +147,50 @@ export default {
 				// 	required: 1
 				// },
 				{
+					fieldtype: 'Data',
+					label: 'Tên công ty',
+					fieldname: 'billing_name',
+					required: 1,
+					size: this.size
+				},
+				{
 					fieldtype: 'Email',
 					label: 'Email',
 					fieldname: 'email_id',
-					required: 1
+					required: 1,
+					size: this.size
 				},
 				{
 					fieldtype: 'Data',
 					label: 'Số điện thoại',
 					fieldname: 'phone',
-					required: 1
-				},
-				{
-					fieldtype: 'Data',
-					label: 'Mã số thuế',
-					fieldname: 'tax_code',
-					required: 1
-				},
-				{
-					fieldtype: 'Int',
-					label: 'Số lượng nhân viên',
-					fieldname: 'number_of_employees',
-					required: 1
-				},
-				{
-					fieldtype: 'Data',
-					label: 'Địa chỉ kinh doanh',
-					fieldname: 'address',
-					required: 1
-				},
-				{
-					fieldtype:
-						this.address.country === 'Vietnam' ? 'Autocomplete' : 'Data',
-					label: 'Tỉnh thành',
-					fieldname: 'state',
 					required: 1,
-					options: this.address.country === 'Vietnam' ? this.optionsState : null
+					size: this.size
 				}
+				// {
+				// 	fieldtype: 'Data',
+				// 	label: 'Mã số thuế',
+				// 	fieldname: 'tax_code',
+				// 	required: 1,
+				// 	size: this.size
+				// }
+				// {
+				// 	fieldtype: 'Data',
+				// 	label: 'Địa chỉ kinh doanh',
+				// 	fieldname: 'address',
+				// 	required: 1,
+				// 	size: this.size
+				// },
+				// {
+				// 	fieldtype:
+				// 		this.address.country === 'Vietnam' ? 'Autocomplete' : 'Data',
+				// 	label: 'Tỉnh thành',
+				// 	fieldname: 'state',
+				// 	required: 1,
+				// 	options:
+				// 		this.address.country === 'Vietnam' ? this.optionsState : null,
+				// 	class: this.size ? 'custom-form-btn' : ''
+				// }
 				// {
 				// 	fieldtype:
 				// 		this.address.country === 'Vietnam' ? 'Autocomplete' : 'Data',

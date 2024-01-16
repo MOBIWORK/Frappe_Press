@@ -1,51 +1,72 @@
 <template>
-	<Dialog
-		:options="{
-			title: 'Cập nhật thông tin thanh toán',
-			actions: [
-				{
-					label: 'Xác nhận',
-					variant: 'solid',
-					loading: $resources.updateBillingInformation.loading,
-					onClick: () => $resources.updateBillingInformation.submit()
-				}
-			]
-		}"
-		:modelValue="show"
-		@update:modelValue="$emit('update:show', $event)"
-	>
-		<template v-slot:body-content>
-			<p class="text-base" v-if="message">
-				{{ message }}
-			</p>
-			<FormControl
-				class="mt-4"
-				v-model="billingInformation.billing_name"
-				label="Tên công ty"
-			/>
-			<AddressForm
-				ref="address-form"
-				class="mt-4"
-				v-model:address="billingInformation"
-			/>
-			<ErrorMessage
-				class="mt-2"
-				:message="$resources.updateBillingInformation.error"
-			/>
-		</template>
-	</Dialog>
+	<LoginBox>
+		<div>
+			<div>
+				<div class="mb-4 w-36">
+					<FormControl
+						type="select"
+						:options="[
+							{
+								label: 'Tiếng Việt',
+								value: 'vi'
+							}
+						]"
+						size="md"
+						variant="outline"
+						placeholder="Placeholder"
+						:disabled="false"
+						label=""
+						modelValue="vi"
+					>
+						<template #prefix>
+							<img src="../../assets/icon_flag_vi.svg" alt="Flag Icon" />
+						</template>
+					</FormControl>
+				</div>
+				<div class="mb-4 text-3xl font-[500] text-gray-900">
+					<div>Cập nhật thông tin thanh toán</div>
+				</div>
+				<div>
+					<p class="text-base" v-if="message">
+						{{ message }}
+					</p>
+					<AddressForm
+						size="lg"
+						ref="address-form"
+						class="mt-4"
+						v-model:address="billingInformation"
+					/>
+					<ErrorMessage
+						class="mt-2"
+						:message="$resources.updateBillingInformation.error"
+					/>
+				</div>
+				<div class="text-center">
+					<Button
+						class="my-6 h-9 bg-red-600 px-8 text-base font-[700] text-white hover:bg-red-700"
+						variant="solid"
+						:loading="$resources.updateBillingInformation.loading"
+						:onClick="() => $resources.updateBillingInformation.submit()"
+					>
+						Xác nhận thông tin
+					</Button>
+				</div>
+			</div>
+		</div>
+	</LoginBox>
 </template>
 
 <script>
+import LoginBox from '@/views/partials/LoginBox.vue';
 import AddressForm from '@/components/AddressForm.vue';
 import { notify } from '@/utils/toast';
 
 export default {
-	name: 'UpdateBillingDetails',
-	props: ['message', 'show'],
-	emits: ['update:show', 'updated'],
+	name: 'SetupAccountBilling',
+	props: ['message'],
 	components: {
-		AddressForm
+		AddressForm,
+		LoginBox
 	},
 	data() {
 		return {
@@ -72,11 +93,10 @@ export default {
 			onSuccess(data) {
 				let billingInformation = data.billing_details;
 				let user_detail = data.user_detail;
+
 				if ('country' in (billingInformation || {})) {
 					Object.assign(this.billingInformation, {
 						address: billingInformation.address_line1,
-						email_id: billingInformation.email_id,
-						phone: billingInformation.phone,
 						tax_code: billingInformation.tax_code,
 						county: billingInformation.county,
 						state: billingInformation.state,
@@ -87,11 +107,11 @@ export default {
 							billingInformation.gstin == 'Not Applicable'
 								? ''
 								: billingInformation.gstin,
-						billing_name: billingInformation.billing_name,
 						number_of_employees: billingInformation.number_of_employees,
 						areas_of_concern: billingInformation.areas_of_concern
 					});
 				}
+
 				Object.assign(this.billingInformation, {
 					email_id: billingInformation.email_id || user_detail.email,
 					phone: billingInformation.phone || user_detail.phone,
@@ -107,7 +127,6 @@ export default {
 					billing_details: this.billingInformation
 				},
 				async onSuccess() {
-					this.$emit('update:show', false);
 					notify({
 						icon: 'check',
 						color: 'green',
@@ -117,7 +136,8 @@ export default {
 					await this.$call('press.api.billing.setup_intent_success', {
 						setup_intent: {}
 					});
-					this.$emit('updated');
+
+					this.$router.push('/setup-account/preliminary_survey');
 				},
 				validate() {
 					return this.$refs['address-form'].validateValues();

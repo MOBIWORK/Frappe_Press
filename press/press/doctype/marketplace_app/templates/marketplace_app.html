@@ -362,7 +362,7 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 			</div>
 			<div class="flex items-center justify-center mt-3">
 				<p class="text-base text-gray-600">
-					{{ 'Download' if no_of_installs in [0, 1] else 'Downloads' }}
+					{{ 'Install' if no_of_installs in [0, 1] else 'Installs' }}
 				</p>
 			</div>
 		</div>
@@ -502,9 +502,26 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 								</div>
 								<div class="flex ml-3">
 									<p class="text-base text-gray-600">
-										{{ 'Download' if no_of_installs in [0, 1] else 'Downloads' }}
+										{{ 'Install' if no_of_installs in [0, 1] else 'Installs' }}
 									</p>
 								</div>
+							</div>
+							<div class="tally mx-5"></div>
+							<div class="flex">
+								<p class="text-base text-gray-600">
+									<a
+										class="flex flex-row space-x-1 text-gray-600 hover:text-gray-800"
+										{%  if app.website %}
+										target="_blank"
+										href="{{ app.website }}"
+										{% else %}
+										href="#"
+										{% endif %}
+									>
+										<img class="h-4" src="/assets/press/images/external-link.svg" />
+										<span class="text-base">Visit Website</span>
+									</a>
+								</p>
 							</div>
 						</div>
 					</div>
@@ -514,7 +531,7 @@ badge_gray, badge_green,badge_purple, five_star_rating -%} {%- block title -%}
 				<div class="flex justify-center py-4">
 					<a href="/dashboard/install-app/{{ app.name }}">
 						<button class="px-8 btn-register rounded-2xl py-1.5" type="button">
-							Tải xuống
+							Cài đặt
 						</button>
 					</a>
 				</div>

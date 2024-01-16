@@ -11,7 +11,8 @@
   "description",
   "slug",
   "level",
-  "show_in_dashboard"
+  "show_in_dashboard",
+  "concerns_feature"
  ],
  "fields": [
   {
@@ -41,11 +42,17 @@
    "fieldtype": "Code",
    "label": "Content",
    "options": "HTML"
+  },
+  {
+   "default": "0",
+   "fieldname": "concerns_feature",
+   "fieldtype": "Check",
+   "label": "Concerns Feature"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-05 15:53:29.571715",
+ "modified": "2024-01-16 16:19:17.044284",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Marketplace App Category",

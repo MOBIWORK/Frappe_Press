@@ -67,7 +67,7 @@ def signup(email, product=None, referrer=None):
 def setup_account(
         key,
         first_name=None,
-        last_name=None,
+        phone=None,
         password=None,
         is_invitation=False,
         country=None,
@@ -88,8 +88,8 @@ def setup_account(
         if not first_name:
             frappe.throw("Tên không được để trống")
 
-        if not last_name:
-            frappe.throw("Họ không được để trống")
+        if not phone:
+            frappe.throw("Số điện thoại không được để trống")
 
         if not password and not oauth_signup:
             frappe.throw("Mật khẩu không được để trống")
@@ -126,13 +126,13 @@ def setup_account(
         # then Team already exists and will be added to that team
         doc = frappe.get_doc("Team", team)
         doc.create_user_for_member(
-            first_name, last_name, email, password, role)
+            first_name, phone, email, password, role)
     else:
         # Team doesn't exist, create it
         team_doc = Team.create_new(
             account_request=account_request,
             first_name=first_name,
-            last_name=last_name,
+            phone=phone,
             password=password,
             country=country,
             user_exists=bool(user_exists),
@@ -324,7 +324,7 @@ def validate_request_key(key, timezone=None):
         return {
             "email": account_request.email,
             "first_name": account_request.first_name,
-            "last_name": account_request.last_name,
+            "phone": account_request.phone_number,
             "country": 'Vietnam',
             "countries": frappe.db.get_all("Country", pluck="name"),
             "user_exists": frappe.db.exists("User", account_request.email),
@@ -570,13 +570,13 @@ def get_ssh_key(user):
 
 
 @frappe.whitelist()
-def update_profile(first_name=None, last_name=None, email=None):
+def update_profile(first_name=None, phone=None, email=None):
     if email:
         frappe.utils.validate_email_address(email, True)
     user = frappe.session.user
     doc = frappe.get_doc("User", user)
     doc.first_name = first_name
-    doc.last_name = last_name
+    doc.phone = phone
     doc.email = email
     doc.save(ignore_permissions=True)
     return doc
@@ -731,7 +731,9 @@ def get_billing_information(timezone=None):
     if not billing_details.country and timezone:
         billing_details.country = get_country_from_timezone(timezone)
 
-    return billing_details
+    user_detail = frappe.db.get_value(
+        "User", team.user, ['first_name', 'email', 'phone'], as_dict=True)
+    return {"billing_details": billing_details, "user_detail": user_detail}
 
 
 @frappe.whitelist()
@@ -741,6 +743,8 @@ def update_billing_information(billing_details):
         billing_details.state = billing_details.state.get('value')
     if type(billing_details.county) == dict:
         billing_details.county = billing_details.county.get('value')
+    if type(billing_details.enterprise) == dict:
+        billing_details.enterprise = billing_details.enterprise.get('value')
     number_of_employees = str(billing_details.number_of_employees)
     if number_of_employees.isnumeric():
         billing_details.number_of_employees = int(number_of_employees)
@@ -749,6 +753,19 @@ def update_billing_information(billing_details):
 
     team = get_current_team(get_doc=True)
     team.update_billing_details(billing_details)
+
+
+@frappe.whitelist()
+def update_information_survey(billing_details):
+    billing_details = frappe._dict(billing_details)
+    number_of_employees = str(billing_details.number_of_employees)
+    if number_of_employees.isnumeric():
+        billing_details.number_of_employees = int(number_of_employees)
+    else:
+        billing_details.number_of_employees = None
+
+    team = get_current_team(get_doc=True)
+    team.update_billing_details_survey(billing_details)
 
 
 @frappe.whitelist()

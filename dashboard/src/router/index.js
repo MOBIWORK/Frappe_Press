@@ -42,6 +42,22 @@ const routes = [
 		}
 	},
 	{
+		path: '/setup-account/billing',
+		name: 'Setup Account Billing',
+		component: () => import('../views/auth/SetupAccountBilling.vue'),
+		meta: {
+			hideSidebar: true
+		}
+	},
+	{
+		path: '/setup-account/preliminary_survey',
+		name: 'Setup Account Preliminary Survey',
+		component: () => import('../views/auth/SetupAccountPreliminarySurvey.vue'),
+		meta: {
+			hideSidebar: true
+		}
+	},
+	{
 		path: '/reset-password/:requestKey',
 		name: 'Reset Password',
 		component: () => import('../views/auth/ResetPassword.vue'),

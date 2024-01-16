@@ -46,7 +46,7 @@ class Team(Document):
         user = frappe.db.get_value(
             "User",
             self.user,
-            ["first_name", "last_name", "user_image", "user_type"],
+            ["first_name", "phone", "user_image", "user_type"],
             as_dict=True,
         )
         doc.balance = self.get_balance()
@@ -113,7 +113,7 @@ class Team(Document):
             cls,
             account_request: AccountRequest,
             first_name: str,
-            last_name: str,
+            phone: str,
             password: str = None,
             country: str = None,
             is_us_eu: bool = False,
@@ -135,7 +135,7 @@ class Team(Document):
 
         if not user_exists:
             user = team.create_user(
-                first_name, last_name, account_request.email, password, account_request.role
+                first_name, phone, account_request.email, password, account_request.role
             )
         else:
             user = frappe.get_doc("User", account_request.email)
@@ -175,10 +175,10 @@ class Team(Document):
         return team
 
     @staticmethod
-    def create_user(first_name=None, last_name=None, email=None, password=None, role=None):
+    def create_user(first_name=None, phone=None, email=None, password=None, role=None):
         user = frappe.new_doc("User")
         user.first_name = first_name
-        user.last_name = last_name
+        user.phone = phone
         user.email = email
         user.owner = email
         user.new_password = password
@@ -188,12 +188,12 @@ class Team(Document):
         return user
 
     def create_user_for_member(
-            self, first_name=None, last_name=None, email=None, password=None, role=None
+            self, first_name=None, phone=None, email=None, password=None, role=None
     ):
         user = frappe.db.get_value("User", email, ["name"], as_dict=True)
         if not user:
             user = self.create_user(
-                first_name, last_name, email, password, role)
+                first_name, phone, email, password, role)
 
         self.append("team_members", {"user": user.name})
         self.save(ignore_permissions=True)
@@ -491,12 +491,49 @@ class Team(Document):
             "state": billing_details.state,
             'city': billing_details.state,
             "county": billing_details.county,
+            "enterprise": billing_details.enterprise,
             "email_id": billing_details.email_id,
             "phone": billing_details.phone,
             "tax_code": billing_details.tax_code,
             "pincode": billing_details.postal_code,
             "country": billing_details.country,
             "gstin": billing_details.gstin,
+        }
+
+        if billing_details.number_of_employees or billing_details.number_of_employees == 0:
+            data_update['number_of_employees'] = billing_details.number_of_employees
+
+        address_doc.update(data_update)
+        address_doc.save()
+        address_doc.reload()
+
+        self.billing_name = billing_details.billing_name or self.billing_name
+        self.billing_address = address_doc.name
+        self.save()
+        self.reload()
+
+        # self.update_billing_details_on_stripe(address_doc)
+        # self.update_billing_details_on_frappeio()
+        self.update_billing_details_on_draft_invoices()
+
+    def update_billing_details_survey(self, billing_details):
+        if self.billing_address:
+            address_doc = frappe.get_doc("Address", self.billing_address)
+        else:
+            address_doc = frappe.new_doc("Address")
+            address_doc.address_title = billing_details.billing_name or self.billing_name
+            address_doc.append(
+                "links",
+                {
+                    "link_doctype": self.doctype,
+                    "link_name": self.name,
+                    "link_title": self.name
+                },
+            )
+
+        data_update = {
+            "areas_of_concern": billing_details.areas_of_concern,
+            "concerns_feature": billing_details.concerns_feature
         }
 
         if billing_details.number_of_employees or billing_details.number_of_employees == 0:
@@ -1005,7 +1042,7 @@ def get_team_members(team):
     if member_emails:
         users = frappe.db.sql(
             """
-                select u.name, u.first_name, u.last_name, GROUP_CONCAT(r.`role`) as roles
+                select u.name, u.first_name, u.phone, GROUP_CONCAT(r.`role`) as roles
                 from `tabUser` u
                 left join `tabHas Role` r
                 on (r.parent = u.name)

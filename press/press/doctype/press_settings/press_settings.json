@@ -1175,7 +1175,7 @@
   {
    "fieldname": "site_num_days_advance_warning",
    "fieldtype": "Int",
-   "label": "Number Of Days Of Advance Warning"
+   "label": "Number Of Days Of Advance Warning Email"
   },
   {
    "fieldname": "site_num_days_past_lock",
@@ -1195,7 +1195,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2024-01-13 08:44:15.541716",
+ "modified": "2024-01-15 13:50:26.095557",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

@@ -2,7 +2,7 @@
 	<div class="space-y-5">
 		<AccountAPI />
 		<AccountSSHKey />
-		<FeatureFlags />
+		<!-- <FeatureFlags /> -->
 	</div>
 </template>
 

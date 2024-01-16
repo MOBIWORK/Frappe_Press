@@ -35,6 +35,9 @@ let utils = {
 		$formatDate(d) {
 			return this.$date(d).toFormat('dd-MM-yyyy');
 		},
+		$getFormatTimeNow(f) {
+			return DateTime.now().toFormat(f, { zone: 'Asia/Ho_Chi_Minh' });
+		},
 		$formatDateDetail(d) {
 			return this.$date(d).toFormat('dd-MM-yyyy hh:mm:ss');
 		},

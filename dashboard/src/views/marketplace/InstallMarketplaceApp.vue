@@ -5,13 +5,13 @@
 		>
 		<div v-else>
 			<h1 class="mb-4 text-xl font-semibold">
-				Install App: {{ options ? options.title : '' }}
+				Cài đặt ứng dụng: {{ options ? options.title : '' }}
 			</h1>
 
 			<ErrorMessage :message="$resources.optionsForQuickInstall.error" />
 
 			<div v-if="options" class="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
-				<Card title="Sites" subtitle="Select a site to install">
+				<Card title="Tổ chức" subtitle="Chọn một tổ chức để cài đặt">
 					<ul v-if="options.sites?.length">
 						<li
 							v-for="site in options.sites"
@@ -29,15 +29,15 @@
 					</ul>
 
 					<div v-else>
-						<p class="text-sm text-gray-700">No site available for install</p>
+						<p class="text-sm text-gray-700">Không có tổ chức nào để cài đặt</p>
 					</div>
 
 					<template v-slot:actions>
-						<Button variant="solid" route="/sites/new">Trang web mới</Button>
+						<Button variant="solid" route="/sites/new">Tổ chức mới</Button>
 					</template>
 				</Card>
 
-				<Card title="Private Benches" subtitle="Select a bench to install">
+				<!-- <Card title="Private Benches" subtitle="Select a bench to install">
 					<ul v-if="options.release_groups?.length" class="space-y-3">
 						<li
 							v-for="bench in options.release_groups"
@@ -62,7 +62,7 @@
 					<template v-slot:actions>
 						<Button variant="solid" route="/benches/new">New Bench</Button>
 					</template>
-				</Card>
+				</Card> -->
 			</div>
 		</div>
 

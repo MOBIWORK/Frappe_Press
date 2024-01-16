@@ -19,7 +19,7 @@
 						modelValue="vi"
 					>
 						<template #prefix>
-							<img src="../../assets/icon_flag_vi.svg" alt="Eye Icon" />
+							<img src="../../assets/icon_flag_vi.svg" alt="Flag Icon" />
 						</template>
 					</FormControl>
 				</div>
@@ -64,23 +64,6 @@
 						<template v-if="oauthSignup == 0">
 							<div>
 								<div class="mb-2 mt-4">
-									<label class="text-base" for="lname">Họ</label>
-								</div>
-								<FormControl
-									id="lname"
-									size="lg"
-									variant="outline"
-									placeholder="---"
-									label=""
-									type="text"
-									v-model="lastName"
-									name="lname"
-									autocomplete="family-name"
-									required
-								/>
-							</div>
-							<div>
-								<div class="mb-2 mt-4">
 									<label class="text-base" for="fname">Tên</label>
 								</div>
 								<FormControl
@@ -94,6 +77,24 @@
 									name="fname"
 									autocomplete="given-name"
 									required
+								/>
+							</div>
+							<div>
+								<div class="mb-2 mt-4">
+									<label class="text-base" for="phone">Số điện thoại</label>
+								</div>
+								<FormControl
+									id="phone"
+									size="lg"
+									variant="outline"
+									placeholder="---"
+									label=""
+									type="text"
+									name="phone"
+									autocomplete="family-name"
+									required
+									v-model="phone"
+									@keyup="validPhone"
 								/>
 							</div>
 							<div class="relative">
@@ -255,7 +256,7 @@ export default {
 			dashboardRoute: null,
 			email: null,
 			firstName: null,
-			lastName: null,
+			phone: null,
 			password: null,
 			errorMessage: null,
 			userExists: null,
@@ -285,7 +286,7 @@ export default {
 					if (res && res.email) {
 						this.email = res.email;
 						this.firstName = res.first_name;
-						this.lastName = res.last_name;
+						this.phone = res.phone;
 						this.country = res.country;
 						this.userExists = res.user_exists;
 						this.invitationToTeam = res.team;
@@ -308,7 +309,7 @@ export default {
 					key: this.requestKey,
 					password: this.password,
 					first_name: this.firstName,
-					last_name: this.lastName,
+					phone: this.phone,
 					country: this.country,
 					is_invitation: this.isInvitation,
 					user_exists: this.userExists,
@@ -318,16 +319,17 @@ export default {
 					signup_values: this.signupValues
 				},
 				onSuccess(res) {
-					if (res) {
-						this.dashboardRoute = res.dashboard_route || '/';
-						// this.$router.push(res.dashboard_route || '/');
-					}
-					window.location.reload();
+					this.dashboardRoute = '/setup-account/billing';
+					window.location.href = '/setup-account/billing';
 				}
 			};
 		}
 	},
 	methods: {
+		validPhone(e) {
+			let value = e.target.value.replace(/[^0-9]/gm, '');
+			this.phone = value;
+		},
 		showFormFields() {
 			let show = true;
 			show = !this.userExists;

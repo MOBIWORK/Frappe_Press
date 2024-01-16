@@ -2,7 +2,7 @@
 	<div>
 		<div>
 			<header
-				class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
+				class="sticky top-0 flex items-center justify-between border-b bg-white px-5 py-2.5"
 			>
 				<Breadcrumbs :items="[{ label: 'Tổ chức', route: { name: 'Sites' } }]">
 					<template v-if="this.$account.team.enabled" #actions>

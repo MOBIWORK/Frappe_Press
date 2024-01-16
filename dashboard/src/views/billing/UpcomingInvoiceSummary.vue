@@ -17,11 +17,11 @@ export default {
 				return 'Không có hóa đơn';
 			}
 			let start = this.$date(this.invoiceDoc.period_start);
-			let end = this.$date(this.invoiceDoc.period_end);
+			// let end = this.$date(this.invoiceDoc.period_end);
 
-			return `Ước tính tổng cộng cho tháng hiện tại (${start.toFormat(
+			return `Ước tính tổng cộng cho đến hiện tại (${start.toFormat(
 				'dd/MM'
-			)} - ${end.toFormat('dd/MM/yyyy')})`;
+			)} - ${this.$getFormatTimeNow('dd/MM/yyyy')}`;
 		}
 	}
 };

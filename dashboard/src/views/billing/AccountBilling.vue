@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<header class="sticky top-0 z-10 border-b bg-white px-5 pt-2.5">
+		<header class="sticky top-0 border-b bg-white px-5 pt-2.5">
 			<Breadcrumbs
 				:items="[{ label: 'Thanh toán', route: { name: 'BillingScreen' } }]"
 			/>
