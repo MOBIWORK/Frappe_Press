@@ -447,7 +447,7 @@ def get_link_payment_payos(info_order):
             'desc': 'Success'
         }
     except Exception as ex:
-        # print('=====', ex)
+        print('=====', ex)
         return {
             'code': '1',
             'desc': str(ex)
