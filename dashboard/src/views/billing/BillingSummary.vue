@@ -1,6 +1,6 @@
 <template>
 	<div class="space-y-5">
-		<Card title="Tóm lược thanh toán">
+		<Card title="Tóm tắt thanh toán">
 			<div v-if="!$resources.upcomingInvoice.loading">
 				<div class="mb-4 grid grid-cols-2 gap-4">
 					<div class="rounded-md border p-4">
@@ -194,10 +194,11 @@ export default {
 			return this.$formatMoney(this.$resources.unpaidAmountDue.data) + ' VND';
 		},
 		availableBalances() {
+			let moneyUpcoming = this.upcomingInvoice?.total || 0;
 			let total =
 				this.$resources.upcomingInvoice.data?.num_available_credits -
 				this.$resources.unpaidAmountDue.data -
-				this.upcomingInvoice.total;
+				moneyUpcoming;
 			return this.$formatMoney(total) + ' VND';
 		},
 		availableCredits() {

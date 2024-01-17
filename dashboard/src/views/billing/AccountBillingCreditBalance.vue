@@ -1,11 +1,11 @@
 <template>
 	<Card title="Số dư tiền nạp" subtitle="Lịch sử số dư tiền nạp của bạn">
-		<div class="max-h-96 divide-y">
+		<div class="max-h-96 divide-y overflow-auto">
 			<div
-				class="grid grid-cols-6 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-6"
+				class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-7"
 			>
-				<span class="hidden md:inline">Ngày</span>
-				<span class="col-span-2 md:col-span-1">Mô tả</span>
+				<span>Ngày</span>
+				<span>Mô tả</span>
 				<span>Số dư trước</span>
 				<span>Số tiền</span>
 				<span>Số dư</span>
@@ -13,27 +13,26 @@
 				<span></span>
 			</div>
 			<div
-				class="grid grid-cols-6 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-6"
+				class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-7"
 				v-for="d in dataTrans"
 				:key="d.name"
 			>
-				<div class="hidden md:block">
+				<div>
 					{{ this.$formatDate(d.creation) }}
 				</div>
-				<div class="col-span-2 whitespace-nowrap text-gray-700 md:col-span-1">
+				<div class="whitespace-nowrap text-gray-700">
 					<div>
 						{{ getDescription(d) }}
 					</div>
-					<div class="md:hidden">{{ this.$formatDate(d.creation) }}</div>
 				</div>
-				<div class="whitespace-nowrap text-gray-700">
+				<div class="whitespace-nowrap">
 					{{ d.formatted.pre_balance }}
 				</div>
-				<div class="whitespace-nowrap text-gray-700">
+				<div class="whitespace-nowrap">
 					{{ d.formatted.amount }}
 				</div>
 				<div class="whitespace-nowrap">{{ d.formatted.ending_balance }}</div>
-				<div>
+				<div class="whitespace-nowrap">
 					<StatusOrder
 						:status="getStatus(d)"
 						:description="statusDoc[getStatus(d)]"

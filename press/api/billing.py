@@ -129,9 +129,15 @@ def balances():
         )
         pre_balance = ''
         ending_balance = ''
-        if d.ending_balance:
+
+        if d.ending_balance and d.docstatus == 1:
             pre_balance = fmt_money(d.ending_balance - d.amount, 0, d.currency)
             ending_balance = fmt_money(d.ending_balance, 0, d.currency)
+        elif d.ending_balance and d.docstatus == 2:
+            pre_balance = fmt_money(d.ending_balance - d.amount, 0, d.currency)
+            ending_balance = fmt_money(
+                d.ending_balance - d.amount, 0, d.currency)
+
         d.formatted['pre_balance'] = pre_balance
         d.formatted['ending_balance'] = ending_balance
 
@@ -447,7 +453,6 @@ def get_link_payment_payos(info_order):
             'desc': 'Success'
         }
     except Exception as ex:
-        print('=====', ex)
         return {
             'code': '1',
             'desc': str(ex)

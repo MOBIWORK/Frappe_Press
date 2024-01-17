@@ -18,7 +18,7 @@
 				</div>
 			</div>
 			<div v-if="regionOptions.length > 0">
-				<h2 class="text-lg font-semibold">Chọn Khu vực</h2>
+				<h2 class="text-lg font-semibold">Chọn khu vực</h2>
 				<p class="text-base text-gray-700">
 					Chọn khu vực trung tâm dữ liệu nơi trang web của bạn sẽ được tạo
 				</p>
@@ -78,7 +78,7 @@
 						</div>
 					</div>
 					<div v-if="privateApps.length > 0">
-						<h3 class="text-sm font-medium">Ứng dụng Riêng của bạn</h3>
+						<h3 class="text-sm font-medium">Ứng dụng riêng của bạn</h3>
 						<div
 							class="mt- -mx-2 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
@@ -174,7 +174,7 @@ export default {
 		selectedVersion(value) {
 			if (!this.privateBench) {
 				let selectedVersion = this.versions.find(v => v.name == value);
-				this.$emit('update:selectedGroup', selectedVersion.group.name);
+				this.$emit('update:selectedGroup', selectedVersion?.group.name);
 			}
 		},
 		selectedGroup() {
@@ -224,10 +224,10 @@ export default {
 					if (this.privateBench) {
 						this.selectedVersion = this.versions.filter(
 							v => v.group.name === this.bench
-						)[0].name;
+						)[0]?.name;
 						this.$emit('update:selectedApps', ['frappe']);
 					} else {
-						this.selectedVersion = this.versions[0].name;
+						this.selectedVersion = this.versions[0]?.name;
 					}
 
 					if (this.regionOptions.length == 1) {

@@ -352,8 +352,15 @@ export default {
 					try {
 						await this.$auth.login(this.email, this.password);
 					} catch (error) {
-						console.log(error);
-						this.loginError = error.messages.join('\n');
+						let arr_err = error.messages;
+						let dic_err = {
+							'Invalid login credentials':
+								'Tải khoản hoặc mật khẩu không chính xác.'
+						};
+
+						this.loginError = arr_err.length
+							? dic_err[arr_err[0]]
+							: 'Có lỗi xảy ra.';
 					}
 				}
 			} else if (this.hasForgotPassword) {
