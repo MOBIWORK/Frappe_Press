@@ -229,7 +229,7 @@ export default {
 						title: 'Gửi thông tin thành công!'
 					});
 					// this.$router.push('/sites/new');
-					window.location.href = '/sites/new';
+					window.location.href = '/dashboard/sites/new';
 				},
 				validate() {
 					return this.validateValues();

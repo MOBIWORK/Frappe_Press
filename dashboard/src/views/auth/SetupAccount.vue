@@ -319,7 +319,7 @@ export default {
 					signup_values: this.signupValues
 				},
 				onSuccess(res) {
-					this.dashboardRoute = '/dashboard/setup-account/billing';
+					this.dashboardRoute = '/setup-account/billing';
 					window.location.href = '/dashboard/setup-account/billing';
 				}
 			};
