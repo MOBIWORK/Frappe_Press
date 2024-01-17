@@ -319,8 +319,8 @@ export default {
 					signup_values: this.signupValues
 				},
 				onSuccess(res) {
-					this.dashboardRoute = '/setup-account/billing';
-					window.location.href = '/setup-account/billing';
+					this.dashboardRoute = '/dashboard/setup-account/billing';
+					window.location.href = '/dashboard/setup-account/billing';
 				}
 			};
 		}

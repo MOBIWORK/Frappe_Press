@@ -19,6 +19,23 @@
 				:description="$resources.billingDetails.data.billing_name"
 			/>
 			<ListItem
+				title="Email"
+				:description="$resources.billingDetails.data.address.email_id"
+			/>
+			<ListItem
+				title="Số điện thoại"
+				:description="$resources.billingDetails.data.address.phone"
+			/>
+			<ListItem
+				title="Loại doanh nghiệp"
+				:description="$resources.billingDetails.data.address.enterprise"
+			/>
+			<ListItem
+				v-if="$resources.billingDetails.data.address.enterprise == 'Công ty'"
+				title="Mã số thuế"
+				:description="$resources.billingDetails.data.address.tax_code"
+			/>
+			<ListItem
 				title="Địa chỉ thanh toán"
 				:description="
 					$resources.billingDetails.data.billing_address || 'Chưa đặt'

@@ -18,11 +18,6 @@
 			<p class="text-base" v-if="message">
 				{{ message }}
 			</p>
-			<FormControl
-				class="mt-4"
-				v-model="billingInformation.billing_name"
-				label="Tên công ty"
-			/>
 			<AddressForm
 				ref="address-form"
 				class="mt-4"

@@ -213,6 +213,7 @@ def details():
         billing_address = ""
 
     return {
+        "address": address,
         "billing_name": team.billing_name,
         "billing_address": billing_address,
         "gstin": address.gstin if address else None,
@@ -446,6 +447,7 @@ def get_link_payment_payos(info_order):
             'desc': 'Success'
         }
     except Exception as ex:
+        # print('=====', ex)
         return {
             'code': '1',
             'desc': str(ex)

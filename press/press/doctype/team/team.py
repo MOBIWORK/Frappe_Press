@@ -1042,7 +1042,7 @@ def get_team_members(team):
     if member_emails:
         users = frappe.db.sql(
             """
-                select u.name, u.first_name, u.phone, GROUP_CONCAT(r.`role`) as roles
+                select u.name, u.first_name, u.last_name, u.phone, GROUP_CONCAT(r.`role`) as roles
                 from `tabUser` u
                 left join `tabHas Role` r
                 on (r.parent = u.name)
