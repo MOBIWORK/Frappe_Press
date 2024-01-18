@@ -2,7 +2,7 @@
 	<div>
 		<div>
 			<header
-				class="sticky top-0 flex items-center justify-between border-b bg-white px-5 py-2.5"
+				class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 			>
 				<Breadcrumbs :items="[{ label: 'Tổ chức', route: { name: 'Sites' } }]">
 					<template v-if="this.$account.team.enabled" #actions>
@@ -145,7 +145,7 @@
 										v-if="column.name === 'status'"
 										:label="$siteStatus(row)"
 									/>
-									<div
+									<!-- <div
 										v-else-if="column.name === 'tags'"
 										class="hidden space-x-1 lg:flex"
 									>
@@ -164,7 +164,7 @@
 											/>
 										</Tooltip>
 										<span v-if="row.tags.length == 0">-</span>
-									</div>
+									</div> -->
 									<span
 										v-else-if="column.name === 'plan'"
 										class="hidden md:block"

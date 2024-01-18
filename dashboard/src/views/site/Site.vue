@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<header
-			class="sticky top-0 flex items-center justify-between border-b bg-white px-5 py-2.5"
+			class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 		>
 			<Breadcrumbs
 				:items="[
@@ -37,7 +37,7 @@
 					<h1 class="text-2xl font-bold">
 						{{ site.host_name || site.name }}
 					</h1>
-					<Badge class="ml-4" :label="this.$siteStatus(site.status)" />
+					<Badge class="ml-4" :label="this.$siteStatus(site)" />
 					<div
 						v-if="regionInfo"
 						class="ml-2 hidden cursor-default flex-row items-center self-end rounded-md bg-yellow-50 px-3 py-1 text-xs font-medium text-yellow-700 md:flex"
@@ -361,15 +361,15 @@ export default {
 						);
 					}
 				},
-				{
-					label: 'Quản lý Bench',
-					icon: 'tool',
-					route: `/benches/${this.site?.group}`,
-					condition: () => this.site?.group,
-					onClick: () => {
-						this.$router.push(`/benches/${this.site?.group}`);
-					}
-				},
+				// {
+				// 	label: 'Quản lý Bench',
+				// 	icon: 'tool',
+				// 	route: `/benches/${this.site?.group}`,
+				// 	condition: () => this.site?.group,
+				// 	onClick: () => {
+				// 		this.$router.push(`/benches/${this.site?.group}`);
+				// 	}
+				// },
 				{
 					label: 'Đăng nhập với tư cách Quản trị viên',
 					icon: 'external-link',

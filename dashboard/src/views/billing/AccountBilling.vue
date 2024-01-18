@@ -32,8 +32,8 @@ export default {
 			let tabs = [
 				{ label: 'Tổng quan', route: 'overview' },
 				{ label: 'Hóa đơn', route: 'invoices' },
-				{ label: 'Phương thức thanh toán', route: 'payment' },
-				{ label: 'Số dư tiền nạp', route: 'credit-balance' }
+				{ label: 'Thông tin hóa đơn', route: 'payment' },
+				{ label: 'Lịch sử giao dịch', route: 'credit-balance' }
 			];
 
 			return tabs.map(tab => {

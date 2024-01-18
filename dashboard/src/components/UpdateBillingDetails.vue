@@ -1,7 +1,7 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Cập nhật thông tin thanh toán',
+			title: 'Cập nhật thông tin hóa đơn',
 			actions: [
 				{
 					label: 'Xác nhận',
@@ -56,7 +56,8 @@ export default {
 				gstin: '',
 				billing_name: '',
 				number_of_employees: '',
-				areas_of_concern: ''
+				areas_of_concern: '',
+				enterprise: ''
 			}
 		};
 	},

@@ -1,5 +1,5 @@
 <template>
-	<LoginBox>
+	<LoginBox top="mt-6" py="py-0">
 		<div>
 			<div>
 				<div class="mb-4 w-36">
@@ -24,7 +24,7 @@
 					</FormControl>
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
-					<div>Cập nhật thông tin thanh toán</div>
+					<div>Cập nhật thông tin hóa đơn</div>
 				</div>
 				<div>
 					<p class="text-base" v-if="message">
@@ -82,7 +82,8 @@ export default {
 				gstin: '',
 				billing_name: '',
 				number_of_employees: '',
-				areas_of_concern: ''
+				areas_of_concern: '',
+				enterprise: ''
 			}
 		};
 	},

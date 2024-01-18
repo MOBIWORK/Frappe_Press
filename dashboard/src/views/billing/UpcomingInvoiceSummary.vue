@@ -21,7 +21,7 @@ export default {
 
 			return `Ước tính tổng cộng cho đến hiện tại (${start.toFormat(
 				'dd/MM'
-			)} - ${this.$getFormatTimeNow('dd/MM/yyyy')}`;
+			)} - ${this.$getFormatTimeNow('dd/MM/yyyy')})`;
 		}
 	}
 };

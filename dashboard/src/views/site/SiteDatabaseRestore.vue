@@ -9,8 +9,8 @@
 		"
 	>
 		<div class="divide-y">
-			<div class="flex items-center justify-between py-3">
-				<div>
+			<div class="flex flex-wrap items-center justify-between py-3">
+				<div class="mb-2">
 					<h3 class="text-lg">Khôi phục</h3>
 					<p class="mt-1 text-base text-gray-600">
 						Khôi phục cơ sở dữ liệu của bạn bằng cách sử dụng một bản sao lưu
@@ -33,8 +33,8 @@
 					</Button>
 				</Tooltip>
 			</div>
-			<div class="flex items-center justify-between py-3">
-				<div>
+			<div class="flex flex-wrap items-center justify-between py-3">
+				<div class="mb-2">
 					<h3 class="text-lg">Migrate</h3>
 					<p class="mt-1 text-base text-gray-600">
 						Chạy lệnh `bench migrate` trên database của bạn.
@@ -55,8 +55,8 @@
 					</Button>
 				</Tooltip>
 			</div>
-			<div class="flex items-center justify-between py-3">
-				<div>
+			<div class="flex flex-wrap items-center justify-between py-3">
+				<div class="mb-2">
 					<h3 class="text-lg">Đặt lại</h3>
 					<p class="mt-1 text-base text-gray-600">
 						Đặt lại database của bạn về trạng thái sạch sẽ.
@@ -78,8 +78,8 @@
 					</Button>
 				</Tooltip>
 			</div>
-			<div class="flex items-center justify-between py-3">
-				<div>
+			<div class="flex flex-wrap items-center justify-between py-3">
+				<div class="mb-2">
 					<h3 class="text-lg">Xóa Cache</h3>
 					<p class="mt-1 text-base text-gray-600">
 						Xóa bộ nhớ cache của tổ chức của bạn
@@ -93,10 +93,10 @@
 				</Button>
 			</div>
 			<div
-				class="flex items-center justify-between py-3"
+				class="flex flex-wrap items-center justify-between py-3"
 				v-if="$account.team.database_access_enabled"
 			>
-				<div>
+				<div class="mb-2">
 					<h3 class="text-lg">Truy cập</h3>
 					<p class="mt-1 text-base text-gray-600">
 						Kết nối vào database của bạn

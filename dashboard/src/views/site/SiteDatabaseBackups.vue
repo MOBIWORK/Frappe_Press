@@ -9,7 +9,6 @@
 				v-if="site?.status === 'Active' || site?.status === 'Suspended'"
 				@click="$resources.scheduleBackup.fetch()"
 				:loading="$resources.scheduleBackup.loading"
-				class="py-5"
 			>
 				Tạo bản sao lưu
 			</Button>

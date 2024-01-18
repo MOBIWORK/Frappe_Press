@@ -1,6 +1,6 @@
 <template>
 	<Card
-		class="h-full max-h-96 min-h-full"
+		class="h-full max-h-96 min-h-full overflow-auto"
 		title="Hoạt động tổ chức"
 		subtitle="Các hoạt động được thực hiện trên tổ chức của bạn"
 	>

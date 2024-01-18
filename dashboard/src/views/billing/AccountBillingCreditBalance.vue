@@ -1,5 +1,8 @@
 <template>
-	<Card title="Số dư tiền nạp" subtitle="Lịch sử số dư tiền nạp của bạn">
+	<Card
+		title="Lịch sử giao dịch"
+		subtitle="các giao dịch từ trước đến nay của bạn"
+	>
 		<div class="max-h-96 divide-y overflow-auto">
 			<div
 				class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-7"

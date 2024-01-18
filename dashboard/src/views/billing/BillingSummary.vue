@@ -1,17 +1,17 @@
 <template>
 	<div class="space-y-5">
-		<Card title="Tóm tắt thanh toán">
+		<Card title="Tóm tắt số dư">
 			<div v-if="!$resources.upcomingInvoice.loading">
 				<div class="mb-4 grid grid-cols-2 gap-4">
 					<div class="rounded-md border p-4">
-						<div class="mb-2 text-base">Số tiền thanh toán hiện tại</div>
+						<div class="mb-2 text-base">Hóa đơn hiện tại</div>
 						<div class="text-2xl font-medium">
 							{{ upcomingInvoice ? upcomingInvoice.formatted.total : '0 VND' }}
 						</div>
 					</div>
 					<div class="rounded-md border p-4">
 						<div class="flex justify-between text-base">
-							<div>Tổng số tiền chưa thanh toán</div>
+							<div>Hóa đơn chưa thanh toán</div>
 							<Button
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"

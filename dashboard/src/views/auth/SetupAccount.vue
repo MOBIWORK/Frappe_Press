@@ -64,7 +64,7 @@
 						<template v-if="oauthSignup == 0">
 							<div>
 								<div class="mb-2 mt-4">
-									<label class="text-base" for="fname">Tên</label>
+									<label class="text-base" for="fname">Họ tên</label>
 								</div>
 								<FormControl
 									id="fname"

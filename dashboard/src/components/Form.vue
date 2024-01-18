@@ -1,5 +1,49 @@
 <template>
 	<div class="space-y-4">
+		<div>
+			<FormControl
+				variant="outline"
+				:size="size"
+				:class="this.size ? 'custom-form-btn' : ''"
+				label="Đối tượng"
+				type="select"
+				:options="optionsEnterprise"
+				name="enterprise"
+				:modelValue="modelValue['enterprise']"
+				required="true"
+				:onUpdate:modelValue="value => onChangeIn(value, 'enterprise')"
+				:onblur="e => checkRequiredIn('enterprise', e)"
+			/>
+			<ErrorMessage
+				class="mt-1"
+				v-if="requiredFieldNotSet.includes('enterprise')"
+				message="Đối tượng không được để trống"
+			/>
+		</div>
+		<div>
+			<FormControl
+				variant="outline"
+				:size="size"
+				:label="
+					modelValue['enterprise'] == 'Công ty' ? `Tên công ty` : `Họ tên`
+				"
+				type="text"
+				name="billing_name"
+				:modelValue="modelValue['billing_name']"
+				required="true"
+				:onUpdate:modelValue="value => onChangeIn(value, 'billing_name')"
+				:onblur="e => checkRequiredIn('billing_name', e)"
+			/>
+			<ErrorMessage
+				class="mt-1"
+				v-if="requiredFieldNotSet.includes('billing_name')"
+				:message="
+					modelValue['enterprise'] == 'Công ty'
+						? `Tên công ty`
+						: `Họ tên` + ` không được để trống`
+				"
+			/>
+		</div>
 		<div
 			v-for="field in fields"
 			:key="field.fieldname"
@@ -18,26 +62,6 @@
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes(field.fieldname)"
 				:message="field.label + ' không được để trống'"
-			/>
-		</div>
-		<div>
-			<FormControl
-				variant="outline"
-				:size="size"
-				:class="this.size ? 'custom-form-btn' : ''"
-				label="Loại doanh nghiệp"
-				type="select"
-				:options="optionsEnterprise"
-				name="enterprise"
-				:modelValue="modelValue['enterprise']"
-				required="true"
-				:onUpdate:modelValue="value => onChangeIn(value, 'enterprise')"
-				:onblur="e => checkRequiredIn('enterprise', e)"
-			/>
-			<ErrorMessage
-				class="mt-1"
-				v-if="requiredFieldNotSet.includes('enterprise')"
-				message="Loại doanh nghiệp không được để trống"
 			/>
 		</div>
 		<div>
@@ -63,7 +87,7 @@
 			<FormControl
 				variant="outline"
 				:size="size"
-				label="Địa chỉ kinh doanh"
+				label="Địa chỉ"
 				type="text"
 				name="address"
 				:modelValue="modelValue['address']"
@@ -74,7 +98,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('address')"
-				message="Địa chỉ kinh doanh không được để trống"
+				message="Địa chỉ không được để trống"
 			/>
 		</div>
 		<div>

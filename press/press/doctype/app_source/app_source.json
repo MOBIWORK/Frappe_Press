@@ -12,6 +12,7 @@
   "enabled",
   "repository_url",
   "data_3",
+  "trong_so",
   "repository",
   "repository_owner",
   "branch",
@@ -151,11 +152,17 @@
    "fieldtype": "Datetime",
    "label": "Last Synced",
    "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "trong_so",
+   "fieldtype": "Float",
+   "label": "Tr\u1ecdng s\u1ed1"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-01-17 14:29:19.684075",
+ "modified": "2024-01-18 16:35:36.969355",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "App Source",

@@ -20,7 +20,7 @@
 						: 'col-span-1 flex justify-center md:bg-white'
 				"
 			>
-				<div class="mt-24">
+				<div :class="top ? top : `mt-24`">
 					<div class="flex justify-center">
 						<slot name="logo">
 							<img
@@ -40,7 +40,8 @@
 					</div>
 					<div
 						v-else
-						class="mx-auto mt-14 w-[80vw] rounded-xl bg-white px-4 py-8 sm:mt-5 sm:px-8 md:w-[50vw] lg:w-[450px]"
+						class="mx-auto mt-14 w-[80vw] rounded-xl bg-white px-4 sm:mt-5 sm:px-8 md:w-[50vw] lg:w-[450px]"
+						:class="{ [py]: py, 'py-8': !py }"
 					>
 						<div class="mb-6 text-center" v-if="title">
 							<span class="text-base text-gray-900">{{ title }}</span>
@@ -60,7 +61,7 @@ import { notify } from '@/utils/toast';
 
 export default {
 	name: 'LoginBox',
-	props: ['title', 'logo'],
+	props: ['title', 'logo', 'top', 'py'],
 	components: {
 		FCLogo,
 		FrappeLogo

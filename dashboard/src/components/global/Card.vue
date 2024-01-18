@@ -1,7 +1,7 @@
 <template>
 	<div class="flex w-full flex-col rounded-lg border bg-white px-6 py-5">
-		<div class="flex items-baseline justify-between">
-			<div class="flex items-baseline space-x-2">
+		<div class="flex flex-wrap items-baseline justify-between">
+			<div class="mb-2 flex items-baseline space-x-2">
 				<div class="flex items-center space-x-2" v-if="$slots['actions-left']">
 					<slot name="actions-left"></slot>
 				</div>
@@ -12,7 +12,10 @@
 					</p>
 				</div>
 			</div>
-			<div class="flex items-center space-x-2" v-if="$slots['actions']">
+			<div
+				class="flex min-w-max items-center space-x-2"
+				v-if="$slots['actions']"
+			>
 				<slot name="actions"></slot>
 			</div>
 		</div>

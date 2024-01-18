@@ -14,6 +14,14 @@ export default {
 	computed: {
 		color() {
 			return {
+				'Hoạt động': 'green',
+				'Đang xử lý': 'orange',
+				'Đang cài đặt': 'orange',
+				'Đang cập nhật': 'gray',
+				'Dừng hoạt động': 'gray',
+				Lỗi: 'red',
+				'Đã lưu trữ': 'gray',
+				'Đình chỉ': 'red',
 				Approved: 'green',
 				Broken: 'red',
 				Installing: 'orange',

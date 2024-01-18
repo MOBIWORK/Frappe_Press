@@ -1184,7 +1184,8 @@ def activate(name):
 @frappe.whitelist()
 @protected("Site")
 def login(name, reason=None):
-    return {"sid": frappe.get_doc("Site", name).login(reason), "site": name}
+    info = {"sid": frappe.get_doc("Site", name).login(reason), "site": name}
+    return info
 
 
 @frappe.whitelist()

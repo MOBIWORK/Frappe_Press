@@ -101,7 +101,7 @@ export default {
 				)
 				.map(df => df.fieldname);
 
-			let fieldEx = ['state', 'county', 'enterprise'];
+			let fieldEx = ['state', 'county', 'enterprise', 'billing_name'];
 			if (this.address['enterprise'] == 'Công ty') {
 				fieldEx.push('tax_code');
 			}
@@ -146,13 +146,13 @@ export default {
 				// 	options: this.countryList,
 				// 	required: 1
 				// },
-				{
-					fieldtype: 'Data',
-					label: 'Tên công ty',
-					fieldname: 'billing_name',
-					required: 1,
-					size: this.size
-				},
+				// {
+				// 	fieldtype: 'Data',
+				// 	label: 'Tên công ty',
+				// 	fieldname: 'billing_name',
+				// 	required: 1,
+				// 	size: this.size
+				// },
 				{
 					fieldtype: 'Email',
 					label: 'Email',

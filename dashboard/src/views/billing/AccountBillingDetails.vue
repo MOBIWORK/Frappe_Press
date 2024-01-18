@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="Thông tin thanh toán"
-		subtitle="Thông tin thanh toán của bạn được hiển thị trong hóa đơn hàng tháng"
+		title="Thông tin hóa đơn"
+		subtitle="Thông tin của bạn được sử dụng trong hóa đơn điện tử"
 	>
 		<template #actions>
 			<Button @click="editBillingDetails = true">Cập nhật</Button>
@@ -13,38 +13,35 @@
 				$resources.billingDetails.reload();
 			"
 		/>
-		<div class="divide-y" v-if="$resources.billingDetails.data">
+		<div class="divide-y" v-if="infoBilling">
 			<ListItem
-				title="Tên công ty"
-				:description="$resources.billingDetails.data.billing_name"
+				title="Đối tượng"
+				:description="infoBilling.address.enterprise"
 			/>
 			<ListItem
-				title="Email"
-				:description="$resources.billingDetails.data.address.email_id"
+				:title="
+					infoBilling.address.enterprise == `Công ty` ? `Tên công ty` : `Họ tên`
+				"
+				:description="infoBilling.billing_name"
 			/>
+			<ListItem
+				v-if="infoBilling.address.enterprise == 'Công ty'"
+				title="Mã số thuế"
+				:description="infoBilling.address.tax_code"
+			/>
+			<ListItem title="Email" :description="infoBilling.address.email_id" />
 			<ListItem
 				title="Số điện thoại"
-				:description="$resources.billingDetails.data.address.phone"
-			/>
-			<ListItem
-				title="Loại doanh nghiệp"
-				:description="$resources.billingDetails.data.address.enterprise"
-			/>
-			<ListItem
-				v-if="$resources.billingDetails.data.address.enterprise == 'Công ty'"
-				title="Mã số thuế"
-				:description="$resources.billingDetails.data.address.tax_code"
+				:description="infoBilling.address.phone"
 			/>
 			<ListItem
 				title="Địa chỉ thanh toán"
-				:description="
-					$resources.billingDetails.data.billing_address || 'Chưa đặt'
-				"
+				:description="infoBilling.billing_address || 'Chưa đặt'"
 			/>
 			<ListItem
 				v-if="$account.team.country == 'India'"
 				title="Tax ID"
-				:description="$resources.billingDetails.data.gstin || 'Chưa đặt'"
+				:description="infoBilling.gstin || 'Chưa đặt'"
 			/>
 		</div>
 	</Card>
@@ -67,6 +64,11 @@ export default {
 		return {
 			editBillingDetails: false
 		};
+	},
+	computed: {
+		infoBilling() {
+			return this.$resources.billingDetails.data;
+		}
 	}
 };
 </script>
