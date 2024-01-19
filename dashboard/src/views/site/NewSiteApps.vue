@@ -30,7 +30,9 @@
 					/>
 				</div>
 			</div>
-			<div v-if="publicApps.length > 1 || privateApps.length">
+			<div
+				v-if="publicApps.length > 1 || privateApps.length || featureApp.length"
+			>
 				<h2 class="text-lg font-semibold">Chọn ứng dụng cài đặt</h2>
 				<p class="text-base text-gray-700">
 					Chọn các ứng dụng để cài đặt trên trang web của bạn. Bạn có thể chọn
@@ -38,8 +40,86 @@
 					bạn.
 				</p>
 				<div class="mt-4 space-y-4">
-					<div v-if="publicApps.length">
-						<h3 class="sr-only">Ứng dụng từ thị trường</h3>
+					<div v-if="featureApp.length > 0">
+						<h3 class="text-sm font-medium">
+							Ứng dụng từ tính năng quan tâm của bạn
+						</h3>
+						<div
+							class="-mx-2 mt-4 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
+						>
+							<SelectableCard
+								v-for="publicApp in featureApp"
+								:key="publicApp.app"
+								@click.native="toggleApp(publicApp)"
+								:title="
+									publicApp.marketplace
+										? publicApp.marketplace.title
+										: publicApp.app_title
+								"
+								:image="
+									publicApp.marketplace ? publicApp.marketplace.image : null
+								"
+								:selected="selectedApps.includes(publicApp.app)"
+								v-show="!publicApp.frappe"
+								fullCircleImage
+							>
+								<template #secondary-content>
+									<a
+										v-if="publicApp.marketplace"
+										class="inline-block text-sm leading-snug text-gray-600"
+										:href="'/' + publicApp.marketplace.route"
+										target="_blank"
+										@click.stop
+									>
+										Chi tiết
+									</a>
+									<span class="text-sm leading-snug text-gray-700" v-else>
+										{{ publicApp.repository_owner }}/{{ publicApp.repository }}
+									</span>
+								</template>
+							</SelectableCard>
+							<div class="h-1 py-4" v-if="featureApp.length > 4"></div>
+						</div>
+					</div>
+					<div v-if="privateApps.length > 0">
+						<h3 class="text-sm font-medium">Ứng dụng riêng của bạn</h3>
+						<div
+							class="mt- -mx-2 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
+						>
+							<SelectableCard
+								v-for="app in privateApps"
+								:key="app.app"
+								@click.native="toggleApp(app)"
+								:selected="selectedApps.includes(app.app)"
+								:title="app.app_title"
+								fullCircleImage
+							>
+								<div slot="secondary-content" class="text-base text-gray-700">
+									{{ app.repository_owner }}:{{ app.branch }}
+								</div>
+							</SelectableCard>
+						</div>
+					</div>
+					<div v-if="publicApps.length > 1" class="flex justify-end">
+						<Button
+							:variant="'ghost'"
+							theme="gray"
+							size="sm"
+							label="Button"
+							:loading="false"
+							:loadingText="null"
+							:disabled="false"
+							:link="null"
+							@click="() => (this.showMore = !this.showMore)"
+						>
+							<div class="text-sm font-medium text-gray-700 underline">
+								{{ this.showMore ? `Xem tất cả` : `Ẩn xem thêm` }}
+							</div>
+						</Button>
+					</div>
+					<div v-if="publicApps.length" :class="{ hidden: showMore }">
+						<h3 class="text-sm font-medium">Tất cả ứng dụng</h3>
+						<!-- <h3 class="sr-only">Ứng dụng từ thị trường</h3> -->
 						<div
 							class="-mx-2 mt-4 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
@@ -77,25 +157,6 @@
 							<div class="h-1 py-4" v-if="publicApps.length > 4"></div>
 						</div>
 					</div>
-					<div v-if="privateApps.length > 0">
-						<h3 class="text-sm font-medium">Ứng dụng riêng của bạn</h3>
-						<div
-							class="mt- -mx-2 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
-						>
-							<SelectableCard
-								v-for="app in privateApps"
-								:key="app.app"
-								@click.native="toggleApp(app)"
-								:selected="selectedApps.includes(app.app)"
-								:title="app.app_title"
-								fullCircleImage
-							>
-								<div slot="secondary-content" class="text-base text-gray-700">
-									{{ app.repository_owner }}:{{ app.branch }}
-								</div>
-							</SelectableCard>
-						</div>
-					</div>
 				</div>
 			</div>
 			<div v-if="selectedApps.includes('erpnext')">
@@ -121,12 +182,14 @@ export default {
 	},
 	name: 'Apps',
 	emits: [
+		'update:appsDefault',
 		'update:selectedApps',
 		'update:selectedGroup',
 		'update:selectedRegion',
 		'update:shareDetailsConsent'
 	],
 	props: [
+		'appsDefault',
 		'selectedApps',
 		'selectedGroup',
 		'privateBench',
@@ -137,13 +200,24 @@ export default {
 	data() {
 		return {
 			selectedVersion: null,
-			version: null
+			version: null,
+			showMore: true
 		};
 	},
 	computed: {
-		publicApps() {
+		featureApp() {
+			let arr_app = this.marketplaceAppsFeature.map(el => el.app);
 			return this.apps
-				.filter(app => app.public)
+				.filter(app => app.public && arr_app.includes(app.app))
+				.map(app => {
+					app.marketplace = this.marketplaceApps[app.app] || null;
+					return app;
+				});
+		},
+		publicApps() {
+			let arr_app = this.marketplaceAppsFeature.map(el => el.app);
+			return this.apps
+				.filter(app => app.public && !arr_app.includes(app.app))
 				.map(app => {
 					app.marketplace = this.marketplaceApps[app.app] || null;
 					return app;
@@ -219,6 +293,7 @@ export default {
 						return v.group;
 					});
 					this.marketplaceApps = r.marketplace_apps;
+					this.marketplaceAppsFeature = r.marketplace_apps_feature;
 
 					// from mounted
 					if (this.privateBench) {
@@ -232,6 +307,13 @@ export default {
 
 					if (this.regionOptions.length == 1) {
 						this.$emit('update:selectedRegion', this.regionOptions[0].value);
+					}
+
+					let selectedVersion = this.versions.find(
+						v => v.name == this.selectedVersion
+					);
+					if (selectedVersion.group) {
+						this.$emit('update:appsDefault', selectedVersion.group.apps);
 					}
 				}
 			};

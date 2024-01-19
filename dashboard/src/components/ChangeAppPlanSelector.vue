@@ -72,6 +72,11 @@ export default {
 								break;
 							}
 						}
+					} else {
+						if (plans.length) {
+							this.selectedPlan = plans[0];
+							this.$emit('change', plans[0]);
+						}
 					}
 				},
 				auto: true

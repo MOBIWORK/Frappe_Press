@@ -35,7 +35,7 @@
 				:description="infoBilling.address.phone"
 			/>
 			<ListItem
-				title="Địa chỉ thanh toán"
+				title="Địa chỉ"
 				:description="infoBilling.billing_address || 'Chưa đặt'"
 			/>
 			<ListItem

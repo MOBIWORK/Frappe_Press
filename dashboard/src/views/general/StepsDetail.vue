@@ -76,7 +76,7 @@
 						</div>
 					</span>
 					<span class="ml-2 select-none text-sm font-medium text-gray-900">
-						{{ step.name }}
+						{{ this.$formatTitleJob(step.name) }}
 					</span>
 					<div class="ml-auto">
 						<span class="text-sm text-gray-600" v-if="step.duration">
@@ -85,13 +85,16 @@
 						<component :is="step.action" v-if="step.action" />
 					</div>
 				</summary>
-				<div :class="index == steps.length - 1 ? 'pb-4' : 'pb-2'">
+				<div
+					v-if="(step.output && step.completed) || step.output"
+					:class="index == steps.length - 1 ? 'pb-4' : 'pb-2'"
+				>
 					<div
 						class="ml-4 overflow-auto rounded-md bg-gray-100 px-2 py-2.5 font-mono text-xs text-gray-900"
 						:style="{ width: viewportWidth < 768 ? 'calc(100vw - 6rem)' : '' }"
 					>
 						<div class="max-w-md">
-							<pre>{{ step.output || 'Chưa có kết quả' }}</pre>
+							<pre>{{ step.output }}</pre>
 						</div>
 					</div>
 				</div>

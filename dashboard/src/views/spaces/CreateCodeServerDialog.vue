@@ -92,10 +92,10 @@ export default {
 				return 'Tên miền quá ngắn. Hãy sử dụng 5 ký tự trở lên.';
 			}
 			if (subdomain.length > 32) {
-				return 'Subdomain too long. Use 32 or less characters';
+				return 'Tên miền quá dài. Sử dụng 32 ký tự trở xuống';
 			}
 			if (!subdomain.match(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/)) {
-				return 'Subdomain contains invalid characters. Use lowercase characters, numbers and hyphens';
+				return 'Tên miền chứa các ký tự không hợp lệ. Sử dụng ký tự chữ thường, số và dấu gạch nối';
 			}
 			return null;
 		}

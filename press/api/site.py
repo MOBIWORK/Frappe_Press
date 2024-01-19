@@ -510,7 +510,8 @@ def get_domain():
 
 @frappe.whitelist()
 def get_new_site_options(group: str = None):
-    team = get_current_team()
+    doc_team = get_current_team(True)
+    team = doc_team.name
     versions = frappe.get_all(
         "Frappe Version",
         ["name", "number", "default", "status"],
@@ -562,6 +563,7 @@ def get_new_site_options(group: str = None):
                 "public",
                 "app_title",
                 "frappe",
+                "trong_so"
             ],
             filters={"name": ("in", bench_apps)},
             or_filters={"public": True, "team": team},
@@ -591,9 +593,42 @@ def get_new_site_options(group: str = None):
         fields=["title", "image", "description", "app", "route"],
         filters={"app": ("in", list(apps))},
     )
+
+    marketplace_apps_feature = []
+    if doc_team:
+        address_detail = frappe.get_doc('Address', doc_team.billing_address)
+        concerns_feature = []
+        if address_detail and address_detail.concerns_feature:
+            concerns_feature = tuple(
+                address_detail.concerns_feature.split(';') + ["1", "2"])
+            str_query = f"""
+                SELECT
+                    marketplace.title,
+                    marketplace.image,
+                    marketplace.route,
+                    marketplace.description,
+                    marketplace.app
+                FROM
+                    `tabMarketplace App` marketplace
+                INNER JOIN
+                    `tabMarketplace App Categories` categories
+                ON
+                    categories.parent = marketplace.name
+                WHERE
+                    marketplace.app IN {tuple(apps)}
+                AND
+                    categories.category IN {concerns_feature}
+                ;
+                """
+            marketplace_apps_feature = frappe.db.sql(
+                str_query,
+                as_dict=True,
+            )
+
     return {
         "versions": versions,
         "marketplace_apps": {row.app: row for row in marketplace_apps},
+        "marketplace_apps_feature": marketplace_apps_feature
     }
 
 
@@ -615,6 +650,8 @@ def get_plans(name=None, rg=None):
             "database_access",
             "support_included",
             "`tabHas Role`.role",
+            "num_of_empl_from",
+            "num_of_empl_to"
         ],
         filters=filters,
         order_by="price_vnd asc",
@@ -1184,8 +1221,7 @@ def activate(name):
 @frappe.whitelist()
 @protected("Site")
 def login(name, reason=None):
-    info = {"sid": frappe.get_doc("Site", name).login(reason), "site": name}
-    return info
+    return {"sid": frappe.get_doc("Site", name).login(reason), "site": name}
 
 
 @frappe.whitelist()
@@ -1276,6 +1312,7 @@ def exists(subdomain, domain):
 @frappe.whitelist()
 @protected("Site")
 def setup_wizard_complete(name):
+    print('===1===')
     return frappe.get_doc("Site", name).is_setup_wizard_complete()
 
 

@@ -25,7 +25,10 @@
 		>
 			<LoadingText />
 		</div>
-		<div class="mt-4 flex-auto" v-else-if="$slots['default']">
+		<div
+			class="mt-4 max-h-96 flex-auto overflow-auto"
+			v-else-if="$slots['default']"
+		>
 			<slot></slot>
 		</div>
 	</div>

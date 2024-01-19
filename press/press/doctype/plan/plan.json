@@ -226,18 +226,18 @@
    "default": "0",
    "fieldname": "num_of_empl_from",
    "fieldtype": "Int",
-   "label": "Number Of Employees From"
+   "label": "S\u1ed1 l\u01b0\u1ee3ng nh\u00e2n vi\u00ean t\u1eeb"
   },
   {
    "default": "0",
    "fieldname": "num_of_empl_to",
    "fieldtype": "Int",
-   "label": "Number Of Employees To"
+   "label": "S\u1ed1 l\u01b0\u1ee3ng nh\u00e2n vi\u00ean \u0111\u1ebfn"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-13 08:20:10.025378",
+ "modified": "2024-01-19 15:17:13.227351",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Plan",

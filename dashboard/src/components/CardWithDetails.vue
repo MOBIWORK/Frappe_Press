@@ -3,7 +3,7 @@
 		<Card
 			:title="title"
 			:subtitle="subtitle"
-			class="w-full border-none shadow-none md:w-1/3"
+			class="w-full overflow-auto border-none shadow-none md:w-1/3"
 			:class="{ 'hidden md:flex': showDetails }"
 			:style="{ height: viewportWidth > 768 ? 'calc(100vh - 12rem)' : null }"
 		>

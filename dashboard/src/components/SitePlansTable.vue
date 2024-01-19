@@ -50,12 +50,12 @@
 			</div>
 			<a
 				v-if="plan.support_included"
-				href="https://support.frappe.io"
+				href="https://mbwcloud.com/lien-he/"
 				target="_blank"
 				class="w-1/4"
 			>
-				<Tooltip text="ERPNext/HR product warranty and support" placement="top">
-					<Badge class="hover:cursor-pointer" color="blue" label="Included" />
+				<Tooltip text="Được hỗ trợ và bảo hành sản phẩm" placement="top">
+					<Badge class="hover:cursor-pointer" color="blue" label="Có" />
 				</Tooltip>
 			</a>
 			<div v-else class="w-1/4"></div>

@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<header
-			class="sticky top-0 flex items-center justify-between border-b bg-white px-5 py-2.5"
+			class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 		>
 			<Breadcrumbs
 				:items="[
@@ -32,6 +32,7 @@
 						v-show="activeStep.name === 'Apps'"
 						:privateBench="privateBench"
 						:bench="benchName"
+						v-model:appsDefault="appsDefault"
 						v-model:selectedApps="selectedApps"
 						v-model:selectedGroup="selectedGroup"
 						v-model:selectedRegion="selectedRegion"
@@ -44,11 +45,14 @@
 							:key="app.name"
 							:app="app.name"
 							:group="selectedGroup"
+							:currentPlan="selectedAppPlans[app.name]"
 							:editable="false"
 							class="mb-9"
 							@change="plan => (selectedAppPlans[app.name] = plan.name)"
 						/>
 					</div>
+
+					<SiteSummaryBilling v-show="activeStep.name === 'Summary Invoice'" />
 
 					<Restore
 						v-model:selectedFiles="selectedFiles"
@@ -58,6 +62,7 @@
 					<Plans
 						v-model:selectedPlan="selectedPlan"
 						:bench="bench"
+						:pointPlanSite="pointPlanSite"
 						:benchTeam="benchTeam"
 						v-show="activeStep.name === 'Plan'"
 					/>
@@ -124,6 +129,7 @@ import Hostname from './NewSiteHostname.vue';
 import Apps from './NewSiteApps.vue';
 import Restore from './NewSiteRestore.vue';
 import Plans from './NewSitePlans.vue';
+import SiteSummaryBilling from './SiteSummaryBilling.vue';
 import ChangeAppPlanSelector from '@/components/ChangeAppPlanSelector.vue';
 
 export default {
@@ -136,17 +142,21 @@ export default {
 		Apps,
 		Restore,
 		Plans,
+		SiteSummaryBilling,
 		ChangeAppPlanSelector
 	},
 	data() {
 		return {
 			subdomain: null,
 			subdomainValid: false,
+			pointPlanSite: 0,
+			billingDetails: {},
 			privateBench: false,
 			benchName: null,
 			benchTitle: null,
 			benchTeam: null,
 			selectedApps: [],
+			appsDefault: [],
 			selectedGroup: null,
 			selectedRegion: null,
 			selectedFiles: {
@@ -183,6 +193,9 @@ export default {
 				},
 				{
 					name: 'Plan'
+				},
+				{
+					name: 'Summary Invoice'
 				}
 			],
 			agreedToRegionConsent: false,
@@ -220,6 +233,15 @@ export default {
 		}
 	},
 	resources: {
+		getBillingAddress() {
+			return {
+				url: 'press.api.account.get_billing_information',
+				auto: true,
+				onSuccess(data) {
+					this.billingDetails = data.billing_details;
+				}
+			};
+		},
 		newSite() {
 			return {
 				url: 'press.api.site.new',
@@ -268,6 +290,19 @@ export default {
 	},
 	methods: {
 		async nextStep(activeStep, next) {
+			// lay ti le su dung cho plan
+			let trongSoApp = {};
+			this.appsDefault.forEach(app => {
+				trongSoApp[app.app] = app.trong_so;
+			});
+			let newPoind = this.billingDetails.number_of_employees;
+
+			this.selectedApps.forEach(el => {
+				newPoind *= trongSoApp[el] || 0;
+			});
+			this.pointPlanSite = newPoind;
+			//
+
 			if (activeStep.name == 'Apps') {
 				this.loadingPlans = true;
 
@@ -283,10 +318,11 @@ export default {
 				if (this.appsWithPlans && this.appsWithPlans.length > 0) {
 					this.addPlanSelectionStep();
 
-					this.selectedAppPlans = {};
-					for (let app of this.appsWithPlans) {
-						this.selectedAppPlans[app.name] = null;
-					}
+					// loại bỏ refresh select plan
+					// this.selectedAppPlans = {};
+					// for (let app of this.appsWithPlans) {
+					// 	this.selectedAppPlans[app.name] = null;
+					// }
 				} else {
 					this.validationMessage = null;
 					this.removePlanSelectionStepIfExists();

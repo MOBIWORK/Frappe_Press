@@ -195,7 +195,7 @@ export default {
 				let duration = this.$formatDuration(
 					this.selectedCandidate.build_duration
 				);
-				return `Hoàn thành ${when} in ${duration}`;
+				return `Hoàn thành lúc ${when} trong ${duration}`;
 			} else if (this.selectedCandidate?.status === 'Running') {
 				const when = this.formatDate(
 					this.selectedCandidate.build_start,

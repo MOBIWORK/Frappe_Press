@@ -409,7 +409,7 @@ def is_valid_subdomain(subdomain):
     if matched:
         return True
     print(
-        "Subdomain contains invalid characters. Use lowercase characters, numbers and hyphens"
+        "Tên miền chứa các ký tự không hợp lệ. Sử dụng ký tự chữ thường, số và dấu gạch nối"
     )
 
 
