@@ -26,7 +26,7 @@ export default {
 				return '';
 			}
 			if (!doc.period_start || !doc.period_end) {
-				return `Invoice Details for ${this.invoice}`;
+				return `Chi tiết mã hóa đơn ${this.invoice}`;
 			}
 
 			let start = this.$formatDate(doc.period_start);

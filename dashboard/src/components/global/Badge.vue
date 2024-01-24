@@ -14,11 +14,16 @@ export default {
 	computed: {
 		color() {
 			return {
+				'Đã thanh toán': 'green',
+				'Chưa thanh toán': 'orange',
 				'Hoạt động': 'green',
 				'Đang xử lý': 'orange',
 				'Đang cài đặt': 'orange',
 				'Đang cập nhật': 'gray',
 				'Dừng hoạt động': 'gray',
+				'Đang chạy': 'green',
+				'Thành công': 'green',
+				'Thât bại': 'red',
 				Lỗi: 'red',
 				'Đã lưu trữ': 'gray',
 				'Đình chỉ': 'red',
@@ -38,6 +43,7 @@ export default {
 				Paid: 'green',
 				Unpaid: 'orange',
 				'Invoice Created': 'blue',
+				'Đã tạo hóa đơn': 'blue',
 				Rejected: 'red',
 				'In Review': 'orange',
 				'Attention Required': 'red',

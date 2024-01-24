@@ -81,9 +81,8 @@
 					class="text-center text-lg font-[400] text-gray-600"
 					v-if="hasForgotPassword"
 				>
-					Một liên kết đặt lại mật khẩu sẽ được gửi đến email của bạn để đặt lại
-					mật khẩu của bạn. Nếu bạn không nhận được một email trong vòng vài
-					phút, vui lòng thử lại.
+					Một liên kết đặt lại mật khẩu sẽ được gửi tới email của bạn. Nếu bạn
+					không nhận được email trong vòng vài phút, vui lòng thử lại.
 				</div>
 				<form class="flex flex-col" @submit.prevent="submitForm">
 					<template v-if="hasForgotPassword">
@@ -248,14 +247,14 @@
 				<Dialog v-model="resetPasswordEmailSent">
 					<template #body-title>
 						<h3 class="text-xl font-[500] text-gray-900">
-							Xác thực thành công
+							Gửi liên kết thành công
 						</h3>
 					</template>
 					<template #body-content>
-						<div class="text-center text-base text-gray-600">
-							Chúng tôi đã gửi hướng dẫn thay đổi mật khẩu vào
+						<div class="text-left text-base text-gray-600">
+							Chúng tôi đã gửi một đường dẫn liên kết tới email
 							<span class="text-gray-900">{{ email }}</span
-							>, vui lòng kiểm tra hộp thư cũng như thư rác của bạn.
+							>. Vui lòng kiểm tra hộp thư để thiết lập lại mật khẩu của bạn.
 						</div>
 					</template>
 				</Dialog>

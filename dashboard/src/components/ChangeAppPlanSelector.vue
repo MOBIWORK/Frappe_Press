@@ -48,7 +48,7 @@ export default {
 		AppPlanCard
 	},
 	props: ['app', 'group', 'frappeVersion', 'currentPlan', 'editable'],
-	emits: ['change'],
+	emits: ['change', 'appPlans'],
 	data() {
 		return {
 			selectedPlan: null
@@ -74,8 +74,7 @@ export default {
 						}
 					} else {
 						if (plans.length) {
-							this.selectedPlan = plans[0];
-							this.$emit('change', plans[0]);
+							this.handleCardClick(plans[0]);
 						}
 					}
 				},
@@ -96,6 +95,10 @@ export default {
 		handleCardClick(plan) {
 			this.selectedPlan = plan;
 			this.$emit('change', plan);
+			this.$emit('update:appPlans', {
+				...this.appPlans,
+				[this.app]: plan.price_vnd
+			});
 		}
 	},
 	computed: {

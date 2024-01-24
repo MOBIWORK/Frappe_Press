@@ -45,7 +45,7 @@
 							Ứng dụng từ tính năng quan tâm của bạn
 						</h3>
 						<div
-							class="-mx-2 mt-4 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
+							class="-mx-2 mt-1 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
 							<SelectableCard
 								v-for="publicApp in featureApp"
@@ -84,7 +84,7 @@
 					<div v-if="privateApps.length > 0">
 						<h3 class="text-sm font-medium">Ứng dụng riêng của bạn</h3>
 						<div
-							class="mt- -mx-2 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
+							class="-mx-2 mt-1 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
 							<SelectableCard
 								v-for="app in privateApps"
@@ -121,7 +121,7 @@
 						<h3 class="text-sm font-medium">Tất cả ứng dụng</h3>
 						<!-- <h3 class="sr-only">Ứng dụng từ thị trường</h3> -->
 						<div
-							class="-mx-2 mt-4 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
+							class="-mx-2 mt-1 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
 							<SelectableCard
 								v-for="publicApp in publicApps"

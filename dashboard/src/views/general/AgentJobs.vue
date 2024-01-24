@@ -9,7 +9,7 @@
 				:to="jobRoute(job)"
 			>
 				<ListItem
-					:title="job.job_type"
+					:title="this.$formatTitleJob(job.job_type)"
 					:description="this.$formatDateDetail(job.creation)"
 				>
 					<template v-slot:actions>
@@ -19,9 +19,12 @@
 								runningJob.id == job.name &&
 								runningJob.status !== 'Success'
 							"
-							:label="runningJob.status"
+							:label="this.$jobStatus(runningJob.status)"
 						/>
-						<Badge v-else-if="job.status != 'Success'" :label="job.status" />
+						<Badge
+							v-else-if="job.status != 'Success'"
+							:label="this.$jobStatus(job.status)"
+						/>
 					</template>
 				</ListItem>
 				<div class="border-b"></div>

@@ -81,6 +81,17 @@ a {
 	text-decoration: underline;
 }
 
+.bg-red-700 {
+	background-color: #b91c1c !important;
+}
+
+.--button-primary {
+	@apply bg-red-700 rounded-lg;
+}
+.--button-primary a {
+	@apply text-white block px-2 py-1 text-base leading-normal no-underline rounded-lg;
+}
+
 .button {
 	@apply bg-gray-200 rounded-lg;
 }

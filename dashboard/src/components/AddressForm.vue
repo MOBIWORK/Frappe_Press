@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<Form
+		<FormCustom
 			:size="size"
 			class="mt-4"
 			:fields="fields"
@@ -41,7 +41,7 @@
 </template>
 
 <script>
-import Form from '@/components/Form.vue';
+import FormCustom from '@/components/FormCustom.vue';
 // import { vietnamStates, vietnamCity } from '@/utils/billing';
 
 export default {
@@ -49,7 +49,7 @@ export default {
 	props: ['address', 'size'],
 	emits: ['update:address'],
 	components: {
-		Form
+		FormCustom
 	},
 	data() {
 		return {

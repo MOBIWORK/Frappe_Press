@@ -27,6 +27,35 @@
 			</div>
 			<ErrorMessage :message="errorMessage" />
 		</div>
+		<div class="mt-4">
+			<div>
+				<input
+					id="checkrestore"
+					name="checkrestore"
+					label="ok"
+					type="radio"
+					class="form-radio text-gray-900"
+					:checked="true"
+					value="new"
+					@change="checkRestoreChange"
+				/>
+				<label class="ml-2 text-base" for="checkrestore">Tạo mới dữ liệu</label>
+			</div>
+			<div class="mt-2">
+				<input
+					id="checkrestore1"
+					name="checkrestore"
+					label="ok"
+					type="radio"
+					value="restore"
+					class="form-radio text-gray-900"
+					@change="checkRestoreChange"
+				/>
+				<label class="ml-2 text-base" for="checkrestore1">
+					Lấy dữ liệu cũ</label
+				>
+			</div>
+		</div>
 	</div>
 </template>
 <script>
@@ -34,8 +63,8 @@ import { validateSubdomain } from '@/utils';
 
 export default {
 	name: 'Hostname',
-	props: ['modelValue'],
-	emits: ['update:modelValue', 'error'],
+	props: ['modelValue', 'checkRestore', 'checkRestore'],
+	emits: ['update:modelValue', 'error', 'update:checkRestore'],
 	data() {
 		return {
 			subdomainAvailable: false,
@@ -56,6 +85,9 @@ export default {
 		}
 	},
 	methods: {
+		checkRestoreChange(e) {
+			this.$emit('update:checkRestore', e.target.value);
+		},
 		async subdomainChange(e) {
 			let subdomain = e.target.value;
 			this.$emit('update:modelValue', subdomain);

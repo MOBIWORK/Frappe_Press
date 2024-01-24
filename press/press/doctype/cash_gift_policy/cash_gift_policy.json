@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-01-23 09:49:32.463210",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "policy_code",
+  "policy_name",
+  "policy_type",
+  "amount_from",
+  "col_1",
+  "amount_to",
+  "cash_gift_percentage",
+  "maximum_amount",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "policy_code",
+   "fieldtype": "Data",
+   "label": "M\u00e3 ch\u00ednh s\u00e1ch"
+  },
+  {
+   "fieldname": "policy_name",
+   "fieldtype": "Data",
+   "label": "T\u00ean ch\u00ednh s\u00e1ch"
+  },
+  {
+   "default": "N\u1ea1p th\u01b0\u1eddng",
+   "fieldname": "policy_type",
+   "fieldtype": "Select",
+   "label": "Lo\u1ea1i ch\u00ednh s\u00e1ch",
+   "options": "N\u1ea1p l\u1ea7n \u0111\u1ea7u\nN\u1ea1p th\u01b0\u1eddng"
+  },
+  {
+   "default": "0",
+   "fieldname": "amount_from",
+   "fieldtype": "Float",
+   "label": "S\u1ed1 ti\u1ec1n n\u1ea1p t\u1eeb"
+  },
+  {
+   "default": "0",
+   "fieldname": "amount_to",
+   "fieldtype": "Float",
+   "label": "S\u1ed1 ti\u1ec1n n\u1ea1p \u0111\u1ebfn"
+  },
+  {
+   "default": "0",
+   "fieldname": "cash_gift_percentage",
+   "fieldtype": "Float",
+   "label": "% t\u1eb7ng ti\u1ec1n"
+  },
+  {
+   "default": "0",
+   "fieldname": "maximum_amount",
+   "fieldtype": "Float",
+   "label": "S\u1ed1 ti\u1ec1n t\u1ed1i \u0111a"
+  },
+  {
+   "default": "Ho\u1ea1t \u0111\u1ed9ng",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Tr\u1ea1ng th\u00e1i",
+   "options": "Ho\u1ea1t \u0111\u1ed9ng\nKh\u00f3a"
+  },
+  {
+   "fieldname": "col_1",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-01-23 09:50:31.281621",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "Cash Gift Policy",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

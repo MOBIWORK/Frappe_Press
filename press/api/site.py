@@ -100,18 +100,85 @@ def protected(doctypes):
     return wrapper
 
 
+def validate_balance_account(site):
+    # lay so du kha dung
+    team = get_current_team(True)
+    invoice = team.get_upcoming_invoice()
+    amount_available_credits = team.get_balance()
+    amount_upcoming_invoice = 0
+    unpaid_amount_due = (
+        frappe.get_all(
+            "Invoice",
+            {"status": "Unpaid", "team": get_current_team(),
+             "type": "Subscription"},
+            ["sum(total) as total"],
+            pluck="total",
+        )[0]
+        or 0
+    )
+
+    if invoice:
+        upcoming_invoice = invoice.as_dict()
+        amount_upcoming_invoice = upcoming_invoice.get('total')
+
+    available_balances = amount_available_credits - \
+        amount_upcoming_invoice - unpaid_amount_due
+
+    # tinh so tien cho cac goi dang ky
+    total_amount = 0
+    site_num_days_required = int(frappe.db.get_value(
+        "Press Settings", "Press Settings", "site_num_days_required"))
+    period = frappe.utils.get_last_day(None).day
+    price_vnd = frappe.db.get_value("Plan", site['plan'], "price_vnd")
+    if site_num_days_required != None and price_vnd != None:
+        # tinh tien goi site
+        if price_vnd != None:
+            total_amount += round(price_vnd/period, 2) * site_num_days_required
+
+        # tinh tien goi app
+        selected_app_plans = site['selected_app_plans']
+        name_app_plans = []
+        name_plans = []
+        price_plans = []
+        for x in selected_app_plans.values():
+            name_app_plans.append(x)
+
+        if name_app_plans:
+            name_plans = frappe.get_all(
+                "Marketplace App Plan",
+                filters={"name": ("in", name_app_plans)},
+                pluck="plan",
+            )
+        if name_plans:
+            price_plans = frappe.get_all(
+                "Plan",
+                filters={"name": ("in", name_plans)},
+                pluck="price_vnd",
+            )
+        for price in price_plans:
+            total_amount += round(price/period, 2) * site_num_days_required
+
+    # kiem tra so du
+    if available_balances - total_amount < 0:
+        frappe.throw(
+            "Tài khoản của bạn không đủ để thực hiện tạo tổ chức")
+
+
 def _new(site, server: str = None, ignore_plan_validation: bool = False):
     team = get_current_team(get_doc=True)
+
+    validate_balance_account(site)
+
     if not team.enabled:
         frappe.throw(
-            "Bạn không thể tạo một trang web mới vì tài khoản của bạn đã bị vô hiệu hóa")
+            "Bạn không thể tạo một tổ chức mới vì tài khoản của bạn đã bị vô hiệu hóa")
 
     files = site.get("files", {})
     share_details_consent = site.get("share_details_consent")
 
     domain = site.get("domain")
     if not (domain and frappe.db.exists("Root Domain", {"name": domain})):
-        frappe.throw("Không có tên miền gốc cho trang web")
+        frappe.throw("Không có tên miền gốc cho tổ chức")
 
     cluster = site.get("cluster") or frappe.db.get_single_value(
         "Press Settings", "cluster"
@@ -242,14 +309,14 @@ def get_app_subscriptions(app_plans, team: str):
     subscriptions = []
 
     for app_name, plan_name in app_plans.items():
-        is_free = frappe.db.get_value(
-            "Marketplace App Plan", plan_name, "is_free")
-        if not is_free:
-            team = get_current_team(get_doc=True)
-            if not team.can_install_paid_apps():
-                frappe.throw(
-                    "Vui lòng nạp tiền lần đầu trước khi cài đặt."
-                )
+        # is_free = frappe.db.get_value(
+        #     "Marketplace App Plan", plan_name, "is_free")
+        # if not is_free:
+        #     team = get_current_team(get_doc=True)
+        #     if not team.can_install_paid_apps():
+        #         frappe.throw(
+        #             "Vui lòng nạp tiền lần đầu trước khi cài đặt."
+        #         )
 
         new_subscription = frappe.get_doc(
             {
@@ -506,6 +573,11 @@ def options_for_new():
 @frappe.whitelist()
 def get_domain():
     return frappe.db.get_value("Press Settings", "Press Settings", ["domain"])
+
+
+@frappe.whitelist()
+def get_day_required_register_site():
+    return frappe.db.get_value("Press Settings", "Press Settings", ["site_num_days_required"])
 
 
 @frappe.whitelist()

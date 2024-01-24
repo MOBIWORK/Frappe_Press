@@ -31,11 +31,13 @@
 			v-if="step == 'Create order'"
 			label="Tổng số tiền + Thuế (nếu áp dụng)"
 			disabled
+			hidden
 			v-model="total"
 			name="total"
 			autocomplete="off"
 			type="number"
 		/>
+		<div class="mt-2 text-base">{{ this.$formatMoney(total) }} VND</div>
 
 		<div v-if="step == 'Setting up Stripe'" class="mt-8 flex justify-center">
 			<Spinner class="h-4 w-4 text-gray-600" />
@@ -155,7 +157,7 @@ export default {
 				},
 				validate() {
 					if (this.creditsToBuy < this.minimumAmount) {
-						return `Số tiền phải lớn hơn ${this.minimumAmount}`;
+						return `Số tiền phải lớn hơn hoặc bằng ${this.minimumAmount}`;
 					}
 				},
 				async onSuccess(data) {
@@ -268,16 +270,17 @@ export default {
 			return this.$formatMoney(this.infoOrder.amount);
 		},
 		updateTotal() {
-			if (this.$account.team.currency === 'INR') {
-				this.total = Number(
-					(
-						this.creditsToBuy +
-						this.creditsToBuy * this.$account.billing_info.gst_percentage
-					).toFixed(2)
-				);
-			} else {
-				this.total = this.creditsToBuy;
-			}
+			// if (this.$account.team.currency === 'INR') {
+			// 	this.total = Number(
+			// 		(
+			// 			this.creditsToBuy +
+			// 			this.creditsToBuy * this.$account.billing_info.gst_percentage
+			// 		).toFixed(2)
+			// 	);
+			// } else {
+			// 	this.total = this.creditsToBuy;
+			// }
+			this.total = this.creditsToBuy;
 		},
 		setupStripe() {
 			this.$resources.createPaymentIntent.submit();

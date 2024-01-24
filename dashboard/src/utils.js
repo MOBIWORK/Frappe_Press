@@ -38,6 +38,9 @@ let utils = {
 		$getFormatTimeNow(f) {
 			return DateTime.now().toFormat(f, { zone: 'Asia/Ho_Chi_Minh' });
 		},
+		$getDays(year, month) {
+			return new Date(year, month, 0).getDate();
+		},
 		$formatDateDetail(d) {
 			return this.$date(d).toFormat('dd-MM-yyyy hh:mm:ss');
 		},
@@ -88,12 +91,7 @@ let utils = {
 			return duration / 1000000;
 		},
 		$formatMoney(price) {
-			const VND = new Intl.NumberFormat('vi-VN', {
-				style: 'currency',
-				currency: 'VND'
-			});
-
-			return VND.format(price).split('₫')[0].trim();
+			return price?.toLocaleString('da-DK') || price;
 		},
 		$planTitle(plan) {
 			let price_field = 'price_vnd';
@@ -124,6 +122,24 @@ let utils = {
 					hash: this.$route.hash
 				});
 			}
+		},
+		$invoiceStatus(status) {
+			let objStatus = {
+				Paid: 'Đã thanh toán',
+				Unpaid: 'Chưa thanh toán',
+				'Invoice Created': 'Đã tạo hóa đơn'
+			};
+			return objStatus[status] || status;
+		},
+		$jobStatus(status) {
+			let objStatus = {
+				Undelivered: 'Chưa được giao',
+				Pending: 'Đang xử lý',
+				Running: 'Đang chạy',
+				Success: 'Thành công',
+				Failure: 'Thât bại'
+			};
+			return objStatus[status] || status;
 		},
 		$siteStatus(site) {
 			let statusSite = {

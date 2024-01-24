@@ -9,6 +9,10 @@
 					{ label: 'Mới', route: { name: 'NewSite' } }
 				]"
 			/>
+			<div class="flex flex-wrap space-x-5">
+				<div><strong>Số dư: </strong>0 VND</div>
+				<div><strong>Số dư khả dụng: </strong>0 VND</div>
+			</div>
 		</header>
 		<WizardCard>
 			<div class="mb-2 text-center">
@@ -24,6 +28,7 @@
 				>
 					<div class="mt-8"></div>
 					<Hostname
+						v-model:checkRestore="checkRestore"
 						v-show="activeStep.name === 'Hostname'"
 						v-model="subdomain"
 						@error="error => (subdomainValid = !Boolean(error))"
@@ -49,10 +54,20 @@
 							:editable="false"
 							class="mb-9"
 							@change="plan => (selectedAppPlans[app.name] = plan.name)"
+							v-model:appPlans="appPlans"
 						/>
 					</div>
 
-					<SiteSummaryBilling v-show="activeStep.name === 'Summary Invoice'" />
+					<SiteSummaryBilling
+						:detail="{
+							subdomain: subdomain,
+							selectedApps: selectedApps,
+							selectedPlan: selectedPlan,
+							selectedAppPlans: selectedAppPlans,
+							appPlans: appPlans
+						}"
+						v-show="activeStep.name === 'Summary Invoice'"
+					/>
 
 					<Restore
 						v-model:selectedFiles="selectedFiles"
@@ -66,7 +81,7 @@
 						:benchTeam="benchTeam"
 						v-show="activeStep.name === 'Plan'"
 					/>
-					<ErrorMessage :message="validationMessage" />
+					<ErrorMessage class="mt-2" :message="validationMessage" />
 					<div class="mt-4">
 						<!-- Region consent checkbox -->
 						<div class="my-6 w-full" v-if="!hasNext">
@@ -109,7 +124,7 @@
 								class="ml-auto"
 								variant="solid"
 								:class="{ 'mt-2': hasPrevious }"
-								@click="$resources.newSite.submit()"
+								@click="handleCreateSite"
 								:loading="$resources.newSite.loading"
 							>
 								Tạo trang web
@@ -149,6 +164,7 @@ export default {
 		return {
 			subdomain: null,
 			subdomainValid: false,
+			checkRestore: 'new',
 			pointPlanSite: 0,
 			billingDetails: {},
 			privateBench: false,
@@ -189,9 +205,6 @@ export default {
 					}
 				},
 				{
-					name: 'Restore'
-				},
-				{
 					name: 'Plan'
 				},
 				{
@@ -200,6 +213,7 @@ export default {
 			],
 			agreedToRegionConsent: false,
 			selectedAppPlans: {},
+			appPlans: [],
 			loadingPlans: false
 		};
 	},
@@ -270,7 +284,7 @@ export default {
 						(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Vui lòng đồng ý với chính sách trên để tạo trang web';
+						return 'Vui lòng đồng ý với chính sách của MBW để tạo trang web';
 					}
 
 					if (!canCreate) {
@@ -288,8 +302,55 @@ export default {
 			return false;
 		}
 	},
+	watch: {
+		checkRestore(value) {
+			const appsStepIndex = this.steps.findIndex(step => step.name == 'Apps');
+			const selectAppPlansStepIndex = this.steps.findIndex(
+				step => step.name == 'Select App Plans'
+			);
+			const restoreStepIndex = this.steps.findIndex(
+				step => step.name == 'Restore'
+			);
+
+			if (value == 'new') {
+				if (restoreStepIndex >= 0) {
+					this.steps.splice(restoreStepIndex, 1);
+				}
+			} else if (restoreStepIndex < 0) {
+				if (selectAppPlansStepIndex >= 0) {
+					this.steps.splice(selectAppPlansStepIndex + 1, 0, {
+						name: 'Restore'
+					});
+				} else {
+					this.steps.splice(appsStepIndex + 1, 0, {
+						name: 'Restore'
+					});
+				}
+			}
+		}
+	},
 	methods: {
+		handleCreateSite() {
+			// Xoa goi khi loai bo app
+			let appPlans = this.selectedAppPlans;
+			let apps = Object.keys(appPlans);
+			apps.forEach(el => {
+				if (!this.selectedApps.includes(el)) {
+					delete appPlans[el];
+				}
+			});
+			this.selectedAppPlans = appPlans;
+
+			// tao site
+			this.$resources.newSite.submit();
+		},
 		async nextStep(activeStep, next) {
+			if (activeStep.name == 'Hostname') {
+				this.validationMessage = '';
+				if (!this.subdomain) {
+					this.validationMessage = 'Vui lòng điền đầy đủ thông tin';
+				}
+			}
 			// lay ti le su dung cho plan
 			let trongSoApp = {};
 			this.appsDefault.forEach(app => {

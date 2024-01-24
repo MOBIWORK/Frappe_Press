@@ -194,11 +194,7 @@ export default {
 			return this.$formatMoney(this.$resources.unpaidAmountDue.data) + ' VND';
 		},
 		availableBalances() {
-			let moneyUpcoming = this.upcomingInvoice?.total || 0;
-			let total =
-				this.$resources.upcomingInvoice.data?.num_available_credits -
-				this.$resources.unpaidAmountDue.data -
-				moneyUpcoming;
+			let total = this.$resources.upcomingInvoice.data?.available_balances || 0;
 			return this.$formatMoney(total) + ' VND';
 		},
 		availableCredits() {

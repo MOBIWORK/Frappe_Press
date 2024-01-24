@@ -1170,17 +1170,17 @@
   {
    "fieldname": "site_num_days_required",
    "fieldtype": "Int",
-   "label": "Number Of Days Required"
+   "label": "S\u1ed1 ng\u00e0y c\u1ea7n thi\u1ebft \u0111\u0103ng k\u00fd site"
   },
   {
    "fieldname": "site_num_days_advance_warning",
    "fieldtype": "Int",
-   "label": "Number Of Days Of Advance Warning Email"
+   "label": "S\u1ed1 ng\u00e0y c\u1ea3nh b\u00e1o h\u1ea1n site Email"
   },
   {
    "fieldname": "site_num_days_past_lock",
    "fieldtype": "Int",
-   "label": "Number Of Days Past The Lock"
+   "label": "S\u1ed1 ng\u00e0y qu\u00e1 h\u1ea1n kh\u00f3a site"
   },
   {
    "fieldname": "tab_site_config",
@@ -1195,7 +1195,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2024-01-15 13:50:26.095557",
+ "modified": "2024-01-22 08:49:18.702373",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

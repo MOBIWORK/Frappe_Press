@@ -37,7 +37,7 @@
 						v-if="invoice.type == 'Subscription'"
 						:to="'/billing/' + invoice.name + '/invoices'"
 					>
-						Hóa đơn cho
+						Hóa đơn ngày
 						{{ this.$formatDate(invoice.period_end) }}
 					</Link>
 					<span v-if="invoice.type === 'Prepaid Credits'">
@@ -49,7 +49,7 @@
 				</span>
 				<span class="hidden md:inline">{{ invoice.formatted_total }}</span>
 				<span>
-					<Badge :label="invoice.status" />
+					<Badge :label="this.$invoiceStatus(invoice.status)" />
 				</span>
 				<span class="hidden md:inline">
 					<span

@@ -41,18 +41,34 @@ def get_publishable_key_and_setup_intent():
 def upcoming_invoice():
     team = get_current_team(True)
     invoice = team.get_upcoming_invoice()
+    amount_available_credits = team.get_balance()
+    amount_upcoming_invoice = 0
+    unpaid_amount_due = (
+        frappe.get_all(
+            "Invoice",
+            {"status": "Unpaid", "team": get_current_team(),
+             "type": "Subscription"},
+            ["sum(total) as total"],
+            pluck="total",
+        )[0]
+        or 0
+    )
 
     if invoice:
         upcoming_invoice = invoice.as_dict()
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
+        amount_upcoming_invoice = upcoming_invoice.get('total')
     else:
         upcoming_invoice = None
 
+    available_balances = amount_available_credits - \
+        amount_upcoming_invoice - unpaid_amount_due
     return {
         "upcoming_invoice": upcoming_invoice,
-        "available_credits": f'{fmt_money(team.get_balance(), 0, team.currency)}',
-        "num_available_credits": team.get_balance(),
-        "available_balances": 0
+        "available_credits": f'{fmt_money(amount_available_credits, 0, team.currency)}',
+        "amount_available_credits": amount_available_credits,
+        "amount_upcoming_invoice": amount_upcoming_invoice,
+        "available_balances": available_balances
     }
 
 

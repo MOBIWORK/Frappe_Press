@@ -628,7 +628,7 @@ def send_reset_password_email(email):
     if frappe.db.exists("User", email):
         frappe.db.set_value("User", email, "reset_password_key", key)
         url = get_url("/dashboard/reset-password/" + key)
-        subject = f"[MBWCloud] - Đặt lại mật khẩu cho email {email} của bạn"
+        subject = f"Thiết lập lại mật khẩu"
         frappe.sendmail(
             recipients=email,
             subject=subject,

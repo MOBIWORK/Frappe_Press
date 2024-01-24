@@ -5,7 +5,7 @@
 		>
 			<div class="w-10"></div>
 			<div class="w-1/4">Gói</div>
-			<div class="w-1/4">Tính toán</div>
+			<div class="w-1/4">Mức sử dụng</div>
 			<div class="w-1/4">Database</div>
 			<div class="w-1/4">Ổ cứng</div>
 			<div class="w-1/4">Hỗ trợ</div>
