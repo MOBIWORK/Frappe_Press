@@ -20,7 +20,9 @@
   "invoice",
   "order_code",
   "checkout_url",
-  "payos_payment_status"
+  "payos_payment_status",
+  "promotion_balance_1",
+  "promotion_balance_2"
  ],
  "fields": [
   {
@@ -124,12 +126,28 @@
    "fieldname": "team_name",
    "fieldtype": "Data",
    "label": "Team Name"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "promotion_balance_1",
+   "fieldtype": "Currency",
+   "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 1",
+   "options": "currency"
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "promotion_balance_2",
+   "fieldtype": "Currency",
+   "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 2",
+   "options": "currency"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-11 11:41:02.473723",
+ "modified": "2024-01-25 10:56:32.338395",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",

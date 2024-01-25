@@ -18,7 +18,7 @@ class Plan(Document):
     def get_price_per_day(self, currency):
         # price = self.price_inr if currency == "INR" else self.price_usd
         price = self.price_vnd
-        price_per_day = rounded(price / self.period, 2)
+        price_per_day = rounded(price / self.period)
         return price_per_day
 
     def get_price_for_interval(self, interval, currency):

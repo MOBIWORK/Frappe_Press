@@ -26,7 +26,7 @@
 							{{ this.$formatMoney(row.rate) }} x {{ row.quantity }}
 						</td>
 						<td class="border-b py-3 pr-2 text-right font-semibold">
-							{{ doc.formatted.items[i].amount }}
+							{{ this.$formatMoney(doc.items[i].amount, 0) }} VND
 						</td>
 					</tr>
 				</tbody>
@@ -85,11 +85,7 @@
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							{{
-								doc.partner_email && doc.partner_email != doc.team
-									? doc.formatted.total_before_discount
-									: doc.formatted.total
-							}}
+							{{ totalInvoice }}
 						</td>
 					</tr>
 					<template v-if="doc.total !== doc.amount_due && doc.docstatus == 1">
@@ -140,6 +136,13 @@ export default {
 		}
 	},
 	computed: {
+		totalInvoice() {
+			let total =
+				this.doc.partner_email && this.doc.partner_email != this.doc.team
+					? this.doc.total_before_discount
+					: this.doc.total;
+			return this.$formatMoney(total, 0) + ' VND';
+		},
 		doc() {
 			return this.invoiceDoc || this.$resources.doc.data;
 		}

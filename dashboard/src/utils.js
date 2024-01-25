@@ -90,7 +90,8 @@ let utils = {
 		$formatCPUTime(duration) {
 			return duration / 1000000;
 		},
-		$formatMoney(price) {
+		$formatMoney(price, precision = 2) {
+			price = this.round(price, precision) || price;
 			return price?.toLocaleString('da-DK') || price;
 		},
 		$planTitle(plan) {

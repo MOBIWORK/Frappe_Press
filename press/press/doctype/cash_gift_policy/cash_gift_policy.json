@@ -73,7 +73,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-23 09:50:31.281621",
+ "modified": "2024-01-25 15:31:19.580739",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Cash Gift Policy",
@@ -92,7 +92,9 @@
    "write": 1
   }
  ],
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "policy_code"
 }

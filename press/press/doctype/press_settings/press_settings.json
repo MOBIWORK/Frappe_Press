@@ -17,6 +17,8 @@
   "site_num_days_required",
   "site_num_days_advance_warning",
   "site_num_days_past_lock",
+  "col_b_1",
+  "number_days_promotion",
   "stripe_settings_section",
   "payos_client_id",
   "payos_api_key",
@@ -1081,27 +1083,27 @@
    "default": "0",
    "fieldname": "free_credits_vnd",
    "fieldtype": "Currency",
-   "label": "Credits on Signup (VND)",
+   "label": "S\u1ed1 ti\u1ec1n t\u1eb7ng khi \u0111\u0103ng k\u00fd l\u1ea7n \u0111\u1ea7u (VND)",
    "options": "VND"
   },
   {
    "default": "0",
    "fieldname": "credit_on_spending",
    "fieldtype": "Currency",
-   "label": "Credit on Spending (VND))",
+   "label": "S\u1ed1 ti\u1ec1n ti\u00eau d\u00f9ng khi gi\u1edbi thi\u1ec7u (VND)",
    "options": "VND"
   },
   {
    "default": "0",
    "fieldname": "enabled_refer_earn",
    "fieldtype": "Check",
-   "label": "Enabled Refer & Earn"
+   "label": "Gi\u1edbi thi\u1ec7u v\u00e0 ki\u1ebfm ti\u1ec1n"
   },
   {
    "default": "0",
    "fieldname": "referral_income",
    "fieldtype": "Currency",
-   "label": "Referral income (VND)",
+   "label": "S\u1ed1 ti\u1ec1n t\u1eb7ng khi gi\u1edbi thi\u1ec7u (VND)",
    "options": "VND"
   },
   {
@@ -1178,6 +1180,7 @@
    "label": "S\u1ed1 ng\u00e0y c\u1ea3nh b\u00e1o h\u1ea1n site Email"
   },
   {
+   "default": "0",
    "fieldname": "site_num_days_past_lock",
    "fieldtype": "Int",
    "label": "S\u1ed1 ng\u00e0y qu\u00e1 h\u1ea1n kh\u00f3a site"
@@ -1191,11 +1194,20 @@
    "fieldname": "tab_invoicing",
    "fieldtype": "Section Break",
    "label": "Invoicing"
+  },
+  {
+   "fieldname": "col_b_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "number_days_promotion",
+   "fieldtype": "Int",
+   "label": "H\u1ea1n s\u1eed d\u1ee5ng khuy\u1ebfn m\u1ea1i 1 (ng\u00e0y)"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2024-01-22 08:49:18.702373",
+ "modified": "2024-01-25 11:06:26.450613",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

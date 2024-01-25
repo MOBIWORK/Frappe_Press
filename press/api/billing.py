@@ -38,12 +38,25 @@ def get_publishable_key_and_setup_intent():
 
 
 @frappe.whitelist()
+def get_cash_gift_policy():
+    cash_policy = frappe.get_list(
+        "Cash Gift Policy",
+        fields=["*"],
+        order_by="amount_from asc",
+        ignore_permissions=True
+    )
+    print(cash_policy)
+
+    return cash_policy
+
+
+@frappe.whitelist()
 def upcoming_invoice():
     team = get_current_team(True)
     invoice = team.get_upcoming_invoice()
     amount_available_credits = team.get_balance()
     amount_upcoming_invoice = 0
-    unpaid_amount_due = (
+    total_unpaid_amount = (
         frappe.get_all(
             "Invoice",
             {"status": "Unpaid", "team": get_current_team(),
@@ -62,13 +75,14 @@ def upcoming_invoice():
         upcoming_invoice = None
 
     available_balances = amount_available_credits - \
-        amount_upcoming_invoice - unpaid_amount_due
+        amount_upcoming_invoice - total_unpaid_amount
     return {
         "upcoming_invoice": upcoming_invoice,
-        "available_credits": f'{fmt_money(amount_available_credits, 0, team.currency)}',
+        "available_credits": amount_available_credits,
         "amount_available_credits": amount_available_credits,
         "amount_upcoming_invoice": amount_upcoming_invoice,
-        "available_balances": available_balances
+        "available_balances": available_balances,
+        "total_unpaid_amount": total_unpaid_amount
     }
 
 
@@ -806,7 +820,8 @@ def team_has_balance_for_invoice(prepaid_mode_invoice):
 def get_partner_credits():
     team = get_current_team(get_doc=True)
     available_credits = team.get_available_partner_credits()
-    return fmt_money(available_credits, 2, team.currency)
+    # return fmt_money(available_credits, 2, team.currency)
+    return available_credits
 
 
 @frappe.whitelist()

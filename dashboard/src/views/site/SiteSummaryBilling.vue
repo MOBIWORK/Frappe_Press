@@ -59,7 +59,7 @@
 								{{ this.$resources.dayRequire.data }}
 							</td>
 							<td class="border-b py-3 pr-2 text-right font-semibold">
-								{{ item.price }} VND
+								{{ item.formatter.price }} VND
 							</td>
 						</tr>
 					</tbody>
@@ -82,16 +82,16 @@
 <script>
 export default {
 	name: 'SiteSummaryBilling',
-	emits: [],
-	props: ['detail'],
+	emits: ['update:totalBilling'],
+	props: ['detail', 'totalBilling'],
 	components: {},
 	data() {
 		return {};
 	},
 	mounted() {
-		this.$socket.on('press_job_update', data => {
-			console.log(data);
-		});
+		// this.$socket.on('press_job_update', data => {
+		// 	console.log(data);
+		// });
 	},
 	unmounted() {
 		// this.$socket.off('eval_js', () => {
@@ -129,7 +129,7 @@ export default {
 					let rate = Number.parseFloat(
 						(info.selectedPlan?.price_vnd / daysInSeptember).toFixed(2)
 					);
-					let price = Number.parseFloat((rate * day_required).toFixed(2));
+					let price = Math.round(rate * day_required);
 					total += price;
 
 					items.push({
@@ -156,7 +156,7 @@ export default {
 						};
 						if (plan) {
 							let rate = Number.parseFloat((plan / daysInSeptember).toFixed(2));
-							let price = Number.parseFloat((rate * day_required).toFixed(2));
+							let price = Math.round(rate * day_required);
 							total += price;
 							item = {
 								...item,
@@ -171,6 +171,7 @@ export default {
 						items.push(item);
 					});
 				}
+				this.$emit('update:totalBilling', total);
 			}
 
 			return {

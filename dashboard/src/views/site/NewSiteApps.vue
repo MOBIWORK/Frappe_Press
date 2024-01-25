@@ -100,7 +100,13 @@
 							</SelectableCard>
 						</div>
 					</div>
-					<div v-if="publicApps.length > 1" class="flex justify-end">
+					<div
+						v-if="
+							publicApps.length > 1 &&
+							(featureApp.length > 0 || privateApps.length > 0)
+						"
+						class="flex justify-end"
+					>
 						<Button
 							:variant="'ghost'"
 							theme="gray"
@@ -117,7 +123,15 @@
 							</div>
 						</Button>
 					</div>
-					<div v-if="publicApps.length" :class="{ hidden: showMore }">
+					<div
+						v-if="publicApps.length"
+						:class="{
+							hidden:
+								featureApp.length < 1 && privateApps.length < 1
+									? false
+									: showMore
+						}"
+					>
 						<h3 class="text-sm font-medium">Tất cả ứng dụng</h3>
 						<!-- <h3 class="sr-only">Ứng dụng từ thị trường</h3> -->
 						<div

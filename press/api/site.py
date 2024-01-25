@@ -133,7 +133,7 @@ def validate_balance_account(site):
     if site_num_days_required != None and price_vnd != None:
         # tinh tien goi site
         if price_vnd != None:
-            total_amount += round(price_vnd/period, 2) * site_num_days_required
+            total_amount += round(price_vnd/period) * site_num_days_required
 
         # tinh tien goi app
         selected_app_plans = site['selected_app_plans']
@@ -156,12 +156,12 @@ def validate_balance_account(site):
                 pluck="price_vnd",
             )
         for price in price_plans:
-            total_amount += round(price/period, 2) * site_num_days_required
+            total_amount += round(price/period) * site_num_days_required
 
     # kiem tra so du
-    if available_balances - total_amount < 0:
+    if total_amount > available_balances:
         frappe.throw(
-            "Tài khoản của bạn không đủ để thực hiện tạo tổ chức")
+            "Số dư tài khoản không đủ để tạo tổ chức")
 
 
 def _new(site, server: str = None, ignore_plan_validation: bool = False):
@@ -660,6 +660,9 @@ def get_new_site_options(group: str = None):
         version["group"] = rg
         apps.update([source.app for source in app_sources])
 
+    if not apps or len(apps) < 0:
+        apps.update(["*1*", "*2*"])
+
     marketplace_apps = frappe.db.get_all(
         "Marketplace App",
         fields=["title", "image", "description", "app", "route"],
@@ -672,7 +675,7 @@ def get_new_site_options(group: str = None):
         concerns_feature = []
         if address_detail and address_detail.concerns_feature:
             concerns_feature = tuple(
-                address_detail.concerns_feature.split(';') + ["1", "2"])
+                address_detail.concerns_feature.split(';') + ["*1*", "*2*"])
             str_query = f"""
                 SELECT
                     marketplace.title,

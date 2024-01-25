@@ -4,5 +4,13 @@
 # import frappe
 from frappe.model.document import Document
 
+
 class CashGiftPolicy(Document):
-	pass
+    pass
+    # def after_insert(self):
+    #     self.publish_created()
+
+    # def publish_created(self):
+    #     frappe.publish_realtime(
+    #         "press_job_balance", {}
+    #     )

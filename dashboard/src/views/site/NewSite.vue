@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<header
-			class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
+			class="sticky top-0 z-10 flex flex-wrap items-center justify-between border-b bg-white px-5 py-2.5"
 		>
 			<Breadcrumbs
 				:items="[
@@ -10,8 +10,8 @@
 				]"
 			/>
 			<div class="flex flex-wrap space-x-5">
-				<div><strong>Số dư: </strong>0 VND</div>
-				<div><strong>Số dư khả dụng: </strong>0 VND</div>
+				<div><strong>Số dư: </strong>{{ soDu() }} VND</div>
+				<div><strong>Số dư khả dụng: </strong>{{ soDuKhaDung() }} VND</div>
 			</div>
 		</header>
 		<WizardCard>
@@ -66,6 +66,7 @@
 							selectedAppPlans: selectedAppPlans,
 							appPlans: appPlans
 						}"
+						v-model:totalBilling="totalBilling"
 						v-show="activeStep.name === 'Summary Invoice'"
 					/>
 
@@ -164,6 +165,7 @@ export default {
 		return {
 			subdomain: null,
 			subdomainValid: false,
+			totalBilling: 0,
 			checkRestore: 'new',
 			pointPlanSite: 0,
 			billingDetails: {},
@@ -247,6 +249,7 @@ export default {
 		}
 	},
 	resources: {
+		upcomingInvoice: { url: 'press.api.billing.upcoming_invoice', auto: true },
 		getBillingAddress() {
 			return {
 				url: 'press.api.account.get_billing_information',
@@ -285,6 +288,14 @@ export default {
 
 					if (!this.agreedToRegionConsent) {
 						return 'Vui lòng đồng ý với chính sách của MBW để tạo trang web';
+					}
+
+					// kiem tra so du
+					if (
+						this.totalBilling >
+						this.$resources.upcomingInvoice.data?.available_balances
+					) {
+						return 'Số dư tài khoản không đủ để tạo tổ chức';
 					}
 
 					if (!canCreate) {
@@ -330,6 +341,14 @@ export default {
 		}
 	},
 	methods: {
+		soDu() {
+			let amount = this.$resources.upcomingInvoice.data?.available_credits;
+			return this.$formatMoney(amount, 0);
+		},
+		soDuKhaDung() {
+			let amount = this.$resources.upcomingInvoice.data?.available_balances;
+			return this.$formatMoney(amount, 0);
+		},
 		handleCreateSite() {
 			// Xoa goi khi loai bo app
 			let appPlans = this.selectedAppPlans;
@@ -354,7 +373,7 @@ export default {
 			// lay ti le su dung cho plan
 			let trongSoApp = {};
 			this.appsDefault.forEach(app => {
-				trongSoApp[app.app] = app.trong_so;
+				trongSoApp[app.app] = app.trong_so || 0;
 			});
 			let newPoind = this.billingDetails.number_of_employees;
 

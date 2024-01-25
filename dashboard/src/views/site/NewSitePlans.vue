@@ -43,7 +43,8 @@ export default {
 			if (
 				this.plans &&
 				!this.userSelect &&
-				(value != null || value != undefined)
+				value != null &&
+				value != undefined
 			) {
 				let newSelectedPlan = null;
 				for (let plan of this.plans) {

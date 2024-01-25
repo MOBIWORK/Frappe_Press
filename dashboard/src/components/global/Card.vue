@@ -26,7 +26,10 @@
 			<LoadingText />
 		</div>
 		<div
-			class="mt-4 max-h-96 flex-auto overflow-auto"
+			class="mt-4 flex-auto overflow-auto"
+			:class="{
+				'max-h-96': !activeHeight
+			}"
 			v-else-if="$slots['default']"
 		>
 			<slot></slot>
@@ -37,7 +40,7 @@
 import { LoadingText } from 'frappe-ui';
 export default {
 	name: 'Card',
-	props: ['title', 'subtitle', 'loading', 'stopOverflow'],
+	props: ['title', 'subtitle', 'loading', 'stopOverflow', 'activeHeight'],
 	components: {
 		LoadingText
 	}
