@@ -276,7 +276,7 @@
    "fieldtype": "Currency",
    "label": "Transaction Amount",
    "no_copy": 1,
-   "options": "INR"
+   "options": "VND"
   },
   {
    "allow_on_submit": 1,
@@ -284,7 +284,7 @@
    "fieldtype": "Currency",
    "label": "Transaction Net",
    "no_copy": 1,
-   "options": "INR"
+   "options": "VND"
   },
   {
    "allow_on_submit": 1,
@@ -292,7 +292,7 @@
    "fieldtype": "Currency",
    "label": "Transaction Fee",
    "no_copy": 1,
-   "options": "INR"
+   "options": "VND"
   },
   {
    "allow_on_submit": 1,
@@ -482,7 +482,7 @@
    "link_fieldname": "invoice"
   }
  ],
- "modified": "2023-12-29 14:22:06.389269",
+ "modified": "2024-01-26 10:16:14.509551",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice",

@@ -49,7 +49,7 @@ class Team(Document):
             ["first_name", "phone", "user_image", "user_type"],
             as_dict=True,
         )
-        doc.balance = self.get_balance()
+        doc.balance = self.get_balance_all()
         doc.user = user
         doc.is_desk_user = user.user_type == "System User"
         return doc
@@ -246,7 +246,7 @@ class Team(Document):
             )
 
     def validate_payment_mode(self):
-        if not self.payment_mode and self.get_balance() > 0:
+        if not self.payment_mode and self.get_balance_all() > 0:
             self.payment_mode = "Prepaid Credits"
 
         if self.has_value_changed("payment_mode"):
@@ -254,8 +254,8 @@ class Team(Document):
                 if frappe.db.count("Stripe Payment Method", {"team": self.name}) == 0:
                     frappe.throw("No card added")
             if self.payment_mode == "Prepaid Credits":
-                if self.get_balance() < 0:
-                    frappe.throw("Tài khoản không có đủ số dư")
+                if self.get_balance_all() < 0:
+                    frappe.throw("Tài khoản không đủ số dư")
 
         if not self.is_new() and not self.default_payment_method:
             # if default payment method is unset
@@ -742,6 +742,32 @@ class Team(Document):
         return res[0]
 
     @frappe.whitelist()
+    def get_balance_all(self):
+        res = frappe.db.get_all(
+            "Balance Transaction",
+            fields=['ending_balance', 'promotion_balance_1',
+                    'promotion_balance_2'],
+            filters={"team": self.name, "docstatus": 1},
+            order_by="creation desc",
+            limit=1,
+        )
+        if not res:
+            return 0
+        return (res[0].get('ending_balance') or 0) + (res[0].get('promotion_balance_1') or 0) + (res[0].get('promotion_balance_2') or 0)
+
+    @frappe.whitelist()
+    def get_detail_balance_all(self):
+        res = frappe.db.get_all(
+            "Balance Transaction",
+            fields=['ending_balance', 'promotion_balance_1',
+                    'promotion_balance_2'],
+            filters={"team": self.name, "docstatus": 1},
+            order_by="creation desc",
+            limit=1,
+        )
+        return res[0] if len(res) else {'ending_balance': 0, 'promotion_balance_1': 0, "promotion_balance_2": 0}
+
+    @frappe.whitelist()
     def get_available_partner_credits(self):
         client = get_frappe_io_connection()
         response = client.session.post(
@@ -776,7 +802,7 @@ class Team(Document):
             frappe.throw("Problem fetching partner credit balance.")
 
     def is_partner_and_has_enough_credits(self):
-        return self.erpnext_partner and self.get_balance() > 0
+        return self.erpnext_partner and self.get_balance_all() > 0
 
     def has_partner_account_on_erpnext_com(self):
         if frappe.conf.developer_mode:
@@ -803,19 +829,19 @@ class Team(Document):
             if self.get_available_partner_credits() > 0:
                 return allow
             else:
-                why = "Không thể tạo trang web do không đủ điểm tín dụng đối tác"
+                why = "Không thể tạo tổ chức do không đủ điểm tín dụng đối tác"
 
         if self.payment_mode == "Prepaid Credits":
-            if self.get_balance() > 0:
+            if self.get_balance_all() > 0:
                 return allow
             else:
-                why = "Không thể tạo trang web do số dư không đủ"
+                why = "Không thể tạo tổ chức do số dư không đủ"
 
         if self.payment_mode == "Card":
             if self.default_payment_method:
                 return allow
             else:
-                why = "Không thể tạo trang web mà không thêm thẻ"
+                why = "Không thể tạo tổ chức mà không thêm thẻ"
 
         return (False, why)
 
@@ -833,7 +859,7 @@ class Team(Document):
     def billing_info(self):
         return {
             "gst_percentage": frappe.db.get_single_value("Press Settings", "gst_percentage"),
-            "balance": self.get_balance(),
+            "balance": self.get_balance_all(),
             "verified_micro_charge": bool(
                 frappe.db.exists(
                     "Stripe Payment Method", {
@@ -854,7 +880,7 @@ class Team(Document):
         else:
             billing_setup = bool(
                 self.payment_mode in ["Card", "Prepaid Credits"]
-                and (self.default_payment_method or self.get_balance() > 0)
+                and (self.default_payment_method or self.get_balance_all() > 0)
                 and self.billing_address
             )
 

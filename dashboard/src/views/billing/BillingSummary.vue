@@ -25,22 +25,30 @@
 
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
-							<div>Số dư khuyến mại 1</div>
+							<div class="flex">
+								<div class="mr-1">Số dư khuyến mại 1</div>
+								<Tooltip text="Đây là khuyến mại 1">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										height="14"
+										width="14"
+										viewBox="0 0 512 512"
+									>
+										<path
+											d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm169.8-90.7c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+										/>
+									</svg>
+								</Tooltip>
+							</div>
 						</div>
 						<div class="text-2xl font-medium">
-							{{ availableCredits }}
+							{{ khuyenMai1 }}
 						</div>
 					</div>
 
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
 							<div>Hóa đơn còn nợ</div>
-							<!-- <Button
-								@click="showPrepaidCreditsDialog = true"
-								theme="gray"
-								iconLeft="credit-card"
-								>Thanh toán</Button
-							> -->
 						</div>
 						<div class="text-2xl font-medium">
 							{{ unpaidAmountDue }}
@@ -49,10 +57,24 @@
 
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
-							<div>Số dư khuyến mại 2</div>
+							<div class="flex">
+								<div class="mr-1">Số dư khuyến mại 2</div>
+								<Tooltip text="Đây là khuyến mại 2">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										height="14"
+										width="14"
+										viewBox="0 0 512 512"
+									>
+										<path
+											d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm169.8-90.7c7.9-22.3 29.1-37.3 52.8-37.3h58.3c34.9 0 63.1 28.3 63.1 63.1c0 22.6-12.1 43.5-31.7 54.8L280 264.4c-.2 13-10.9 23.6-24 23.6c-13.3 0-24-10.7-24-24V250.5c0-8.6 4.6-16.5 12.1-20.8l44.3-25.4c4.7-2.7 7.6-7.7 7.6-13.1c0-8.4-6.8-15.1-15.1-15.1H222.6c-3.4 0-6.4 2.1-7.5 5.3l-.4 1.2c-4.4 12.5-18.2 19-30.6 14.6s-19-18.2-14.6-30.6l.4-1.2zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"
+										/>
+									</svg>
+								</Tooltip>
+							</div>
 						</div>
 						<div class="text-2xl font-medium">
-							{{ availableCredits }}
+							{{ khuyenMai2 }}
 						</div>
 					</div>
 
@@ -64,38 +86,31 @@
 					</div>
 
 					<div class="col-span-2 rounded-md border p-4">
-						<div class="mb-2 flex justify-between text-lg font-medium">
+						<div class="mb-5 flex justify-between text-lg font-medium">
 							<div>Số dư tiền nạp</div>
 						</div>
-						<div class="mb-5 flex justify-between text-base">
+						<div
+							v-if="soTienThanhToan > 0"
+							class="mb-3 flex flex-wrap justify-between text-base"
+						>
+							<div class="mb-2">
+								Nạp thêm {{ this.$formatMoney(soTienThanhToan) }} VND để thanh
+								toán hóa đơn nợ và hóa đơn đến cuối tháng
+							</div>
+							<Button
+								@click="showPrepaidCreditsDialog = true"
+								theme="gray"
+								iconLeft="credit-card"
+								>Thanh toán</Button
+							>
+						</div>
+						<div v-else class="mb-3 flex flex-wrap justify-between text-base">
+							<div class="mb-2">Nạp tiền vào tài khoản</div>
 							<Button
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"
 								iconLeft="plus"
 								>Nạp tiền</Button
-							>
-						</div>
-						<div class="mb-4 flex flex-wrap justify-between text-base">
-							<div class="mb-2">
-								Nạp thêm {{ unpaidAmountDue }} để thanh toán hóa đơn nợ
-							</div>
-							<Button
-								@click="showPrepaidCreditsDialog = true"
-								theme="gray"
-								iconLeft="credit-card"
-								>Thanh toán</Button
-							>
-						</div>
-						<div class="mb-4 flex flex-wrap justify-between text-base">
-							<div class="mb-2">
-								Nạp thêm {{ unpaidAmountDue }} để thanh toán hóa đơn đến cuối
-								tháng
-							</div>
-							<Button
-								@click="showPrepaidCreditsDialog = true"
-								theme="gray"
-								iconLeft="credit-card"
-								>Thanh toán</Button
 							>
 						</div>
 					</div>
@@ -146,6 +161,11 @@
 				"
 			/>
 		</Card>
+
+		<UpcomingInvoiceSummary
+			:invoice-doc="upcomingInvoice"
+			v-if="upcomingInvoice?.items.length"
+		/>
 		<Card v-if="$resources.cashPolicy.data" title="Chính sách tặng tiền">
 			<div>
 				<div class="overflow-x-auto">
@@ -158,7 +178,7 @@
 									Loại chính sách
 								</th>
 								<th class="border-b py-3 pr-2 text-left font-normal">
-									Nạp trong khoảng
+									Khuyến mại nạp
 								</th>
 								<th class="border-b py-3 pr-2 text-left font-normal">
 									% số tiền tặng
@@ -173,24 +193,18 @@
 									{{ this.$formatMoney(row.amount_to) }} VND
 								</td>
 								<td class="border-b py-3 pr-2">
-									{{ row.cash_gift_percentage }} % (Tối đa
+									{{ row.cash_gift_percentage }}% (Tối đa
 									{{ this.$formatMoney(row.maximum_amount) }} VND)
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="py-20 text-center">
-					<Button :loading="true" v-if="$resources.cashPolicy.loading"
-						>Đang tải</Button
-					>
+				<div v-if="$resources.cashPolicy.loading" class="py-20 text-center">
+					<Button :loading="true">Đang tải</Button>
 				</div>
 			</div>
 		</Card>
-		<UpcomingInvoiceSummary
-			:invoice-doc="upcomingInvoice"
-			v-if="upcomingInvoice?.items.length"
-		/>
 	</div>
 </template>
 <script>
@@ -278,7 +292,9 @@ export default {
 			const unpaidAmount =
 				this.$resources.upcomingInvoice.data?.total_unpaid_amount;
 			// const minimumDefault = $account.team.currency == 'INR' ? 800 : 10;
-			const minimumDefault = 2000;
+			let sotien =
+				this.$resources.upcomingInvoice.data?.so_tien_thanh_toan || 0;
+			const minimumDefault = sotien || 2000;
 
 			return unpaidAmount && unpaidAmount > minimumDefault
 				? unpaidAmount
@@ -298,11 +314,28 @@ export default {
 			let total = this.$resources.upcomingInvoice.data?.available_balances || 0;
 			return this.$formatMoney(total, 0) + ' VND';
 		},
+		soTienThanhToan() {
+			return this.$resources.upcomingInvoice.data?.so_tien_thanh_toan;
+		},
 		availableCredits() {
-			let amount = this.$resources.upcomingInvoice.data?.available_credits;
-			if (this.$account.team.payment_mode === 'Partner Credits') {
-				amount = this.$resources.availablePartnerCredits.data;
-			}
+			let amount =
+				this.$resources.upcomingInvoice.data?.available_credits
+					?.amount_available_credits;
+			// if (this.$account.team.payment_mode === 'Partner Credits') {
+			// 	amount = this.$resources.availablePartnerCredits.data;
+			// }
+			return this.$formatMoney(amount, 0) + ' VND';
+		},
+		khuyenMai1() {
+			let amount =
+				this.$resources.upcomingInvoice.data?.available_credits
+					?.promotion_balance_1;
+			return this.$formatMoney(amount, 0) + ' VND';
+		},
+		khuyenMai2() {
+			let amount =
+				this.$resources.upcomingInvoice.data?.available_credits
+					?.promotion_balance_2;
 			return this.$formatMoney(amount, 0) + ' VND';
 		},
 		paymentDate() {

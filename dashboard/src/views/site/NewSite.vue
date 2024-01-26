@@ -9,10 +9,17 @@
 					{ label: 'Mới', route: { name: 'NewSite' } }
 				]"
 			/>
-			<div class="flex flex-wrap space-x-5">
-				<div><strong>Số dư: </strong>{{ soDu() }} VND</div>
+			<div v-if="$resources.upcomingInvoice.data" class="flex flex-wrap">
+				<div class="mr-5">
+					<strong>Số dư tài khoản: </strong>{{ soDu() }} VND
+				</div>
 				<div><strong>Số dư khả dụng: </strong>{{ soDuKhaDung() }} VND</div>
 			</div>
+			<Button
+				v-if="$resources.upcomingInvoice.loading"
+				:loading="true"
+				loadingText="Đang tải"
+			/>
 		</header>
 		<WizardCard>
 			<div class="mb-2 text-center">
@@ -342,7 +349,8 @@ export default {
 	},
 	methods: {
 		soDu() {
-			let amount = this.$resources.upcomingInvoice.data?.available_credits;
+			let amount =
+				this.$resources.upcomingInvoice.data?.available_credits?.amount_all;
 			return this.$formatMoney(amount, 0);
 		},
 		soDuKhaDung() {

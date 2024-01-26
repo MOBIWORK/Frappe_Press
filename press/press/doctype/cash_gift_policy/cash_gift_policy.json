@@ -10,12 +10,12 @@
   "policy_code",
   "policy_name",
   "policy_type",
-  "amount_from",
+  "status",
   "col_1",
+  "amount_from",
   "amount_to",
   "cash_gift_percentage",
-  "maximum_amount",
-  "status"
+  "maximum_amount"
  ],
  "fields": [
   {
@@ -73,7 +73,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-25 15:31:19.580739",
+ "modified": "2024-01-26 08:33:54.322046",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Cash Gift Policy",

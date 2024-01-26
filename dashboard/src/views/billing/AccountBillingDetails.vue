@@ -16,16 +16,18 @@
 		<div class="divide-y" v-if="infoBilling">
 			<ListItem
 				title="Đối tượng"
-				:description="infoBilling.address.enterprise"
+				:description="infoBilling.address?.enterprise"
 			/>
 			<ListItem
 				:title="
-					infoBilling.address.enterprise == `Công ty` ? `Tên công ty` : `Họ tên`
+					infoBilling.address?.enterprise == `Công ty`
+						? `Tên công ty`
+						: `Họ tên`
 				"
 				:description="infoBilling.billing_name"
 			/>
 			<ListItem
-				v-if="infoBilling.address.enterprise == 'Công ty'"
+				v-if="infoBilling.address?.enterprise == 'Công ty'"
 				title="Mã số thuế"
 				:description="infoBilling.address.tax_code"
 			/>

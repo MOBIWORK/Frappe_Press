@@ -12,6 +12,7 @@ from frappe.utils import getdate, cint
 from frappe.utils.data import fmt_money
 from press.api.billing import get_stripe
 from frappe.model.document import Document
+from frappe.utils import rounded
 
 from press.overrides import get_permission_query_conditions_for_doctype
 from press.utils.billing import get_frappe_io_connection, convert_stripe_money
@@ -412,7 +413,7 @@ class Invoice(Document):
             if row.quantity == 0:
                 items_to_remove.append(row)
             else:
-                row.amount = row.quantity * row.rate
+                row.amount = rounded(row.quantity * row.rate)
 
         for item in items_to_remove:
             self.remove(item)

@@ -6,6 +6,7 @@ import frappe
 from typing import Dict, List
 from itertools import groupby
 from frappe.utils import fmt_money
+from frappe.utils.data import time_diff
 from frappe.core.utils import find
 from press.press.doctype.team.team import has_unsettled_invoices
 from press.utils import get_current_team, check_payos_settings
@@ -20,6 +21,7 @@ from press.utils.billing import (
     validate_gstin_check_digit,
     GSTIN_FORMAT,
 )
+import math
 
 from payos import PayOS, PaymentData
 
@@ -38,23 +40,56 @@ def get_publishable_key_and_setup_intent():
 
 
 @frappe.whitelist()
+def check_first_deposit():
+    team = get_current_team()
+    rs = bool(
+        frappe.db.exists(
+            "Invoice", {"team": team,
+                        "transaction_amount": (">", 0), "status": "Paid"}
+        )
+    )
+    return rs
+
+
+@frappe.whitelist()
 def get_cash_gift_policy():
-    cash_policy = frappe.get_list(
+    cash_policy_1 = frappe.get_list(
         "Cash Gift Policy",
+        filters={
+            'policy_type': 'Nạp lần đầu',
+            'status': 'Hoạt động'
+        },
         fields=["*"],
         order_by="amount_from asc",
         ignore_permissions=True
     )
-    print(cash_policy)
+    cash_policy_2 = frappe.get_list(
+        "Cash Gift Policy",
+        filters={
+            'policy_type': 'Nạp thường',
+            'status': 'Hoạt động'
+        },
+        fields=["*"],
+        order_by="amount_from asc",
+        ignore_permissions=True
+    )
 
-    return cash_policy
+    return cash_policy_1 + cash_policy_2
 
 
 @frappe.whitelist()
 def upcoming_invoice():
     team = get_current_team(True)
+
+    day_left = time_diff(frappe.utils.get_last_day(None),
+                         frappe.utils.now_datetime()).days
+
     invoice = team.get_upcoming_invoice()
-    amount_available_credits = team.get_balance()
+    detail_balance_all = team.get_detail_balance_all()
+    amount_available_credits = detail_balance_all.get('ending_balance') or 0
+    promotion_balance_1 = detail_balance_all.get('promotion_balance_1') or 0
+    promotion_balance_2 = detail_balance_all.get('promotion_balance_2') or 0
+
     amount_upcoming_invoice = 0
     total_unpaid_amount = (
         frappe.get_all(
@@ -67,22 +102,39 @@ def upcoming_invoice():
         or 0
     )
 
+    so_tien_thanh_toan = 0
     if invoice:
+        for item in invoice.items:
+            so_tien_thanh_toan += item.rate * day_left
+
         upcoming_invoice = invoice.as_dict()
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
         amount_upcoming_invoice = upcoming_invoice.get('total')
+
     else:
         upcoming_invoice = None
 
-    available_balances = amount_available_credits - \
+    amount_all = amount_available_credits + \
+        promotion_balance_1 + promotion_balance_2
+    available_balances = amount_all - \
         amount_upcoming_invoice - total_unpaid_amount
+
+    so_tien_thanh_toan = so_tien_thanh_toan + total_unpaid_amount
+    if available_balances < 0:
+        so_tien_thanh_toan = so_tien_thanh_toan - available_balances
+    so_tien_thanh_toan = math.ceil(so_tien_thanh_toan)
+
     return {
         "upcoming_invoice": upcoming_invoice,
-        "available_credits": amount_available_credits,
-        "amount_available_credits": amount_available_credits,
-        "amount_upcoming_invoice": amount_upcoming_invoice,
+        "available_credits": {
+            "amount_available_credits": amount_available_credits,
+            "promotion_balance_1": promotion_balance_1,
+            "promotion_balance_2": promotion_balance_2,
+            "amount_all": amount_all
+        },
         "available_balances": available_balances,
-        "total_unpaid_amount": total_unpaid_amount
+        "total_unpaid_amount": total_unpaid_amount,
+        "so_tien_thanh_toan": so_tien_thanh_toan
     }
 
 
@@ -305,7 +357,7 @@ def create_order(amount):
         payos_settings = check_payos_settings()
         if not payos_settings:
             return {
-                'code': '1',
+                'code': '2',
                 'desc': 'Chưa thể nạp tiền ngay lúc này, vui lòng thử lại sau.'
             }
 
@@ -355,7 +407,7 @@ def create_order(amount):
         }
     except Exception as ex:
         return {
-            'code': '1',
+            'code': '2',
             'desc': str(ex)
         }
 

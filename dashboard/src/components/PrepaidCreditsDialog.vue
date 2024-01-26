@@ -1,11 +1,12 @@
 <template>
 	<Dialog
+		:options="{ size: 'xl' }"
 		:modelValue="modelValue"
 		@update:modelValue="$emit('update:show', $event)"
 	>
 		<template #body-title>
 			<h3 class="text-2xl font-semibold leading-6 text-gray-900">
-				Thêm tiền vào tài khoản của bạn
+				Nạp tiền vào tài khoản
 			</h3>
 			<p class="mt-1 text-base text-gray-600">
 				{{ paymentGateway ? '' : 'Chọn cổng thanh toán của bạn' }}

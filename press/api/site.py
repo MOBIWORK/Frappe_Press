@@ -203,23 +203,23 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False):
 
     bench = frappe.db.sql(
         f"""
-	SELECT
-		bench.name, bench.server, bench.cluster = '{cluster}' as in_primary_cluster
-	FROM
-		tabBench bench
-	LEFT JOIN
-		tabServer server
-	ON
-		bench.server = server.name
-	WHERE
-		server.proxy_server in {proxy_servers} AND
-		bench.status = "Active" AND
-		bench.group = '{site["group"]}'
-		{query_sub_str}
-	ORDER BY
-		in_primary_cluster DESC, server.use_for_new_sites DESC, bench.creation DESC
-	LIMIT 1
-	""",
+    SELECT
+        bench.name, bench.server, bench.cluster = '{cluster}' as in_primary_cluster
+    FROM
+        tabBench bench
+    LEFT JOIN
+        tabServer server
+    ON
+        bench.server = server.name
+    WHERE
+        server.proxy_server in {proxy_servers} AND
+        bench.status = "Active" AND
+        bench.group = '{site["group"]}'
+        {query_sub_str}
+    ORDER BY
+        in_primary_cluster DESC, server.use_for_new_sites DESC, bench.creation DESC
+    LIMIT 1
+    """,
         as_dict=True,
     )[0]
     plan = site["plan"]
