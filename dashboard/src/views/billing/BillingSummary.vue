@@ -27,7 +27,9 @@
 						<div class="mb-2 flex justify-between text-base">
 							<div class="flex">
 								<div class="mr-1">Số dư khuyến mại 1</div>
-								<Tooltip text="Đây là khuyến mại 1">
+								<Tooltip
+									text="Đây là khuyến mại số dư tài khoản có hạn sử dụng"
+								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										height="14"
@@ -59,7 +61,9 @@
 						<div class="mb-2 flex justify-between text-base">
 							<div class="flex">
 								<div class="mr-1">Số dư khuyến mại 2</div>
-								<Tooltip text="Đây là khuyến mại 2">
+								<Tooltip
+									text="Đây là khuyến mại số dư tài khoản không có hạn sử dụng"
+								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										height="14"

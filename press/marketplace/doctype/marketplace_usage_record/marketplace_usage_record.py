@@ -21,7 +21,7 @@ class MarketplaceUsageRecord(Document):
         """
 		team = frappe.get_doc("Team", self.team)
 
-		available_credits = team.get_balance()
+		available_credits = team.get_balance_all()
 		if available_credits < self.amount:
 			frappe.get_doc("Site", self.site).suspend()
 			available = frappe.utils.fmt_money(available_credits, 2, self.currency)

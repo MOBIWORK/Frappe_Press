@@ -438,7 +438,7 @@ def get():
         "child_team_members": get_child_team_members(team_doc.name),
         "teams": list(teams if teams else parent_teams),
         "onboarding": team_doc.get_onboarding(),
-        "balance": team_doc.get_balance(),
+        "balance": team_doc.get_balance_all(),
         "parent_team": team_doc.parent_team or "",
         "saas_site_request": team_doc.get_pending_saas_site_request(),
         "feature_flags": press_setting,

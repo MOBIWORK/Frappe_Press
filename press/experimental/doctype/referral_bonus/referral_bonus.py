@@ -36,7 +36,8 @@ class ReferralBonus(Document):
         if not credit_amount:
             return
 
-        team.allocate_credit_amount(credit_amount, source="Referral Bonus")
+        team.allocate_referral_bonus_credit_amount(
+            credit_amount, source="Referral Bonus")
 
         self.credits_allocated = True
         self.save()

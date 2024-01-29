@@ -6,98 +6,143 @@
 import frappe
 from frappe.model.document import Document
 from press.overrides import get_permission_query_conditions_for_doctype
+from press.utils import check_promotion
 
 
 class BalanceTransaction(Document):
-	def validate(self):
-		if self.amount == 0:
-			frappe.throw("Amount cannot be 0")
+    def validate(self):
+        total_amount = self.amount + \
+            self.amount_promotion_1 + self.amount_promotion_2
+        if total_amount == 0:
+            frappe.throw("Amount cannot be 0")
 
-	def before_submit(self):
-		last_balance = frappe.db.get_all(
-			"Balance Transaction",
-			filters={"team": self.team, "docstatus": 1},
-			fields=["sum(amount) as ending_balance"],
-			group_by="team",
-			pluck="ending_balance",
-		)
-		last_balance = last_balance[0] if last_balance else 0
-		if last_balance:
-			self.ending_balance = (last_balance or 0) + self.amount
-		else:
-			self.ending_balance = self.amount
+    def before_submit(self):
+        info_last_balance = frappe.db.get_all(
+            "Balance Transaction",
+            filters={"team": self.team, "docstatus": 1},
+            fields=["sum(amount) as ending_balance", "sum(amount_promotion_1) as promotion_balance_1",
+                    "sum(amount_promotion_2) as promotion_balance_2"],
+            group_by="team",
+        )
 
-		if self.type == "Adjustment":
-			self.unallocated_amount = self.amount
-			if self.unallocated_amount < 0:
-				# in case of credit transfer
-				self.consume_unallocated_amount()
-				self.unallocated_amount = 0
-			elif last_balance < 0 and abs(last_balance) <= self.amount:
-				# previously the balance was negative
-				# settle the negative balance
-				self.unallocated_amount = self.amount - abs(last_balance)
-				self.add_comment(text=f"Settling negative balance of {abs(last_balance)}")
-			elif last_balance < 0 and abs(last_balance) > self.amount:
-				frappe.throw(
-					f"Your credit balance is negative. You need to add minimum {abs(last_balance)} prepaid credits."
-				)
+        # kiem tra xem ngay dang ky khuyen mai da co chua va cap nhat
+        # dang ky khuyen mai cho giao dich hien tai
+        if not self.date_promotion_1:
+            date_promotion_1 = frappe.db.get_all(
+                "Balance Transaction",
+                fields=['date_promotion_1'],
+                filters={"team": self.team, "docstatus": 1},
+                order_by="creation desc",
+                pluck='date_promotion_1',
+                limit=1,
+            )[0]
+            self.date_promotion_1 = date_promotion_1
 
-	def before_update_after_submit(self):
-		total_allocated = sum([d.amount for d in self.allocated_to])
-		self.unallocated_amount = self.amount - total_allocated
+        # kiem tra da het han khuyen mai 1 chua
+        # neu het han thi reset khuyen mai 1 ve 0
+        val_check_promotion = check_promotion(self.team, self.date_promotion_1)
+        if not val_check_promotion:
+            self.amount_promotion_1 = 0
+            self.promotion_balance_1 = 0
+        # tinh toan lai tat ca so du va cap nhat lai so tien
+        if info_last_balance:
+            info_last_balance = info_last_balance[0]
+            ending_balance = info_last_balance['ending_balance']
+            promotion_balance_1 = info_last_balance['promotion_balance_1'] if val_check_promotion else 0
+            promotion_balance_2 = info_last_balance['promotion_balance_2']
+            self.ending_balance = ending_balance + self.amount
+            self.promotion_balance_1 = promotion_balance_1 + self.amount_promotion_1
+            self.promotion_balance_2 = promotion_balance_2 + self.amount_promotion_2
+        else:
+            self.ending_balance = self.amount
+            self.promotion_balance_1 = self.amount_promotion_1
+            self.promotion_balance_2 = self.amount_promotion_2
 
-	def on_submit(self):
-		frappe.publish_realtime("balance_updated", user=self.team)
+        last_balance = self.ending_balance + \
+            self.promotion_balance_1 + self.promotion_balance_2
 
-	def consume_unallocated_amount(self):
-		self.validate_total_unallocated_amount()
+        if self.type == "Adjustment":
+            self.unallocated_amount = self.amount + \
+                self.amount_promotion_1 + self.amount_promotion_2
+            if self.unallocated_amount < 0:
+                # in case of credit transfer
+                self.consume_unallocated_amount()
+                self.unallocated_amount = 0
+            elif last_balance < 0 and abs(last_balance) <= self.unallocated_amount:
+                # previously the balance was negative
+                # settle the negative balance
+                self.unallocated_amount = self.unallocated_amount - \
+                    abs(last_balance)
+                self.add_comment(
+                    text=f"Settling negative balance of {abs(last_balance)}")
+            elif last_balance < 0 and abs(last_balance) > self.unallocated_amount:
+                frappe.throw(
+                    f"Your credit balance is negative. You need to add minimum {abs(last_balance)} prepaid credits."
+                )
 
-		allocation_map = {}
-		remaining_amount = abs(self.amount)
-		transactions = frappe.get_all(
-			"Balance Transaction",
-			filters={"docstatus": 1, "team": self.team, "unallocated_amount": (">", 0)},
-			fields=["name", "unallocated_amount"],
-			order_by="creation asc",
-		)
-		for transaction in transactions:
-			if remaining_amount <= 0:
-				break
-			allocated_amount = min(remaining_amount, transaction.unallocated_amount)
-			remaining_amount -= allocated_amount
-			allocation_map[transaction.name] = allocated_amount
+    def before_update_after_submit(self):
+        total_amount = self.amount + self.amount_promotion_1 + self.amount_promotion_2
+        total_allocated = sum([d.amount for d in self.allocated_to]) + sum(
+            [d.amount_promotion_1 for d in self.allocated_to]) + sum([d.amount_promotion_2 for d in self.allocated_to])
+        self.unallocated_amount = total_amount - total_allocated
 
-		for transaction, amount in allocation_map.items():
-			doc = frappe.get_doc("Balance Transaction", transaction)
-			doc.append(
-				"allocated_to",
-				{
-					"amount": abs(amount),
-					"currency": self.currency,
-					"balance_transaction": self.name,
-				},
-			)
-			doc.save(ignore_permissions=True)
+    def on_submit(self):
+        frappe.publish_realtime("balance_updated", user=self.team)
 
-	def validate_total_unallocated_amount(self):
-		total_unallocated_amount = (
-			frappe.get_all(
-				"Balance Transaction",
-				filters={"docstatus": 1, "team": self.team, "unallocated_amount": (">", 0)},
-				fields=["sum(unallocated_amount) as total_unallocated_amount"],
-				pluck="total_unallocated_amount",
-			)
-			or []
-		)
-		if not total_unallocated_amount:
-			frappe.throw("Cannot create transaction as no unallocated amount found")
-		if total_unallocated_amount[0] < abs(self.amount):
-			frappe.throw(
-				f"Cannot create transaction as unallocated amount {total_unallocated_amount[0]} is less than {self.amount}"
-			)
+    def consume_unallocated_amount(self):
+        self.validate_total_unallocated_amount()
+
+        allocation_map = {}
+        remaining_amount = abs(
+            self.amount + self.amount_promotion_1 + self.amount_promotion_2)
+        transactions = frappe.get_all(
+            "Balance Transaction",
+            filters={"docstatus": 1, "team": self.team,
+                     "unallocated_amount": (">", 0)},
+            fields=["name", "unallocated_amount"],
+            order_by="creation asc",
+        )
+        for transaction in transactions:
+            if remaining_amount <= 0:
+                break
+            allocated_amount = min(
+                remaining_amount, transaction.unallocated_amount)
+            remaining_amount -= allocated_amount
+            allocation_map[transaction.name] = allocated_amount
+
+        for transaction, amount in allocation_map.items():
+            doc = frappe.get_doc("Balance Transaction", transaction)
+            doc.append(
+                "allocated_to",
+                {
+                    "amount": abs(amount),
+                    "currency": self.currency,
+                    "balance_transaction": self.name,
+                },
+            )
+            doc.save(ignore_permissions=True)
+
+    def validate_total_unallocated_amount(self):
+        total_amount = self.amount + self.amount_promotion_1 + self.amount_promotion_2
+        total_unallocated_amount = (
+            frappe.get_all(
+                "Balance Transaction",
+                filters={"docstatus": 1, "team": self.team,
+                         "unallocated_amount": (">", 0)},
+                fields=["sum(unallocated_amount) as total_unallocated_amount"],
+                pluck="total_unallocated_amount",
+            )
+            or []
+        )
+        if not total_unallocated_amount:
+            frappe.throw(
+                "Cannot create transaction as no unallocated amount found")
+        if total_unallocated_amount[0] < abs(total_amount):
+            frappe.throw(
+                f"Cannot create transaction as unallocated amount {total_unallocated_amount[0]} is less than {total_amount}"
+            )
 
 
 get_permission_query_conditions = get_permission_query_conditions_for_doctype(
-	"Balance Transaction"
+    "Balance Transaction"
 )

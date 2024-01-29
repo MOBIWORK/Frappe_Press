@@ -351,9 +351,34 @@ def generator_order_code(number=12):
 def create_order(amount):
     try:
         team = get_current_team()
-        amount = round(amount)
+        amount_new = round(amount)
         remark = "Nap tien TK MBW Cloud"
 
+        # tinh toan so du khuyen mai 2
+        amount_promotion_2 = 0
+        policy_type = 'Nạp lần đầu'
+        if check_first_deposit():
+            policy_type = 'Nạp thường'
+
+        cash_policy = frappe.get_list(
+            "Cash Gift Policy",
+            filters={
+                'policy_type': policy_type,
+                'status': 'Hoạt động1'
+            },
+            fields=["*"],
+            order_by="amount_from asc",
+            ignore_permissions=True
+        )
+
+        for item in cash_policy:
+            if amount_new >= item['amount_from']:
+                amount_free = amount_new * item['cash_gift_percentage'] / 100
+                if amount_free > item['maximum_amount']:
+                    amount_free = item['maximum_amount']
+                amount_promotion_2 = round(amount_free)
+
+        # kiem tra config payos
         payos_settings = check_payos_settings()
         if not payos_settings:
             return {
@@ -393,7 +418,8 @@ def create_order(amount):
             team=team,
             type="Adjustment",
             source='Prepaid Credits',
-            amount=amount,
+            amount=amount_new,
+            amount_promotion_2=amount_promotion_2,
             description=remark,
             payos_payment_status='PROCESSING'
         )
@@ -706,7 +732,7 @@ def prepaid_credits_via_onboarding():
 
     seconds = 0
     # block until balance is updated
-    while team.get_balance() == 0 or seconds > 20:
+    while team.get_balance_all() == 0 or seconds > 20:
         seconds += 1
         sleep(1)
         frappe.db.rollback()
@@ -865,7 +891,7 @@ def get_latest_unpaid_invoice():
 
 def team_has_balance_for_invoice(prepaid_mode_invoice):
     team = get_current_team(get_doc=True)
-    return team.get_balance() >= prepaid_mode_invoice.amount_due
+    return team.get_balance_all() >= prepaid_mode_invoice.amount_due
 
 
 @frappe.whitelist()

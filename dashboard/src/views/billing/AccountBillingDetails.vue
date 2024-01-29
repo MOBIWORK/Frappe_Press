@@ -29,12 +29,12 @@
 			<ListItem
 				v-if="infoBilling.address?.enterprise == 'Công ty'"
 				title="Mã số thuế"
-				:description="infoBilling.address.tax_code"
+				:description="infoBilling.address?.tax_code"
 			/>
-			<ListItem title="Email" :description="infoBilling.address.email_id" />
+			<ListItem title="Email" :description="infoBilling.address?.email_id" />
 			<ListItem
 				title="Số điện thoại"
-				:description="infoBilling.address.phone"
+				:description="infoBilling.address?.phone"
 			/>
 			<ListItem
 				title="Địa chỉ"

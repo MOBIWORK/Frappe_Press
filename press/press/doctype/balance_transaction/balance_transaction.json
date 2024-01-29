@@ -22,7 +22,10 @@
   "checkout_url",
   "payos_payment_status",
   "promotion_balance_1",
-  "promotion_balance_2"
+  "promotion_balance_2",
+  "amount_promotion_1",
+  "amount_promotion_2",
+  "date_promotion_1"
  ],
  "fields": [
   {
@@ -128,26 +131,44 @@
    "label": "Team Name"
   },
   {
-   "allow_on_submit": 1,
    "default": "0",
    "fieldname": "promotion_balance_1",
+   "fieldtype": "Currency",
+   "label": "S\u1ed1 d\u01b0 cu\u1ed1i khuy\u1ebfn m\u1ea1i 1",
+   "options": "currency"
+  },
+  {
+   "default": "0",
+   "fieldname": "promotion_balance_2",
+   "fieldtype": "Currency",
+   "label": "S\u1ed1 d\u01b0 cu\u1ed1i khuy\u1ebfn m\u1ea1i 2",
+   "options": "currency"
+  },
+  {
+   "default": "0",
+   "fieldname": "amount_promotion_1",
    "fieldtype": "Currency",
    "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 1",
    "options": "currency"
   },
   {
-   "allow_on_submit": 1,
    "default": "0",
-   "fieldname": "promotion_balance_2",
+   "fieldname": "amount_promotion_2",
    "fieldtype": "Currency",
    "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 2",
    "options": "currency"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "date_promotion_1",
+   "fieldtype": "Date",
+   "label": "Ng\u00e0y \u00e1p d\u1ee5ng khuy\u1ebfn m\u1ea1i 1"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-25 10:56:32.338395",
+ "modified": "2024-01-29 11:33:33.336826",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",

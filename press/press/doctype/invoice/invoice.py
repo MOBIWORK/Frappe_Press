@@ -6,7 +6,7 @@ import frappe
 
 from frappe import _
 from enum import Enum
-from press.utils import log_error
+from press.utils import log_error, check_promotion
 from frappe.core.utils import find_all
 from frappe.utils import getdate, cint
 from frappe.utils.data import fmt_money
@@ -90,29 +90,29 @@ class Invoice(Document):
                 " pay using Stripe."
             )
 
-        try:
-            self.create_stripe_invoice()
-        except Exception:
-            frappe.db.rollback()
-            self.reload()
+        # try:
+        #     self.create_stripe_invoice()
+        # except Exception:
+        #     frappe.db.rollback()
+        #     self.reload()
 
-            # log the traceback as comment
-            msg = "<pre><code>" + frappe.get_traceback() + "</pre></code>"
-            self.add_comment("Comment", _(
-                "Stripe Invoice Creation Failed") + "<br><br>" + msg)
+        #     # log the traceback as comment
+        #     msg = "<pre><code>" + frappe.get_traceback() + "</pre></code>"
+        #     self.add_comment("Comment", _(
+        #         "Stripe Invoice Creation Failed") + "<br><br>" + msg)
 
-            if not self.stripe_invoice_id:
-                # if stripe invoice was created, find it and set it
-                # so that we avoid scenarios where Stripe Invoice was created but not set in Frappe Cloud
-                stripe_invoice_id = self.find_stripe_invoice()
-                if stripe_invoice_id:
-                    self.stripe_invoice_id = stripe_invoice_id
-                    self.status = "Invoice Created"
-                    self.save()
+        #     if not self.stripe_invoice_id:
+        #         # if stripe invoice was created, find it and set it
+        #         # so that we avoid scenarios where Stripe Invoice was created but not set in Frappe Cloud
+        #         stripe_invoice_id = self.find_stripe_invoice()
+        #         if stripe_invoice_id:
+        #             self.stripe_invoice_id = stripe_invoice_id
+        #             self.status = "Invoice Created"
+        #             self.save()
 
-            frappe.db.commit()
+        #     frappe.db.commit()
 
-            raise
+        #     raise
 
         self.save()
 
@@ -538,6 +538,8 @@ class Invoice(Document):
                 source=transaction.source,
                 currency=transaction.currency,
                 amount=transaction.amount,
+                amount_promotion_1=transaction.amount_promotion_1,
+                amount_promotion_2=transaction.amount_promotion_2,
                 description=f"Reversed on cancel of Invoice {self.name}",
             )
             doc.insert()
@@ -570,7 +572,7 @@ class Invoice(Document):
         # cancel applied credits to re-apply available credits
         self.cancel_applied_credits()
 
-        balance = frappe.get_cached_doc("Team", self.team).get_balance()
+        balance = frappe.get_cached_doc("Team", self.team).get_balance_all()
         if balance <= 0:
             return
 
@@ -582,24 +584,49 @@ class Invoice(Document):
                 "unallocated_amount": (">", 0),
                 "docstatus": ("<", 2),
             },
-            fields=["name", "unallocated_amount", "source"],
+            fields=["name", "unallocated_amount", "source", "amount",
+                    "amount_promotion_1", "amount_promotion_2"],
             order_by="creation desc",
         )
         # sort by ascending for FIFO
         unallocated_balances.reverse()
 
         total_allocated = 0
+        total_allocated_1 = 0
+        total_allocated_2 = 0
         due = self.total
         for balance in unallocated_balances:
             if due == 0:
                 break
+
+            amount_root = balance.amount or 0
+            amount_promotion_1 = balance.amount_promotion_1 or 0
+            amount_promotion_2 = balance.amount_promotion_2 or 0
+            allocated_root = 0
+            allocated_promotion_1 = 0
+            allocated_promotion_2 = 0
+            remaining_due = due
+            # so tien km1 tra duoc
+            allocated_promotion_1 = min(remaining_due, amount_promotion_1)
+            remaining_due -= allocated_promotion_1
+            # so tien goc tra duoc
+            if remaining_due:
+                allocated_root = min(remaining_due, amount_root)
+                remaining_due -= allocated_root
+            # so tien km2 tra duoc
+            if remaining_due:
+                allocated_promotion_2 = min(remaining_due, amount_promotion_2)
+
+            # cap nhan lai 'due' cho hoa don sau
             allocated = min(due, balance.unallocated_amount)
             due -= allocated
             self.append(
                 "credit_allocations",
                 {
                     "transaction": balance.name,
-                    "amount": allocated,
+                    "amount": allocated_root,
+                    "amount_promotion_1": allocated_promotion_1,
+                    "amount_promotion_2": allocated_promotion_2,
                     "currency": self.currency,
                     "source": balance.source,
                 },
@@ -607,17 +634,27 @@ class Invoice(Document):
             doc = frappe.get_doc("Balance Transaction", balance.name)
             doc.append(
                 "allocated_to",
-                {"invoice": self.name, "amount": allocated,
-                 "currency": self.currency},
+                {
+                    "invoice": self.name,
+                    "amount": allocated_root,
+                    "amount_promotion_1": allocated_promotion_1,
+                    "amount_promotion_2": allocated_promotion_2,
+                    "currency": self.currency
+                },
             )
             doc.save()
-            total_allocated += allocated
+            total_allocated += allocated_root
+            total_allocated_1 += allocated_promotion_1
+            total_allocated_2 += allocated_promotion_2
 
+        # tinh toan lai so tien sau khi chi tra hoa don
         balance_transaction = frappe.get_doc(
             doctype="Balance Transaction",
             team=self.team,
             type="Applied To Invoice",
             amount=total_allocated * -1,
+            amount_promotion_1=total_allocated_1 * -1,
+            amount_promotion_2=total_allocated_2 * -1,
             invoice=self.name,
         ).insert()
         balance_transaction.submit()
@@ -626,13 +663,24 @@ class Invoice(Document):
         self.amount_due = self.total - self.applied_credits
 
     def cancel_applied_credits(self):
+        # kiem tra xem con ap dung khuyen mai 1 khong, de tra lai khuyen mai 1
+        val_check_promotion = check_promotion(self.team)
+
+        # thuc hien huy phan bo lai so tien
         for row in self.credit_allocations:
+            amount_promotion_1 = 0
+            # tra lai so tien km1 khi con thoi han
+            if val_check_promotion:
+                amount_promotion_1 = row.amount_promotion_1
+
             doc = frappe.get_doc(
                 doctype="Balance Transaction",
                 type="Adjustment",
                 source=row.source,
                 team=self.team,
                 amount=row.amount,
+                amount_promotion_1=amount_promotion_1,
+                amount_promotion_2=row.amount_promotion_2,
                 description=(
                     f"Reverse amount {row.get_formatted('amount')} of {row.transaction}"
                     f" from invoice {self.name}"
@@ -860,7 +908,7 @@ class Invoice(Document):
             frappe.throw("Amount due is less than or equal to 0")
 
         team = frappe.get_doc("Team", self.team)
-        available_credits = team.get_balance()
+        available_credits = team.get_balance_all()
         if available_credits < self.amount_due:
             available = frappe.utils.fmt_money(
                 available_credits, 2, self.currency)

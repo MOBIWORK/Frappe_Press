@@ -425,7 +425,8 @@ class Team(Document):
                 "Press Settings", credits_field)
             if not credit_amount:
                 return
-            self.allocate_credit_amount(credit_amount, source="Free Credits")
+            self.allocate_free_credit_amount(
+                credit_amount, source="Free Credits")
             self.free_credits_allocated = 1
             self.save()
             self.reload()
@@ -703,6 +704,43 @@ class Team(Document):
             type="Adjustment",
             source=source,
             amount=amount,
+            description=remark,
+        )
+        doc.insert(ignore_permissions=True)
+        doc.submit()
+        # change payment mode to prepaid credits if default is card or not set
+        self.payment_mode = (
+            "Prepaid Credits" if self.payment_mode != "Partner Credits" else self.payment_mode
+        )
+        self.save()
+        return doc
+
+    def allocate_free_credit_amount(self, amount, source, remark=None):
+        doc = frappe.get_doc(
+            doctype="Balance Transaction",
+            team=self.name,
+            type="Adjustment",
+            source=source,
+            amount_promotion_1=amount,
+            date_promotion_1=frappe.utils.now(),
+            description=remark,
+        )
+        doc.insert(ignore_permissions=True)
+        doc.submit()
+        # change payment mode to prepaid credits if default is card or not set
+        self.payment_mode = (
+            "Prepaid Credits" if self.payment_mode != "Partner Credits" else self.payment_mode
+        )
+        self.save()
+        return doc
+
+    def allocate_referral_bonus_credit_amount(self, amount, source, remark=None):
+        doc = frappe.get_doc(
+            doctype="Balance Transaction",
+            team=self.name,
+            type="Adjustment",
+            source=source,
+            amount_promotion_2=amount,
             description=remark,
         )
         doc.insert(ignore_permissions=True)
@@ -1138,7 +1176,9 @@ def process_payos_webhook(doc, method):
         return
 
     # Give them free credits too (only first time)
-    team.allocate_free_credits()
+    team: Team = frappe.get_doc("Team", doc.team)
+    if team:
+        team.allocate_free_credits()
 
     invoice = frappe.get_doc(
         doctype="Invoice",

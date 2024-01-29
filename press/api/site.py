@@ -104,7 +104,7 @@ def validate_balance_account(site):
     # lay so du kha dung
     team = get_current_team(True)
     invoice = team.get_upcoming_invoice()
-    amount_available_credits = team.get_balance()
+    amount_available_credits = team.get_balance_all()
     amount_upcoming_invoice = 0
     unpaid_amount_due = (
         frappe.get_all(

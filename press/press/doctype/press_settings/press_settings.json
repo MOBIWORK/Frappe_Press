@@ -1200,6 +1200,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "default": "0",
    "fieldname": "number_days_promotion",
    "fieldtype": "Int",
    "label": "H\u1ea1n s\u1eed d\u1ee5ng khuy\u1ebfn m\u1ea1i 1 (ng\u00e0y)"
@@ -1207,7 +1208,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2024-01-25 11:06:26.450613",
+ "modified": "2024-01-29 09:31:19.467647",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

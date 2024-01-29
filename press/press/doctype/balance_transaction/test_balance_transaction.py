@@ -10,19 +10,20 @@ from press.press.doctype.team.test_team import create_test_team
 
 
 class TestBalanceTransaction(unittest.TestCase):
-	def tearDown(self):
-		frappe.db.rollback()
+    def tearDown(self):
+        frappe.db.rollback()
 
-	def test_team_balance(self):
-		team = create_test_team()
+    def test_team_balance(self):
+        team = create_test_team()
 
-		team.allocate_credit_amount(50, source="")
-		self.assertEqual(team.get_balance(), 50)
+        team.allocate_credit_amount(50, source="")
+        self.assertEqual(team.get_balance_all(), 50)
 
-		team.allocate_credit_amount(-10, source="")
-		self.assertEqual(team.get_balance(), 40)
+        team.allocate_credit_amount(-10, source="")
+        self.assertEqual(team.get_balance_all(), 40)
 
-		team.allocate_credit_amount(100, source="")
-		self.assertEqual(team.get_balance(), 140)
+        team.allocate_credit_amount(100, source="")
+        self.assertEqual(team.get_balance_all(), 140)
 
-		self.assertEqual(frappe.db.count("Balance Transaction", {"team": team.name}), 3)
+        self.assertEqual(frappe.db.count(
+            "Balance Transaction", {"team": team.name}), 3)

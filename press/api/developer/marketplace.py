@@ -79,7 +79,7 @@ class DeveloperApiHandler:
                 "plans": get_site_plans(),
                 "has_billing_info": (
                     team_doc.default_payment_method
-                    or team_doc.get_balance() > 0
+                    or team_doc.get_balance_all() > 0
                     or team_doc.free_account
                 ),
                 "current_plan": frappe.db.get_value("Site", self.app_subscription_doc.site, "plan"),

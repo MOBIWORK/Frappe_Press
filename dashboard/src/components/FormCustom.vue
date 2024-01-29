@@ -145,6 +145,7 @@
 </template>
 
 <script>
+import { vietnamStates, vietnamCounty } from '@/utils/billing';
 export default {
 	name: 'FormCustom',
 	props: ['fields', 'modelValue', 'fieldNotSet', 'size'],
@@ -179,31 +180,29 @@ export default {
 	},
 	methods: {
 		async stateList() {
-			const response = await fetch(
-				'https://provinces.open-api.vn/api/?depth=2'
-			);
-			const data = await response.json();
-			let countys = [];
-			let states = [];
-			data.forEach(el => {
-				states.push({
-					label: el.name,
-					value: el.name
-				});
-				el.districts.forEach(ct => {
-					countys.push({
-						value: ct.name,
-						parent: el.name
+			try {
+				let countys = [];
+				let states = [];
+				vietnamStates.forEach(el => {
+					states.push({
+						label: el.name,
+						value: el.name
 					});
 				});
-			});
-			this.optionsState = states;
-			this.optionsCountyAll = countys;
-			let ops = countys.filter(d => d.parent == this.modelValue?.state);
-			this.optionsCounty = ops.map(d => ({
-				label: d.value,
-				value: d.value
-			}));
+				vietnamCounty.forEach(el => {
+					countys.push({
+						value: el.name,
+						parent: el.parent
+					});
+				});
+				this.optionsState = states;
+				this.optionsCountyAll = countys;
+				let ops = countys.filter(d => d.parent == this.modelValue?.state);
+				this.optionsCounty = ops.map(d => ({
+					label: d.value,
+					value: d.value
+				}));
+			} catch {}
 		},
 		vietnamCounty(parent) {
 			let ops = this.optionsCountyAll.filter(d => d.parent == parent);

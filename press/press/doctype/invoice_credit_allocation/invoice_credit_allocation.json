@@ -7,8 +7,11 @@
  "field_order": [
   "transaction",
   "source",
+  "currency",
+  "col_b_1",
   "amount",
-  "currency"
+  "amount_promotion_1",
+  "amount_promotion_2"
  ],
  "fields": [
   {
@@ -25,6 +28,7 @@
    "options": "Currency"
   },
   {
+   "default": "0",
    "fieldname": "amount",
    "fieldtype": "Currency",
    "in_list_view": 1,
@@ -36,12 +40,30 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Source"
+  },
+  {
+   "default": "0",
+   "fieldname": "amount_promotion_1",
+   "fieldtype": "Currency",
+   "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 1",
+   "options": "Currency"
+  },
+  {
+   "default": "0",
+   "fieldname": "amount_promotion_2",
+   "fieldtype": "Currency",
+   "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 2",
+   "options": "Currency"
+  },
+  {
+   "fieldname": "col_b_1",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2020-11-12 22:25:22.163211",
+ "modified": "2024-01-29 08:20:25.360382",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice Credit Allocation",
@@ -50,5 +72,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
+ "states": [],
  "track_changes": 1
 }

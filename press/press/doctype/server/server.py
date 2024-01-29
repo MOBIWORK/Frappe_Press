@@ -382,7 +382,7 @@ class BaseServer(Document):
 			frappe.throw("Cannot change plan because you don't have sufficient partner credits")
 
 		if team.payment_mode != "Partner Credits" and not (
-			team.default_payment_method or team.get_balance()
+			team.default_payment_method or team.get_balance_all()
 		):
 			frappe.throw(
 				"Cannot change plan because you haven't added a card and not have enough balance"
