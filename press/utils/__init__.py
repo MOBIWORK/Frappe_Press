@@ -493,7 +493,8 @@ def check_promotion(team, date_promotion_1=None):
             order_by="creation desc",
             pluck='date_promotion_1',
             limit=1,
-        )[0]
+        )
+        date_promotion_1 = date_promotion_1[0] if date_promotion_1 else None
     number_days_promotion = int(frappe.db.get_value(
         "Press Settings", "Press Settings", "number_days_promotion"
     ) or 0)

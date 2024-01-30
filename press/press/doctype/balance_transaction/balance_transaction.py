@@ -35,7 +35,8 @@ class BalanceTransaction(Document):
                 order_by="creation desc",
                 pluck='date_promotion_1',
                 limit=1,
-            )[0]
+            )
+            date_promotion_1 = date_promotion_1[0] if date_promotion_1 else None
             self.date_promotion_1 = date_promotion_1
 
         # kiem tra da het han khuyen mai 1 chua
