@@ -798,7 +798,7 @@ class Team(Document):
         res = frappe.db.get_all(
             "Balance Transaction",
             fields=['ending_balance', 'promotion_balance_1',
-                    'promotion_balance_2'],
+                    'promotion_balance_2', 'date_promotion_1'],
             filters={"team": self.name, "docstatus": 1},
             order_by="creation desc",
             limit=1,

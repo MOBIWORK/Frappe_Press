@@ -9,7 +9,7 @@ from frappe.utils import fmt_money
 from frappe.utils.data import time_diff
 from frappe.core.utils import find
 from press.press.doctype.team.team import has_unsettled_invoices
-from press.utils import get_current_team, check_payos_settings
+from press.utils import get_current_team, check_payos_settings, check_promotion, get_date_expire_promotion
 from press.utils.billing import (
     clear_setup_intent,
     get_publishable_key,
@@ -90,6 +90,10 @@ def upcoming_invoice():
     promotion_balance_1 = detail_balance_all.get('promotion_balance_1') or 0
     promotion_balance_2 = detail_balance_all.get('promotion_balance_2') or 0
 
+    # lay so ngay het han km1
+    val_check_promotion = check_promotion(team.name)
+    date_promotion_1 = get_date_expire_promotion(team.name)
+
     amount_upcoming_invoice = 0
     total_unpaid_amount = (
         frappe.get_all(
@@ -134,7 +138,9 @@ def upcoming_invoice():
         },
         "available_balances": available_balances,
         "total_unpaid_amount": total_unpaid_amount,
-        "so_tien_thanh_toan": so_tien_thanh_toan
+        "so_tien_thanh_toan": so_tien_thanh_toan,
+        "date_promotion_1": date_promotion_1,
+        "val_check_promotion": val_check_promotion
     }
 
 

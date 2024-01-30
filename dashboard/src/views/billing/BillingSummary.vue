@@ -28,7 +28,14 @@
 							<div class="flex">
 								<div class="mr-1">Số dư khuyến mại 1</div>
 								<Tooltip
-									text="Đây là khuyến mại số dư tài khoản có hạn sử dụng"
+									:text="
+										$resources.upcomingInvoice.data?.val_check_promotion
+											? 'Khuyến mại này được dùng đến hết ngày ' +
+											  this.$formatDate(
+													$resources.upcomingInvoice.data?.date_promotion_1
+											  )
+											: 'Đây là khuyến mại số dư tài khoản có hạn sử dụng'
+									"
 								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"

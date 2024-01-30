@@ -13,6 +13,8 @@
   "billing_tab",
   "tab_invoicing",
   "gst_percentage",
+  "vat_percentage",
+  "col_b_2",
   "tab_site_config",
   "site_num_days_required",
   "site_num_days_advance_warning",
@@ -1073,6 +1075,7 @@
   {
    "fieldname": "gst_percentage",
    "fieldtype": "Float",
+   "hidden": 1,
    "label": "GST Percentage"
   },
   {
@@ -1193,7 +1196,7 @@
   {
    "fieldname": "tab_invoicing",
    "fieldtype": "Section Break",
-   "label": "Invoicing"
+   "label": "L\u1eadp h\u00f3a \u0111\u01a1n"
   },
   {
    "fieldname": "col_b_1",
@@ -1204,11 +1207,22 @@
    "fieldname": "number_days_promotion",
    "fieldtype": "Int",
    "label": "H\u1ea1n s\u1eed d\u1ee5ng khuy\u1ebfn m\u1ea1i 1 (ng\u00e0y)"
+  },
+  {
+   "default": "10",
+   "fieldname": "vat_percentage",
+   "fieldtype": "Float",
+   "label": "VAT",
+   "precision": "2"
+  },
+  {
+   "fieldname": "col_b_2",
+   "fieldtype": "Column Break"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2024-01-29 09:31:19.467647",
+ "modified": "2024-01-30 14:35:36.248895",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

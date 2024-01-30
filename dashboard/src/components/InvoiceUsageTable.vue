@@ -57,6 +57,7 @@
 							}}
 						</td>
 					</tr>
+					<!-- gst -->
 					<tr v-if="doc.gst > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
@@ -79,9 +80,34 @@
 							{{ doc.formatted.gst }}
 						</td>
 					</tr>
+					<!-- vat -->
+					<tr v-if="doc.vat > 0">
+						<td></td>
+						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+							Tổng cộng (Chưa tính thuế VAT)
+						</td>
+						<td
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+						>
+							{{ doc.formatted.total_before_vat }}
+						</td>
+					</tr>
+					<tr v-if="doc.vat > 0">
+						<td></td>
+						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+							Thuế VAT {{ Number(doc.vat) }}%
+						</td>
+						<td
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+						>
+							{{ this.$formatMoney(doc.total - doc.total_before_vat) }} VND
+						</td>
+					</tr>
 					<tr>
 						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">Tổng cộng</td>
+						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+							Tổng tiền thanh toán
+						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>

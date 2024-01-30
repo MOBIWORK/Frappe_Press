@@ -33,6 +33,9 @@
   "total_before_discount",
   "total_discount_amount",
   "column_break_15",
+  "vat",
+  "total_before_vat",
+  "total_after_vat",
   "total",
   "total_before_tax",
   "gst",
@@ -113,7 +116,7 @@
    "fieldname": "total",
    "fieldtype": "Currency",
    "in_list_view": 1,
-   "label": "Total",
+   "label": "T\u1ed5ng ti\u1ec1n",
    "no_copy": 1,
    "options": "currency"
   },
@@ -428,12 +431,14 @@
   {
    "fieldname": "gst",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "GST",
    "options": "currency"
   },
   {
    "fieldname": "total_before_tax",
    "fieldtype": "Currency",
+   "hidden": 1,
    "label": "Total Before Tax",
    "options": "currency"
   },
@@ -450,13 +455,32 @@
   {
    "fieldname": "electronic_bill_section",
    "fieldtype": "Section Break",
-   "label": "Electronic Bill"
+   "label": "H\u00f3a \u0111\u01a1n \u0111i\u1ec7n t\u1eed"
   },
   {
    "allow_on_submit": 1,
    "fieldname": "link_to_electronic_invoice",
    "fieldtype": "Data",
    "label": "Link to electronic invoice"
+  },
+  {
+   "fieldname": "total_after_vat",
+   "fieldtype": "Currency",
+   "hidden": 1,
+   "label": "S\u1ed1 ti\u1ec1n sau VAT",
+   "options": "currency"
+  },
+  {
+   "fieldname": "vat",
+   "fieldtype": "Float",
+   "label": "VAT",
+   "precision": "2"
+  },
+  {
+   "fieldname": "total_before_vat",
+   "fieldtype": "Currency",
+   "label": "S\u1ed1 ti\u1ec1n tr\u01b0\u1edbc VAT",
+   "options": "currency"
   }
  ],
  "is_submittable": 1,
@@ -482,7 +506,7 @@
    "link_fieldname": "invoice"
   }
  ],
- "modified": "2024-01-26 10:16:14.509551",
+ "modified": "2024-01-30 14:35:26.823173",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice",

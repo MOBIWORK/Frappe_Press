@@ -429,6 +429,7 @@ class Invoice(Document):
 
         self.total_before_discount = total
         self.set_total_and_discount()
+        self.set_total_and_vat()
 
     def compute_free_credits(self):
         self.free_credits = sum(
@@ -505,7 +506,15 @@ class Invoice(Document):
                     invoice_discount)
 
         self.total_discount_amount = total_discount_amount
-        self.total = self.total_before_discount - total_discount_amount
+        self.total_before_vat = self.total_before_discount - total_discount_amount
+
+    def set_total_and_vat(self):
+        if self.vat is None:
+            vat_percentage = frappe.db.get_single_value(
+                "Press Settings", "vat_percentage") or 0
+            self.vat = vat_percentage
+        amount_vat = rounded(self.total_before_vat * self.vat / 100, 2)
+        self.total = rounded(self.total_before_vat + amount_vat)
 
     def get_flat_on_total_discount_amount(self, invoice_discount):
         discount_amount = 0
@@ -659,7 +668,7 @@ class Invoice(Document):
         ).insert()
         balance_transaction.submit()
 
-        self.applied_credits = total_allocated
+        self.applied_credits = total_allocated + total_allocated_1 + total_allocated_2
         self.amount_due = self.total - self.applied_credits
 
     def cancel_applied_credits(self):
@@ -687,7 +696,8 @@ class Invoice(Document):
                 ),
             ).insert()
             doc.submit()
-            self.applied_credits -= row.amount
+            self.applied_credits -= (row.amount +
+                                     row.amount_promotion_1 + row.amount_promotion_2)
 
         self.clear_credit_allocation_table()
         self.save()
