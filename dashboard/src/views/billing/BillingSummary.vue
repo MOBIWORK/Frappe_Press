@@ -275,7 +275,7 @@ export default {
 				this.$resources.upcomingInvoice.data?.total_unpaid_amount;
 			// const minimumDefault = $account.team.currency == 'INR' ? 800 : 10;
 			let sotien =
-				this.$resources.upcomingInvoice.data?.so_tien_thanh_toan || 0;
+				this.$resources.upcomingInvoice.data?.so_tien_goi_y_thanh_toan || 0;
 			const minimumDefault = sotien || 2000;
 
 			return unpaidAmount && unpaidAmount > minimumDefault
@@ -297,7 +297,7 @@ export default {
 			return this.$formatMoney(total, 0) + ' VND';
 		},
 		soTienThanhToan() {
-			return this.$resources.upcomingInvoice.data?.so_tien_thanh_toan;
+			return this.$resources.upcomingInvoice.data?.so_tien_goi_y_thanh_toan;
 		},
 		availableCredits() {
 			let amount =

@@ -13,10 +13,9 @@
   "currency",
   "amount",
   "amended_from",
-  "description",
   "ending_balance",
   "unallocated_amount",
-  "allocated_to",
+  "col_b_1",
   "invoice",
   "order_code",
   "checkout_url",
@@ -25,7 +24,10 @@
   "promotion_balance_2",
   "amount_promotion_1",
   "amount_promotion_2",
-  "date_promotion_1"
+  "date_promotion_1",
+  "sec_b_1",
+  "allocated_to",
+  "description"
  ],
  "fields": [
   {
@@ -163,12 +165,20 @@
    "fieldname": "date_promotion_1",
    "fieldtype": "Date",
    "label": "Ng\u00e0y \u00e1p d\u1ee5ng khuy\u1ebfn m\u1ea1i 1"
+  },
+  {
+   "fieldname": "col_b_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sec_b_1",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-29 11:33:33.336826",
+ "modified": "2024-01-31 16:29:24.098652",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",

@@ -1,86 +1,75 @@
 <template>
 	<div>
-		<FormControl
-			v-if="step == 'Create order'"
-			class="mb-2"
-			label="Số tiền"
-			v-model.number="creditsToBuy"
-			name="amount"
-			autocomplete="off"
-			type="number"
-			:min="minimumAmount"
-		/>
-		<!-- <label
-      class="block"
-      :class="{
-        'h-0.5 opacity-0': step != 'Add Card Details',
-        'mt-4': step == 'Add Card Details'
-      }"
-    >
-      <span class="text-sm leading-4 text-gray-700">
-        Thẻ Tín dụng hoặc Thẻ Ghi nợ
-      </span>
-      <div
-        class="form-input mt-2 block w-full py-2 pl-3"
-        ref="card-element"
-      ></div>
-      <ErrorMessage class="mt-1" :message="cardErrorMessage" />
-    </label> -->
-
-		<FormControl
-			v-if="step == 'Create order'"
-			label=""
-			disabled
-			hidden
-			v-model="total"
-			name="total"
-			autocomplete="off"
-			type="number"
-		/>
-		<div v-if="step == 'Create order'" class="mt-2 text-base">
-			<table class="w-full text-sm">
-				<tbody>
-					<tr class="border-b">
-						<td>Số dư tiền nạp:</td>
-						<td class="py-2 text-right">
-							+ {{ this.$formatMoney(total) }} VND
-						</td>
-					</tr>
-					<tr class="border-b">
-						<td>Số dư khuyến mại 1:</td>
-						<td class="py-2 text-right">+ {{ this.$formatMoney(0) }} VND</td>
-					</tr>
-					<tr class="border-b">
-						<td>Số dư khuyến mại 2:</td>
-						<td class="py-2 text-right">
-							+ {{ this.$formatMoney(depositBonus) }} VND
-						</td>
-					</tr>
-					<tr>
-						<th>Số dư tài khoản:</th>
-						<th class="py-2 text-right">+ {{ this.calcAmountAll() }} VND</th>
-					</tr>
-				</tbody>
-			</table>
-			<div class="my-4 text-sm" v-if="textDepositBonus">
-				{{ textDepositBonus }}
+		<div v-if="step == 'Create order'" class="rounded-lg border p-4">
+			<div class="text-md mb-3 font-bold">Nạp tiền</div>
+			<div>
+				<FormControl
+					class="mb-2"
+					label="Số tiền"
+					v-model.number="creditsToBuy"
+					name="amount"
+					autocomplete="off"
+					type="number"
+					:min="minimumAmount"
+				/>
+				<FormControl
+					label=""
+					disabled
+					hidden
+					v-model="total"
+					name="total"
+					autocomplete="off"
+					type="number"
+				/>
+				<div class="mt-2 text-base">
+					<table class="w-full text-sm">
+						<tbody>
+							<tr class="border-b">
+								<td>Số dư tiền nạp:</td>
+								<td class="py-2 text-right">
+									+ {{ this.$formatMoney(total) }} VND
+								</td>
+							</tr>
+							<tr class="border-b">
+								<td>Số dư khuyến mại 1:</td>
+								<td class="py-2 text-right">
+									+ {{ this.$formatMoney(0) }} VND
+								</td>
+							</tr>
+							<tr class="border-b">
+								<td>Số dư khuyến mại 2:</td>
+								<td class="py-2 text-right">
+									+ {{ this.$formatMoney(depositBonus) }} VND
+								</td>
+							</tr>
+							<tr>
+								<th>Số dư tài khoản:</th>
+								<th class="py-2 text-right">
+									+ {{ this.calcAmountAll() }} VND
+								</th>
+							</tr>
+						</tbody>
+					</table>
+					<div class="my-4 text-sm" v-if="textDepositBonus">
+						{{ textDepositBonus }}
+					</div>
+				</div>
+				<ErrorMessage
+					class="mt-2"
+					:message="
+						(['1', '2'].includes($resources.createaOrder.data?.code) &&
+							$resources.createaOrder.data?.desc) ||
+						errorMessage
+					"
+				/>
 			</div>
 		</div>
-
-		<!-- <div v-if="step == 'Setting up Stripe'" class="mt-8 flex justify-center">
-			<Spinner class="h-4 w-4 text-gray-600" />
-		</div> -->
-		<ErrorMessage
-			class="mt-2"
-			:message="
-				(['1', '2'].includes($resources.createaOrder.data?.code) &&
-					$resources.createaOrder.data?.desc) ||
-				errorMessage
-			"
-		/>
-		<div class="mt-5">
+		<div
+			v-if="$resources.cashPolicy.data && step == 'Create order'"
+			class="mt-5 rounded-lg border p-4"
+		>
 			<div class="text-md font-bold">Chính sách tặng tiền</div>
-			<div v-if="$resources.cashPolicy.data && step == 'Create order'">
+			<div>
 				<div class="overflow-x-auto">
 					<table class="text w-full text-sm">
 						<thead>
@@ -99,13 +88,19 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr v-for="(row, i) in $resources.cashPolicy.data" :key="row.idx">
-								<td class="border-b py-3 pr-2">{{ row.policy_type }}</td>
-								<td class="border-b py-3 pr-2">
+							<tr
+								v-for="(row, i) in $resources.cashPolicy.data"
+								:key="row.idx"
+								:class="
+									$resources.cashPolicy.data.length != i + 1 ? 'border-b' : ''
+								"
+							>
+								<td class="py-3 pr-2">{{ row.policy_type }}</td>
+								<td class="py-3 pr-2">
 									Nạp từ {{ this.$formatMoney(row.amount_from) }} VND đến
 									{{ this.$formatMoney(row.amount_to) }} VND
 								</td>
-								<td class="border-b py-3 pr-2">
+								<td class="py-3 pr-2">
 									{{ row.cash_gift_percentage }}% (Tối đa
 									{{ this.$formatMoney(row.maximum_amount) }} VND)
 								</td>
@@ -126,7 +121,7 @@
 			Đến thanh toán
 		</router-link>
 		<div v-if="infoOrder">
-			<div>Thông tin hóa đơn đã được tạo:</div>
+			<div>Thông tin hóa đơn được tạo:</div>
 			<div class="rounded-md border p-2">
 				<p>Mã hóa đơn: {{ infoOrder.order_code }}</p>
 				<p>Số tiền: {{ formatAmount() }} VND</p>
@@ -143,7 +138,7 @@
 					@click="$resources.createaOrder.submit()"
 					:loading="$resources.createaOrder.loading"
 				>
-					Tạo hóa đơn
+					Thiết lập hóa đơn
 				</Button>
 			</div>
 			<div v-if="step == 'Get link payment'">

@@ -15,68 +15,117 @@
 				<span>Trạng thái</span>
 				<span></span>
 			</div>
-			<div
-				class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-7"
-				v-for="d in dataTrans"
-				:key="d.name"
-			>
+			<details v-for="d in dataTrans" :key="d.name" class="cursor-pointer">
+				<summary class="w-full focus:outline-none">
+					<div
+						class="ml-2 grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-7"
+					>
+						<div>
+							<span title="Xem chi tiết">
+								<subsummary></subsummary>
+							</span>
+							<span class="ml-2">
+								{{ this.$formatDate(d.creation) }}
+							</span>
+						</div>
+						<div class="whitespace-nowrap text-gray-700">
+							<div>
+								{{ getDescription(d) }}
+							</div>
+						</div>
+						<div class="whitespace-nowrap">
+							{{ d.formatted.pre_balance }}
+						</div>
+						<div class="whitespace-nowrap">
+							{{ d.formatted.amount }}
+						</div>
+						<div class="whitespace-nowrap">
+							{{ d.formatted.ending_balance }}
+						</div>
+						<div class="whitespace-nowrap">
+							<StatusOrder
+								:status="getStatus(d)"
+								:description="this.$getStatusDocTrans(getStatus(d))"
+							></StatusOrder>
+						</div>
+						<div
+							class="flex min-w-40 flex-wrap space-x-2"
+							v-if="
+								d.docstatus == 0 &&
+								d.payos_payment_status == 'PENDING' &&
+								d.checkout_url
+							"
+						>
+							<Link :href="d.checkout_url" class="border-none">
+								<Button
+									:variant="'solid'"
+									theme="blue"
+									size="sm"
+									label="Button"
+									:loading="false"
+									:loadingText="null"
+									:disabled="false"
+									:link="null"
+								>
+									Thanh toán
+								</Button>
+							</Link>
+							<div>
+								<Button
+									:variant="'solid'"
+									theme="red"
+									size="sm"
+									label="Button"
+									@click="$resources.cancelOrder.submit({ name: d.name })"
+									:loading="$resources.cancelOrder.loading"
+								>
+									Hủy
+								</Button>
+							</div>
+						</div>
+					</div>
+				</summary>
 				<div>
-					{{ this.$formatDate(d.creation) }}
-				</div>
-				<div class="whitespace-nowrap text-gray-700">
-					<div>
-						{{ getDescription(d) }}
+					<div class="overflow-auto rounded-md px-2 text-xs text-gray-900">
+						<div class="w-full">
+							<div
+								class="grid grid-cols-7 items-center gap-x-8 pb-4 text-base text-gray-900 md:grid-cols-7"
+							>
+								<div></div>
+								<div>
+									<div class="py-1">Tiền nạp:</div>
+									<div class="py-1">Khuyến mại 1:</div>
+									<div class="py-1">Khuyến mại 2:</div>
+								</div>
+								<div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+								</div>
+								<div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+								</div>
+								<div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.pre.pre_balance }}</div>
+								</div>
+								<div></div>
+								<div
+									class="flex min-w-40 space-x-2"
+									v-if="
+										d.docstatus == 0 &&
+										d.payos_payment_status == 'PENDING' &&
+										d.checkout_url
+									"
+								></div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="whitespace-nowrap">
-					{{ d.formatted.pre_balance }}
-				</div>
-				<div class="whitespace-nowrap">
-					{{ d.formatted.amount }}
-				</div>
-				<div class="whitespace-nowrap">{{ d.formatted.ending_balance }}</div>
-				<div class="whitespace-nowrap">
-					<StatusOrder
-						:status="getStatus(d)"
-						:description="statusDoc[getStatus(d)]"
-					></StatusOrder>
-				</div>
-				<div
-					class="flex min-w-40 space-x-2"
-					v-if="
-						d.docstatus == 0 &&
-						d.payos_payment_status == 'PENDING' &&
-						d.checkout_url
-					"
-				>
-					<Link :href="d.checkout_url" class="border-none">
-						<Button
-							:variant="'solid'"
-							theme="blue"
-							size="sm"
-							label="Button"
-							:loading="false"
-							:loadingText="null"
-							:disabled="false"
-							:link="null"
-						>
-							Thanh toán
-						</Button>
-					</Link>
-					<div>
-						<Button
-							:variant="'solid'"
-							theme="red"
-							size="sm"
-							label="Button"
-							@click="$resources.cancelOrder.submit({ name: d.name })"
-							:loading="$resources.cancelOrder.loading"
-						>
-							Hủy
-						</Button>
-					</div>
-				</div>
-			</div>
+			</details>
 		</div>
 	</Card>
 </template>
@@ -88,15 +137,10 @@ export default {
 	name: 'AccountBillingCreditBalance',
 	data() {
 		return {
-			dataTrans: [],
-			statusDoc: {
-				0: 'Chờ thanh toán',
-				1: 'Đã thanh toán',
-				2: 'Đã hủy',
-				3: 'Chờ xử lý'
-			}
+			dataTrans: []
 		};
 	},
+	inject: ['viewportWidth'],
 	resources: {
 		balances() {
 			return {
@@ -154,6 +198,7 @@ export default {
 	},
 	methods: {
 		getStatus(d) {
+			console.log(d);
 			var statusCode = 3;
 			if (d.docstatus == 1) {
 				statusCode = 1;
@@ -166,18 +211,30 @@ export default {
 		},
 
 		getDescription(d) {
-			var typeSource = {
-				'Prepaid Credits': 'Tiền đã nạp',
-				'Transferred Credits': 'Tiền chuyển đi',
-				'Free Credits': 'Tiền ưu đãi'
-			};
-
 			if (d.type === 'Applied To Invoice' && d.formatted.invoice_for) {
 				return `Hóa đơn cho ${d.formatted.invoice_for}`;
 			}
 
-			return d.amount < 0 ? d.type : typeSource[d.source];
+			return d.amount < 0 ? d.type : this.$getTypeSource(d.source);
 		}
 	}
 };
 </script>
+
+<style scoped>
+details summary {
+	list-style-type: none;
+}
+
+details summary::-webkit-details-marker {
+	display: none;
+}
+
+details subsummary::before {
+	content: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4.25 9.5L7.75 6L4.25 2.5' stroke='%231F272E' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+details[open] subsummary::before {
+	content: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2.5 4.25L6 7.75L9.5 4.25' stroke='%231F272E' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E%0A");
+}
+</style>

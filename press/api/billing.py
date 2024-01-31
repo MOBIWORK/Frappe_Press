@@ -81,8 +81,11 @@ def get_cash_gift_policy():
 def upcoming_invoice():
     team = get_current_team(True)
 
+    # lay so ngay con lai cho hoa don cua thang
     day_left = time_diff(frappe.utils.get_last_day(None),
                          frappe.utils.now_datetime().strftime('%Y-%m-%d')).days
+    if day_left < 0:
+        day_left = 0
 
     invoice = team.get_upcoming_invoice()
     detail_balance_all = team.get_detail_balance_all()
@@ -94,7 +97,7 @@ def upcoming_invoice():
     val_check_promotion = check_promotion(team.name)
     date_promotion_1 = get_date_expire_promotion(team.name)
 
-    amount_upcoming_invoice = 0
+    # lay so tien no chua tra
     total_unpaid_amount = (
         frappe.get_all(
             "Invoice",
@@ -106,11 +109,12 @@ def upcoming_invoice():
         or 0
     )
 
-    so_tien_thanh_toan = 0
+    amount_upcoming_invoice = 0
+    so_tien_goi_y_thanh_toan = 0
     if invoice:
         amount_upcoming_invoice = invoice.total
         for item in invoice.items:
-            so_tien_thanh_toan += item.rate * day_left
+            so_tien_goi_y_thanh_toan += item.rate * day_left
 
         upcoming_invoice = invoice.as_dict()
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
@@ -118,14 +122,17 @@ def upcoming_invoice():
     else:
         upcoming_invoice = None
 
+    # tat ca so tien hien co
     amount_all = amount_available_credits + \
         promotion_balance_1 + promotion_balance_2
+    # tinh so tien sau khi tru no
     so_tien_no_phai_thanh_toan = amount_upcoming_invoice + total_unpaid_amount
     available_balances = amount_all - so_tien_no_phai_thanh_toan
 
     if available_balances < 0:
-        so_tien_thanh_toan = so_tien_thanh_toan + abs(available_balances)
-    so_tien_thanh_toan = math.ceil(so_tien_thanh_toan)
+        so_tien_goi_y_thanh_toan = so_tien_goi_y_thanh_toan + \
+            abs(available_balances)
+    so_tien_goi_y_thanh_toan = math.ceil(so_tien_goi_y_thanh_toan)
 
     return {
         "upcoming_invoice": upcoming_invoice,
@@ -137,7 +144,7 @@ def upcoming_invoice():
         },
         "available_balances": available_balances,
         "total_unpaid_amount": total_unpaid_amount,
-        "so_tien_thanh_toan": so_tien_thanh_toan,
+        "so_tien_goi_y_thanh_toan": so_tien_goi_y_thanh_toan,
         "date_promotion_1": date_promotion_1,
         "val_check_promotion": val_check_promotion
     }
@@ -203,6 +210,10 @@ def balances():
             bt.ending_balance,
             bt.checkout_url,
             bt.payos_payment_status,
+            bt.promotion_balance_1,
+            bt.promotion_balance_2,
+            bt.amount_promotion_1,
+            bt.amount_promotion_2,
             inv.period_start,
         )
         .where((bt.team == team))
@@ -214,19 +225,29 @@ def balances():
         d.formatted = dict(
             amount=fmt_money(d.amount, 0, d.currency),
         )
-        pre_balance = ''
-        ending_balance = ''
+        pre_balance = 0
+        ending_balance = 0
+        pre_promotion_balance_1 = 0
+        pre_promotion_balance_2 = 0
 
-        if d.ending_balance and d.docstatus == 1:
-            pre_balance = fmt_money(d.ending_balance - d.amount, 0, d.currency)
-            ending_balance = fmt_money(d.ending_balance, 0, d.currency)
-        elif d.ending_balance and d.docstatus == 2:
-            pre_balance = fmt_money(d.ending_balance - d.amount, 0, d.currency)
-            ending_balance = fmt_money(
-                d.ending_balance - d.amount, 0, d.currency)
+        if d.docstatus == 1:
+            ending_balance = d.ending_balance
+        elif d.docstatus == 2:
+            ending_balance = d.ending_balance - d.amount
 
-        d.formatted['pre_balance'] = pre_balance
-        d.formatted['ending_balance'] = ending_balance
+        if d.docstatus in [1, 2]:
+            pre_promotion_balance_1 = d.promotion_balance_1 - d.amount_promotion_1
+            pre_promotion_balance_2 = d.promotion_balance_2 - d.amount_promotion_2
+            pre_balance = d.ending_balance - d.amount
+
+        d.pre = dict(
+            pre_balance=pre_balance,
+            pre_promotion_balance_1=pre_promotion_balance_1,
+            pre_promotion_balance_2=pre_promotion_balance_2,
+        )
+        d.formatted['pre_balance'] = fmt_money(pre_balance, 0, d.currency)
+        d.formatted['ending_balance'] = fmt_money(
+            ending_balance, 0, d.currency)
 
         if d.period_start:
             d.formatted["invoice_for"] = d.period_start.strftime("%B %Y")
@@ -369,7 +390,7 @@ def create_order(amount):
             "Cash Gift Policy",
             filters={
                 'policy_type': policy_type,
-                'status': 'Hoạt động1'
+                'status': 'Hoạt động'
             },
             fields=["*"],
             order_by="amount_from asc",
@@ -382,7 +403,7 @@ def create_order(amount):
                 if amount_free > item['maximum_amount']:
                     amount_free = item['maximum_amount']
                 amount_promotion_2 = round(amount_free)
-
+        print(amount_promotion_2)
         # kiem tra config payos
         payos_settings = check_payos_settings()
         if not payos_settings:

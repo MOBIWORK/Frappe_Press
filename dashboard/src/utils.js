@@ -124,6 +124,23 @@ let utils = {
 				});
 			}
 		},
+		$getStatusDocTrans(t) {
+			let statusDoc = {
+				0: 'Chưa thành công',
+				1: 'Thành công',
+				2: 'Đã hủy',
+				3: 'Chờ xử lý'
+			};
+			return statusDoc[t] || t;
+		},
+		$getTypeSource(t) {
+			let typeSource = {
+				'Prepaid Credits': 'Tiền đã nạp',
+				'Transferred Credits': 'Tiền chuyển đi',
+				'Free Credits': 'Tiền ưu đãi'
+			};
+			return typeSource[t] || t;
+		},
 		$invoiceStatus(status) {
 			let objStatus = {
 				Paid: 'Đã thanh toán',
