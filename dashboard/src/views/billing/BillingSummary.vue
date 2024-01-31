@@ -5,7 +5,7 @@
 				<div class="mb-4 grid grid-cols-2 gap-4">
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
-							<div>Số dư tài khoản</div>
+							<div>Số dư tiền nạp</div>
 						</div>
 						<div class="text-2xl font-medium">
 							{{ availableCredits }}
@@ -97,8 +97,19 @@
 					</div>
 
 					<div class="col-span-2 rounded-md border p-4">
-						<div class="mb-5 flex justify-between text-lg font-medium">
-							<div>Số dư tiền nạp</div>
+						<div class="mb-5">
+							<div class="mb-2 flex justify-between text-base">
+								<div>Số dư tài khoản</div>
+							</div>
+							<div class="text-2xl font-medium">
+								{{
+									this.$formatMoney(
+										$resources.upcomingInvoice.data?.available_credits
+											?.amount_all
+									)
+								}}
+								VND
+							</div>
 						</div>
 						<div
 							v-if="soTienThanhToan > 0"
@@ -177,45 +188,6 @@
 			:invoice-doc="upcomingInvoice"
 			v-if="upcomingInvoice?.items.length"
 		/>
-		<Card v-if="$resources.cashPolicy.data" title="Chính sách tặng tiền">
-			<div>
-				<div class="overflow-x-auto">
-					<table class="text w-full text-sm">
-						<thead>
-							<tr class="text-gray-600">
-								<th
-									class="whitespace-nowrap border-b py-3 pr-2 text-left font-normal"
-								>
-									Loại chính sách
-								</th>
-								<th class="border-b py-3 pr-2 text-left font-normal">
-									Khuyến mại nạp
-								</th>
-								<th class="border-b py-3 pr-2 text-left font-normal">
-									% số tiền tặng
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr v-for="(row, i) in $resources.cashPolicy.data" :key="row.idx">
-								<td class="border-b py-3 pr-2">{{ row.policy_type }}</td>
-								<td class="border-b py-3 pr-2">
-									Nạp từ {{ this.$formatMoney(row.amount_from) }} VND đến
-									{{ this.$formatMoney(row.amount_to) }} VND
-								</td>
-								<td class="border-b py-3 pr-2">
-									{{ row.cash_gift_percentage }}% (Tối đa
-									{{ this.$formatMoney(row.maximum_amount) }} VND)
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div v-if="$resources.cashPolicy.loading" class="py-20 text-center">
-					<Button :loading="true">Đang tải</Button>
-				</div>
-			</div>
-		</Card>
 	</div>
 </template>
 <script>
@@ -240,7 +212,6 @@ export default {
 	},
 	resources: {
 		upcomingInvoice: { url: 'press.api.billing.upcoming_invoice', auto: true },
-		cashPolicy: { url: 'press.api.billing.get_cash_gift_policy', auto: true },
 		availablePartnerCredits() {
 			return {
 				url: 'press.api.billing.get_partner_credits'

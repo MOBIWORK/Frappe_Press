@@ -64,18 +64,17 @@
 						<template v-if="oauthSignup == 0">
 							<div>
 								<div class="mb-2 mt-4">
-									<label class="text-base" for="fname">Họ tên</label>
+									<label class="text-base" for="firstName">Họ tên</label>
 								</div>
 								<FormControl
-									id="fname"
+									id="firstName"
 									size="lg"
 									variant="outline"
 									placeholder="---"
 									label=""
 									type="text"
 									v-model="firstName"
-									name="fname"
-									autocomplete="given-name"
+									name="firstName"
 									required
 								/>
 							</div>
@@ -91,7 +90,6 @@
 									label=""
 									type="text"
 									name="phone"
-									autocomplete="family-name"
 									required
 									v-model="phone"
 									@keyup="validPhone"

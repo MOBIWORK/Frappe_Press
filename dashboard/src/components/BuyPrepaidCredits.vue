@@ -38,19 +38,33 @@
 			type="number"
 		/>
 		<div v-if="step == 'Create order'" class="mt-2 text-base">
-			<table class="table-auto text-sm">
+			<table class="w-full text-sm">
 				<tbody>
+					<tr class="border-b">
+						<td>Số dư tiền nạp:</td>
+						<td class="py-2 text-right">
+							+ {{ this.$formatMoney(total) }} VND
+						</td>
+					</tr>
+					<tr class="border-b">
+						<td>Số dư khuyến mại 1:</td>
+						<td class="py-2 text-right">+ {{ this.$formatMoney(0) }} VND</td>
+					</tr>
+					<tr class="border-b">
+						<td>Số dư khuyến mại 2:</td>
+						<td class="py-2 text-right">
+							+ {{ this.$formatMoney(depositBonus) }} VND
+						</td>
+					</tr>
 					<tr>
 						<th>Số dư tài khoản:</th>
-						<td class="pl-2">+ {{ this.$formatMoney(total) }} VND</td>
-					</tr>
-					<tr v-if="depositBonus">
-						<th>Số dư khuyến mại 2:</th>
-						<td class="pl-2">+ {{ this.$formatMoney(depositBonus) }} VND</td>
+						<th class="py-2 text-right">+ {{ this.calcAmountAll() }} VND</th>
 					</tr>
 				</tbody>
 			</table>
-			<div class="my-4" v-if="textDepositBonus">{{ textDepositBonus }}</div>
+			<div class="my-4 text-sm" v-if="textDepositBonus">
+				{{ textDepositBonus }}
+			</div>
 		</div>
 
 		<!-- <div v-if="step == 'Setting up Stripe'" class="mt-8 flex justify-center">
@@ -64,6 +78,46 @@
 				errorMessage
 			"
 		/>
+		<div class="mt-5">
+			<div class="text-md font-bold">Chính sách tặng tiền</div>
+			<div v-if="$resources.cashPolicy.data && step == 'Create order'">
+				<div class="overflow-x-auto">
+					<table class="text w-full text-sm">
+						<thead>
+							<tr class="text-gray-600">
+								<th
+									class="whitespace-nowrap border-b py-3 pr-2 text-left font-normal"
+								>
+									Loại chính sách
+								</th>
+								<th class="border-b py-3 pr-2 text-left font-normal">
+									Khuyến mại nạp
+								</th>
+								<th class="border-b py-3 pr-2 text-left font-normal">
+									% số tiền tặng
+								</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(row, i) in $resources.cashPolicy.data" :key="row.idx">
+								<td class="border-b py-3 pr-2">{{ row.policy_type }}</td>
+								<td class="border-b py-3 pr-2">
+									Nạp từ {{ this.$formatMoney(row.amount_from) }} VND đến
+									{{ this.$formatMoney(row.amount_to) }} VND
+								</td>
+								<td class="border-b py-3 pr-2">
+									{{ row.cash_gift_percentage }}% (Tối đa
+									{{ this.$formatMoney(row.maximum_amount) }} VND)
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div v-if="$resources.cashPolicy.loading" class="py-20 text-center">
+					<Button :loading="true">Đang tải</Button>
+				</div>
+			</div>
+		</div>
 		<router-link
 			v-if="$resources.createaOrder.data?.code == 1"
 			class="text-sm underline"
@@ -328,6 +382,10 @@ export default {
 		}
 	},
 	methods: {
+		calcAmountAll() {
+			let t = this.total + this.depositBonus;
+			return this.$formatMoney(t);
+		},
 		formatAmount() {
 			return this.$formatMoney(this.infoOrder.amount);
 		},

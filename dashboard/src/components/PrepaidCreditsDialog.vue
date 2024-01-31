@@ -1,6 +1,6 @@
 <template>
 	<Dialog
-		:options="{ size: 'xl' }"
+		:options="{ size: '3xl' }"
 		:modelValue="modelValue"
 		@update:modelValue="$emit('update:show', $event)"
 	>

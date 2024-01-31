@@ -82,7 +82,7 @@ def upcoming_invoice():
     team = get_current_team(True)
 
     day_left = time_diff(frappe.utils.get_last_day(None),
-                         frappe.utils.now_datetime()).days
+                         frappe.utils.now_datetime().strftime('%Y-%m-%d')).days
 
     invoice = team.get_upcoming_invoice()
     detail_balance_all = team.get_detail_balance_all()
@@ -108,24 +108,23 @@ def upcoming_invoice():
 
     so_tien_thanh_toan = 0
     if invoice:
+        amount_upcoming_invoice = invoice.total
         for item in invoice.items:
             so_tien_thanh_toan += item.rate * day_left
 
         upcoming_invoice = invoice.as_dict()
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
-        amount_upcoming_invoice = upcoming_invoice.get('total')
 
     else:
         upcoming_invoice = None
 
     amount_all = amount_available_credits + \
         promotion_balance_1 + promotion_balance_2
-    available_balances = amount_all - \
-        amount_upcoming_invoice - total_unpaid_amount
+    so_tien_no_phai_thanh_toan = amount_upcoming_invoice + total_unpaid_amount
+    available_balances = amount_all - so_tien_no_phai_thanh_toan
 
-    so_tien_thanh_toan = so_tien_thanh_toan + total_unpaid_amount
     if available_balances < 0:
-        so_tien_thanh_toan = so_tien_thanh_toan - available_balances
+        so_tien_thanh_toan = so_tien_thanh_toan + abs(available_balances)
     so_tien_thanh_toan = math.ceil(so_tien_thanh_toan)
 
     return {

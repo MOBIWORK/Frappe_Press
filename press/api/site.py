@@ -126,8 +126,8 @@ def validate_balance_account(site):
 
     # tinh so tien cho cac goi dang ky
     total_amount = 0
-    site_num_days_required = int(frappe.db.get_value(
-        "Press Settings", "Press Settings", "site_num_days_required"))
+    site_num_days_required = frappe.db.get_single_value(
+        "Press Settings", "site_num_days_required") or 0
     period = frappe.utils.get_last_day(None).day
     price_vnd = frappe.db.get_value("Plan", site['plan'], "price_vnd")
     if site_num_days_required != None and price_vnd != None:

@@ -11,6 +11,13 @@ from press.utils import check_promotion
 
 class BalanceTransaction(Document):
     def validate(self):
+        if not self.amount:
+            self.amount = 0
+        if not self.amount_promotion_1:
+            self.amount_promotion_1 = 0
+        if not self.amount_promotion_2:
+            self.amount_promotion_2 = 0
+
         total_amount = self.amount + \
             self.amount_promotion_1 + self.amount_promotion_2
         if total_amount == 0:
