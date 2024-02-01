@@ -226,22 +226,24 @@ def balances():
             amount=fmt_money(d.amount, 0, d.currency),
             amount_promotion_1=fmt_money(d.amount_promotion_1, 0, d.currency),
             amount_promotion_2=fmt_money(d.amount_promotion_2, 0, d.currency),
-            promotion_balance_1=fmt_money(
-                d.promotion_balance_1, 0, d.currency),
-            promotion_balance_2=fmt_money(
-                d.promotion_balance_2, 0, d.currency),
         )
+        # khoi tao bien va tinh toan so du
         pre_balance = 0
         ending_balance = 0
         pre_promotion_balance_1 = 0
         pre_promotion_balance_2 = 0
+        total_balance = 0
 
+        promotion_balance_1 = d.promotion_balance_1
+        promotion_balance_2 = d.promotion_balance_2
         if d.docstatus == 1:
             ending_balance = d.ending_balance
             total_balance = d.ending_balance + d.promotion_balance_1 + d.promotion_balance_2
         elif d.docstatus == 2:
             ending_balance = d.ending_balance - d.amount
             total_balance = ending_balance
+            promotion_balance_1 = d.promotion_balance_1 - d.amount_promotion_1
+            promotion_balance_2 = d.promotion_balance_2 - d.amount_promotion_2
 
         if d.docstatus in [1, 2]:
             pre_promotion_balance_1 = d.promotion_balance_1 - d.amount_promotion_1
@@ -266,6 +268,11 @@ def balances():
         d.total_amount = d.amount + d.amount_promotion_1 + d.amount_promotion_2
         d.total_balance = total_balance
         d.ending_balance = ending_balance
+        # formatted
+        d.formatted['promotion_balance_1'] = fmt_money(
+            promotion_balance_1, 0, d.currency)
+        d.formatted['promotion_balance_2'] = fmt_money(
+            promotion_balance_2, 0, d.currency)
         d.formatted['total_amount'] = fmt_money(
             d.total_amount, 0, d.currency)
         d.formatted['total_balance'] = fmt_money(

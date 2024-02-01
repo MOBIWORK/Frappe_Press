@@ -126,8 +126,8 @@ let utils = {
 		},
 		$getStatusDocTrans(t) {
 			let statusDoc = {
-				0: 'Chưa thành công',
-				1: 'Thành công',
+				0: 'Chưa thanh toán',
+				1: 'Đã thanh toán',
 				2: 'Đã hủy',
 				3: 'Chờ xử lý'
 			};

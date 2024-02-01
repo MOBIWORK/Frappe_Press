@@ -4,132 +4,142 @@
 		subtitle="Các giao dịch từ trước đến nay của bạn"
 	>
 		<div class="max-h-96 divide-y overflow-auto">
-			<div
-				class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-7"
-			>
-				<span>Ngày</span>
-				<span>Mô tả</span>
-				<span>Số dư trước</span>
-				<span>Số tiền</span>
-				<span>Số dư</span>
-				<span>Trạng thái</span>
-				<span></span>
-			</div>
-			<details v-for="d in dataTrans" :key="d.name" class="cursor-pointer">
-				<summary class="w-full focus:outline-none">
-					<div
-						class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900"
-					>
-						<div>
-							<span title="Xem chi tiết">
-								<subsummary></subsummary>
-							</span>
-							<span class="ml-2">
-								{{ this.$formatDate(d.creation) }}
-							</span>
-						</div>
-						<div class="text-gray-700">
-							<div>
-								{{ getDescription(d) }}
-							</div>
-						</div>
-						<div class="whitespace-nowrap">
-							{{ d.pre_formatted.total_balance }}
-						</div>
-						<div class="whitespace-nowrap">
-							{{ d.formatted.total_amount }}
-						</div>
-						<div class="whitespace-nowrap">
-							{{ d.formatted.total_balance }}
-						</div>
-						<div class="whitespace-nowrap">
-							<StatusOrder
-								:status="getStatus(d)"
-								:description="this.$getStatusDocTrans(getStatus(d))"
-							></StatusOrder>
-						</div>
-						<div
-							class="flex min-w-40 flex-wrap space-x-2"
-							v-if="
-								d.docstatus == 0 &&
-								d.payos_payment_status == 'PENDING' &&
-								d.checkout_url
-							"
-						>
-							<Link :href="d.checkout_url" class="border-none">
-								<Button
-									:variant="'solid'"
-									theme="blue"
-									size="sm"
-									label="Button"
-									:loading="false"
-									:loadingText="null"
-									:disabled="false"
-									:link="null"
-								>
-									Thanh toán
-								</Button>
-							</Link>
-							<div>
-								<Button
-									:variant="'solid'"
-									theme="red"
-									size="sm"
-									label="Button"
-									@click="$resources.cancelOrder.submit({ name: d.name })"
-									:loading="$resources.cancelOrder.loading"
-								>
-									Hủy
-								</Button>
-							</div>
-						</div>
-					</div>
-				</summary>
-				<div>
-					<div class="overflow-auto rounded-md text-xs text-gray-900">
-						<div class="w-full">
-							<div
-								class="grid grid-cols-7 items-center gap-x-8 pb-4 text-base text-gray-900 md:grid-cols-7"
-							>
-								<div></div>
-								<div>
-									<div class="py-1">Tiền nạp:</div>
-									<div class="py-1">Khuyến mại 1:</div>
-									<div class="py-1">Khuyến mại 2:</div>
-								</div>
-								<div>
-									<div class="py-1">{{ d.pre_formatted.balance }}</div>
-									<div class="py-1">
-										{{ d.pre_formatted.promotion_balance_1 }}
-									</div>
-									<div class="py-1">
-										{{ d.pre_formatted.promotion_balance_2 }}
-									</div>
-								</div>
-								<div>
-									<div class="py-1">{{ d.formatted.amount }}</div>
-									<div class="py-1">{{ d.formatted.amount_promotion_1 }}</div>
-									<div class="py-1">{{ d.formatted.amount_promotion_2 }}</div>
-								</div>
-								<div>
-									<div class="py-1">{{ d.formatted.ending_balance }}</div>
-									<div class="py-1">{{ d.formatted.promotion_balance_1 }}</div>
-									<div class="py-1">{{ d.formatted.promotion_balance_2 }}</div>
-								</div>
-								<div></div>
-								<div
-									class="flex min-w-40 space-x-2"
-									v-if="
-										d.docstatus == 0 &&
-										d.payos_payment_status == 'PENDING' &&
-										d.checkout_url
-									"
-								></div>
-							</div>
-						</div>
-					</div>
+			<div>
+				<div
+					class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-7"
+				>
+					<span>Ngày</span>
+					<span>Mô tả</span>
+					<span>Số dư trước</span>
+					<span>Số tiền</span>
+					<span>Số dư</span>
+					<span>Trạng thái</span>
+					<span></span>
 				</div>
-			</details>
+				<details
+					v-for="d in dataTrans"
+					:key="d.name"
+					class="cursor-pointer border-t"
+				>
+					<summary class="w-full focus:outline-none">
+						<div
+							class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900"
+						>
+							<div>
+								<span title="Xem chi tiết">
+									<subsummary></subsummary>
+								</span>
+								<span class="ml-2">
+									{{ this.$formatDate(d.creation) }}
+								</span>
+							</div>
+							<div class="text-gray-700">
+								<div>
+									{{ getDescription(d) }}
+								</div>
+							</div>
+							<div>
+								{{ d.pre_formatted.total_balance }}
+							</div>
+							<div>
+								{{ d.formatted.total_amount }}
+							</div>
+							<div>
+								{{ d.formatted.total_balance }}
+							</div>
+							<div class="whitespace-nowrap">
+								<StatusOrder
+									:status="getStatus(d)"
+									:description="this.$getStatusDocTrans(getStatus(d))"
+								></StatusOrder>
+							</div>
+							<div
+								class="flex flex-wrap justify-end"
+								v-if="
+									d.docstatus == 0 &&
+									d.payos_payment_status == 'PENDING' &&
+									d.checkout_url
+								"
+							>
+								<Link :href="d.checkout_url" class="mb-2 mr-2 border-none">
+									<Button
+										:variant="'solid'"
+										theme="blue"
+										size="sm"
+										label="Button"
+										:loading="false"
+										:loadingText="null"
+										:disabled="false"
+										:link="null"
+									>
+										Thanh toán
+									</Button>
+								</Link>
+								<div class="mr-2">
+									<Button
+										:variant="'solid'"
+										theme="red"
+										size="sm"
+										label="Button"
+										@click="$resources.cancelOrder.submit({ name: d.name })"
+										:loading="$resources.cancelOrder.loading"
+									>
+										Hủy
+									</Button>
+								</div>
+							</div>
+						</div>
+					</summary>
+					<div>
+						<div class="overflow-auto rounded-md text-xs text-gray-900">
+							<div class="w-full">
+								<div
+									class="grid grid-cols-7 items-center gap-x-8 pb-4 text-base text-gray-900 md:grid-cols-7"
+								>
+									<div></div>
+									<div>
+										<div class="py-1">Tiền nạp:</div>
+										<div class="py-1">Khuyến mại 1:</div>
+										<div class="py-1">Khuyến mại 2:</div>
+									</div>
+									<div>
+										<div class="py-1">{{ d.pre_formatted.balance }}</div>
+										<div class="py-1">
+											{{ d.pre_formatted.promotion_balance_1 }}
+										</div>
+										<div class="py-1">
+											{{ d.pre_formatted.promotion_balance_2 }}
+										</div>
+									</div>
+									<div>
+										<div class="py-1">{{ d.formatted.amount }}</div>
+										<div class="py-1">{{ d.formatted.amount_promotion_1 }}</div>
+										<div class="py-1">{{ d.formatted.amount_promotion_2 }}</div>
+									</div>
+									<div>
+										<div class="py-1">{{ d.formatted.ending_balance }}</div>
+										<div class="py-1">
+											{{ d.formatted.promotion_balance_1 }}
+										</div>
+										<div class="py-1">
+											{{ d.formatted.promotion_balance_2 }}
+										</div>
+									</div>
+									<div></div>
+									<div
+										class="flex min-w-40 space-x-2"
+										v-if="
+											d.docstatus == 0 &&
+											d.payos_payment_status == 'PENDING' &&
+											d.checkout_url
+										"
+									></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</details>
+			</div>
 		</div>
 	</Card>
 </template>
