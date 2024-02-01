@@ -224,6 +224,12 @@ def balances():
     for d in data:
         d.formatted = dict(
             amount=fmt_money(d.amount, 0, d.currency),
+            amount_promotion_1=fmt_money(d.amount_promotion_1, 0, d.currency),
+            amount_promotion_2=fmt_money(d.amount_promotion_2, 0, d.currency),
+            promotion_balance_1=fmt_money(
+                d.promotion_balance_1, 0, d.currency),
+            promotion_balance_2=fmt_money(
+                d.promotion_balance_2, 0, d.currency),
         )
         pre_balance = 0
         ending_balance = 0
@@ -232,25 +238,43 @@ def balances():
 
         if d.docstatus == 1:
             ending_balance = d.ending_balance
+            total_balance = d.ending_balance + d.promotion_balance_1 + d.promotion_balance_2
         elif d.docstatus == 2:
             ending_balance = d.ending_balance - d.amount
+            total_balance = ending_balance
 
         if d.docstatus in [1, 2]:
             pre_promotion_balance_1 = d.promotion_balance_1 - d.amount_promotion_1
             pre_promotion_balance_2 = d.promotion_balance_2 - d.amount_promotion_2
             pre_balance = d.ending_balance - d.amount
 
+        pre_total_balance = pre_balance+pre_promotion_balance_1+pre_promotion_balance_2
         d.pre = dict(
-            pre_balance=pre_balance,
-            pre_promotion_balance_1=pre_promotion_balance_1,
-            pre_promotion_balance_2=pre_promotion_balance_2,
+            total_balance=pre_total_balance,
+            balance=pre_balance,
+            promotion_balance_1=pre_promotion_balance_1,
+            promotion_balance_2=pre_promotion_balance_2,
         )
-        d.formatted['pre_balance'] = fmt_money(pre_balance, 0, d.currency)
+        d.pre_formatted = dict(
+            total_balance=fmt_money(pre_total_balance, 0, d.currency),
+            balance=fmt_money(pre_balance, 0, d.currency),
+            promotion_balance_1=fmt_money(
+                pre_promotion_balance_1, 0, d.currency),
+            promotion_balance_2=fmt_money(
+                pre_promotion_balance_2, 0, d.currency),
+        )
+        d.total_amount = d.amount + d.amount_promotion_1 + d.amount_promotion_2
+        d.total_balance = total_balance
+        d.ending_balance = ending_balance
+        d.formatted['total_amount'] = fmt_money(
+            d.total_amount, 0, d.currency)
+        d.formatted['total_balance'] = fmt_money(
+            d.total_balance, 0, d.currency)
         d.formatted['ending_balance'] = fmt_money(
-            ending_balance, 0, d.currency)
+            d.ending_balance, 0, d.currency)
 
         if d.period_start:
-            d.formatted["invoice_for"] = d.period_start.strftime("%B %Y")
+            d.formatted["invoice_for"] = d.period_start.strftime("%m-%Y")
     return data
 
 

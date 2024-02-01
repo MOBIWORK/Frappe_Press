@@ -5,13 +5,17 @@
 			<Button
 				variant="solid"
 				@click="
-					isDefaultPaymentModeCard
+					this.$account.team.billing_address
 						? (showPrepaidCreditsDialog = true)
 						: (editBillingDetails = true)
 				"
 				class="whitespace-nowrap"
 			>
-				{{ isDefaultPaymentModeCard ? 'Thêm Số Dư' : 'Xác nhận thông tin' }}
+				{{
+					this.$account.team.billing_address
+						? 'Thêm Số Dư'
+						: 'Xác nhận thông tin'
+				}}
 			</Button>
 		</template>
 		<!-- <BillingInformationDialog v-model="showCardDialog" v-if="showCardDialog" /> -->
@@ -68,8 +72,8 @@ export default {
 			return this.$account.team.payment_mode == 'Card';
 		},
 		message() {
-			if (this.isDefaultPaymentModeCard) {
-				return 'Chúng tôi không thể xác minh thẻ của bạn bằng khoản phí vi mô. Vui lòng thêm một số số dư vào tài khoản của bạn để bắt đầu tạo trang web.';
+			if (this.$account.team.billing_address) {
+				return 'Số dư tài khoản của bạn đã hết. Vui lòng nạp thêm tiền vào tài khoản của bạn để tiếp tục sử dụng dịch vụ.';
 			} else {
 				return 'Bạn chưa xác nhận thông tin thanh toán của mình. Thêm nó để bắt đầu tạo trang web.';
 			}

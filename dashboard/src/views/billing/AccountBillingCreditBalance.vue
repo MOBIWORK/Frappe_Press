@@ -1,7 +1,7 @@
 <template>
 	<Card
 		title="Lịch sử giao dịch"
-		subtitle="các giao dịch từ trước đến nay của bạn"
+		subtitle="Các giao dịch từ trước đến nay của bạn"
 	>
 		<div class="max-h-96 divide-y overflow-auto">
 			<div
@@ -18,7 +18,7 @@
 			<details v-for="d in dataTrans" :key="d.name" class="cursor-pointer">
 				<summary class="w-full focus:outline-none">
 					<div
-						class="ml-2 grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900 md:grid-cols-7"
+						class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900"
 					>
 						<div>
 							<span title="Xem chi tiết">
@@ -28,19 +28,19 @@
 								{{ this.$formatDate(d.creation) }}
 							</span>
 						</div>
-						<div class="whitespace-nowrap text-gray-700">
+						<div class="text-gray-700">
 							<div>
 								{{ getDescription(d) }}
 							</div>
 						</div>
 						<div class="whitespace-nowrap">
-							{{ d.formatted.pre_balance }}
+							{{ d.pre_formatted.total_balance }}
 						</div>
 						<div class="whitespace-nowrap">
-							{{ d.formatted.amount }}
+							{{ d.formatted.total_amount }}
 						</div>
 						<div class="whitespace-nowrap">
-							{{ d.formatted.ending_balance }}
+							{{ d.formatted.total_balance }}
 						</div>
 						<div class="whitespace-nowrap">
 							<StatusOrder
@@ -98,19 +98,23 @@
 									<div class="py-1">Khuyến mại 2:</div>
 								</div>
 								<div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.pre_formatted.balance }}</div>
+									<div class="py-1">
+										{{ d.pre_formatted.promotion_balance_1 }}
+									</div>
+									<div class="py-1">
+										{{ d.pre_formatted.promotion_balance_2 }}
+									</div>
 								</div>
 								<div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.formatted.amount }}</div>
+									<div class="py-1">{{ d.formatted.amount_promotion_1 }}</div>
+									<div class="py-1">{{ d.formatted.amount_promotion_2 }}</div>
 								</div>
 								<div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
-									<div class="py-1">{{ d.pre.pre_balance }}</div>
+									<div class="py-1">{{ d.formatted.ending_balance }}</div>
+									<div class="py-1">{{ d.formatted.promotion_balance_1 }}</div>
+									<div class="py-1">{{ d.formatted.promotion_balance_2 }}</div>
 								</div>
 								<div></div>
 								<div
@@ -198,7 +202,6 @@ export default {
 	},
 	methods: {
 		getStatus(d) {
-			console.log(d);
 			var statusCode = 3;
 			if (d.docstatus == 1) {
 				statusCode = 1;
@@ -212,7 +215,7 @@ export default {
 
 		getDescription(d) {
 			if (d.type === 'Applied To Invoice' && d.formatted.invoice_for) {
-				return `Hóa đơn cho ${d.formatted.invoice_for}`;
+				return `Hóa đơn tháng ${d.formatted.invoice_for}`;
 			}
 
 			return d.amount < 0 ? d.type : this.$getTypeSource(d.source);
