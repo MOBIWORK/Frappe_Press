@@ -33,17 +33,17 @@
 				<template v-if="showUnpaidInvoiceAlert">
 					<Alert
 						v-if="latestUnpaidInvoice.payment_mode === 'Prepaid Credits'"
-						title="Việc thanh toán hóa đơn cuối cùng của bạn không thành công."
+						title="Thanh toán hóa đơn cuối cùng của bạn không thành công."
 					>
 						Vui lòng thêm
 						<strong>
+							{{ this.$formatMoney(latestUnpaidInvoice.amount_due) }}
 							{{ latestUnpaidInvoice.currency }}
-							{{ latestUnpaidInvoice.amount_due }}
 						</strong>
-						vào số tín dụng.
+						vào số dư tài khoản.
 						<template #actions>
 							<Button @click="showPrepaidCreditsDialog = true" variant="solid">
-								Thêm Số tín dụng
+								Thêm Số Dư
 							</Button>
 						</template>
 					</Alert>

@@ -138,7 +138,7 @@
 					@click="$resources.createaOrder.submit()"
 					:loading="$resources.createaOrder.loading"
 				>
-					Thiết lập hóa đơn
+					Tạo hóa đơn
 				</Button>
 			</div>
 			<div v-if="step == 'Get link payment'">

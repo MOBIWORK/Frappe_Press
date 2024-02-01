@@ -86,7 +86,7 @@
 					</div>
 				</summary>
 				<div>
-					<div class="overflow-auto rounded-md px-2 text-xs text-gray-900">
+					<div class="overflow-auto rounded-md text-xs text-gray-900">
 						<div class="w-full">
 							<div
 								class="grid grid-cols-7 items-center gap-x-8 pb-4 text-base text-gray-900 md:grid-cols-7"
