@@ -20,7 +20,7 @@
 						<Button
 							v-if="bench?.status === 'Active'"
 							icon-left="plus"
-							label="Trang web mới"
+							label="Tổ chức mới"
 							@click="$router.push(`/${this.bench.name}/new`)"
 						/>
 						<Dropdown :options="benchActions">
@@ -159,7 +159,7 @@ export default {
 			let tabRoute = subRoute => `/benches/${this.benchName}/${subRoute}`;
 			let tabs = [
 				{
-					label: 'Trang web',
+					label: 'Tổ chức',
 					route: 'sites'
 				},
 				{ label: 'Ứng dụng', route: 'apps' },
@@ -210,15 +210,15 @@ export default {
 					}
 				},
 				{
-					label: 'Cập nhật tất cả các trang web',
+					label: 'Cập nhật tất cả các tổ chức',
 					icon: 'arrow-up-circle',
 					condition: () => this.bench.status == 'Active' && !this.bench.public,
 					onClick: async () => {
 						await this.$resources.updateAllSites.submit();
 						notify({
-							title: 'Lên lịch cập nhật trang web thành công',
+							title: 'Lên lịch cập nhật tổ chức thành công',
 							message:
-								'Tất cả các trang web trên bench này sẽ được cập nhật lên phiên bản mới nhất',
+								'Tất cả các tổ chức trên bench này sẽ được cập nhật lên phiên bản mới nhất',
 							icon: 'check',
 							color: 'green'
 						});

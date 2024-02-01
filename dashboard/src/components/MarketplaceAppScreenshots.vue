@@ -2,7 +2,7 @@
 	<Card
 		class="md:col-span-2"
 		title="Ảnh chụp màn hình"
-		subtitle="Thêm ảnh chụp màn hình để hiển thị trên trang web marketplace."
+		subtitle="Thêm ảnh chụp màn hình để hiển thị trên tổ chức marketplace."
 	>
 		<div>
 			<div class="flex flex-row">

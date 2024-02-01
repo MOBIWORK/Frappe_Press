@@ -135,7 +135,7 @@
 								@click="handleCreateSite"
 								:loading="$resources.newSite.loading"
 							>
-								Tạo trang web
+								Tạo tổ chức
 							</Button>
 						</div>
 					</div>
@@ -294,7 +294,7 @@ export default {
 						(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Vui lòng đồng ý với chính sách của MBW để tạo trang web';
+						return 'Vui lòng đồng ý với chính sách của MBW để tạo tổ chức';
 					}
 
 					// kiem tra so du
@@ -306,7 +306,7 @@ export default {
 					}
 
 					if (!canCreate) {
-						return 'Không thể tạo trang web';
+						return 'Không thể tạo tổ chức';
 					}
 				}
 			};

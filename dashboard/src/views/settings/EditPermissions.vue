@@ -23,7 +23,7 @@
 			<div v-else class="flex max-h-96 flex-col overflow-auto">
 				<div v-if="options.length === 0" class="mt-4 text-center">
 					<span class="text-gray-500">
-						Không có tùy chọn nào để thêm quyền, hãy tạo một số trang web!
+						Không có tùy chọn nào để thêm quyền, hãy tạo một số tổ chức!
 						<router-link :to="'/sites/new'" class="text-gray-900">
 							Nhấp vào đây
 						</router-link>

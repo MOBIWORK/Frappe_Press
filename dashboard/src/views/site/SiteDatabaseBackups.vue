@@ -13,11 +13,11 @@
 				Tạo bản sao lưu
 			</Button>
 			<Dialog
-				:options="{ title: 'Khôi phục bản sao lưu trên trang web khác' }"
+				:options="{ title: 'Khôi phục bản sao lưu trên tổ chức khác' }"
 				v-model="showRestoreOnAnotherSiteDialog"
 			>
 				<template v-slot:body-content>
-					<p class="text-base">Chọn trang web mà bạn muốn khôi phục sao lưu</p>
+					<p class="text-base">Chọn tổ chức mà bạn muốn khôi phục sao lưu</p>
 					<SiteRestoreSelector
 						:sites="
 							$resources.sites.data.filter(site => site.name !== this.site.name)
@@ -29,8 +29,8 @@
 						<p class="text-base">
 							Bạn có chắc chắn muốn khôi phục sao lưu từ
 							<b>{{ site?.name }}</b> được thực hiện vào
-							<b>{{ formatDate(backupToRestore.creation) }}</b> đến trang web
-							của bạn <b>{{ selectedSite.name }}</b
+							<b>{{ formatDate(backupToRestore.creation) }}</b> đến tổ chức của
+							bạn <b>{{ selectedSite.name }}</b
 							>?
 						</p>
 					</div>
@@ -229,7 +229,7 @@ export default {
 							}
 						},
 						{
-							label: `Cấu hình trang web (${this.formatBytes(
+							label: `Cấu hình tổ chức (${this.formatBytes(
 								backup.config_file_size || 0
 							)})`,
 							condition: () => backup.config_file_size,
@@ -254,7 +254,7 @@ export default {
 								this.$confirm({
 									title: 'Khôi phục sao lưu',
 									// prettier-ignore
-									message: `Bạn có chắc chắn muốn khôi phục trang web của bạn đến <b>${this.formatDate(backup.creation)}</b> không?`,
+									message: `Bạn có chắc chắn muốn khôi phục tổ chức của bạn đến <b>${this.formatDate(backup.creation)}</b> không?`,
 									actionLabel: 'Khôi phục',
 									action: closeDialog => {
 										closeDialog();
@@ -264,7 +264,7 @@ export default {
 							}
 						},
 						{
-							label: 'Khôi phục sao lưu trên trang web khác',
+							label: 'Khôi phục sao lưu trên tổ chức khác',
 							onClick: () => {
 								this.showRestoreOnAnotherSiteDialog = true;
 								this.backupToRestore = backup;

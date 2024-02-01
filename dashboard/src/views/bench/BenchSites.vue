@@ -2,7 +2,7 @@
 	<div class="space-y-8">
 		<Table
 			:columns="[
-				{ label: 'Tên trang web', name: 'name', width: 2 },
+				{ label: 'Tên tổ chức', name: 'name', width: 2 },
 				{ label: 'Trạng thái', name: 'status' },
 				{ label: 'Khu vực', name: 'region' },
 				{ label: 'Thẻ', name: 'tags' },
@@ -16,7 +16,7 @@
 			<div class="flex items-center justify-center">
 				<LoadingText class="mt-8" v-if="$resources.versions.loading" />
 				<div v-else-if="rows.length === 0" class="mt-8">
-					<div class="text-base text-gray-700">Không có trang web</div>
+					<div class="text-base text-gray-700">Không có tổ chức</div>
 				</div>
 			</div>
 			<div
@@ -63,7 +63,7 @@
 					v-if="!group.sites?.length"
 					class="flex items-center justify-center border-b py-4.5"
 				>
-					<div class="text-base text-gray-600">Không có trang web</div>
+					<div class="text-base text-gray-600">Không có tổ chức</div>
 				</div>
 				<TableRow
 					v-for="(row, index) in group.sites"
@@ -333,8 +333,8 @@ export default {
 				url: 'press.api.bench.update',
 				onSuccess() {
 					notify({
-						title: 'Lên lịch cập nhật trang web thành công',
-						message: `Tất cả các trang web trong ${
+						title: 'Lên lịch cập nhật tổ chức thành công',
+						message: `Tất cả các tổ chức trong ${
 							this.versions[this.selectedVersionIndex]?.name
 						} sẽ được cập nhật lên phiên bản mới nhất`,
 						icon: 'check',
@@ -356,7 +356,7 @@ export default {
 		dropdownItems(site) {
 			return [
 				{
-					label: 'Truy cập trang web',
+					label: 'Truy cập tổ chức',
 					onClick: () => {
 						window.open(`https://${site.name}`, '_blank');
 					}
@@ -410,7 +410,7 @@ export default {
 					condition: () => this.versions[i].status === 'Active'
 				},
 				{
-					label: 'Cập nhật tất cả các trang web',
+					label: 'Cập nhật tất cả các tổ chức',
 					onClick: () => {
 						this.$resources.updateAllSites.submit({
 							name: this.versions[i]?.name

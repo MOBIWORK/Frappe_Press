@@ -1,8 +1,5 @@
 <template>
-	<Dialog
-		:options="{ title: 'Thêm thẻ để tạo trang web' }"
-		v-model="showDialog"
-	>
+	<Dialog :options="{ title: 'Thêm thẻ để tạo tổ chức' }" v-model="showDialog">
 		<template v-slot:body-content>
 			<StripeCard
 				class="mb-1"

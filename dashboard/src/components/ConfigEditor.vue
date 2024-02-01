@@ -1,5 +1,5 @@
 <template>
-	<Card :title="title || 'Cấu hình trang web'">
+	<Card :title="title || 'Cấu hình tổ chức'">
 		<template #actions>
 			<Button
 				class="mr-2"

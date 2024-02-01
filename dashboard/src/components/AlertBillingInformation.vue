@@ -75,7 +75,7 @@ export default {
 			if (this.$account.team.billing_address) {
 				return 'Số dư tài khoản của bạn đã hết. Vui lòng nạp thêm tiền vào tài khoản của bạn để tiếp tục sử dụng dịch vụ.';
 			} else {
-				return 'Bạn chưa xác nhận thông tin thanh toán của mình. Thêm nó để bắt đầu tạo trang web.';
+				return 'Bạn chưa xác nhận thông tin thanh toán của mình. Thêm nó để bắt đầu tạo tổ chức.';
 			}
 		}
 	}

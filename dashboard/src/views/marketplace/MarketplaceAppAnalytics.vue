@@ -191,7 +191,7 @@ export default {
 							(total_installs == 1 ? 'Site' : 'Sites')
 					},
 					{
-						title: 'Các trang web hoạt động với ứng dụng này',
+						title: 'Các tổ chức hoạt động với ứng dụng này',
 						value:
 							num_installs_active_sites.toString() +
 							' ' +

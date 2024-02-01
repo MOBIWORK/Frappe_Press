@@ -7,7 +7,7 @@
 			<div v-if="!this.privateBench">
 				<h2 class="text-lg font-semibold">Chọn phiên bản Frappe</h2>
 				<p class="text-base text-gray-700">
-					Chọn phiên bản Frappe cho trang web của bạn
+					Chọn phiên bản Frappe cho tổ chức của bạn
 				</p>
 				<div class="mt-4">
 					<FormControl
@@ -20,7 +20,7 @@
 			<div v-if="regionOptions.length > 0">
 				<h2 class="text-lg font-semibold">Chọn khu vực</h2>
 				<p class="text-base text-gray-700">
-					Chọn khu vực trung tâm dữ liệu nơi trang web của bạn sẽ được tạo
+					Chọn khu vực trung tâm dữ liệu nơi tổ chức của bạn sẽ được tạo
 				</p>
 				<div class="mt-4">
 					<RichSelect
@@ -35,8 +35,8 @@
 			>
 				<h2 class="text-lg font-semibold">Chọn ứng dụng cài đặt</h2>
 				<p class="text-base text-gray-700">
-					Chọn các ứng dụng để cài đặt trên trang web của bạn. Bạn có thể chọn
-					các ứng dụng được xuất bản trên thị trường hoặc các ứng dụng riêng của
+					Chọn các ứng dụng để cài đặt trên tổ chức của bạn. Bạn có thể chọn các
+					ứng dụng được xuất bản trên thị trường hoặc các ứng dụng riêng của
 					bạn.
 				</p>
 				<div class="mt-4 space-y-4">

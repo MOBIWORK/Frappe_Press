@@ -3,7 +3,7 @@
 		<Card
 			v-if="profileData && profileData.profile_created"
 			title="Hồ sơ nhà xuất bản"
-			subtitle="Hiển thị trên trang web marketplace"
+			subtitle="Hiển thị trên tổ chức marketplace"
 		>
 			<div class="divide-y-2">
 				<ListItem

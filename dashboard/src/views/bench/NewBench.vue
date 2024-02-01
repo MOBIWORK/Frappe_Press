@@ -53,8 +53,8 @@
 						Chọn ứng dụng để cài đặt
 					</label>
 					<p class="text-base text-gray-700">
-						Những ứng dụng này sẽ có sẵn cho các trang web trên Bench của bạn.
-						Bạn cũng có thể thêm ứng dụng vào Bench của bạn sau này.
+						Những ứng dụng này sẽ có sẵn cho các tổ chức trên Bench của bạn. Bạn
+						cũng có thể thêm ứng dụng vào Bench của bạn sau này.
 					</p>
 					<div class="mt-4">
 						<AppSourceSelector

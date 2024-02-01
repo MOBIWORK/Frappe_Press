@@ -45,11 +45,11 @@ const siteMigrationText = computed(() => {
 	const status = props.site?.site_migration.status;
 
 	if (status === 'Running') {
-		return 'Công việc di chuyển trang web của bạn đang trong quá trình tiến hành';
+		return 'Công việc di chuyển tổ chức của bạn đang trong quá trình tiến hành';
 	} else if (status === 'Pending') {
-		return 'Quá trình di chuyển trang web của bạn sẽ bắt đầu trong thời gian ngắn';
+		return 'Quá trình di chuyển tổ chức của bạn sẽ bắt đầu trong thời gian ngắn';
 	} else if (status === 'Scheduled') {
-		return `Quá trình di chuyển trang web của bạn đã được lên lịch để diễn ra ${utils.methods.formatDate(
+		return `Quá trình di chuyển tổ chức của bạn đã được lên lịch để diễn ra ${utils.methods.formatDate(
 			props.site?.site_migration.scheduled_time,
 			'relative'
 		)}.`;
@@ -60,11 +60,11 @@ const siteVersionUpgradeText = computed(() => {
 	const status = props.site?.version_upgrade.status;
 
 	if (status === 'Running') {
-		return 'Quá trình nâng cấp phiên bản trang web của bạn đang trong quá trình tiến hành';
+		return 'Quá trình nâng cấp phiên bản tổ chức của bạn đang trong quá trình tiến hành';
 	} else if (status === 'Pending') {
-		return 'Quá trình nâng cấp phiên bản trang web của bạn sẽ bắt đầu trong thời gian ngắn';
+		return 'Quá trình nâng cấp phiên bản tổ chức của bạn sẽ bắt đầu trong thời gian ngắn';
 	} else if (status === 'Scheduled') {
-		return `Quá trình nâng cấp phiên bản trang web của bạn đã được lên lịch để diễn ra ${utils.methods.formatDate(
+		return `Quá trình nâng cấp phiên bản tổ chức của bạn đã được lên lịch để diễn ra ${utils.methods.formatDate(
 			props.site?.version_upgrade.scheduled_time,
 			'relative'
 		)}.`;
@@ -113,7 +113,7 @@ const marketplacePromotionalBanners = createResource({
 		</div>
 		<Alert title="Thử nghiệm" v-if="isInTrial && $account.hasBillingInfo">
 			Thời gian thử nghiệm của bạn sẽ kết thúc vào {{ trialEndsText }}, sau đó
-			trang web của bạn sẽ bị tạm ngừng. Thêm thông tin thanh toán của bạn để
+			tổ chức của bạn sẽ bị tạm ngừng. Thêm thông tin thanh toán của bạn để
 			tránh tình trạng tạm ngừng.
 
 			<template #actions>
@@ -128,7 +128,7 @@ const marketplacePromotionalBanners = createResource({
 		</Alert>
 		<Alert title="Thử nghiệm" v-if="isInTrial && $account.hasBillingInfo">
 			Thời gian thử nghiệm của bạn sẽ kết thúc vào {{ trialEndsText }}, sau đó
-			trang web của bạn sẽ bị tạm ngừng. Chọn một gói để tránh tình trạng tạm
+			tổ chức của bạn sẽ bị tạm ngừng. Chọn một gói để tránh tình trạng tạm
 			ngừng.
 
 			<template #actions>
@@ -142,15 +142,15 @@ const marketplacePromotionalBanners = createResource({
 			</template>
 		</Alert>
 		<Alert title="Yêu cầu chú ý" v-if="limitExceeded">
-			Trang web của bạn đã vượt quá sử dụng được phép cho gói của bạn. Nâng cấp
+			Tổ chức của bạn đã vượt quá sử dụng được phép cho gói của bạn. Nâng cấp
 			gói ngay bây giờ.
 		</Alert>
 		<Alert title="Yêu cầu chú ý" v-else-if="closeToLimits">
-			Trang web của bạn đã vượt quá 80% sử dụng được phép cho gói của bạn. Nâng
+			Tổ chức của bạn đã vượt quá 80% sử dụng được phép cho gói của bạn. Nâng
 			cấp gói ngay bây giờ.
 		</Alert>
 
-		<Alert title="Di chuyển trang web" v-if="site?.site_migration">
+		<Alert title="Di chuyển tổ chức" v-if="site?.site_migration">
 			{{ siteMigrationText }}
 			<template #actions>
 				<Button

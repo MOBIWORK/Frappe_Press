@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<div v-if="!$resources.getSiteAutoUpdateInfo.loading && !autoUpdateEnabled">
-			<Alert title="Cập nhật tự động đã bị tắt cho trang web này.">
+			<Alert title="Cập nhật tự động đã bị tắt cho tổ chức này.">
 				<template #actions>
 					<Button
 						variant="solid"
@@ -92,7 +92,7 @@
 					v-if="!$resources.getSiteAutoUpdateInfo.loading && !autoUpdateEnabled"
 				>
 					<h3 class="text-sm text-gray-800">
-						Cập nhật tự động đã bị tắt cho trang web này.
+						Cập nhật tự động đã bị tắt cho tổ chức này.
 					</h3>
 					<Button
 						class="mt-3"

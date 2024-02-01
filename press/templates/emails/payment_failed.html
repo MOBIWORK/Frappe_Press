@@ -11,9 +11,8 @@
 		</p>
 		{%- if card_not_added -%}
 		<p class="mb-6">
-			Bạn chưa cập nhận thông tin thành toán. Trang web của bạn sẽ sẽ bị tạm
-			dừng cho đến khi bạn cập nhật chi tiết thành toán trong tài khoản của
-			mình.
+			Bạn chưa cập nhận thông tin thành toán. Tổ chức của bạn sẽ sẽ bị tạm dừng
+			cho đến khi bạn cập nhật chi tiết thành toán trong tài khoản của mình.
 		</p>
 		{{ utils.button('Update Billing Settings', account_update_link) }} {%- else
 		-%}
@@ -24,7 +23,7 @@
 		</p>
 		{{ utils.button('Thanh toán ngay', payment_link) }} {%- endif -%} {%- if
 		sites -%} {{ utils.separator() }}
-		<p class="mt-0 mb-2">Các trang web sau đã bị tạm dừng:</p>
+		<p class="mt-0 mb-2">Các tổ chức sau đã bị tạm dừng:</p>
 		<ul class="list-disc">
 			{%- for site in sites -%}
 			<li class="text-sm font-medium">{{ site }}</li>

@@ -48,10 +48,10 @@ def suspend_sites_and_send_email(team):
         email = team.user
         frappe.sendmail(
             recipients=email,
-            subject="[MBWCloud] - Các trang web của bạn đã bị tạm dừng trên MBW Cloud",
+            subject="[MBWCloud] - Các tổ chức của bạn đã bị tạm dừng trên MBW Cloud",
             template="unpaid_invoices",
             args={
-                "subject": "Các trang web của bạn đã bị tạm dừng trên Frappe Cloud",
+                "subject": "Các tổ chức của bạn đã bị tạm dừng trên Frappe Cloud",
                 "sites": sites,
             },
         )

@@ -1,7 +1,7 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Di chuyển trang web sang bench khác',
+			title: 'Di chuyển tổ chức sang bench khác',
 			actions: [
 				{
 					label: 'Xác nhận',
@@ -36,7 +36,7 @@
 				v-model="targetGroup"
 			/>
 			<p v-else class="text-md text-base text-gray-800">
-				Không có bench khác mà bạn sở hữu cho trang web này để di chuyển đến.
+				Không có bench khác mà bạn sở hữu cho tổ chức này để di chuyển đến.
 			</p>
 			<ErrorMessage class="mt-3" :message="$resources.changeGroup.error" />
 		</template>
@@ -85,7 +85,7 @@ export default {
 
 					notify({
 						title: 'Thay bench đã Được lên lịch',
-						message: `Trang web đã được lên lịch để được di chuyển đến <b>${destinationGroupTitle}</b>`,
+						message: `Tổ chức đã được lên lịch để được di chuyển đến <b>${destinationGroupTitle}</b>`,
 						color: 'green',
 						icon: 'check'
 					});

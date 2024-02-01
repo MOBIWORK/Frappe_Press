@@ -38,7 +38,7 @@
 				title:
 					step == 'Apps'
 						? 'Chọn các ứng dụng bạn muốn cập nhật'
-						: 'Chọn các trang web bạn muốn cập nhật'
+						: 'Chọn các tổ chức bạn muốn cập nhật'
 			}"
 			v-model="showDeployDialog"
 		>

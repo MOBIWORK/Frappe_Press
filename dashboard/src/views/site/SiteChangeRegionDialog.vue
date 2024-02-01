@@ -16,7 +16,7 @@
 				class="text-base text-gray-600"
 			>
 				Bạn chỉ có một khu vực khả dụng. Thêm nhiều khu vực khác từ cài đặt
-				bench hiện tại để thay đổi khu vực của trang web này.
+				bench hiện tại để thay đổi khu vực của tổ chức này.
 			</p>
 			<div v-else>
 				<RichSelect
@@ -33,7 +33,7 @@
 				<FormControl
 					class="mt-4"
 					v-if="$resources.changeRegionOptions.data?.regions?.length > 0"
-					label="Lên lịch migrate trang web (IST)"
+					label="Lên lịch migrate tổ chức (IST)"
 					type="datetime-local"
 					:min="new Date().toISOString().slice(0, 16)"
 					v-model="targetDateTime"
@@ -124,7 +124,7 @@ export default {
 						this.$resources.changeRegionOptions.data.current_region ===
 						this.selectedRegion
 					)
-						return 'Trang web đã ở trong khu vực này rồi';
+						return 'Tổ chức đã ở trong khu vực này rồi';
 				},
 				onSuccess() {
 					const regionName =
@@ -134,7 +134,7 @@ export default {
 
 					notify({
 						title: 'Lên lịch thay đổi khu vực',
-						message: `Trang web <b>${this.site?.hostname}</b> đã được lên lịch để được di chuyển đến <b>${regionName}</b>`,
+						message: `Tổ chức <b>${this.site?.hostname}</b> đã được lên lịch để được di chuyển đến <b>${regionName}</b>`,
 						color: 'green',
 						icon: 'check'
 					});

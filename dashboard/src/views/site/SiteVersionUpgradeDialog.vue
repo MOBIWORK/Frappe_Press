@@ -2,17 +2,17 @@
 	<Dialog
 		v-model="show"
 		@close="resetValues"
-		:options="{ title: 'Nâng cấp phiên bản trang web' }"
+		:options="{ title: 'Nâng cấp phiên bản tổ chức' }"
 	>
 		<template #body-content>
 			<div class="space-y-4">
 				<p v-if="site?.is_public && nextVersion" class="text-base">
-					Trang web <b>{{ site.host_name }}</b> sẽ được nâng cấp lên
+					Tổ chức <b>{{ site.host_name }}</b> sẽ được nâng cấp lên
 					<b>{{ nextVersion }}</b>
 				</p>
 				<FormControl
 					v-else-if="privateReleaseGroups.length > 0 && nextVersion"
-					:label="`Vui lòng chọn một bench ${nextVersion} để nâng cấp trang web từ ${site.frappe_version}`"
+					:label="`Vui lòng chọn một bench ${nextVersion} để nâng cấp tổ chức từ ${site.frappe_version}`"
 					class="w-full"
 					type="select"
 					:options="privateReleaseGroups"
@@ -28,7 +28,7 @@
 				<FormControl
 					class="mt-4"
 					v-if="(site.is_public && nextVersion) || benchHasCommonServer"
-					label="Lên lịch di chuyển trang web"
+					label="Lên lịch di chuyển tổ chức"
 					type="datetime-local"
 					:min="new Date().toISOString().slice(0, 16)"
 					v-model="targetDateTime"
@@ -115,15 +115,15 @@ export default {
 		},
 		message() {
 			if (this.site.frappe_version === this.site.latest_frappe_version) {
-				return 'Trang web này đã ở trên phiên bản mới nhất.';
+				return 'Tổ chức này đã ở phiên bản mới nhất.';
 			} else if (!this.privateReleaseGroup) {
 				return '';
 			} else if (!this.site.is_public && !this.privateReleaseGroups.length)
-				return `Nhóm của bạn không sở hữu bất kỳ bench riêng nào có sẵn để nâng cấp trang web này lên ${this.nextVersion}.`;
+				return `Nhóm của bạn không sở hữu bất kỳ bench riêng nào có sẵn để nâng cấp tổ chức này lên ${this.nextVersion}.`;
 			else if (!this.site.is_public && !this.benchHasCommonServer)
-				return `Bench đã chọn và trang web của bạn không có server chung. Vui lòng thêm server của trang web vào bench.`;
+				return `Bench đã chọn và tổ chức của bạn không có server chung. Vui lòng thêm server của tổ chức vào bench.`;
 			else if (!this.site.is_public && this.benchHasCommonServer)
-				return `Bench đã chọn và trang web của bạn có server chung. Bạn có thể tiếp tục với việc nâng cấp lên ${this.nextVersion}.`;
+				return `Bench đã chọn và tổ chức của bạn có server chung. Bạn có thể tiếp tục với việc nâng cấp lên ${this.nextVersion}.`;
 			else return '';
 		},
 		datetimeInIST() {
@@ -146,8 +146,8 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: 'Nâng cấp phiên bản trang web',
-						message: `Lên lịch nâng cấp trang web cho <b>${this.site?.host_name}</b> đến <b>${this.nextVersion}</b>`,
+						title: 'Nâng cấp phiên bản tổ chức',
+						message: `Lên lịch nâng cấp tổ chức cho <b>${this.site?.host_name}</b> đến <b>${this.nextVersion}</b>`,
 						icon: 'check',
 						color: 'green'
 					});

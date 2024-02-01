@@ -13,15 +13,14 @@
 				<div>
 					<p class="text-base">
 						Truy cập database không khả dụng trên gói dịch vụ hiện tại của bạn.
-						Vui lòng nâng cấp gói dịch vụ để truy cập database trang web của
-						bạn.
+						Vui lòng nâng cấp gói dịch vụ để truy cập database tổ chức của bạn.
 					</p>
 
 					<Button
 						class="mt-4 w-full"
 						variant="solid"
 						@click="showChangePlanDialog = true"
-						>Nâng cấp gói dịch vụ trang web</Button
+						>Nâng cấp gói dịch vụ tổ chức</Button
 					>
 				</div>
 
@@ -98,7 +97,7 @@
 					</div>
 					<div v-else>
 						<p class="mb-2 text-sm">
-							Truy cập bảng điều khiển database đã bị tắt cho trang web này.
+							Truy cập bảng điều khiển database đã bị tắt cho tổ chức này.
 						</p>
 					</div>
 				</div>

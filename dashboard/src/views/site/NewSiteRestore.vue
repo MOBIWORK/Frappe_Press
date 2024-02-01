@@ -1,17 +1,17 @@
 <template>
 	<div>
 		<label class="text-lg font-semibold">
-			Khôi phục một trang web hiện tại
+			Khôi phục một tổ chức hiện tại
 		</label>
 		<p class="text-base text-gray-700">
-			Khôi phục một trang web hiện tại từ tệp sao lưu hoặc trực tiếp từ URL của
-			trang web.
+			Khôi phục một tổ chức hiện tại từ tệp sao lưu hoặc trực tiếp từ URL của tổ
+			chức.
 		</p>
 		<div class="mt-4 grid grid-cols-2 gap-6">
 			<Button
 				v-for="tab in [
 					{ name: 'Tải lên tệp sao lưu', key: 'backup' },
-					{ name: 'Chuyển đổi từ URL trang web', key: 'siteUrl' }
+					{ name: 'Chuyển đổi từ URL tổ chức', key: 'siteUrl' }
 				]"
 				:key="tab.key"
 				:type="restoreFrom === tab.key ? 'primary' : 'secondary'"
@@ -25,7 +25,7 @@
 				class="mt-6 rounded-md border border-gray-300 px-4 py-3 text-sm text-gray-700"
 			>
 				<ol class="list-decimal pl-4">
-					<li>Đăng nhập vào trang web của bạn.</li>
+					<li>Đăng nhập vào tổ chức của bạn.</li>
 					<li>Từ trang Tải về Bản sao lưu, tải xuống bản sao lưu mới nhất.</li>
 					<li>
 						Để có bản sao lưu tệp, nhấp vào Tải về Bản sao lưu Tệp. Điều này sẽ
@@ -38,7 +38,7 @@
 				</ol>
 			</div>
 			<Alert class="mt-5 w-full" v-if="manualMigration">
-				Dường như trang web của bạn lớn. Hãy mở một phiếu hỗ trợ và cho biết bạn
+				Dường như tổ chức của bạn lớn. Hãy mở một phiếu hỗ trợ và cho biết bạn
 				muốn khôi phục một bản sao lưu và kích thước của nó, chúng tôi sẽ xử lý
 				từ đó.
 			</Alert>
@@ -54,7 +54,7 @@
 					class="rounded-md border border-gray-300 px-4 py-3 text-sm text-gray-700"
 				>
 					<ol class="list-decimal pl-4">
-						<li>Đăng nhập vào trang web của bạn và hoàn tất đạo cụ cài đặt.</li>
+						<li>Đăng nhập vào tổ chức của bạn và hoàn tất đạo cụ cài đặt.</li>
 						<li>Từ trang Tải Bản sao lưu, nhấp vào Tải về Bản sao lưu Tệp.</li>
 						<li>
 							Điều này sẽ tạo ra một bản sao lưu tệp mới và bạn sẽ nhận được một
@@ -69,15 +69,15 @@
 						errorContains('Your site exceeds the limits for this operation')
 					"
 				>
-					Dường như trang web của bạn lớn. Hãy mở một phiếu hỗ trợ và cho biết
-					bạn muốn khôi phục một bản sao lưu và kích thước của nó, chúng tôi sẽ
-					xử lý từ đó.
+					Dường như tổ chức của bạn lớn. Hãy mở một phiếu hỗ trợ và cho biết bạn
+					muốn khôi phục một bản sao lưu và kích thước của nó, chúng tôi sẽ xử
+					lý từ đó.
 				</Alert>
 				<Form
 					class="mt-6"
 					:fields="[
 						{
-							label: 'URL trang web',
+							label: 'URL tổ chức',
 							fieldtype: 'Data',
 							fieldname: 'url'
 						},

@@ -16,7 +16,7 @@
 	>
 		<template v-slot:body-content>
 			<p class="text-base">
-				Bạn có chắc chắn muốn xóa bỏ bench này không? Tất cả các trang web trên
+				Bạn có chắc chắn muốn xóa bỏ bench này không? Tất cả các tổ chức trên
 				bench này nên được xóa bỏ thủ công trước khi xóa bench. Hành động này
 				không thể được hoàn tác.
 			</p>

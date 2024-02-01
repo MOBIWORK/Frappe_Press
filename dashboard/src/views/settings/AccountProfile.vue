@@ -124,8 +124,8 @@
 					<ul>
 						<li>Tài khoản của bạn sẽ bị vô hiệu hóa</li>
 						<li>
-							Các trang web đang hoạt động của bạn sẽ bị đình chỉ ngay lập tức
-							và sẽ bị xóa sau một tuần.
+							Các tổ chức đang hoạt động của bạn sẽ bị đình chỉ ngay lập tức và
+							sẽ bị xóa sau một tuần.
 						</li>
 						<li>Việc thanh toán tài khoản của bạn sẽ bị ngừng</li>
 					</ul>
@@ -155,7 +155,7 @@
 					Xác nhận hành động này:
 					<ul>
 						<li>Tài khoản của bạn sẽ được kích hoạt</li>
-						<li>Các trang web bị đình chỉ của bạn sẽ hoạt động</li>
+						<li>Các tổ chức bị đình chỉ của bạn sẽ hoạt động</li>
 						<li>Việc lập hóa đơn cho tài khoản của bạn sẽ được tiếp tục</li>
 					</ul>
 					Bạn có muốn tiếp tục không?

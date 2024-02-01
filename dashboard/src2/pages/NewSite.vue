@@ -3,8 +3,8 @@
 		<Header>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Trang web', route: '/sites' },
-					{ label: 'Trang web mới', route: '/sites/new' }
+					{ label: 'Tổ chức', route: '/sites' },
+					{ label: 'Tổ chức mới', route: '/sites/new' }
 				]"
 			/>
 		</Header>
@@ -275,7 +275,7 @@ export default {
 					// 	(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo trang web';
+						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo tổ chức';
 					}
 
 					// if (!canCreate) {
