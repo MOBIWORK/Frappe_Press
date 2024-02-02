@@ -361,15 +361,15 @@ export default {
 						);
 					}
 				},
-				// {
-				// 	label: 'Quản lý Bench',
-				// 	icon: 'tool',
-				// 	route: `/benches/${this.site?.group}`,
-				// 	condition: () => this.site?.group,
-				// 	onClick: () => {
-				// 		this.$router.push(`/benches/${this.site?.group}`);
-				// 	}
-				// },
+				{
+					label: 'Quản lý Bench',
+					icon: 'tool',
+					route: `/benches/${this.site?.group}`,
+					condition: () => this.site?.group,
+					onClick: () => {
+						this.$router.push(`/benches/${this.site?.group}`);
+					}
+				},
 				{
 					label: 'Đăng nhập với tư cách Quản trị viên',
 					icon: 'external-link',
@@ -399,40 +399,40 @@ export default {
 						});
 					}
 				},
-				// {
-				// 	label: 'Chuyển giao tổ chức',
-				// 	icon: 'tool',
-				// 	loading: this.$resources.transferSite.loading,
-				// 	condition: () =>
-				// 		this.site?.status === 'Active' && !this.$account.parent_team,
-				// 	onClick: () => {
-				// 		this.showTransferSiteDialog = true;
-				// 	}
-				// },
-				// {
-				// 	label: 'Thay đổi Bench',
-				// 	icon: 'package',
-				// 	condition: () => this.site?.status === 'Active',
-				// 	onClick: () => (this.showChangeGroupDialog = true)
-				// },
-				// {
-				// 	label: 'Thay đổi khu vực',
-				// 	icon: 'globe',
-				// 	condition: () => this.site?.status === 'Active',
-				// 	onClick: () => (this.showChangeRegionDialog = true)
-				// },
+				{
+					label: 'Chuyển giao tổ chức',
+					icon: 'tool',
+					loading: this.$resources.transferSite.loading,
+					condition: () =>
+						this.site?.status === 'Active' && !this.$account.parent_team,
+					onClick: () => {
+						this.showTransferSiteDialog = true;
+					}
+				},
+				{
+					label: 'Thay đổi Bench',
+					icon: 'package',
+					condition: () => this.site?.status === 'Active',
+					onClick: () => (this.showChangeGroupDialog = true)
+				},
+				{
+					label: 'Thay đổi khu vực',
+					icon: 'globe',
+					condition: () => this.site?.status === 'Active',
+					onClick: () => (this.showChangeRegionDialog = true)
+				},
 				{
 					label: 'Nâng cấp phiên bản',
 					icon: 'arrow-up',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showVersionUpgradeDialog = true)
+				},
+				{
+					label: 'Thay đổi Server',
+					icon: 'server',
+					condition: () => this.site?.status === 'Active',
+					onClick: () => (this.showChangeServerDialog = true)
 				}
-				// {
-				// 	label: 'Thay đổi Server',
-				// 	icon: 'server',
-				// 	condition: () => this.site?.status === 'Active',
-				// 	onClick: () => (this.showChangeServerDialog = true)
-				// }
 			];
 		},
 
