@@ -40,25 +40,7 @@ export default {
 	},
 	watch: {
 		pointPlanSite(value) {
-			if (
-				this.plans &&
-				!this.userSelect &&
-				value != null &&
-				value != undefined
-			) {
-				let newSelectedPlan = null;
-				for (let plan of this.plans) {
-					if (value >= plan.num_of_empl_from && value <= plan.num_of_empl_to) {
-						newSelectedPlan = plan;
-						break;
-					}
-				}
-				if (this.plans && !newSelectedPlan) {
-					newSelectedPlan = this.plans[0];
-				}
-
-				this.$emit('update:selectedPlan', newSelectedPlan);
-			}
+			this.updatePlan(value);
 		}
 	},
 	resources: {
@@ -74,8 +56,32 @@ export default {
 						plan.disabled = !this.$account.hasBillingInfo;
 						return plan;
 					});
+					this.updatePlan(this.pointPlanSite);
 				}
 			};
+		}
+	},
+	methods: {
+		updatePlan(value) {
+			if (
+				!this.selectedPlan &&
+				this.plans &&
+				!this.userSelect &&
+				value != null &&
+				value != undefined
+			) {
+				let newSelectedPlan = null;
+				for (let plan of this.plans) {
+					if (value >= plan.num_of_empl_from && value <= plan.num_of_empl_to) {
+						newSelectedPlan = plan;
+						break;
+					}
+				}
+				if (this.plans && !newSelectedPlan) {
+					newSelectedPlan = this.plans[0];
+				}
+				this.$emit('update:selectedPlan', newSelectedPlan);
+			}
 		}
 	}
 };

@@ -223,7 +223,8 @@ export default {
 			agreedToRegionConsent: false,
 			selectedAppPlans: {},
 			appPlans: [],
-			loadingPlans: false
+			loadingPlans: false,
+			infoBench: null
 		};
 	},
 	async mounted() {
@@ -244,6 +245,7 @@ export default {
 					name: this.bench
 				}
 			);
+			this.infoBench = { title, creation, team };
 			this.benchName = this.bench;
 			this.benchTitle = title;
 			this.benchTeam = team;
@@ -251,6 +253,10 @@ export default {
 				// Select a zero cost plan and remove the plan selection step
 				this.selectedPlan = { name: 'Unlimited' };
 				let plan_step_index = this.steps.findIndex(step => step.name == 'Plan');
+				this.steps.splice(plan_step_index, 1);
+				plan_step_index = this.steps.findIndex(
+					step => step.name == 'Summary Invoice'
+				);
 				this.steps.splice(plan_step_index, 1);
 			}
 		}
@@ -286,7 +292,7 @@ export default {
 					let { site, job = '' } = data;
 					this.$router.push(`/sites/${site}/jobs/${job}`);
 				},
-				validate() {
+				async validate() {
 					let canCreate =
 						this.subdomainValid &&
 						this.selectedApps.length > 0 &&
@@ -297,12 +303,14 @@ export default {
 						return 'Vui lòng đồng ý với chính sách của MBW để tạo tổ chức';
 					}
 
-					// kiem tra so du
-					if (
-						this.totalBilling >
-						this.$resources.upcomingInvoice.data?.available_balances
-					) {
-						return 'Số dư tài khoản không đủ để tạo tổ chức';
+					if (!this.infoBench) {
+						// kiem tra so du
+						if (
+							this.totalBilling >
+							this.$resources.upcomingInvoice.data?.available_balances
+						) {
+							return 'Số dư tài khoản không đủ để tạo tổ chức';
+						}
 					}
 
 					if (!canCreate) {
@@ -383,8 +391,7 @@ export default {
 			this.appsDefault.forEach(app => {
 				trongSoApp[app.app] = app.trong_so || 0;
 			});
-			let newPoind = this.billingDetails.number_of_employees;
-
+			let newPoind = this.billingDetails.number_of_employees || 0;
 			this.selectedApps.forEach(el => {
 				newPoind *= trongSoApp[el] || 0;
 			});

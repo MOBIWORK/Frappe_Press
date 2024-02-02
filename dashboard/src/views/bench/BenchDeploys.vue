@@ -160,7 +160,7 @@ export default {
 					action: {
 						render() {
 							return h(
-								'Liên kết',
+								'Link',
 								{
 									props: { to: `/benches/${bench?.name}/jobs/${job.name}` },
 									class: 'text-sm'

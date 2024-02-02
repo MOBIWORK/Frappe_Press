@@ -167,7 +167,8 @@ def validate_balance_account(site):
 def _new(site, server: str = None, ignore_plan_validation: bool = False):
     team = get_current_team(get_doc=True)
 
-    validate_balance_account(site)
+    if site.get('plan') != 'Unlimited':
+        validate_balance_account(site)
 
     if not team.enabled:
         frappe.throw(
@@ -661,7 +662,7 @@ def get_new_site_options(group: str = None):
         apps.update([source.app for source in app_sources])
 
     if not apps or len(apps) < 0:
-        apps.update(["*1*", "*2*"])
+        apps.update(["#1#", "#2#"])
 
     marketplace_apps = frappe.db.get_all(
         "Marketplace App",
@@ -671,11 +672,14 @@ def get_new_site_options(group: str = None):
 
     marketplace_apps_feature = []
     if doc_team:
-        address_detail = frappe.get_doc('Address', doc_team.billing_address)
+        address_detail = None
+        if doc_team.billing_address:
+            address_detail = frappe.get_doc(
+                'Address', doc_team.billing_address)
         concerns_feature = []
         if address_detail and address_detail.concerns_feature:
             concerns_feature = tuple(
-                address_detail.concerns_feature.split(';') + ["*1*", "*2*"])
+                address_detail.concerns_feature.split(';') + ["#1#", "#2#"])
             str_query = f"""
                 SELECT
                     marketplace.title,
@@ -1387,7 +1391,6 @@ def exists(subdomain, domain):
 @frappe.whitelist()
 @protected("Site")
 def setup_wizard_complete(name):
-    print('===1===')
     return frappe.get_doc("Site", name).is_setup_wizard_complete()
 
 

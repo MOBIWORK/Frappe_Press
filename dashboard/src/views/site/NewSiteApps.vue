@@ -262,7 +262,7 @@ export default {
 		selectedVersion(value) {
 			if (!this.privateBench) {
 				let selectedVersion = this.versions.find(v => v.name == value);
-				this.$emit('update:selectedGroup', selectedVersion?.group.name);
+				this.$emit('update:selectedGroup', selectedVersion?.group?.name);
 			}
 		},
 		selectedGroup() {
@@ -291,7 +291,7 @@ export default {
 			let selectedVersion = this.versions.find(
 				v => v.name == this.selectedVersion
 			);
-			return selectedVersion.group;
+			return selectedVersion?.group;
 		}
 	},
 	resources: {
@@ -304,7 +304,7 @@ export default {
 				},
 				onSuccess(r) {
 					this.versions = r.versions.filter(v => {
-						return v.group;
+						return v?.group;
 					});
 					this.marketplaceApps = r.marketplace_apps;
 					this.marketplaceAppsFeature = r.marketplace_apps_feature;
@@ -312,7 +312,7 @@ export default {
 					// from mounted
 					if (this.privateBench) {
 						this.selectedVersion = this.versions.filter(
-							v => v.group.name === this.bench
+							v => v?.group.name === this.bench
 						)[0]?.name;
 						this.$emit('update:selectedApps', ['frappe']);
 					} else {
@@ -326,8 +326,8 @@ export default {
 					let selectedVersion = this.versions.find(
 						v => v.name == this.selectedVersion
 					);
-					if (selectedVersion.group) {
-						this.$emit('update:appsDefault', selectedVersion.group.apps);
+					if (selectedVersion?.group) {
+						this.$emit('update:appsDefault', selectedVersion?.group.apps);
 					}
 				}
 			};

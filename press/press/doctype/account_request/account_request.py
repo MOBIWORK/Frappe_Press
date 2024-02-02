@@ -75,7 +75,7 @@ class AccountRequest(Document):
             if self.invited_by and self.role != "Press Admin":
                 subject = """[MBWCloud] - Bạn được {{ invited_by }} mời tham gia MBW Cloud"""
                 template = "invite_team_member"
-        print('================1================')
+
         template_subject = Template(subject)
         subject = template_subject.render({
             "email_customer": self.email,
@@ -93,7 +93,6 @@ class AccountRequest(Document):
                 ),
             }
         )
-        print('================2================')
 
         frappe.sendmail(
             recipients=self.email,
@@ -102,7 +101,6 @@ class AccountRequest(Document):
             args=args,
             now=True,
         )
-        print('================3================')
 
     def get_verification_url(self):
         if self.saas:
