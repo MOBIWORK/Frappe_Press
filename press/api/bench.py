@@ -469,26 +469,30 @@ def versions(name):
     )
 
     Cluster = frappe.qb.DocType("Cluster")
+    lst_cluster_name = [
+        site.cluster for site in sites_in_group_details] + ['###']
     cluster_data = (
         frappe.qb.from_(Cluster)
         .select(Cluster.name, Cluster.title, Cluster.image)
-        .where((Cluster.name.isin([site.cluster for site in sites_in_group_details])))
+        .where((Cluster.name.isin(lst_cluster_name)))
         .run(as_dict=True)
     )
 
     Plan = frappe.qb.DocType("Plan")
+    lst_plan_name = [site.plan for site in sites_in_group_details] + ['###']
     plan_data = (
         frappe.qb.from_(Plan)
-        .select(Plan.name, Plan.plan_title, Plan.price_inr, Plan.price_usd. Plan.price_vnd)
-        .where((Plan.name.isin([site.plan for site in sites_in_group_details])))
+        .select(Plan.name, Plan.plan_title, Plan.price_inr, Plan.price_usd, Plan.price_vnd)
+        .where((Plan.name.isin(lst_plan_name)))
         .run(as_dict=True)
     )
 
     ResourceTag = frappe.qb.DocType("Resource Tag")
+    lst_site_name = [site.name for site in sites_in_group_details] + ['###']
     tag_data = (
         frappe.qb.from_(ResourceTag)
         .select(ResourceTag.tag_name, ResourceTag.parent)
-        .where((ResourceTag.parent.isin([site.name for site in sites_in_group_details])))
+        .where((ResourceTag.parent.isin(lst_site_name)))
         .run(as_dict=True)
     )
 
