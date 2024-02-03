@@ -37,7 +37,7 @@
 					</template>
 				</Card>
 
-				<!-- <Card title="Private Benches" subtitle="Select a bench to install">
+				<Card title="Private Benches" subtitle="Select a bench to install">
 					<ul v-if="options.release_groups?.length" class="space-y-3">
 						<li
 							v-for="bench in options.release_groups"
@@ -56,13 +56,13 @@
 
 					<div v-else>
 						<p class="text-sm text-gray-700">
-							No benches available for install
+							Không có bench có sẵn để cài đặt
 						</p>
 					</div>
 					<template v-slot:actions>
-						<Button variant="solid" route="/benches/new">New Bench</Button>
+						<Button variant="solid" route="/benches/new">Tạo Bench mới</Button>
 					</template>
-				</Card> -->
+				</Card>
 			</div>
 		</div>
 
