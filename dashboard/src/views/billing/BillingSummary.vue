@@ -69,7 +69,7 @@
 							<div class="flex">
 								<div class="mr-1">Số dư khuyến mãi 2</div>
 								<Tooltip
-									text="Đây là khuyến mãi số dư tài khoản không có hạn sử dụng"
+									text="Đây là khuyến mãi số dư tài khoản có hạn sử dụng vĩnh viễn"
 								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"

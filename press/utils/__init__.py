@@ -502,7 +502,10 @@ def check_promotion(team, date_promotion_1=None):
         return False
 
     date_now = frappe.utils.now_datetime()
-    date_2 = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
+    if type(date_promotion_1) == str:
+        date_2 = date_promotion_1 + " 00:00:00"
+    else:
+        date_2 = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
     date_2 = datetime.strptime(date_2, '%Y-%m-%d 00:00:00')
     end_date = date_2 + timedelta(days=number_days_promotion)
 
@@ -528,7 +531,10 @@ def get_date_expire_promotion(team, date_promotion_1=None):
     if not date_promotion_1 or not number_days_promotion or number_days_promotion == 0:
         return None
 
-    date_2 = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
+    if type(date_promotion_1) == str:
+        date_2 = date_promotion_1 + " 00:00:00"
+    else:
+        date_2 = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
     date_2 = datetime.strptime(date_2, '%Y-%m-%d 00:00:00')
     end_date = date_2 + timedelta(days=number_days_promotion-1)
     return end_date

@@ -157,7 +157,7 @@ get_permission_query_conditions = get_permission_query_conditions_for_doctype(
 )
 
 
-def except_for_expired_promotions():
+def handle_for_expired_promotions():
     from datetime import timedelta
 
     number_days_promotion = frappe.db.get_single_value(
@@ -181,7 +181,7 @@ def except_for_expired_promotions():
         doc = frappe.get_doc(
             doctype="Balance Transaction",
             team=tran.get('team'),
-            type="Poromotion",
+            type="Promotion",
             source="Free Credits",
             currency=tran.get('currency'),
             amount=0,

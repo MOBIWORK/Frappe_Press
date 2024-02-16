@@ -127,12 +127,12 @@ export default {
 				url: 'press.api.bench.add_app',
 				onSuccess() {
 					notify({
-						title: 'App added successfully!',
+						title: 'Ứng dụng đã được thêm thành công!',
 						icon: 'check',
 						color: 'green'
 					});
 
-					this.$router.push(`/benches/${this.selectedBench}/overview`);
+					this.$router.push(`/benches/${this.selectedBench}/apps`);
 				}
 			};
 		},
@@ -146,7 +146,7 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: 'App installed successfully!',
+						title: 'Ứng dụng đã được cài đặt thành công!',
 						icon: 'check',
 						color: 'green'
 					});

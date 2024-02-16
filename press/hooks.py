@@ -211,7 +211,7 @@ scheduler_events = {
     ],
     "cron": {
         "0 0 * * *": [
-            "press.press.doctype.balance_transaction.balance_transaction.except_for_expired_promotions",
+            "press.press.doctype.balance_transaction.balance_transaction.handle_for_expired_promotions",
         ],
         "0 4 * * *": [
             "press.press.doctype.site.backups.cleanup_offsite",
