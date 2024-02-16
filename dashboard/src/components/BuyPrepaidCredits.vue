@@ -31,13 +31,13 @@
 								</td>
 							</tr>
 							<tr class="border-b">
-								<td>Số dư khuyến mại 1:</td>
+								<td>Số dư khuyến mãi 1:</td>
 								<td class="py-2 text-right">
 									+ {{ this.$formatMoney(0) }} VND
 								</td>
 							</tr>
 							<tr class="border-b">
-								<td>Số dư khuyến mại 2:</td>
+								<td>Số dư khuyến mãi 2:</td>
 								<td class="py-2 text-right">
 									+ {{ this.$formatMoney(depositBonus) }} VND
 								</td>
@@ -80,7 +80,7 @@
 									Loại chính sách
 								</th>
 								<th class="border-b py-3 pr-2 text-left font-normal">
-									Khuyến mại nạp
+									Khuyến mãi nạp
 								</th>
 								<th class="border-b py-3 pr-2 text-left font-normal">
 									% số tiền tặng
@@ -409,7 +409,7 @@ export default {
 								amount_free = el.maximum_amount;
 							}
 
-							this.textDepositBonus = `Bạn được áp dụng khuyến mại nạp lần đầu. Nạp đạt mốc ${this.$formatMoney(
+							this.textDepositBonus = `Bạn được áp dụng khuyến mãi nạp lần đầu. Nạp đạt mốc ${this.$formatMoney(
 								el.amount_from
 							)} VND để nhận thêm ${this.$formatMoney(amount_free)} VND`;
 

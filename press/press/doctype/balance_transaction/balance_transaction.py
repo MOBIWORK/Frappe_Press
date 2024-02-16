@@ -47,17 +47,18 @@ class BalanceTransaction(Document):
             self.date_promotion_1 = date_promotion_1
 
         # kiem tra da het han khuyen mai 1 chua
-        # neu het han thi reset khuyen mai 1 ve 0
+        # neu het han(False) thi reset khuyen mai 1 ve 0
         val_check_promotion = check_promotion(self.team, self.date_promotion_1)
         if not val_check_promotion:
-            self.amount_promotion_1 = 0
             self.promotion_balance_1 = 0
         # tinh toan lai tat ca so du va cap nhat lai so tien
         if info_last_balance:
             info_last_balance = info_last_balance[0]
             ending_balance = info_last_balance['ending_balance']
-            promotion_balance_1 = info_last_balance['promotion_balance_1'] if val_check_promotion else 0
+            promotion_balance_1 = info_last_balance['promotion_balance_1']
             promotion_balance_2 = info_last_balance['promotion_balance_2']
+            if not val_check_promotion:
+                self.amount_promotion_1 = promotion_balance_1 * -1
             self.ending_balance = ending_balance + self.amount
             self.promotion_balance_1 = promotion_balance_1 + self.amount_promotion_1
             self.promotion_balance_2 = promotion_balance_2 + self.amount_promotion_2
@@ -154,3 +155,39 @@ class BalanceTransaction(Document):
 get_permission_query_conditions = get_permission_query_conditions_for_doctype(
     "Balance Transaction"
 )
+
+
+def except_for_expired_promotions():
+    from datetime import timedelta
+
+    number_days_promotion = frappe.db.get_single_value(
+        "Press Settings", "number_days_promotion") or 0
+    date_expire = frappe.utils.now_datetime()
+    date_expire = date_expire - timedelta(days=number_days_promotion)
+    date_expire = date_expire.strftime('%Y-%m-%d')
+
+    transactions = frappe.db.sql(
+        f"""
+			SELECT b.team, b.currency, b.promotion_balance_1, MAX(b.creation) as creation
+			FROM `tabBalance Transaction` b
+			WHERE b.date_promotion_1 <= '{date_expire}' AND b.promotion_balance_1 > 0
+            AND b.docstatus = 1
+			GROUP BY b.team
+		""",
+        as_dict=True,
+    )
+
+    for tran in transactions:
+        doc = frappe.get_doc(
+            doctype="Balance Transaction",
+            team=tran.get('team'),
+            type="Poromotion",
+            source="Free Credits",
+            currency=tran.get('currency'),
+            amount=0,
+            amount_promotion_1=tran.get('promotion_balance_1') * -1,
+            amount_promotion_2=0,
+            description=f"Hết hạn khuyến mãi 1",
+        )
+        doc.insert()
+        doc.submit()

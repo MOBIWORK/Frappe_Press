@@ -1,14 +1,14 @@
 <template>
-	<Alert title="Update Available" v-if="show">
+	<Alert title="Cập nhật có sẵn" v-if="show">
 		<span>
-			A new update is available for your site. Would you like to update your
-			site now?
+			Một bản cập nhật mới đã sẵn có cho tổ chức của bạn. Bạn có muốn cập nhật
+			tổ chức của mình ngay bây giờ không?
 		</span>
 		<template #actions>
 			<Tooltip
 				:text="
 					!permissions.update
-						? `You don't have enough permissions to perform this action`
+						? `Bạn không có đủ quyền để thực hiện hành động này`
 						: ''
 				"
 			>
@@ -17,16 +17,16 @@
 					variant="solid"
 					@click="showUpdatesDialog = true"
 				>
-					Show updates
+					Hiện thị cập nhật
 				</Button>
 			</Tooltip>
 		</template>
 		<Dialog
 			:options="{
-				title: 'Updates available',
+				title: 'Có cập nhật mới',
 				actions: [
 					{
-						label: 'Update Now',
+						label: 'Cập nhật ngay',
 						variant: 'solid',
 						onClick: () => $resources.scheduleUpdate.fetch()
 					}
@@ -45,7 +45,7 @@
 						v-model="wantToSkipFailingPatches"
 					/>
 					<label for="skip-failing" class="ml-1 text-sm text-gray-900">
-						Skip failing patches if any?
+						Bỏ qua các bản vá nếu có lỗi?
 					</label>
 				</div>
 
@@ -58,10 +58,10 @@
 						v-model="wantToSkipBackups"
 					/>
 					<label for="skip-backup" class="ml-1 text-sm text-gray-900">
-						Update without site backup?
+						Cập nhật mà không sao lưu tổ chức?
 					</label>
 					<div class="mt-1 text-sm text-red-600" v-if="wantToSkipBackups">
-						In case of failure, you won't be able to restore the site.
+						Trong trường hợp thất bại, bạn sẽ không thể khôi phục lại tổ chức.
 					</div>
 				</div>
 				<ErrorMessage class="mt-1" :message="$resources.scheduleUpdate.error" />
@@ -115,7 +115,7 @@ export default {
 				onSuccess() {
 					this.showUpdatesDialog = false;
 					notify({
-						title: 'Site update scheduled successfully',
+						title: 'Cập nhật tổ chức đã được đặt lịch thành công',
 						icon: 'check',
 						color: 'green'
 					});

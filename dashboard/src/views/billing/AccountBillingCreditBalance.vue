@@ -99,8 +99,8 @@
 									<div></div>
 									<div>
 										<div class="py-1">Tiền nạp:</div>
-										<div class="py-1">Khuyến mại 1:</div>
-										<div class="py-1">Khuyến mại 2:</div>
+										<div class="py-1">Khuyến mãi 1:</div>
+										<div class="py-1">Khuyến mãi 2:</div>
 									</div>
 									<div>
 										<div class="py-1">{{ d.pre_formatted.balance }}</div>

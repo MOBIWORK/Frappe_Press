@@ -210,6 +210,9 @@ scheduler_events = {
         "press.auth.flush",
     ],
     "cron": {
+        "0 0 * * *": [
+            "press.press.doctype.balance_transaction.balance_transaction.except_for_expired_promotions",
+        ],
         "0 4 * * *": [
             "press.press.doctype.site.backups.cleanup_offsite",
             "press.press.cleanup.unlink_remote_files_from_site",

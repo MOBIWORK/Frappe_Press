@@ -89,7 +89,7 @@
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							{{ doc.formatted.total_before_vat }}
+							{{ this.$formatMoney(doc.total_before_vat, 0) }} VND
 						</td>
 					</tr>
 					<tr v-if="doc.vat > 0">

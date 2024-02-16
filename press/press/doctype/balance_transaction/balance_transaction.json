@@ -43,7 +43,7 @@
    "fieldname": "type",
    "fieldtype": "Select",
    "label": "Type",
-   "options": "Adjustment\nApplied To Invoice"
+   "options": "Adjustment\nApplied To Invoice\nPoromotion"
   },
   {
    "fetch_from": "team.currency",
@@ -178,7 +178,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-31 16:29:24.098652",
+ "modified": "2024-02-16 10:27:24.675392",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",

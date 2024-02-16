@@ -26,15 +26,15 @@
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
 							<div class="flex">
-								<div class="mr-1">Số dư khuyến mại 1</div>
+								<div class="mr-1">Số dư khuyến mãi 1</div>
 								<Tooltip
 									:text="
 										$resources.upcomingInvoice.data?.val_check_promotion
-											? 'Khuyến mại này được dùng đến hết ngày ' +
+											? 'Khuyến mãi này được dùng đến hết ngày ' +
 											  this.$formatDate(
 													$resources.upcomingInvoice.data?.date_promotion_1
 											  )
-											: 'Đây là khuyến mại số dư tài khoản có hạn sử dụng'
+											: 'Đây là khuyến mãi số dư tài khoản có hạn sử dụng'
 									"
 								>
 									<svg
@@ -67,9 +67,9 @@
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
 							<div class="flex">
-								<div class="mr-1">Số dư khuyến mại 2</div>
+								<div class="mr-1">Số dư khuyến mãi 2</div>
 								<Tooltip
-									text="Đây là khuyến mại số dư tài khoản không có hạn sử dụng"
+									text="Đây là khuyến mãi số dư tài khoản không có hạn sử dụng"
 								>
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
