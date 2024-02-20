@@ -6,25 +6,7 @@
 					class="mb-4 w-36"
 					v-if="!(resetPasswordEmailSent || hasForgotPassword)"
 				>
-					<FormControl
-						type="select"
-						:options="[
-							{
-								label: 'Tiếng Việt',
-								value: 'vi'
-							}
-						]"
-						size="md"
-						variant="outline"
-						placeholder="Placeholder"
-						:disabled="false"
-						label=""
-						modelValue="vi"
-					>
-						<template #prefix>
-							<img src="../../assets/icon_flag_vi.svg" alt="Eye Icon" />
-						</template>
-					</FormControl>
+					<SelectLanguage></SelectLanguage>
 				</div>
 
 				<div
@@ -39,18 +21,18 @@
 								alt="Key Icon"
 							/>
 						</div>
-						<div>Quên mật khẩu</div>
+						<div>{{ $t('forgot_password') }}</div>
 					</div>
 					<div v-else-if="saasProduct">
 						Đăng nhập vào MBW Cloud để bắt đầu sử dụng
 						<span class="font-semibold">{{ saasProduct.title }}</span>
 					</div>
-					<div v-else-if="isLogin">Đăng nhập</div>
-					<div v-else>Đăng ký</div>
+					<div v-else-if="isLogin">{{ $t('login') }}</div>
+					<div v-else>{{ $t('sign_up') }}</div>
 				</div>
 
 				<div v-else class="mb-4 text-3xl font-[500] text-gray-900">
-					<div>Đăng ký</div>
+					<div>{{ $t('sign_up') }}</div>
 				</div>
 
 				<div
@@ -58,8 +40,10 @@
 					v-if="!(resetPasswordEmailSent || hasForgotPassword)"
 				>
 					<div class="text-base font-medium">
-						<span v-if="$route.name == 'Login'"> Chưa có tài khoản? </span>
-						<span v-else>Đã có tài khoản? </span>
+						<span v-if="$route.name == 'Login'">
+							{{ $t('no_account_yet') }}?
+						</span>
+						<span v-else>{{ $t('already_have_an_account') }}? </span>
 						<router-link
 							class="text-base font-medium"
 							:to="{
@@ -71,9 +55,11 @@
 								class="font-[600] text-red-600"
 								v-if="$route.name == 'Login'"
 							>
-								Đăng ký ngay
+								{{ $t('register_now') }}
 							</span>
-							<span class="font-[600] text-red-600" v-else>Đăng nhập.</span>
+							<span class="font-[600] text-red-600" v-else
+								>{{ $t('login') }}.</span
+							>
 						</router-link>
 					</div>
 				</div>
@@ -81,8 +67,14 @@
 					class="text-center text-lg font-[400] text-gray-600"
 					v-if="hasForgotPassword"
 				>
-					Một liên kết đặt lại mật khẩu sẽ được gửi tới email của bạn. Nếu bạn
-					không nhận được email trong vòng vài phút, vui lòng thử lại.
+					<p v-if="this.$i18n.locale == 'vi'">
+						Một liên kết đặt lại mật khẩu sẽ được gửi tới email của bạn. Nếu bạn
+						không nhận được email trong vòng vài phút, vui lòng thử lại.
+					</p>
+					<p v-else>
+						A password reset link will be sent to your email. If you don't
+						receive the email within a few minutes, please try again.
+					</p>
 				</div>
 				<form class="flex flex-col" @submit.prevent="submitForm">
 					<template v-if="hasForgotPassword">
@@ -108,7 +100,7 @@
 							:loading="$resources.resetPassword.loading"
 							:disabled="!email"
 						>
-							Gửi liên kết
+							{{ $t('send_link') }}
 						</Button>
 						<router-link
 							class="mb-2 text-base"
@@ -124,7 +116,9 @@
 									src="../../assets/icon_left.svg"
 									alt="Eye Icon"
 								/>
-								<span class="font-[600]"> Trở về trang đăng nhập</span>
+								<span class="font-[600]">
+									{{ $t('return_to_login_page') }}</span
+								>
 							</div>
 						</router-link>
 					</template>
@@ -142,7 +136,9 @@
 						/>
 						<div class="relative mt-4">
 							<div class="mb-2">
-								<label class="text-base" for="password">Mật khẩu</label>
+								<label class="text-base" for="password">{{
+									$t('password')
+								}}</label>
 							</div>
 							<FormControl
 								id="password"
@@ -180,14 +176,16 @@
 									query: { ...$route.query, forgot: 1 }
 								}"
 							>
-								<span class="font-[600] text-red-600"> Quên mật khẩu?</span>
+								<span class="font-[600] text-red-600">
+									{{ $t('forgot_password') }}?</span
+								>
 							</router-link>
 						</div>
 						<Button
 							class="mt-4 h-9 bg-red-600 text-base font-[700] hover:bg-red-700"
 							variant="solid"
 						>
-							Đăng nhập
+							{{ $t('login') }}
 						</Button>
 						<ErrorMessage class="mt-2" :message="loginError" />
 					</template>
@@ -209,7 +207,7 @@
 							:loading="$resources.signup.loading"
 							variant="solid"
 						>
-							Đăng ký
+							{{ $t('sign_up') }}
 						</Button>
 					</template>
 					<ErrorMessage class="mt-2" :message="$resources.signup.error" />
@@ -247,28 +245,47 @@
 				<Dialog v-model="resetPasswordEmailSent">
 					<template #body-title>
 						<h3 class="text-xl font-[500] text-gray-900">
-							Gửi liên kết thành công
+							{{ $t('send_link_success') }}
 						</h3>
 					</template>
 					<template #body-content>
-						<div class="text-left text-base text-gray-600">
+						<div
+							v-if="this.$i18n.locale == 'vi'"
+							class="text-left text-base text-gray-600"
+						>
 							Chúng tôi đã gửi một đường dẫn liên kết tới email
 							<span class="text-gray-900">{{ email }}</span
 							>. Vui lòng kiểm tra hộp thư để thiết lập lại mật khẩu của bạn.
+						</div>
+						<div v-else class="text-left text-base text-gray-600">
+							We have sent a link to the email
+							<span class="text-gray-900">{{ email }}</span
+							>. Please check your inbox to reset your password.
 						</div>
 					</template>
 				</Dialog>
 
 				<Dialog v-model="signupEmailSent">
 					<template #body-title>
-						<h3 class="text-xl font-[500] text-gray-900">Xác thực đăng ký</h3>
+						<h3 class="text-xl font-[500] text-gray-900">
+							{{ $t('registration_verification') }}
+						</h3>
 					</template>
 					<template #body-content>
-						<div class="text-center text-base text-gray-600">
+						<div
+							v-if="this.$i18n.locale == 'vi'"
+							class="text-center text-base text-gray-600"
+						>
 							Chúng tôi đã gửi email tới
 							<span class="text-gray-900">{{ email }}</span
 							>. Vui lòng nhấp vào liên kết nhận được để xác minh email và thiết
 							lập tài khoản của bạn.
+						</div>
+						<div v-else class="text-center text-base text-gray-600">
+							We have sent an email to
+							<span class="text-gray-900">{{ email }}</span
+							>. Please click on the link received to verify your email and set
+							up your account.
 						</div>
 					</template>
 				</Dialog>
@@ -280,12 +297,14 @@
 <script>
 import LoginBox from '@/views/partials/LoginBox.vue';
 import GoogleIconSolid from '@/components/icons/GoogleIconSolid.vue';
+import SelectLanguage from '../../components/global/SelectLanguage.vue';
 
 export default {
 	name: 'Signup',
 	components: {
 		LoginBox,
-		GoogleIconSolid
+		GoogleIconSolid,
+		SelectLanguage
 	},
 	data() {
 		return {
@@ -353,13 +372,14 @@ export default {
 					} catch (error) {
 						let arr_err = error.messages;
 						let dic_err = {
-							'Invalid login credentials':
-								'Tải khoản hoặc mật khẩu không chính xác.'
+							'Invalid login credentials': this.$t(
+								'incorrect_account_or_password'
+							)
 						};
 
 						this.loginError = arr_err.length
 							? dic_err[arr_err[0]]
-							: 'Có lỗi xảy ra.';
+							: this.$t('an_error_occurred');
 					}
 				}
 			} else if (this.hasForgotPassword) {

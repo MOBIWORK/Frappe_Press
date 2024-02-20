@@ -14,7 +14,7 @@
 				@click="$resources.loginAsAdmin.submit()"
 				:loading="$resources.loginAsAdmin.loading"
 			>
-				Đăng nhập
+				{{ $t('login') }}
 			</Button>
 		</template>
 	</Alert>

@@ -164,30 +164,34 @@ def handle_for_expired_promotions():
         "Press Settings", "number_days_promotion") or 0
     date_expire = frappe.utils.now_datetime()
     date_expire = date_expire - timedelta(days=number_days_promotion)
-    date_expire = date_expire.strftime('%Y-%m-%d')
+    date_expire = date_expire.date()
 
     transactions = frappe.db.sql(
         f"""
-			SELECT b.team, b.currency, b.promotion_balance_1, MAX(b.creation) as creation
-			FROM `tabBalance Transaction` b
-			WHERE b.date_promotion_1 <= '{date_expire}' AND b.promotion_balance_1 > 0
-            AND b.docstatus = 1
-			GROUP BY b.team
-		""",
+    		SELECT b.name, b.team, b.currency, b.promotion_balance_1, b.date_promotion_1
+    		FROM `tabBalance Transaction` b
+            INNER JOIN (SELECT c.team, MAX(c.creation) as creation FROM `tabBalance Transaction` c
+            WHERE c.docstatus = 1
+    		GROUP BY c.team) b1
+            ON b.team = b1.team
+            WHERE b.docstatus = 1 AND b.creation = b1.creation
+    		GROUP BY b.team
+    	""",
         as_dict=True,
     )
 
     for tran in transactions:
-        doc = frappe.get_doc(
-            doctype="Balance Transaction",
-            team=tran.get('team'),
-            type="Promotion",
-            source="Free Credits",
-            currency=tran.get('currency'),
-            amount=0,
-            amount_promotion_1=tran.get('promotion_balance_1') * -1,
-            amount_promotion_2=0,
-            description=f"Hết hạn khuyến mãi 1",
-        )
-        doc.insert()
-        doc.submit()
+        if tran.get('promotion_balance_1') > 0 and tran.get('date_promotion_1') and tran.get('date_promotion_1') <= date_expire:
+            doc = frappe.get_doc(
+                doctype="Balance Transaction",
+                team=tran.get('team'),
+                type="Promotion",
+                source="Free Credits",
+                currency=tran.get('currency'),
+                amount=0,
+                amount_promotion_1=tran.get('promotion_balance_1') * -1,
+                amount_promotion_2=0,
+                description=f"Hết hạn khuyến mãi 1",
+            )
+            doc.insert()
+            doc.submit()

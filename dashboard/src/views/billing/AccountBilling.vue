@@ -2,7 +2,7 @@
 	<div>
 		<header class="sticky top-0 z-10 border-b bg-white px-5 pt-2.5">
 			<Breadcrumbs
-				:items="[{ label: 'Thanh toán', route: { name: 'BillingScreen' } }]"
+				:items="[{ label: $t('billing'), route: { name: 'BillingScreen' } }]"
 			/>
 			<Tabs :tabs="tabs" class="-mb-px pb-5 pl-0.5" />
 		</header>
@@ -19,7 +19,7 @@ export default {
 	name: 'BillingScreen',
 	pageMeta() {
 		return {
-			title: 'Billing - MBW Cloud'
+			title: `${this.$t('billing')} - MBW Cloud`
 		};
 	},
 	props: ['invoiceName'],
@@ -30,10 +30,10 @@ export default {
 		tabs() {
 			let tabRoute = subRoute => `/billing/${subRoute}`;
 			let tabs = [
-				{ label: 'Tổng quan', route: 'overview' },
-				{ label: 'Hóa đơn', route: 'invoices' },
-				{ label: 'Thông tin hóa đơn', route: 'payment' },
-				{ label: 'Lịch sử giao dịch', route: 'credit-balance' }
+				{ label: this.$t('overview'), route: 'overview' },
+				{ label: this.$t('invoices'), route: 'invoices' },
+				{ label: this.$t('invoice_details'), route: 'payment' },
+				{ label: this.$t('transaction_history'), route: 'transaction-history' }
 			];
 
 			return tabs.map(tab => {

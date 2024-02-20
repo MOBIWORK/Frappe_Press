@@ -73,37 +73,40 @@
 						target="_blank"
 						class="block rounded-md px-3 pt-4 text-base font-medium focus:outline-none"
 					>
-						Hỗ trợ
+						{{ $t('support_and_docs') }}
 					</a>
-					<a
-						href="https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page"
-						target="_blank"
+					<button
 						class="block rounded-md px-3 text-base font-medium focus:outline-none"
+						@click="this.showLangSwitcher = true"
 					>
-						Tài liệu
-					</a>
+						{{ $t('language') }}
+					</button>
 					<a
 						href="#"
 						class="block rounded-md px-3 text-base font-medium focus:outline-none"
 						@click.prevent="$auth.logout"
 					>
-						Đăng xuất
+						{{ $t('logout') }}
 					</a>
 				</div>
 			</div>
 		</div>
+		<SwitchLangDialog v-model="showLangSwitcher" />
 	</nav>
 </template>
 
 <script>
 import FrappeCloudLogo from '@/components/icons/FrappeCloudLogo.vue';
+import SwitchLangDialog from './SwitchLangDialog.vue';
 
 export default {
 	components: {
-		FrappeCloudLogo
+		FrappeCloudLogo,
+		SwitchLangDialog
 	},
 	data() {
 		return {
+			showLangSwitcher: false,
 			mobileMenuOpen: false
 		};
 	},
@@ -111,7 +114,7 @@ export default {
 		items() {
 			return [
 				{
-					label: 'Tổ chức',
+					label: this.$t('sites'),
 					route: '/sites',
 					highlight: () => {
 						return this.$route.fullPath.endsWith('/sites');
@@ -126,7 +129,7 @@ export default {
 					condition: () => this.$account.team?.benches_enabled
 				},
 				{
-					label: 'Ứng dụng',
+					label: this.$t('apps'),
 					route: '/marketplace/apps',
 					highlight: () => {
 						return this.$route.fullPath.includes('/marketplace/');
@@ -134,14 +137,14 @@ export default {
 					condition: () => this.$account.team?.is_developer
 				},
 				{
-					label: 'Thanh toán',
+					label: this.$t('billing'),
 					route: '/billing',
 					highlight: () => {
 						return this.$route.fullPath.includes('/billing/');
 					}
 				},
 				{
-					label: 'Cài đặt',
+					label: this.$t('settings'),
 					route: '/settings/profile',
 					highlight: () => {
 						return this.$route.fullPath.includes('/settings');

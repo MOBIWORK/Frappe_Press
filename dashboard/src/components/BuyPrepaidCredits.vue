@@ -116,7 +116,7 @@
 		<router-link
 			v-if="$resources.createaOrder.data?.code == 1"
 			class="text-sm underline"
-			to="credit-balance"
+			to="transaction-history"
 		>
 			Đến thanh toán
 		</router-link>

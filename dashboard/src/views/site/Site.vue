@@ -5,7 +5,7 @@
 		>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Tổ chức', route: { name: 'Sites' } },
+					{ label: $t('sites'), route: { name: 'Sites' } },
 					{
 						label: site?.host_name || site?.name,
 						route: { name: 'SiteOverview', params: { siteName: site?.name } }

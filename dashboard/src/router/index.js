@@ -500,8 +500,8 @@ const routes = [
 				component: () => import('../views/billing/AccountBillingPayments.vue')
 			},
 			{
-				name: 'Credit Balance',
-				path: 'credit-balance',
+				name: 'Transaction History',
+				path: 'transaction-history',
 				component: () =>
 					import('../views/billing/AccountBillingCreditBalance.vue')
 			}

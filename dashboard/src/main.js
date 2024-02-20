@@ -10,6 +10,7 @@ import { BrowserTracing } from '@sentry/tracing';
 import router from './router/index';
 import dayjs from 'dayjs';
 import { notify } from '@/utils/toast';
+import i18n from './i18n';
 import {
 	setConfig,
 	frappeRequest,
@@ -30,6 +31,7 @@ let request = options => {
 setConfig('resourceFetcher', request);
 app.use(resourcesPlugin);
 app.use(pageMetaPlugin);
+app.use(i18n);
 
 registerPlugins(app);
 registerGlobalComponents(app);

@@ -161,14 +161,14 @@ let utils = {
 		},
 		$siteStatus(site) {
 			let statusSite = {
-				Active: 'Hoạt động',
-				Pending: 'Đang xử lý',
-				Installing: 'Đang cài đặt',
-				Updating: 'Đang cập nhật',
-				Inactive: 'Dừng hoạt động',
-				Broken: 'Lỗi',
-				Archived: 'Đã lưu trữ',
-				Suspended: 'Đình chỉ'
+				Active: this.$t('active'),
+				Pending: this.$t('pending'),
+				Installing: this.$t('installing'),
+				Updating: this.$t('updating'),
+				Inactive: this.$t('inactive'),
+				Broken: this.$t('broken'),
+				Archived: this.$t('archived'),
+				Suspended: this.$t('suspended')
 			};
 			let status = statusSite[site.status] || site.status;
 

@@ -37,7 +37,7 @@
 							<span class="mr-1.5">
 								<FeatherIcon name="search" class="h-5 w-5 text-gray-700" />
 							</span>
-							<span class="text-sm">Tìm kiếm</span>
+							<span class="text-sm">{{ $t('search') }}</span>
 							<span class="ml-auto text-sm text-gray-500">
 								<template v-if="$platform === 'mac'">⌘K</template>
 								<template v-else>Ctrl+K</template>
@@ -58,7 +58,7 @@
 							<span class="mr-1.5">
 								<FeatherIcon name="inbox" class="h-4.5 w-4.5 text-gray-700" />
 							</span>
-							<span class="text-sm">Thông báo </span>
+							<span class="text-sm"> {{ $t('notifications') }} </span>
 							<span
 								v-if="unreadNotificationsCount > 0"
 								class="ml-auto rounded bg-gray-400 px-1.5 py-0.5 text-xs text-white"
@@ -103,12 +103,14 @@
 			</div>
 		</div>
 		<SwitchTeamDialog v-model="showTeamSwitcher" />
+		<SwitchLangDialog v-model="showLangSwitcher" />
 	</div>
 </template>
 
 <script>
 import { FCIcons } from '@/components/icons';
 import SwitchTeamDialog from './SwitchTeamDialog.vue';
+import SwitchLangDialog from './SwitchLangDialog.vue';
 import FCLogo from '@/components/icons/FCLogo.vue';
 import CommandPalette from '@/components/CommandPalette.vue';
 import { unreadNotificationsCount } from '@/data/notifications';
@@ -118,36 +120,20 @@ export default {
 	components: {
 		FCLogo,
 		SwitchTeamDialog,
-		CommandPalette
+		CommandPalette,
+		SwitchLangDialog
+	},
+	watch: {
+		'$i18n.locale'() {
+			this.dropdownItems = this.getValueMenu();
+		}
 	},
 	data() {
 		return {
 			showCommandPalette: false,
 			showTeamSwitcher: false,
-			dropdownItems: [
-				{
-					label: 'Chuyển nhóm',
-					icon: 'command',
-					onClick: () => (this.showTeamSwitcher = true)
-				},
-				{
-					label: 'Hỗ trợ và Tài liệu',
-					icon: 'help-circle',
-					onClick: () =>
-						(window.location.href =
-							'https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page')
-				},
-				{
-					label: 'Cài đặt',
-					icon: 'settings',
-					onClick: () => this.$router.push('/settings/profile')
-				},
-				{
-					label: 'Đăng xuất',
-					icon: 'log-out',
-					onClick: () => this.$auth.logout()
-				}
-			]
+			showLangSwitcher: false,
+			dropdownItems: this.getValueMenu()
 		};
 	},
 	mounted() {
@@ -176,7 +162,7 @@ export default {
 		items() {
 			return [
 				{
-					label: 'Tổ chức',
+					label: this.$t('sites'),
 					route: '/sites',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/sites');
@@ -211,7 +197,7 @@ export default {
 					condition: () => this.$account.team?.code_servers_enabled
 				},
 				{
-					label: 'Ứng dụng',
+					label: this.$t('apps'),
 					route: '/marketplace/apps',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/marketplace');
@@ -229,7 +215,7 @@ export default {
 					condition: () => this.$account.team?.security_portal_enabled
 				},
 				{
-					label: 'Thanh toán',
+					label: this.$t('billing'),
 					route: '/billing',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/billing');
@@ -240,7 +226,7 @@ export default {
 						$account.user?.user_type === 'System User'
 				},
 				{
-					label: 'Cài đặt',
+					label: this.$t('settings'),
 					route: '/settings',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/settings');
@@ -248,6 +234,39 @@ export default {
 					icon: FCIcons.SettingsIcon
 				}
 			].filter(d => (d.condition ? d.condition() : true));
+		}
+	},
+	methods: {
+		getValueMenu() {
+			return [
+				{
+					label: this.$t('switch_team'),
+					icon: 'command',
+					onClick: () => (this.showTeamSwitcher = true)
+				},
+				{
+					label: this.$t('support_and_docs'),
+					icon: 'help-circle',
+					onClick: () =>
+						(window.location.href =
+							'https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page')
+				},
+				{
+					label: this.$t('settings'),
+					icon: 'settings',
+					onClick: () => this.$router.push('/settings/profile')
+				},
+				{
+					label: this.$t('language'),
+					icon: 'globe',
+					onClick: () => (this.showLangSwitcher = true)
+				},
+				{
+					label: this.$t('logout'),
+					icon: 'log-out',
+					onClick: () => this.$auth.logout()
+				}
+			];
 		}
 	}
 };

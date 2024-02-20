@@ -4,13 +4,15 @@
 			<header
 				class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 			>
-				<Breadcrumbs :items="[{ label: 'Tổ chức', route: { name: 'Sites' } }]">
+				<Breadcrumbs
+					:items="[{ label: $t('sites'), route: { name: 'Sites' } }]"
+				>
 					<template v-if="this.$account.team.enabled" #actions>
 						<Button
 							variant="solid"
 							icon-left="plus"
 							class="ml-2"
-							label="Tạo mới"
+							:label="$t('create')"
 							@click="showBillingDialog"
 						>
 						</Button>
@@ -20,11 +22,11 @@
 
 			<div class="my-5 space-y-2 px-5">
 				<div v-if="!$account.team.enabled">
-					<Alert title="Tài khoản của bạn đã bị vô hiệu hóa">
-						Cho phép tài khoản của bạn bắt đầu tạo tổ chức
+					<Alert :title="$t('site_content_1')">
+						{{ $t('site_content_2') }}
 						<template #actions>
 							<Button variant="solid" route="/settings/profile">
-								Kích hoạt Tài khoản
+								{{ $t('enable_account') }}
 							</Button>
 						</template>
 					</Alert>
@@ -33,31 +35,28 @@
 				<template v-if="showUnpaidInvoiceAlert">
 					<Alert
 						v-if="latestUnpaidInvoice.payment_mode === 'Prepaid Credits'"
-						title="Thanh toán hóa đơn cuối cùng của bạn không thành công."
+						:title="$t('site_content_3')"
 					>
-						Vui lòng thêm
+						{{ $t('site_content_4') }}
 						<strong>
 							{{ this.$formatMoney(latestUnpaidInvoice.amount_due) }}
 							{{ latestUnpaidInvoice.currency }}
 						</strong>
-						vào số dư tài khoản.
+						{{ $t('site_content_5') }}
 						<template #actions>
 							<Button @click="showPrepaidCreditsDialog = true" variant="solid">
-								Thêm Số Dư
+								{{ $t('add_balance') }}
 							</Button>
 						</template>
 					</Alert>
 
-					<Alert
-						v-else
-						title="Thanh toán hóa đơn cuối cùng của bạn không thành công."
-					>
-						Thanh toán ngay để không bị gián đoạn dịch vụ.
+					<Alert v-else :title="$t('site_content_3')">
+						{{ $t('site_content_6') }}
 						<template v-if="this.$resources.latestUnpaidInvoice.data" #actions>
 							<router-link
 								:to="{ path: '/billing', query: { invoiceStatus: 'Unpaid' } }"
 							>
-								<Button variant="solid"> Đến thanh toán </Button>
+								<Button variant="solid"> {{ $t('go_to_billing') }} </Button>
 							</router-link>
 						</template>
 					</Alert>
@@ -74,13 +73,13 @@
 				<div class="pb-20">
 					<div class="flex">
 						<div class="flex w-full space-x-2 pb-4">
-							<FormControl label="Tìm tên miền" v-model="searchTerm">
+							<FormControl :label="$t('search_sites')" v-model="searchTerm">
 								<template #prefix>
 									<FeatherIcon name="search" class="w-4 text-gray-600" />
 								</template>
 							</FormControl>
 							<FormControl
-								label="Trạng thái"
+								:label="$t('status')"
 								class="mr-8"
 								type="select"
 								:options="siteStatusFilterOptions"
@@ -97,18 +96,14 @@
 						</div>
 					</div>
 					<Table
-						:columns="[
-							{ label: 'Tên miền', name: 'name', width: 2 },
-							{ label: 'Trạng thái', name: 'status', width: 1 },
-							{ label: 'Khu vực', name: 'region', width: 0.5 },
-							// { label: 'Thẻ', name: 'tags', width: 1 },
-							{ label: 'Gói', name: 'plan', width: 1.5 },
-							{ label: '', name: 'actions', width: 0.5 }
-						]"
+						:columns="getHeaderTable()"
 						:rows="sites"
 						v-slot="{ rows, columns }"
 					>
-						<TableHeader class="mb-4 hidden lg:grid" />
+						<TableHeaderCustom
+							:columns="getHeaderTable()"
+							class="mb-4 hidden lg:grid"
+						/>
 						<div
 							v-for="group in groups"
 							:key="group.group"
@@ -172,7 +167,7 @@
 										{{
 											row.plan
 												? `${$planTitle(row.plan)}${
-														row.plan.price_vnd > 0 ? '/tháng' : ''
+														row.plan.price_vnd > 0 ? `/${$t('month')}` : ''
 												  }`
 												: ''
 										}}
@@ -221,17 +216,17 @@
 								v-else-if="$resources.allSites.fetched && rows.length === 0"
 								class="text-base text-gray-700"
 							>
-								Không có tổ chức
+								{{ $t('no_sites') }}
 							</div>
 						</div>
 					</Table>
 
 					<Dialog
 						:options="{
-							title: 'Login As Administrator',
+							title: $t('login_as_administrator'),
 							actions: [
 								{
-									label: 'Thực hiện',
+									label: $t('proceed'),
 									variant: 'solid',
 									onClick: proceedWithLoginAsAdmin
 								}
@@ -241,7 +236,7 @@
 					>
 						<template #body-content>
 							<FormControl
-								label="Lý do đăng nhập với tư cách Quản trị viên"
+								:label="$t('reason_for_logging_in_as_administrator')"
 								type="textarea"
 								v-model="reasonForAdminLogin"
 								required
@@ -257,7 +252,7 @@
 <script>
 import { defineAsyncComponent } from 'vue';
 import Table from '@/components/Table/Table.vue';
-import TableHeader from '@/components/Table/TableHeader.vue';
+import TableHeaderCustom from '@/components/Table/TableHeaderCustom.vue';
 import TableRow from '@/components/Table/TableRow.vue';
 import TableCell from '@/components/Table/TableCell.vue';
 import { loginAsAdmin } from '@/controllers/loginAsAdmin';
@@ -268,13 +263,13 @@ export default {
 	name: 'Sites',
 	pageMeta() {
 		return {
-			title: 'Tổ chức - MBW Cloud'
+			title: `${this.$t('sites')} - MBW Cloud`
 		};
 	},
 	props: ['bench'],
 	components: {
 		Table,
-		TableHeader,
+		TableHeaderCustom,
 		TableRow,
 		TableCell,
 		PrepaidCreditsDialog: defineAsyncComponent(() =>
@@ -332,6 +327,16 @@ export default {
 		this.$socket.off('list_update', this.onSiteUpdate);
 	},
 	methods: {
+		getHeaderTable() {
+			return [
+				{ label: this.$t('site_name'), name: 'name', width: 2 },
+				{ label: this.$t('status'), name: 'status', width: 1 },
+				{ label: this.$t('region'), name: 'region', width: 0.5 },
+				// { label: 'Thẻ', name: 'tags', width: 1 },
+				{ label: this.$t('plan'), name: 'plan', width: 1.5 },
+				{ label: '', name: 'actions', width: 0.5 }
+			];
+		},
 		showBillingDialog() {
 			// if (!this.$account.hasBillingInfo) {
 			// 	this.showAddCardDialog = true;
@@ -346,8 +351,8 @@ export default {
 			if (data.status === 'Success' && data.user === this.$account.user.name) {
 				this.reload();
 				notify({
-					title: 'Hoàn tất tạo tổ chức!',
-					message: 'Đăng nhập vào tổ chức của bạn và hoàn tất đạo cụ cài đặt',
+					title: this.$t('site_creation_complete'),
+					message: this.$t('site_content_7'),
 					icon: 'check',
 					color: 'green'
 				});
@@ -382,13 +387,13 @@ export default {
 		dropdownItems(site) {
 			return [
 				{
-					label: 'Truy cập tổ chức',
+					label: this.$t('visit_site'),
 					onClick: () => {
 						window.open(`https://${site.name}`, '_blank');
 					}
 				},
 				{
-					label: 'Đăng nhập với tư cách Quản trị viên',
+					label: this.$t('login_as_administrator'),
 					onClick: () => {
 						if (this.$account.team.name === site.team) {
 							return this.$resources.loginAsAdmin.submit({
@@ -406,7 +411,7 @@ export default {
 			this.errorMessage = '';
 
 			if (!this.reasonForAdminLogin.trim()) {
-				this.errorMessage = 'Yêu cầu cung cấp lý do';
+				this.errorMessage = this.$t('reason_is_required');
 				return;
 			}
 
@@ -496,27 +501,27 @@ export default {
 		siteStatusFilterOptions() {
 			return [
 				{
-					label: 'Tất cả',
+					label: this.$t('all'),
 					value: 'All'
 				},
 				{
-					label: 'Hoạt động',
+					label: this.$t('active'),
 					value: 'Active'
 				},
 				{
-					label: 'Đã hỏng',
+					label: this.$t('broken'),
 					value: 'Broken'
 				},
 				{
-					label: 'Không hoạt động',
+					label: this.$t('inactive'),
 					value: 'Inactive'
 				},
 				{
-					label: 'Thử nghiệm',
+					label: this.$t('trial'),
 					value: 'Trial'
 				},
 				{
-					label: 'Có bản cập nhật',
+					label: this.$t('update_available'),
 					value: 'Update Available'
 				}
 			];

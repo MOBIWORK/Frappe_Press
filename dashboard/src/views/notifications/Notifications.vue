@@ -4,13 +4,15 @@
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 		>
 			<Breadcrumbs
-				:items="[{ label: 'Thông báo', route: { name: 'Notifications' } }]"
+				:items="[
+					{ label: $t('notifications'), route: { name: 'Notifications' } }
+				]"
 			>
 				<template #actions>
 					<TabButtons
 						:buttons="[
-							{ label: 'Chưa đọc', active: true },
-							{ label: 'Đã đọc' }
+							{ label: $t('unread'), active: true },
+							{ label: $t('read') }
 						]"
 						v-model="activeTab"
 					/>
@@ -31,13 +33,13 @@
 					<template #actions>
 						<Button
 							variant="ghost"
-							label="Xem"
+							:label="$t('view')"
 							@click="openNotification(notification)"
 						/>
 					</template>
 				</ListItem>
 				<div v-if="!notifications?.length" class="text-base text-gray-600">
-					Không có thông báo
+					{{ $t('no_notifications') }}
 				</div>
 			</div>
 		</div>
@@ -52,7 +54,7 @@ export default {
 	name: 'Notifications',
 	pageMeta() {
 		return {
-			title: 'Thông báo'
+			title: this.$t('notifications')
 		};
 	},
 	components: {
@@ -60,12 +62,12 @@ export default {
 	},
 	data() {
 		return {
-			activeTab: 'Chưa đọc'
+			activeTab: this.$t('unread')
 		};
 	},
 	resources: {
 		unreadNotifications() {
-			if (this.activeTab !== 'Chưa đọc') return;
+			if (this.activeTab !== this.$t('unread')) return;
 			return {
 				url: 'press.api.notifications.get_notifications',
 				params: {
@@ -76,7 +78,7 @@ export default {
 			};
 		},
 		readNotifications() {
-			if (this.activeTab !== 'Đã đọc') return;
+			if (this.activeTab !== this.$t('read')) return;
 			return {
 				url: 'press.api.notifications.get_notifications',
 				params: {
@@ -94,6 +96,18 @@ export default {
 		}
 	},
 	methods: {
+		getTran() {
+			let rs = this.activeTab;
+			let lang = ['Unread', 'Read'].includes(rs) ? 'en' : 'vi';
+			if (this.$i18n.locale != lang) {
+				let ops = { 'Đã đọc': 'Read', 'Chưa đọc': 'Unread' };
+				if (lang == 'en') {
+					ops = { Read: 'Đã đọc', Unread: 'Chưa đọc' };
+				}
+				rs = ops[rs];
+				this.activeTab = rs;
+			}
+		},
 		openNotification(notification) {
 			if (!notification.read) {
 				this.$resources.markNotificationAsRead.submit({
@@ -107,7 +121,8 @@ export default {
 	},
 	computed: {
 		notifications() {
-			return this.activeTab === 'Chưa đọc'
+			this.getTran();
+			return this.activeTab === this.$t('unread')
 				? this.$resources.unreadNotifications.data
 				: this.$resources.readNotifications.data;
 		}

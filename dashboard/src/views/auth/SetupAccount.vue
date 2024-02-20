@@ -3,33 +3,15 @@
 		<div v-if="!dashboardRoute">
 			<div v-if="!$resources.validateRequestKey.loading && email">
 				<div class="mb-4 w-36">
-					<FormControl
-						type="select"
-						:options="[
-							{
-								label: 'Tiếng Việt',
-								value: 'vi'
-							}
-						]"
-						size="md"
-						variant="outline"
-						placeholder="Placeholder"
-						:disabled="false"
-						label=""
-						modelValue="vi"
-					>
-						<template #prefix>
-							<img src="../../assets/icon_flag_vi.svg" alt="Flag Icon" />
-						</template>
-					</FormControl>
+					<SelectLanguage></SelectLanguage>
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
-					<div v-if="!isInvitation">Đăng ký tài khoản</div>
+					<div v-if="!isInvitation">{{ $t('set_up_your_account') }}</div>
 					<div v-else>Lời mời tham gia nhóm: {{ invitationToTeam }}</div>
 				</div>
-				<div class="mb-10">
+				<div class="mb-6">
 					<div class="text-base font-medium">
-						<span>Đã có tài khoản? </span>
+						<span>{{ $t('already_have_an_account') }}? </span>
 						<router-link
 							class="text-base font-medium"
 							:to="{
@@ -37,7 +19,7 @@
 								query: { ...$route.query, forgot: undefined }
 							}"
 						>
-							<span class="font-[600] text-red-600">Đăng nhập.</span>
+							<span class="font-[600] text-red-600">{{ $t('login') }}.</span>
 						</router-link>
 					</div>
 				</div>
@@ -64,7 +46,9 @@
 						<template v-if="oauthSignup == 0">
 							<div>
 								<div class="mb-2 mt-4">
-									<label class="text-base" for="firstName">Họ tên</label>
+									<label class="text-base" for="firstName">{{
+										$t('full_name')
+									}}</label>
 								</div>
 								<FormControl
 									id="firstName"
@@ -80,7 +64,7 @@
 							</div>
 							<div>
 								<div class="mb-2 mt-4">
-									<label class="text-base" for="phone">Số điện thoại</label>
+									<label class="text-base" for="phone">{{ $t('phone') }}</label>
 								</div>
 								<FormControl
 									id="phone"
@@ -97,7 +81,9 @@
 							</div>
 							<div class="relative">
 								<div class="mb-2 mt-4">
-									<label class="text-base" for="password">Mật khẩu</label>
+									<label class="text-base" for="password">{{
+										$t('password')
+									}}</label>
 								</div>
 								<FormControl
 									id="password"
@@ -130,11 +116,13 @@
 						</template>
 						<div>
 							<div class="mb-2 mt-4">
-								<label class="text-base" for="country">Quốc gia</label>
+								<label class="text-base" for="country">{{
+									$t('country')
+								}}</label>
 							</div>
 							<FormControl
 								class="custom-form-btn"
-								type="autocomplete"
+								type="select"
 								id="country"
 								size="lg"
 								variant="outline"
@@ -151,16 +139,13 @@
 							:fields="signupFields"
 							v-model="signupValues"
 						/>
-						<div class="mt-4 flex items-start">
+						<div v-if="this.$i18n.locale == 'vi'" class="mt-4 flex items-start">
 							<label class="text-base text-gray-900">
 								<FormControl
 									size="lg"
 									type="checkbox"
 									v-model="termsAccepted"
 								/>
-								<!-- By clicking on
-								<span>{{ isInvitation ? 'Accept' : 'Submit' }}</span
-								>, you accept our -->
 								Tôi đã đọc và đồng ý với
 								<Link
 									class="border-none"
@@ -179,10 +164,33 @@
 										Chính sách quyền riêng tư
 									</span></Link
 								>
-								<!-- &#38;
-								<Link href="https://frappecloud.com/cookie-policy" target="_blank">
-									Cookie Policy
-								</Link> -->
+							</label>
+						</div>
+						<div v-else class="mt-4 flex items-start">
+							<label class="text-base text-gray-900">
+								<FormControl
+									size="lg"
+									type="checkbox"
+									v-model="termsAccepted"
+								/>
+								I have read and agree to
+								<Link
+									class="border-none"
+									href="/thoa-thuan-su-dung-dich-vu"
+									target="_blank"
+									><span class="text-blue-500 hover:text-blue-700"
+										>The terms of service
+									</span></Link
+								>
+								and
+								<Link
+									class="border-none"
+									href="/chinh-sach-bao-mat-thong-tin"
+									target="_blank"
+									><span class="text-blue-500 hover:text-blue-700">
+										Privacy policy
+									</span></Link
+								>
 							</label>
 						</div>
 					</div>
@@ -192,7 +200,7 @@
 						variant="solid"
 						:loading="$resources.setupAccount.loading"
 					>
-						{{ isInvitation ? 'Chấp nhận' : 'Đăng ký' }}
+						{{ isInvitation ? $t('agree') : $t('sign_up') }}
 					</Button>
 				</form>
 			</div>
@@ -200,13 +208,24 @@
 				class="text-center"
 				v-else-if="!$resources.validateRequestKey.loading && !email"
 			>
-				Liên kết xác minh không hợp lệ hoặc đã hết hạn.
-				<Link to="/signup"
-					><span class="font-[600] text-red-600 hover:text-red-700"
-						>Đăng ký</span
-					></Link
-				>
-				một tài khoản mới.
+				<p v-if="this.$i18n.locale == 'vi'">
+					Liên kết xác minh không hợp lệ hoặc đã hết hạn.
+					<Link to="/signup"
+						><span class="font-[600] text-red-600 hover:text-red-700"
+							>Đăng ký</span
+						></Link
+					>
+					một tài khoản mới.
+				</p>
+				<p v-else>
+					The verification link is invalid or has expired.
+					<Link to="/signup"
+						><span class="font-[600] text-red-600 hover:text-red-700">{{
+							$t('sign_up')
+						}}</span></Link
+					>
+					a new account.
+				</p>
 			</div>
 			<div v-else></div>
 		</div>
@@ -216,10 +235,17 @@
 					<div class="mb-10 flex justify-center">
 						<img src="../../assets/icon_tick.svg" alt="Key Icon" />
 					</div>
-					<div class="text-3xl">Đăng ký thành công</div>
-					<div class="mt-2 text-lg font-[400] text-gray-600">
+					<div class="text-3xl">{{ $t('registration_successful') }}</div>
+					<div
+						v-if="this.$i18n.locale == 'vi'"
+						class="mt-2 text-lg font-[400] text-gray-600"
+					>
 						Tài khoản của bạn đã được tạo thành công, đăng nhập để trải nghiệm
 						dịch vụ của chúng tôi.
+					</div>
+					<div v-else class="mt-2 text-lg font-[400] text-gray-600">
+						Your account has been successfully created. Log in to experience our
+						services.
 					</div>
 				</div>
 				<router-link :to="dashboardRoute">
@@ -227,7 +253,7 @@
 						class="my-6 h-9 w-full bg-red-600 text-base font-[700] text-white hover:bg-red-700"
 						variant="solid"
 					>
-						Trở về trang đăng nhập
+						{{ $t('return_to_login_page') }}
 					</Button>
 				</router-link>
 			</div>
@@ -239,13 +265,15 @@
 import LoginBox from '@/views/partials/LoginBox.vue';
 import Link from '@/components/Link.vue';
 import Form from '@/components/Form.vue';
+import SelectLanguage from '../../components/global/SelectLanguage.vue';
 
 export default {
 	name: 'SetupAccount',
 	components: {
 		LoginBox,
 		Link,
-		Form
+		Form,
+		SelectLanguage
 	},
 	props: ['requestKey', 'joinRequest'],
 	data() {

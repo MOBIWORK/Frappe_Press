@@ -105,9 +105,9 @@
 				Khóa tài khoản <strong>{{ requestKey }}</strong> không hợp lệ hoặc hết
 				hạn. Quay trở lại
 				<router-link class="underline" to="/login"
-					><span class="font-[600] text-red-600 hover:text-red-700"
-						>Đăng nhập</span
-					></router-link
+					><span class="font-[600] text-red-600 hover:text-red-700">{{
+						$t('login')
+					}}</span></router-link
 				>.
 			</div>
 		</div>
