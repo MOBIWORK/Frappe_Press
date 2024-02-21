@@ -1,5 +1,5 @@
 <template>
-	<Card title="Hóa đơn tạm tính" :subtitle="subtitle">
+	<Card :title="$t('provisional_invoice')" :subtitle="subtitle">
 		<InvoiceUsageTable :invoiceDoc="invoiceDoc" />
 	</Card>
 </template>
@@ -14,12 +14,12 @@ export default {
 	computed: {
 		subtitle() {
 			if (!this.invoiceDoc) {
-				return 'Không có hóa đơn';
+				return this.$t('no_upcoming_invoice');
 			}
 			let start = this.$date(this.invoiceDoc.period_start);
 			// let end = this.$date(this.invoiceDoc.period_end);
 
-			return `Ước tính tổng cộng cho đến hiện tại (${start.toFormat(
+			return `${this.$t('estimated_total_up_to_now')} (${start.toFormat(
 				'dd/MM'
 			)} - ${this.$getFormatTimeNow('dd/MM/yyyy')})`;
 		}

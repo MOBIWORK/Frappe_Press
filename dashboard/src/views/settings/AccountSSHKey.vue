@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="Khóa SSH"
-		subtitle="Khóa công khai SSH liên kết với tài khoản của bạn"
+		:title="$t('ssh_key')"
+		:subtitle="$t('accountsshkey_content_1')"
 		v-if="$account.team.ssh_access_enabled"
 	>
 		<div v-if="$account.ssh_key">
@@ -9,7 +9,7 @@
 				SHA256:{{ $account.ssh_key.ssh_fingerprint }}
 			</p>
 			<div class="mt-2 text-base text-gray-700">
-				Đã thêm vào
+				{{ $t('added_on') }}
 				{{
 					$date($account.ssh_key.creation).toLocaleString({
 						month: 'short',
@@ -21,18 +21,18 @@
 		</div>
 		<template #actions>
 			<Button v-if="!$account.ssh_key" @click="showAddNewKeyDialog = true">
-				Khóa SSH mới
+				{{ $t('new_ssh_key') }}
 			</Button>
 			<Button v-else @click="showAddNewKeyDialog = true">
-				Thay đổi khóa SSH
+				{{ $t('change_ssh_key') }}
 			</Button>
 		</template>
 		<Dialog
 			:options="{
-				title: 'Khóa SSH mới',
+				title: $t('new_ssh_key'),
 				actions: [
 					{
-						label: 'Thêm khoá',
+						label: $t('add_key'),
 						variant: 'solid',
 						onClick: () => $resources.saveKey.submit()
 					}
@@ -43,9 +43,9 @@
 			<template v-slot:body-content>
 				<div class="mt-3">
 					<FormControl
-						:label="'Khóa SSH'"
-						type="textarea"
+						:label="$t('ssh_key')"
 						placeholder="Begins with 'ssh-rsa', 'ecdsa-sha2-nistp256', 'ecdsa-sha2-nistp384', 'ecdsa-sha2-nistp521', 'ssh-ed25519', 'sk-ecdsa-sha2-nistp256@openssh.com', or 'sk-ssh-ed25519@openssh.com'"
+						type="textarea"
 						required
 						v-model="newKey"
 					/>
@@ -78,7 +78,7 @@ export default {
 					this.$account.fetchAccount();
 					this.showAddNewKeyDialog = false;
 					notify({
-						title: 'Khóa SSH mới đã được thêm',
+						title: this.$t('new_ssh_key_added'),
 						icon: 'check',
 						color: 'green'
 					});

@@ -2,7 +2,7 @@
 	<div>
 		<header class="sticky top-0 z-10 border-b bg-white px-5 pt-2.5">
 			<Breadcrumbs
-				:items="[{ label: 'Cài đặt', route: { name: 'SettingsScreen' } }]"
+				:items="[{ label: $t('settings'), route: { name: 'SettingsScreen' } }]"
 			/>
 			<Tabs :tabs="tabs" class="-mb-px pl-0.5" />
 		</header>
@@ -19,7 +19,7 @@ export default {
 	name: 'AccountSettings',
 	pageMeta() {
 		return {
-			title: 'Settings - Profile'
+			title: `${this.$t('settings')} - Profile`
 		};
 	},
 	components: {
@@ -29,15 +29,15 @@ export default {
 		tabs() {
 			let tabRoute = subRoute => `/settings/${subRoute}`;
 			let tabs = [
-				{ label: 'Hồ sơ', route: 'profile' },
+				{ label: this.$t('profile'), route: 'profile' },
 				{
-					label: 'Nhóm',
+					label: this.$t('team'),
 					route: 'team',
 					condition: () =>
 						$account.user.name === $account.team.user ||
 						$account.user.user_type === 'System User'
 				},
-				{ label: 'Phát triển', route: 'developer' }
+				{ label: this.$t('developer'), route: 'developer' }
 				// { label: 'Đối tác', route: 'partner' }
 			].filter(tab => (tab.condition ? tab.condition() : true));
 
@@ -57,15 +57,18 @@ export default {
 			}
 
 			if (team.name !== user.name) {
-				if (team.team_title) subtitle += `Nhóm: ${team.team_title}`;
-				else subtitle += `Nhóm: ${team.name}`;
-				subtitle += ` &middot; Thành viên: ${user.name} `;
+				if (team.team_title)
+					subtitle += `${this.$t('team')}: ${team.team_title}`;
+				else subtitle += `${this.$t('team')}: ${team.name}`;
+				subtitle += ` &middot; ${this.$t('member')}: ${user.name} `;
 			} else {
 				subtitle += `<span>${team.name}</span> `;
 			}
 
 			if (team.erpnext_partner) {
-				subtitle += `&middot; <span>ERPNext Đối tác</span>`;
+				subtitle += `&middot; <span>${this.$t(
+					'accountsettings_content_1'
+				)}</span>`;
 			}
 
 			let userTeamMember = team.team_members.filter(
@@ -79,7 +82,9 @@ export default {
 					day: 'numeric',
 					year: 'numeric'
 				});
-				subtitle += `&middot; <span>Thành viên từ ${memberSince}</span>`;
+				subtitle += `&middot; <span>${this.$t(
+					'member_from'
+				)} ${memberSince}</span>`;
 			}
 
 			return subtitle;

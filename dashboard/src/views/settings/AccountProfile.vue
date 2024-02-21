@@ -1,5 +1,5 @@
 <template>
-	<Card title="Hồ sơ">
+	<Card :title="$t('profile')">
 		<div class="flex items-center border-b pb-3">
 			<div class="relative">
 				<Avatar
@@ -24,7 +24,7 @@
 								:class="{ 'opacity-50': uploading }"
 							>
 								<span v-if="uploading">{{ progress }}%</span>
-								<span v-else>Sửa</span>
+								<span v-else>{{ $t('edit') }}</span>
 							</button>
 						</div>
 					</template>
@@ -32,34 +32,34 @@
 			</div>
 			<div class="ml-4">
 				<h3 class="text-base font-semibold">
-					{{ $account.user.first_name }} {{ $account.user.last_name }}
+					{{ $account.user.first_name }}
 				</h3>
 				<p class="mt-1 text-base text-gray-600">{{ $account.user.email }}</p>
 			</div>
 			<div class="ml-auto">
 				<Button icon-left="edit" @click="showProfileEditDialog = true">
-					Chỉnh sửa
+					{{ $t('edit') }}
 				</Button>
 			</div>
 		</div>
 		<div>
 			<ListItem
-				title="Trở thành nhà phát triển Marketplace"
-				subtitle="Trở thành nhà xuất bản ứng dụng trên marketplace"
+				:title="$t('accountprofile_content_1')"
+				:subtitle="$t('accountprofile_content_2')"
 				v-if="showBecomePublisherButton"
 			>
 				<template #actions>
 					<Button @click="confirmPublisherAccount()">
-						<span>Trở thành nhà xuất bản</span>
+						<span>{{ $t('become_a_publisher') }}</span>
 					</Button>
 				</template>
 			</ListItem>
 			<ListItem
-				:title="teamEnabled ? 'Vô hiệu hóa tài khoản' : 'Kích hoạt tài khoản'"
+				:title="teamEnabled ? $t('disable_account') : $t('enable_account')"
 				:subtitle="
 					teamEnabled
-						? 'Vô hiệu hóa tài khoản của bạn và dừng việc lập hóa đơn'
-						: 'kích hoạt tài khoản của bạn và tiếp tục việc lập hóa đơn'
+						? $t('accountprofile_content_3')
+						: $t('accountprofile_content_4')
 				"
 			>
 				<template #actions>
@@ -75,7 +75,7 @@
 						"
 					>
 						<span :class="{ 'text-red-600': teamEnabled }">{{
-							teamEnabled ? 'Vô hiệu hóa' : 'Kích hoạt'
+							teamEnabled ? $t('disable') : $t('enable')
 						}}</span>
 					</Button>
 				</template>
@@ -83,11 +83,11 @@
 		</div>
 		<Dialog
 			:options="{
-				title: 'Cập nhật thông tin hồ sơ',
+				title: $t('update_profile_information'),
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Lưu thay đổi',
+						label: $t('save_changes'),
 						onClick: () => $resources.updateProfile.submit()
 					}
 				]
@@ -95,9 +95,11 @@
 			v-model="showProfileEditDialog"
 		>
 			<template v-slot:body-content>
-				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<FormControl label="Họ" v-model="$account.user.last_name" />
-					<FormControl label="Tên" v-model="$account.user.first_name" />
+				<div class="grid grid-cols-1 gap-4">
+					<FormControl
+						:label="$t('full_name')"
+						v-model="$account.user.first_name"
+					/>
 				</div>
 				<ErrorMessage class="mt-4" :message="$resources.updateProfile.error" />
 			</template>
@@ -105,10 +107,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Vô hiệu hóa tài khoản',
+				title: $t('disable_account'),
 				actions: [
 					{
-						label: 'Vô hiệu hóa',
+						label: $t('disable'),
 						variant: 'solid',
 						theme: 'red',
 						loading: $resources.disableAccount.loading,
@@ -120,17 +122,15 @@
 		>
 			<template v-slot:body-content>
 				<div class="prose text-base">
-					Bằng cách xác nhận hành động này:
+					{{ $t('accountprofile_content_5') }}
 					<ul>
-						<li>Tài khoản của bạn sẽ bị vô hiệu hóa</li>
+						<li>{{ $t('accountprofile_content_6') }}</li>
 						<li>
-							Các tổ chức đang hoạt động của bạn sẽ bị đình chỉ ngay lập tức và
-							sẽ bị xóa sau một tuần.
+							{{ $t('accountprofile_content_7') }}
 						</li>
-						<li>Việc thanh toán tài khoản của bạn sẽ bị ngừng</li>
+						<li>{{ $t('accountprofile_content_8') }}</li>
 					</ul>
-					Bạn có thể kích hoạt tài khoản của mình sau này bất cứ lúc nào. Bạn có
-					muốn tiếp tục?
+					{{ $t('accountprofile_content_9') }}
 				</div>
 				<ErrorMessage class="mt-2" :message="$resources.disableAccount.error" />
 			</template>
@@ -138,10 +138,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Kích hoạt tài khoản',
+				title: $t('enable_account'),
 				actions: [
 					{
-						label: 'Kích hoạt',
+						label: $t('enable'),
 						variant: 'solid',
 						loading: $resources.enableAccount.loading,
 						onClick: () => $resources.enableAccount.submit()
@@ -152,13 +152,13 @@
 		>
 			<template v-slot:body-content>
 				<div class="prose text-base">
-					Xác nhận hành động này:
+					{{ $t('accountprofile_content_10') }}
 					<ul>
-						<li>Tài khoản của bạn sẽ được kích hoạt</li>
-						<li>Các tổ chức bị đình chỉ của bạn sẽ hoạt động</li>
-						<li>Việc lập hóa đơn cho tài khoản của bạn sẽ được tiếp tục</li>
+						<li>{{ $t('accountprofile_content_11') }}</li>
+						<li>{{ $t('accountprofile_content_12') }}</li>
+						<li>{{ $t('accountprofile_content_13') }}</li>
 					</ul>
-					Bạn có muốn tiếp tục không?
+					{{ $t('accountprofile_content_14') }}
 				</div>
 				<ErrorMessage class="mt-2" :message="$resources.enableAccount.error" />
 			</template>
@@ -193,12 +193,11 @@ export default {
 	},
 	resources: {
 		updateProfile() {
-			let { first_name, last_name, email } = this.$account.user;
+			let { first_name, email } = this.$account.user;
 			return {
 				url: 'press.api.account.update_profile',
 				params: {
 					first_name,
-					last_name,
 					email
 				},
 				onSuccess() {
@@ -216,8 +215,8 @@ export default {
 					this.showFinalizeInvoicesDialog = true;
 				} else {
 					notify({
-						title: 'Tài khoản đã bị vô hiệu hóa',
-						message: 'Tài khoản của bạn đã được vô hiệu hóa thành công',
+						title: this.$t('account_disabled'),
+						message: this.$t('accountprofile_content_15'),
 						icon: 'check',
 						color: 'green'
 					});
@@ -229,8 +228,8 @@ export default {
 			url: 'press.api.account.enable_account',
 			onSuccess() {
 				notify({
-					title: 'Tài khoản đã được kích hoạt',
-					message: 'Tài khoản của bạn đã được kích hoạt thành công',
+					title: this.$t('account_enabled'),
+					message: this.$t('accountprofile_content_16'),
 					icon: 'check',
 					color: 'green'
 				});
@@ -265,17 +264,16 @@ export default {
 		},
 		notifySuccess() {
 			notify({
-				title: 'Thông tin hồ sơ đã được cập nhật',
+				title: this.$t('Updated_profile_information'),
 				icon: 'check',
 				color: 'green'
 			});
 		},
 		confirmPublisherAccount() {
 			this.$confirm({
-				title: 'Trở thành nhà phát triển ứng dụng marketplace?',
-				message:
-					'Sau khi xác nhận, bạn sẽ có thể xuất bản ứng dụng lên Marketplace của chúng tôi.',
-				actionLabel: 'Có',
+				title: this.$t('accountprofile_content_17'),
+				message: this.$t('accountprofile_content_18'),
+				actionLabel: this.$t('yes'),
 				action: closeDialog => {
 					this.$resources.becomePublisher.submit();
 					closeDialog();

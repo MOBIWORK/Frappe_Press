@@ -126,18 +126,18 @@ let utils = {
 		},
 		$getStatusDocTrans(t) {
 			let statusDoc = {
-				0: 'Chưa thanh toán',
-				1: 'Đã thanh toán',
-				2: 'Đã hủy',
-				3: 'Chờ xử lý'
+				0: this.$t('unpaid'),
+				1: this.$t('paid'),
+				2: this.$t('cancelled'),
+				3: this.$t('processing')
 			};
 			return statusDoc[t] || t;
 		},
 		$getTypeSource(t) {
 			let typeSource = {
-				'Prepaid Credits': 'Tiền đã nạp',
-				'Transferred Credits': 'Tiền chuyển đi',
-				'Free Credits': 'Tiền ưu đãi'
+				'Prepaid Credits': this.$t('deposit_amount'),
+				'Transferred Credits': this.$t('transferred_amount'),
+				'Free Credits': this.$t('promotional_amount')
 			};
 			return typeSource[t] || t;
 		},

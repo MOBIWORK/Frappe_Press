@@ -6,7 +6,7 @@
 	>
 		<template #body-title>
 			<h3 class="text-2xl font-semibold leading-6 text-gray-900">
-				Nạp tiền vào tài khoản
+				{{ $t('deposit_money_into_account') }}
 			</h3>
 			<p class="mt-1 text-base text-gray-600">
 				{{ paymentGateway ? '' : 'Chọn cổng thanh toán của bạn' }}

@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<div v-if="step == 'Create order'" class="rounded-lg border p-4">
-			<div class="text-md mb-3 font-bold">Nạp tiền</div>
+			<div class="text-md mb-3 font-bold">{{ $t('deposit_money') }}</div>
 			<div>
 				<FormControl
 					class="mb-2"
-					label="Số tiền"
+					:label="$t('amount_of_money')"
 					v-model.number="creditsToBuy"
 					name="amount"
 					autocomplete="off"
@@ -25,25 +25,25 @@
 					<table class="w-full text-sm">
 						<tbody>
 							<tr class="border-b">
-								<td>Số dư tiền nạp:</td>
+								<td>{{ $t('deposit_balance') }}:</td>
 								<td class="py-2 text-right">
 									+ {{ this.$formatMoney(total) }} VND
 								</td>
 							</tr>
 							<tr class="border-b">
-								<td>Số dư khuyến mãi 1:</td>
+								<td>{{ $t('promotional_balance_1') }}:</td>
 								<td class="py-2 text-right">
 									+ {{ this.$formatMoney(0) }} VND
 								</td>
 							</tr>
 							<tr class="border-b">
-								<td>Số dư khuyến mãi 2:</td>
+								<td>{{ $t('promotional_balance_2') }}:</td>
 								<td class="py-2 text-right">
 									+ {{ this.$formatMoney(depositBonus) }} VND
 								</td>
 							</tr>
 							<tr>
-								<th>Số dư tài khoản:</th>
+								<th>{{ $t('account_balance') }}:</th>
 								<th class="py-2 text-right">
 									+ {{ this.calcAmountAll() }} VND
 								</th>
@@ -68,7 +68,7 @@
 			v-if="$resources.cashPolicy.data && step == 'Create order'"
 			class="mt-5 rounded-lg border p-4"
 		>
-			<div class="text-md font-bold">Chính sách tặng tiền</div>
+			<div class="text-md font-bold">{{ $t('bonus_policy') }}</div>
 			<div>
 				<div class="overflow-x-auto">
 					<table class="text w-full text-sm">
@@ -77,13 +77,13 @@
 								<th
 									class="whitespace-nowrap border-b py-3 pr-2 text-left font-normal"
 								>
-									Loại chính sách
+									{{ $t('policy_type') }}
 								</th>
 								<th class="border-b py-3 pr-2 text-left font-normal">
-									Khuyến mãi nạp
+									{{ $t('deposit_promotion') }}
 								</th>
 								<th class="border-b py-3 pr-2 text-left font-normal">
-									% số tiền tặng
+									% {{ $t('bonus_amount') }}
 								</th>
 							</tr>
 						</thead>
@@ -97,11 +97,12 @@
 							>
 								<td class="py-3 pr-2">{{ row.policy_type }}</td>
 								<td class="py-3 pr-2">
-									Nạp từ {{ this.$formatMoney(row.amount_from) }} VND đến
+									{{ $t('top_up_from') }}
+									{{ this.$formatMoney(row.amount_from) }} VND {{ $t('to') }}
 									{{ this.$formatMoney(row.amount_to) }} VND
 								</td>
 								<td class="py-3 pr-2">
-									{{ row.cash_gift_percentage }}% (Tối đa
+									{{ row.cash_gift_percentage }}% ({{ $t('maximum') }}
 									{{ this.$formatMoney(row.maximum_amount) }} VND)
 								</td>
 							</tr>
@@ -109,7 +110,7 @@
 					</table>
 				</div>
 				<div v-if="$resources.cashPolicy.loading" class="py-20 text-center">
-					<Button :loading="true">Đang tải</Button>
+					<Button :loading="true">{{ $t('loading') }}</Button>
 				</div>
 			</div>
 		</div>
@@ -118,14 +119,14 @@
 			class="text-sm underline"
 			to="transaction-history"
 		>
-			Đến thanh toán
+			{{ $t('go_to_checkout') }}
 		</router-link>
 		<div v-if="infoOrder">
-			<div>Thông tin hóa đơn được tạo:</div>
+			<div>{{ $t('invoice_information_created') }}:</div>
 			<div class="rounded-md border p-2">
-				<p>Mã hóa đơn: {{ infoOrder.order_code }}</p>
-				<p>Số tiền: {{ formatAmount() }} VND</p>
-				<p>Nội dung: {{ infoOrder.description }}</p>
+				<p>{{ $t('invoice_code') }}: {{ infoOrder.order_code }}</p>
+				<p>{{ $t('amount_of_money') }}: {{ formatAmount() }} VND</p>
+				<p>{{ $t('content') }}: {{ infoOrder.description }}</p>
 			</div>
 		</div>
 
@@ -138,18 +139,18 @@
 					@click="$resources.createaOrder.submit()"
 					:loading="$resources.createaOrder.loading"
 				>
-					Tạo hóa đơn
+					{{ $t('create_invoice') }}
 				</Button>
 			</div>
 			<div v-if="step == 'Get link payment'">
-				<Button @click="$emit('cancel')"> Hủy </Button>
+				<Button @click="$emit('cancel')"> {{ $t('cancel') }} </Button>
 				<Button
 					class="ml-2"
 					variant="solid"
 					@click="$resources.getLinkPayment.submit()"
 					:loading="$resources.getLinkPayment.loading"
 				>
-					Đến link thanh toán
+					{{ $t('proceed_to_payment') }}
 				</Button>
 			</div>
 			<!-- <div v-if="step == 'Get Amount'">
@@ -225,7 +226,7 @@ export default {
 				},
 				onError(e) {
 					notify({
-						title: 'Có lỗi xảy ra vui lòng thử lại.',
+						title: this.$t('an_error_occurred'),
 						color: 'red',
 						icon: 'x'
 					});
@@ -242,7 +243,7 @@ export default {
 				},
 				onError(e) {
 					notify({
-						title: 'Có lỗi xảy ra vui lòng thử lại.',
+						title: this.$t('an_error_occurred'),
 						color: 'red',
 						icon: 'x'
 					});
@@ -258,15 +259,15 @@ export default {
 				validate() {
 					this.errorMessage = null;
 					if (this.creditsToBuy < this.minimumAmount) {
-						let text = `Số tiền phải lớn hơn hoặc bằng ${this.$formatMoney(
-							this.minimumAmount
-						)} VND`;
+						let text = `${this.$t(
+							'buyprepaidcredit_content_1'
+						)} ${this.$formatMoney(this.minimumAmount)} VND`;
 						this.errorMessage = text;
 						return text;
 					} else if (this.creditsToBuy > 100000000) {
-						let text = `Số tiền phải nhở hơn hoặc bằng ${this.$formatMoney(
-							100000000
-						)} VND`;
+						let text = `${this.$t(
+							'buyprepaidcredit_content_2'
+						)} ${this.$formatMoney(100000000)} VND`;
 						this.errorMessage = text;
 						return text;
 					}
@@ -312,7 +313,7 @@ export default {
 				},
 				onError(e) {
 					notify({
-						title: 'Có lỗi xảy ra vui lòng thử lại.',
+						title: this.$t('an_error_occurred'),
 						color: 'red',
 						icon: 'x'
 					});
@@ -409,14 +410,18 @@ export default {
 								amount_free = el.maximum_amount;
 							}
 
-							this.textDepositBonus = `Bạn được áp dụng khuyến mãi nạp lần đầu. Nạp đạt mốc ${this.$formatMoney(
-								el.amount_from
-							)} VND để nhận thêm ${this.$formatMoney(amount_free)} VND`;
+							this.textDepositBonus = `${this.$t(
+								'buyprepaidcredit_content_3'
+							)} ${this.$formatMoney(el.amount_from)} VND ${this.$t(
+								'to_receive_more'
+							)} ${this.$formatMoney(amount_free)} VND`;
 
 							if (this.checkFirstDeposit) {
-								this.textDepositBonus = `Nạp đạt mốc ${this.$formatMoney(
-									el.amount_from
-								)} VND để nhận thêm ${this.$formatMoney(amount_free)} VND`;
+								this.textDepositBonus = `${this.$t(
+									'threshold_reached'
+								)} ${this.$formatMoney(el.amount_from)} VND ${this.$t(
+									'to_receive_more'
+								)} ${this.$formatMoney(amount_free)} VND`;
 							}
 							break;
 						} else {

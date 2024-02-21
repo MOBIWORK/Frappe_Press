@@ -1,17 +1,17 @@
 <template>
 	<Card
 		v-if="referralLink"
-		title="Giới thiệu và kiếm tiền"
-		subtitle="Liên kết giới thiệu duy nhất của bạn"
+		:title="$t('refer_and_earn')"
+		:subtitle="$t('accountreferral_content_1')"
 	>
 		<div class="space-y-4">
 			<ClickToCopyField :textContent="referralLink" />
 			<h3 class="text-base text-gray-700">
-				Khi ai đó đăng ký bằng liên kết trên và chi ít nhất
-				{{ minimumSpentAmount }} cho MBW Cloud, Bạn
+				{{ $t('accountreferral_content_2') }}
+				{{ minimumSpentAmount }} {{ $t('accountreferral_content_3') }}
 				<strong
-					>nhận được {{ creditAmountInTeamCurrency }} trong tài khoản MBW
-					Cloud</strong
+					>{{ $t('get') }} {{ creditAmountInTeamCurrency }}
+					{{ $t('accountreferral_content_4') }}</strong
 				>!
 			</h3>
 		</div>

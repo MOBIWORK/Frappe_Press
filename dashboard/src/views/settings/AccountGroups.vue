@@ -1,11 +1,11 @@
 <template>
 	<Card
-		title="Quyền của nhóm"
-		subtitle="Tạo một nhóm hoặc quyền và gán nó cho các thành viên trong đội của bạn"
+		:title="$t('group_permissions')"
+		:subtitle="$t('accountgroups_content_1')"
 	>
 		<template #actions>
 			<Button v-if="showManageTeamButton" @click="showAddGroupDialog = true">
-				Thêm nhóm mới
+				{{ $t('add_new_group') }}
 			</Button>
 		</template>
 		<div class="max-h-96 divide-y">
@@ -41,10 +41,10 @@
 
 	<Dialog
 		:options="{
-			title: 'Thêm nhóm mới',
+			title: $t('add_new_group'),
 			actions: [
 				{
-					label: 'Tạo nhóm',
+					label: $t('create_group'),
 					variant: 'solid',
 					loading: $resources.addGroup.loading,
 					onClick: () => $resources.addGroup.submit({ title: groupName })
@@ -54,7 +54,7 @@
 		v-model="showAddGroupDialog"
 	>
 		<template v-slot:body-content>
-			<Input :label="'Title'" type="text" v-model="groupName" required />
+			<Input :label="$t('title')" type="text" v-model="groupName" required />
 		</template>
 	</Dialog>
 </template>
@@ -92,9 +92,8 @@ export default {
 				this.showManageMemberDialog = false;
 				this.memberEmail = null;
 				notify({
-					title: 'Lời mời đã được gửi!',
-					message:
-						'Họ sẽ nhận được một email trong thời gian ngắn để tham gia vào đội của bạn.',
+					title: this.$t('invite_sent'),
+					message: this.$t('accountmembers_content_3'),
 					color: 'green',
 					icon: 'check'
 				});
@@ -104,15 +103,14 @@ export default {
 			url: 'press.api.account.add_permission_group',
 			validate() {
 				if (this.groupName.length == 0) {
-					return 'Tên nhóm không được để trống.';
+					return this.$t('group_name_is_required');
 				}
 			},
 			onSuccess(r) {
 				this.$resources.groups.fetch();
 				notify({
-					title: 'Nhóm đã được tạo!',
-					message:
-						'Bạn có thể gán nhóm này cho các thành viên trong đội của bạn ngay bây giờ',
+					title: this.$t('group_created'),
+					message: this.$t('accountgroups_content_2'),
 					color: 'green',
 					icon: 'check'
 				});
@@ -126,7 +124,7 @@ export default {
 			onSuccess() {
 				this.$resources.groups.fetch();
 				notify({
-					title: 'Nhóm đã bị xóa!',
+					title: this.$t('group_removed'),
 					message: 'Quyền đã được loại bỏ khỏi tất cả các thành viên trong đội',
 					color: 'green',
 					icon: 'check'
@@ -137,9 +135,11 @@ export default {
 	methods: {
 		removeGroup(group) {
 			this.$confirm({
-				title: 'Xóa nhóm',
-				message: `Bạn có chắc chắn muốn xóa ${group.title} ?`,
-				actionLabel: 'Xóa',
+				title: this.$t('remove_group'),
+				message: `${this.$t('are_you_sure_you_want_to_remove')} ${
+					group.title
+				} ?`,
+				actionLabel: this.$t('remove'),
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.removeGroup.submit({ name: group.name });
@@ -150,7 +150,7 @@ export default {
 		dropdownItems(group) {
 			return [
 				{
-					label: 'Quản lý thành viên',
+					label: this.$t('manage_members'),
 					icon: 'users',
 					onClick: () => {
 						this.group = group;
@@ -158,7 +158,7 @@ export default {
 					}
 				},
 				{
-					label: 'Chỉnh sửa quyền',
+					label: this.$t('edit_permissions'),
 					icon: 'edit',
 					onClick: () => {
 						this.group = group;
@@ -166,7 +166,7 @@ export default {
 					}
 				},
 				{
-					label: 'Xóa',
+					label: this.$t('remove'),
 					icon: 'trash-2',
 					onClick: () => this.removeGroup(group)
 				}

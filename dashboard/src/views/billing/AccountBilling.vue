@@ -32,7 +32,7 @@ export default {
 			let tabs = [
 				{ label: this.$t('overview'), route: 'overview' },
 				{ label: this.$t('invoices'), route: 'invoices' },
-				{ label: this.$t('invoice_details'), route: 'payment' },
+				{ label: this.$t('invoice_information'), route: 'payment' },
 				{ label: this.$t('transaction_history'), route: 'transaction-history' }
 			];
 

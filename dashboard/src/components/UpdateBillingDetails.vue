@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Cập nhật thông tin hóa đơn',
+			title: $t('update_invoice_information'),
 			actions: [
 				{
-					label: 'Xác nhận',
+					label: $t('confirm'),
 					variant: 'solid',
 					loading: $resources.updateBillingInformation.loading,
 					onClick: () => $resources.updateBillingInformation.submit()
@@ -107,7 +107,7 @@ export default {
 					notify({
 						icon: 'check',
 						color: 'green',
-						title: 'Địa chỉ đã được cập nhật thành công!'
+						title: this.$t('address_updated_successfully')
 					});
 
 					await this.$call('press.api.billing.setup_intent_success', {

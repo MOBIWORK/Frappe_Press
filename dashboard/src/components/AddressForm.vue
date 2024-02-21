@@ -118,7 +118,7 @@ export default {
 			this.fieldNotSet = fieldNotSetNew;
 
 			if (!values.every(Boolean)) {
-				return 'Vui lòng điền đầy đủ thông tin';
+				return this.$t('please_fill_required_values');
 			}
 
 			try {
@@ -162,7 +162,7 @@ export default {
 				},
 				{
 					fieldtype: 'Data',
-					label: 'Số điện thoại',
+					label: this.$t('phone'),
 					fieldname: 'phone',
 					required: 1,
 					size: this.size

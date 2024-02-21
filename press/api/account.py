@@ -576,7 +576,8 @@ def update_profile(first_name=None, phone=None, email=None):
     user = frappe.session.user
     doc = frappe.get_doc("User", user)
     doc.first_name = first_name
-    doc.phone = phone
+    if phone != None:
+        doc.phone = phone
     doc.email = email
     doc.save(ignore_permissions=True)
     return doc

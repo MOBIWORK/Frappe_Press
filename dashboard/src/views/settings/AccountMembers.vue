@@ -1,14 +1,14 @@
 <template>
 	<Card
-		title="Thành viên nhóm và quyền"
-		subtitle="Các thành viên trong nhóm có thể thay mặt bạn truy cập vào tài khoản của bạn."
+		:title="$t('team_members_and_permissions')"
+		:subtitle="$t('accountmembers_content_1')"
 	>
 		<template #actions>
 			<Button
 				v-if="showManageTeamButton"
 				@click="showManageMemberDialog = true"
 			>
-				Thêm thành viên mới
+				{{ $t('add_new_member') }}
 			</Button>
 		</template>
 		<div class="max-h-96 divide-y">
@@ -36,10 +36,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Thêm thành viên mới',
+				title: $t('add_new_member'),
 				actions: [
 					{
-						label: 'Gửi lời mời',
+						label: $t('send_invitation'),
 						variant: 'solid',
 						loading: $resources.addMember.loading,
 						onClick: () => $resources.addMember.submit({ email: memberEmail })
@@ -50,7 +50,7 @@
 		>
 			<template v-slot:body-content>
 				<FormControl
-					label="Nhập địa chỉ email của thành viên để mời họ."
+					:label="$t('accountmembers_content_2')"
 					class="mt-2"
 					v-model="memberEmail"
 					required
@@ -91,9 +91,8 @@ export default {
 				this.showManageMemberDialog = false;
 				this.memberEmail = null;
 				notify({
-					title: 'Lời mời đã được gửi!',
-					message:
-						'Họ sẽ nhận được một email trong thời gian ngắn để tham gia vào nhóm của bạn.',
+					title: this.$t('invite_sent'),
+					message: this.$t('accountmembers_content_3'),
 					color: 'green',
 					icon: 'check'
 				});
@@ -105,7 +104,7 @@ export default {
 				this.showManageMemberDialog = false;
 				this.$account.fetchAccount();
 				notify({
-					title: 'Thành viên nhóm đã bị loại bỏ.',
+					title: this.$t('team_member_removed'),
 					icon: 'check',
 					color: 'green'
 				});
@@ -129,9 +128,9 @@ export default {
 		},
 		removeMember(member) {
 			this.$confirm({
-				title: 'Xóa thành viên',
-				message: `Bạn có chắc chắn muốn loại bỏ ${member.first_name} ?`,
-				actionLabel: 'Xóa',
+				title: this.$t('remove_member'),
+				message: `${this.$t('accountmembers_content_4')} ${member.first_name} ?`,
+				actionLabel: this.$t('remove'),
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.removeMember.submit({ user_email: member.name });
@@ -142,7 +141,7 @@ export default {
 		dropdownItems(member) {
 			return [
 				{
-					label: 'Chỉnh sửa quyền',
+					label: this.$t('edit_permissions'),
 					icon: 'edit',
 					onClick: () => {
 						this.memberName = member.name;
@@ -150,7 +149,7 @@ export default {
 					}
 				},
 				{
-					label: 'Xóa',
+					label: this.$t('remove'),
 					icon: 'trash-2',
 					onClick: () => this.removeMember(member)
 				}

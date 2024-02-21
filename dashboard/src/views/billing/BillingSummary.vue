@@ -1,11 +1,11 @@
 <template>
 	<div class="space-y-5">
-		<Card title="Số dư" :activeHeight="true">
+		<Card :title="$t('balance')" :activeHeight="true">
 			<div v-if="!$resources.upcomingInvoice.loading">
 				<div class="mb-4 grid grid-cols-2 gap-4">
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
-							<div>Số dư tiền nạp</div>
+							<div>{{ $t('deposit_balance') }}</div>
 						</div>
 						<div class="text-2xl font-medium">
 							{{ availableCredits }}
@@ -13,7 +13,9 @@
 					</div>
 
 					<div class="rounded-md border p-4">
-						<div class="mb-2 text-base">Hóa đơn tạm tính tháng này</div>
+						<div class="mb-2 text-base">
+							{{ $t('this_month_provisional_invoice') }}
+						</div>
 						<div class="text-2xl font-medium">
 							{{
 								upcomingInvoice
@@ -26,15 +28,15 @@
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
 							<div class="flex">
-								<div class="mr-1">Số dư khuyến mãi 1</div>
+								<div class="mr-1">{{ $t('promotional_balance_1') }}</div>
 								<Tooltip
 									:text="
 										$resources.upcomingInvoice.data?.val_check_promotion
-											? 'Khuyến mãi này được dùng đến hết ngày ' +
+											? `${$t('billingsummary_content_1')} ` +
 											  this.$formatDate(
 													$resources.upcomingInvoice.data?.date_promotion_1
 											  )
-											: 'Đây là khuyến mãi số dư tài khoản có hạn sử dụng'
+											: $t('billingsummary_content_2')
 									"
 								>
 									<svg
@@ -57,7 +59,7 @@
 
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
-							<div>Hóa đơn còn nợ</div>
+							<div>{{ $t('unpaid_invoice') }}</div>
 						</div>
 						<div class="text-2xl font-medium">
 							{{ unpaidAmountDue }}
@@ -67,10 +69,8 @@
 					<div class="rounded-md border p-4">
 						<div class="mb-2 flex justify-between text-base">
 							<div class="flex">
-								<div class="mr-1">Số dư khuyến mãi 2</div>
-								<Tooltip
-									text="Đây là khuyến mãi số dư tài khoản có hạn sử dụng vĩnh viễn"
-								>
+								<div class="mr-1">{{ $t('promotional_balance_2') }}</div>
+								<Tooltip :text="$t('billingsummary_content_3')">
 									<svg
 										xmlns="http://www.w3.org/2000/svg"
 										height="14"
@@ -90,7 +90,7 @@
 					</div>
 
 					<div class="rounded-md border p-4">
-						<div class="mb-2 text-base">Số dư khả dụng</div>
+						<div class="mb-2 text-base">{{ $t('available_balance') }}</div>
 						<div class="text-2xl font-medium">
 							{{ availableBalances }}
 						</div>
@@ -99,7 +99,7 @@
 					<div class="col-span-2 rounded-md border p-4">
 						<div class="mb-5">
 							<div class="mb-2 flex justify-between text-base">
-								<div>Số dư tài khoản</div>
+								<div>{{ $t('account_balance') }}</div>
 							</div>
 							<div class="text-2xl font-medium">
 								{{
@@ -116,23 +116,23 @@
 							class="mb-3 flex flex-wrap justify-between text-base"
 						>
 							<div class="mb-2">
-								Nạp thêm {{ this.$formatMoney(soTienThanhToan) }} VND để thanh
-								toán hóa đơn nợ và hóa đơn đến cuối tháng
+								{{ $t('top_up') }} {{ this.$formatMoney(soTienThanhToan) }} VND
+								{{ $t('billingsummary_content_4') }}
 							</div>
 							<Button
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"
 								iconLeft="credit-card"
-								>Thanh toán</Button
+								>{{ $t('payment') }}</Button
 							>
 						</div>
 						<div v-else class="mb-3 flex flex-wrap justify-between text-base">
-							<div class="mb-2">Nạp tiền vào tài khoản</div>
+							<div class="mb-2">{{ $t('deposit_money_into_account') }}</div>
 							<Button
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"
 								iconLeft="plus"
-								>Nạp tiền</Button
+								>{{ $t('deposit_money') }}</Button
 							>
 						</div>
 					</div>
@@ -166,7 +166,7 @@
 			</div>
 
 			<div class="py-20 text-center" v-if="loading">
-				<Button :loading="true" loadingText="Đang tải" />
+				<Button :loading="true" :loadingText="$t('loading')" />
 			</div>
 
 			<ChangePaymentModeDialog v-model="showChangeModeDialog" />

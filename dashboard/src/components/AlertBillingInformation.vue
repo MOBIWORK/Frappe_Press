@@ -1,5 +1,5 @@
 <template>
-	<Alert title="Thiết lập tài khoản" v-if="!$account.hasBillingInfo">
+	<Alert :title="$t('set_up_account')" v-if="!$account.hasBillingInfo">
 		{{ message }}
 		<template #actions>
 			<Button
@@ -13,8 +13,8 @@
 			>
 				{{
 					this.$account.team.billing_address
-						? 'Thêm Số Dư'
-						: 'Xác nhận thông tin'
+						? $t('add_balance')
+						: $t('confirm_information')
 				}}
 			</Button>
 		</template>
@@ -73,9 +73,9 @@ export default {
 		},
 		message() {
 			if (this.$account.team.billing_address) {
-				return 'Số dư tài khoản của bạn đã hết. Vui lòng nạp thêm tiền vào tài khoản của bạn để tiếp tục sử dụng dịch vụ.';
+				return this.$t('alertbillinginformation_content_1');
 			} else {
-				return 'Bạn chưa xác nhận thông tin thanh toán của mình. Thêm nó để bắt đầu tạo tổ chức.';
+				return this.$t('alertbillinginformation_content_2');
 			}
 		}
 	}

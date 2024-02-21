@@ -1,10 +1,10 @@
 <template>
 	<Card
-		title="Thông tin hóa đơn"
-		subtitle="Thông tin của bạn được sử dụng trong hóa đơn điện tử"
+		:title="$t('invoice_information')"
+		:subtitle="$t('accountbillingdetails_content_1')"
 	>
 		<template #actions>
-			<Button @click="editBillingDetails = true">Cập nhật</Button>
+			<Button @click="editBillingDetails = true">{{ $t('update') }}</Button>
 		</template>
 		<UpdateBillingDetails
 			v-model="editBillingDetails"
@@ -15,35 +15,35 @@
 		/>
 		<div class="divide-y" v-if="infoBilling">
 			<ListItem
-				title="Đối tượng"
+				:title="$t('object')"
 				:description="infoBilling.address?.enterprise"
 			/>
 			<ListItem
 				:title="
 					infoBilling.address?.enterprise == `Công ty`
-						? `Tên công ty`
-						: `Họ tên`
+						? $t('company_name')
+						: $t('full_name')
 				"
 				:description="infoBilling.billing_name"
 			/>
 			<ListItem
 				v-if="infoBilling.address?.enterprise == 'Công ty'"
-				title="Mã số thuế"
+				:title="$t('tax_code')"
 				:description="infoBilling.address?.tax_code"
 			/>
 			<ListItem title="Email" :description="infoBilling.address?.email_id" />
 			<ListItem
-				title="Số điện thoại"
+				:title="$t('phone')"
 				:description="infoBilling.address?.phone"
 			/>
 			<ListItem
-				title="Địa chỉ"
-				:description="infoBilling.billing_address || 'Chưa đặt'"
+				:title="$t('address')"
+				:description="infoBilling.billing_address || $t('not_set')"
 			/>
 			<ListItem
 				v-if="$account.team.country == 'India'"
 				title="Tax ID"
-				:description="infoBilling.gstin || 'Chưa đặt'"
+				:description="infoBilling.gstin || $t('not_set')"
 			/>
 		</div>
 	</Card>

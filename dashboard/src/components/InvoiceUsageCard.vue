@@ -1,7 +1,7 @@
 <template>
 	<Card v-if="invoice" :title="title">
 		<template #actions-left>
-			<Button route="/billing/invoices"> ← Trở lại </Button>
+			<Button route="/billing/invoices"> ← {{ $t('back') }} </Button>
 		</template>
 		<InvoiceUsageTable :invoice="invoice" @doc="doc = $event" />
 	</Card>
@@ -26,12 +26,12 @@ export default {
 				return '';
 			}
 			if (!doc.period_start || !doc.period_end) {
-				return `Chi tiết mã hóa đơn ${this.invoice}`;
+				return `${this.$t('invoice_code_details')} ${this.invoice}`;
 			}
 
 			let start = this.$formatDate(doc.period_start);
 			let end = this.$formatDate(doc.period_end);
-			return `Hóa đơn từ ${start} đến ${end}`;
+			return `${this.$t('invoice_from')} ${start} ${this.$t('to')} ${end}`;
 		}
 	}
 };

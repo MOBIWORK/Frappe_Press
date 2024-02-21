@@ -90,7 +90,10 @@ app.config.errorHandler = (error, instance) => {
 		if (error.messages) errorMessage = error.messages.join('\n');
 		notify({
 			icon: 'x',
-			title: 'Có lỗi xảy ra',
+			title:
+				localStorage.getItem('lang') == 'en'
+					? 'An error occurred'
+					: 'Có lỗi xảy ra',
 			message: errorMessage,
 			color: 'red'
 		});

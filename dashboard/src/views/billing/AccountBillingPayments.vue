@@ -1,5 +1,5 @@
 <template>
-	<Card title="Hóa đơn trước" :subtitle="subtitle" v-if="!invoiceName">
+	<Card :title="$t('past_invoices')" :subtitle="subtitle" v-if="!invoiceName">
 		<template #actions>
 			<FormControl
 				v-if="$resources.pastInvoices.data?.length"
@@ -12,11 +12,11 @@
 			<div
 				class="grid grid-cols-3 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-6"
 			>
-				<span>Ngày</span>
-				<span class="hidden md:inline">Mô tả</span>
-				<span class="hidden md:inline">Số tiền</span>
-				<span>Trạng thái</span>
-				<span class="hidden md:inline">Ngày thanh toán</span>
+				<span>{{ $t('date') }}</span>
+				<span class="hidden md:inline">{{ $t('description') }}</span>
+				<span class="hidden md:inline">{{ $t('amount_of_money') }}</span>
+				<span>{{ $t('status') }}</span>
+				<span class="hidden md:inline">{{ $t('payment_date') }}</span>
 				<span></span>
 			</div>
 			<div
@@ -37,7 +37,7 @@
 						v-if="invoice.type == 'Subscription'"
 						:to="'/billing/' + invoice.name + '/invoices'"
 					>
-						Hóa đơn ngày
+						{{ $t('invoice_for') }}
 						{{ this.$formatDate(invoice.period_end) }}
 					</Link>
 					<span v-if="invoice.type === 'Prepaid Credits'">
@@ -69,7 +69,7 @@
 						class="shrink-0"
 						:link="invoice.link_to_electronic_invoice"
 					>
-						<span class="text-sm">Tải xuống</span>
+						<span class="text-sm">{{ $t('download') }}</span>
 					</Button>
 					<Button
 						v-if="invoice.status != 'Paid' && invoice.stripe_invoice_url"
@@ -77,7 +77,7 @@
 						class="shrink-0"
 						@click="payNow(invoice)"
 					>
-						<span class="text-sm">Thanh toán ngay</span>
+						<span class="text-sm">{{ $t('pay_now') }}</span>
 					</Button>
 				</div>
 			</div>
@@ -99,15 +99,15 @@ export default {
 			invoiceStatus: '',
 			selectItems: [
 				{
-					label: 'Tất cả hóa đơn',
+					label: this.$t('all_invoices'),
 					value: ''
 				},
 				{
-					label: 'Hoá đơn chưa thanh toán',
+					label: this.$t('unpaid_invoices'),
 					value: 'Unpaid'
 				},
 				{
-					label: 'Hóa đơn đã thanh toán',
+					label: this.$t('paid_invoices'),
 					value: 'Paid'
 				}
 			]
@@ -135,9 +135,17 @@ export default {
 				this.$resources.pastInvoices.loading ||
 				this.filteredInvoices.length > 0
 			) {
-				return `Lịch sử thanh toán hóa đơn của bạn với trạng thái hóa đơn là ${this.invoiceStatus}`;
+				if (this.$i18n.locale == 'vi') {
+					return `Lịch sử thanh toán hóa đơn của bạn với trạng thái hóa đơn là ${this.invoiceStatus}`;
+				} else {
+					return `History of your ${this.invoiceStatus} invoice payments`;
+				}
 			}
-			return `Chưa có hóa đơn ${this.invoiceStatus} nào được tạo.`;
+			if (this.$i18n.locale == 'vi') {
+				return `Chưa có hóa đơn ${this.invoiceStatus} nào được tạo.`;
+			} else {
+				return `No ${this.invoiceStatus} invoices have been generated yet`;
+			}
 		}
 	},
 	methods: {

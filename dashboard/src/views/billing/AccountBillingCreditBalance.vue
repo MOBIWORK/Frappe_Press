@@ -1,19 +1,19 @@
 <template>
 	<Card
-		title="Lịch sử giao dịch"
-		subtitle="Các giao dịch từ trước đến nay của bạn"
+		:title="$t('transaction_history')"
+		:subtitle="$t('your_past_transactions')"
 	>
 		<div class="max-h-96 divide-y overflow-auto">
 			<div>
 				<div
 					class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-7"
 				>
-					<span>Ngày</span>
-					<span>Mô tả</span>
-					<span>Số dư trước</span>
-					<span>Số tiền</span>
-					<span>Số dư</span>
-					<span>Trạng thái</span>
+					<span>{{ $t('date') }}</span>
+					<span>{{ $t('description') }}</span>
+					<span>{{ $t('previous_balance') }}</span>
+					<span>{{ $t('amount_of_money') }}</span>
+					<span>{{ $t('balance') }}</span>
+					<span>{{ $t('status') }}</span>
 					<span></span>
 				</div>
 				<details
@@ -26,7 +26,7 @@
 							class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900"
 						>
 							<div>
-								<span title="Xem chi tiết">
+								<span :title="$t('view_details')">
 									<subsummary></subsummary>
 								</span>
 								<span class="ml-2">
@@ -72,7 +72,7 @@
 										:disabled="false"
 										:link="null"
 									>
-										Thanh toán
+										{{ $t('payment') }}
 									</Button>
 								</Link>
 								<div class="mr-2">
@@ -84,7 +84,7 @@
 										@click="$resources.cancelOrder.submit({ name: d.name })"
 										:loading="$resources.cancelOrder.loading"
 									>
-										Hủy
+										{{ $t('cancel') }}
 									</Button>
 								</div>
 							</div>
@@ -98,9 +98,9 @@
 								>
 									<div></div>
 									<div>
-										<div class="py-1">Tiền nạp:</div>
-										<div class="py-1">Khuyến mãi 1:</div>
-										<div class="py-1">Khuyến mãi 2:</div>
+										<div class="py-1">{{ $t('deposit_amount') }}:</div>
+										<div class="py-1">{{ $t('promotion_1') }}:</div>
+										<div class="py-1">{{ $t('promotion_2') }}:</div>
 									</div>
 									<div>
 										<div class="py-1">{{ d.pre_formatted.balance }}</div>
@@ -202,7 +202,7 @@ export default {
 				},
 				onError(e) {
 					notify({
-						title: 'Có lỗi xảy ra vui lòng thử lại.',
+						title: this.$t('an_error_occurred'),
 						color: 'red',
 						icon: 'x'
 					});
@@ -225,7 +225,7 @@ export default {
 
 		getDescription(d) {
 			if (d.type === 'Applied To Invoice' && d.formatted.invoice_for) {
-				return `Hóa đơn tháng ${d.formatted.invoice_for}`;
+				return `${this.$t('invoice_for')} ${d.formatted.invoice_for}`;
 			}
 
 			return d.amount < 0 ? d.type : this.$getTypeSource(d.source);

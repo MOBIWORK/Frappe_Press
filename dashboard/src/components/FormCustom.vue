@@ -5,7 +5,7 @@
 				variant="outline"
 				:size="size"
 				:class="this.size ? 'custom-form-btn' : ''"
-				label="Đối tượng"
+				:label="$t('object')"
 				type="select"
 				:options="optionsEnterprise"
 				name="enterprise"
@@ -17,7 +17,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('enterprise')"
-				message="Đối tượng không được để trống"
+				:message="`${$t('object')} ${$t('is_required')}`"
 			/>
 		</div>
 		<div>
@@ -25,7 +25,9 @@
 				variant="outline"
 				:size="size"
 				:label="
-					modelValue['enterprise'] == 'Công ty' ? `Tên công ty` : `Họ tên`
+					modelValue['enterprise'] == 'Công ty'
+						? $t('company_name')
+						: $t('full_name')
 				"
 				type="text"
 				name="billing_name"
@@ -39,8 +41,8 @@
 				v-if="requiredFieldNotSet.includes('billing_name')"
 				:message="
 					modelValue['enterprise'] == 'Công ty'
-						? `Tên công ty`
-						: `Họ tên` + ` không được để trống`
+						? $t('company_name')
+						: $t('full_name') + ` ${$t('is_required')}`
 				"
 			/>
 		</div>
@@ -61,7 +63,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes(field.fieldname)"
-				:message="field.label + ' không được để trống'"
+				:message="field.label + ` ${$t('is_required')}`"
 			/>
 		</div>
 		<div>
@@ -69,7 +71,7 @@
 				variant="outline"
 				v-if="modelValue['enterprise'] == 'Công ty'"
 				:size="size"
-				label="Mã số thuế"
+				:label="$t('tax_code')"
 				type="text"
 				name="tax_code"
 				:modelValue="modelValue['tax_code']"
@@ -80,14 +82,14 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('tax_code')"
-				message="Mã số thuế không được để trống"
+				:message="`${$t('tax_code')} ${$t('is_required')}`"
 			/>
 		</div>
 		<div>
 			<FormControl
 				variant="outline"
 				:size="size"
-				label="Địa chỉ"
+				:label="$t('address')"
 				type="text"
 				name="address"
 				:modelValue="modelValue['address']"
@@ -98,7 +100,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('address')"
-				message="Địa chỉ không được để trống"
+				:message="`${$t('address')} ${$t('is_required')}`"
 			/>
 		</div>
 		<div>
@@ -106,7 +108,7 @@
 				variant="outline"
 				:size="size"
 				:class="this.size ? 'custom-form-btn' : ''"
-				label="Tỉnh thành"
+				:label="$t('province')"
 				:type="modelValue['country'] == 'Vietnam' ? 'autocomplete' : 'text'"
 				:options="optionsState"
 				name="state"
@@ -118,7 +120,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('state')"
-				message="Tỉnh thành không được để trống"
+				:message="`${$t('province')} ${$t('is_required')}`"
 			/>
 		</div>
 		<div>
@@ -126,7 +128,7 @@
 				variant="outline"
 				:size="size"
 				:class="this.size ? 'custom-form-btn' : ''"
-				label="Quận huyện"
+				:label="$t('county')"
 				:type="modelValue['country'] == 'Vietnam' ? 'autocomplete' : 'text'"
 				:options="optionsCounty"
 				name="county"
@@ -138,7 +140,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('county')"
-				message="Quận huyện không được để trống"
+				:message="`${$t('county')} ${$t('is_required')}`"
 			/>
 		</div>
 	</div>

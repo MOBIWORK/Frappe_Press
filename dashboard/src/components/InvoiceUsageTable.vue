@@ -4,14 +4,20 @@
 			<table class="text w-full text-sm">
 				<thead>
 					<tr class="text-gray-600">
-						<th class="border-b py-3 pr-2 text-left font-normal">Mô tả</th>
-						<th class="border-b py-3 pr-2 text-left font-normal">Tổ chức</th>
+						<th class="border-b py-3 pr-2 text-left font-normal">
+							{{ $t('description') }}
+						</th>
+						<th class="border-b py-3 pr-2 text-left font-normal">
+							{{ $t('sites') }}
+						</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
 						>
-							Tỉ lệ
+							{{ $t('rate') }}
 						</th>
-						<th class="border-b py-3 pr-2 text-right font-normal">Số tiền</th>
+						<th class="border-b py-3 pr-2 text-right font-normal">
+							{{ $t('amount_of_money') }}
+						</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -34,7 +40,7 @@
 					<tr v-if="doc.total_discount_amount > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Tổng số tiền chưa giảm giá
+							{{ $t('total_amount_before_discount') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -45,7 +51,7 @@
 					<tr v-if="doc.total_discount_amount > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Tổng số tiền đã giảm giá
+							{{ $t('total_discounted_amount') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -61,7 +67,7 @@
 					<tr v-if="doc.gst > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Tổng cộng (Chưa tính thuế)
+							{{ $t('invoiceusagetable_content_1') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -84,7 +90,7 @@
 					<tr v-if="doc.vat > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Tổng cộng (Chưa tính thuế VAT)
+							{{ $t('invoiceusagetable_content_2') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -95,7 +101,7 @@
 					<tr v-if="doc.vat > 0">
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Thuế VAT {{ Number(doc.vat) }}%
+							{{ $t('vat_tax') }} {{ Number(doc.vat) }}%
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -106,7 +112,7 @@
 					<tr>
 						<td></td>
 						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							Tổng tiền thanh toán
+							{{ $t('total_payment_amount') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -117,14 +123,14 @@
 					<template v-if="doc.total !== doc.amount_due && doc.docstatus == 1">
 						<tr>
 							<td></td>
-							<td class="pr-2 text-right">Số dư đã áp dụng:</td>
+							<td class="pr-2 text-right">{{ $t('applied_balance') }}:</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
 								- {{ doc.formatted.applied_credits }}
 							</td>
 						</tr>
 						<tr>
 							<td></td>
-							<td class="pr-2 text-right">Số tiền đến hạn:</td>
+							<td class="pr-2 text-right">{{ $t('amount_due') }}:</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
 								{{ doc.formatted.amount_due }}
 							</td>
@@ -134,7 +140,7 @@
 			</table>
 		</div>
 		<div class="py-20 text-center" v-if="$resources.doc.loading">
-			<Button :loading="true">Đang tải</Button>
+			<Button :loading="true">{{ $t('loading') }}</Button>
 		</div>
 	</div>
 </template>
