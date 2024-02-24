@@ -206,7 +206,7 @@ export default {
 					condition: () => this.$account.team?.is_developer
 				},
 				{
-					label: 'Security',
+					label: this.$t('security'),
 					route: '/security',
 					highlight: () => {
 						return this.$route.fullPath.startsWith('/security');

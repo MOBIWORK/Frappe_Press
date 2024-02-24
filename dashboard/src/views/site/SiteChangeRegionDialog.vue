@@ -1,7 +1,7 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Thay đổi Khu vực'
+			title: $t('change_region')
 		}"
 		v-model="show"
 		@close="resetValues"
@@ -15,8 +15,7 @@
 				v-else-if="$resources.changeRegionOptions.data.regions.length < 2"
 				class="text-base text-gray-600"
 			>
-				Bạn chỉ có một khu vực khả dụng. Thêm nhiều khu vực khác từ cài đặt
-				bench hiện tại để thay đổi khu vực của tổ chức này.
+				{{ $t('SiteChangeRegionDialog_content_1') }}
 			</p>
 			<div v-else>
 				<RichSelect
@@ -33,14 +32,13 @@
 				<FormControl
 					class="mt-4"
 					v-if="$resources.changeRegionOptions.data?.regions?.length > 0"
-					label="Lên lịch migrate tổ chức (IST)"
+					:label="$t('schedule_site_migration')"
 					type="datetime-local"
 					:min="new Date().toISOString().slice(0, 16)"
 					v-model="targetDateTime"
 				/>
 				<p class="mt-4 text-sm text-gray-500">
-					Thay đổi khu vực có thể gây gián đoạn trong khoảng từ 30 phút đến 1
-					giờ
+					{{ $t('SiteChangeRegionDialog_content_2') }}
 				</p>
 			</div>
 			<ErrorMessage class="mt-3" :message="$resources.changeRegion.error" />
@@ -62,7 +60,7 @@
 					})
 				"
 			>
-				Xác nhận
+				{{ $t('confirm') }}
 			</Button>
 		</template>
 	</Dialog>
@@ -124,7 +122,7 @@ export default {
 						this.$resources.changeRegionOptions.data.current_region ===
 						this.selectedRegion
 					)
-						return 'Tổ chức đã ở trong khu vực này rồi';
+						return this.$t('site_is_already_in_this_region');
 				},
 				onSuccess() {
 					const regionName =
@@ -133,8 +131,12 @@ export default {
 						)?.title || this.selectedRegion;
 
 					notify({
-						title: 'Lên lịch thay đổi khu vực',
-						message: `Tổ chức <b>${this.site?.hostname}</b> đã được lên lịch để được di chuyển đến <b>${regionName}</b>`,
+						title: this.$t('scheduled_region_change'),
+						message: `${this.$t('sites')} <b>${
+							this.site?.hostname
+						}</b> ${this.$t(
+							'SiteChangeRegionDialog_content_3'
+						)} <b>${regionName}</b>`,
 						color: 'green',
 						icon: 'check'
 					});

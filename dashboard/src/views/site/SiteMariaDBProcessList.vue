@@ -8,7 +8,7 @@
 	<div v-else-if="$resources.getPlan?.data?.monitor_access">
 		<Card>
 			<Report
-				:title="`Danh sách quy trình của MariaDB`"
+				:title="$t('Mariadb_Process_List')"
 				:columns="[
 					{ label: 'ID', name: 'id', class: 'w-1/12' },
 					{ label: 'User', name: 'user', class: 'w-2/12' },
@@ -23,7 +23,7 @@
 					<Button
 						@click="$resources.processList.reload()"
 						:loading="$resources.processList.loading"
-						>Refresh</Button
+						>{{ $t('Refresh') }}</Button
 					>
 				</template>
 			</Report>
@@ -43,13 +43,13 @@
 					$resources.processList.data.length == 0
 				"
 			>
-				Không có dữ liệu
+				{{ $t('no_data') }}
 			</div>
 		</Card>
 	</div>
 	<div class="flex justify-center" v-else>
 		<span class="mt-16 text-base text-gray-700">
-			Your plan doesn't support this feature. Please upgrade your plan.
+			{{ $t('SiteBinaryLogs_content_1') }}
 		</span>
 	</div>
 </template>

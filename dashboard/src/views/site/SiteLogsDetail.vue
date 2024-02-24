@@ -17,11 +17,11 @@
 			<div v-else>
 				<Button
 					:loading="true"
-					loading-text="Đang tải..."
+					:loading-text="`${$t('loading')}...`"
 					v-if="$resources.log.loading"
 				/>
 				<span v-else class="text-base text-gray-600">
-					{{ logName ? 'Log không hợp lệ' : 'Không có log nào được chọn' }}
+					{{ logName ? $t('Invalid_Log') : $t('No_log_selected') }}
 				</span>
 			</div>
 		</div>

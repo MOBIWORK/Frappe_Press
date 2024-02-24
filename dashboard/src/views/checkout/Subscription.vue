@@ -1,7 +1,7 @@
 <template>
 	<div class="min-h-screen bg-gray-50">
 		<LoginBox>
-			<h1 class="text-base text-gray-600">Quản lý đăng ký</h1>
+			<h1 class="text-base text-gray-600">{{ $t('Manage_Subscription') }}</h1>
 			<div class="mt-4">
 				<div class="text-xl font-medium text-gray-900">
 					{{ site }}
@@ -10,13 +10,13 @@
 					class="mt-1 text-base text-gray-700"
 					v-if="$resources.subscription.data?.trial_end_date"
 				>
-					Kết thúc dùng thử
+					{{ $t('Trial_ends') }}
 					{{
 						trialEndsInDaysText($resources.subscription.data?.trial_end_date)
 					}}
 				</div>
 			</div>
-			{{ success ? 'Bạn đã đăng ký gói' : '' }}
+			{{ success ? $t('You_have_subscribed_to_the_plan') : '' }}
 			<ErrorMessage class="mt-2" :message="$resources.subscription.error" />
 			<div class="mt-8" v-if="$resources.subscription.data">
 				<div>
@@ -27,8 +27,8 @@
 						<span class="text-sm font-medium text-gray-700">
 							{{
 								$resources.subscription.data.current_plan
-									? 'Thay đổi gói'
-									: 'Bước 1: Chọn gói'
+									? $t('Change_Plan')
+									: $t('Subscription_content_1')
 							}}
 						</span>
 						<span
@@ -36,7 +36,7 @@
 							v-if="currentStep === 2"
 						>
 							{{ selectedPlan.plan_title
-							}}<span class="font-normal">/tháng</span>
+							}}<span class="font-normal">/{{ $t('month') }}</span>
 						</span>
 					</button>
 					<div class="mt-2 space-y-2" v-if="currentStep == 1">
@@ -56,12 +56,12 @@
 									<span class="text-base font-medium text-gray-900">
 										{{ plan.plan_title }}
 									</span>
-									<span class="text-base text-gray-600">/tháng</span>
+									<span class="text-base text-gray-600">/{{ $t('month') }}</span>
 								</div>
 								<Badge
 									v-if="$resources.subscription.data.current_plan == plan.name"
 								>
-									Gói hiện tại
+									{{ $t('Current_Plan') }}
 								</Badge>
 								<CheckCircleIcon
 									v-else-if="selectedPlan == plan"
@@ -71,7 +71,7 @@
 							<div class="mt-1 text-sm text-gray-600">
 								<span>
 									CPU {{ plan.cpu_time_per_day }}
-									giờ/ngày
+									{{ $t('hour') }}/{{ $t('day') }}
 								</span>
 								<span class="mx-1"> &middot; </span>
 								<span>
@@ -85,7 +85,7 @@
 								variant="solid"
 								@click="currentStep = 2"
 							>
-								Tiếp theo
+								{{ $t('Next') }}
 							</Button>
 							<Button
 								v-else-if="
@@ -96,7 +96,7 @@
 								:loading="$resources.setSubscriptionPlan.loading"
 								@click="$resources.setSubscriptionPlan.submit()"
 							>
-								Thay đổi gói
+								{{ $t('Change_Plan') }}
 							</Button>
 						</div>
 					</div>
@@ -105,7 +105,7 @@
 					<div
 						class="rounded-sm bg-gray-100 p-2 text-sm font-medium text-gray-700"
 					>
-						Bước 2: Thiết lập thanh toán
+						{{ $t('Subscription_content_2') }}
 					</div>
 					<StripeCard
 						class="mt-4"

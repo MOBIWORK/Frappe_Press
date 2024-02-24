@@ -3,7 +3,7 @@
 		<ErrorMessage :message="$resources.analytics.error" />
 		<FormControl
 			class="w-32"
-			label="Khoảng thời gian"
+			:label="$t('Duration')"
 			type="select"
 			:options="durationOptions"
 			v-model="duration"
@@ -11,7 +11,7 @@
 		<div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
 			<LineChart
 				type="time"
-				title="Bộ đếm sử dụng"
+				:title="$t('Usage_Counter')"
 				:key="usageCounterData"
 				:data="usageCounterData"
 				unit="seconds"
@@ -26,7 +26,7 @@
 
 			<LineChart
 				type="time"
-				title="Yêu cầu"
+				:title="$t('Requests')"
 				:key="requestCountData"
 				:data="requestCountData"
 				unit="requests"
@@ -35,7 +35,7 @@
 			/>
 			<LineChart
 				type="time"
-				title="Sử dụng CPU"
+				:title="$t('CPU_Usage')"
 				:key="requestTimeData"
 				:data="requestTimeData"
 				unit="seconds"
@@ -44,7 +44,7 @@
 			/>
 			<LineChart
 				type="time"
-				title="Công việc nền"
+				:title="$t('Background_Jobs')"
 				:key="jobCountData"
 				:data="jobCountData"
 				unit="jobs"
@@ -53,7 +53,7 @@
 			/>
 			<LineChart
 				type="time"
-				title="Công việc nền sử dụng CPU"
+				:title="$t('Background_Jobs_CPU_Usage')"
 				:key="jobTimeData"
 				:data="jobTimeData"
 				unit="seconds"
@@ -63,7 +63,7 @@
 
 			<BarChart
 				class="col-span-2"
-				title="Số lượng yêu cầu theo đường dẫn"
+				:title="$t('Request_Count_by_Path')"
 				:key="requestCountByPathData"
 				:data="requestCountByPathData"
 				unit="requests"
@@ -72,7 +72,7 @@
 			/>
 			<BarChart
 				class="col-span-2"
-				title="Thời lượng yêu cầu theo đường dẫn"
+				:title="$t('Request_Duration_by_Path')"
 				:key="requestDurationByPathData"
 				:data="requestDurationByPathData"
 				unit="seconds"
@@ -97,16 +97,15 @@ export default {
 		LineChart,
 		SiteAnalyticsUptime
 	},
+	watch: {
+		'$i18n.locale'() {
+			this.durationOptions = this.getOptionsDuration();
+		}
+	},
 	data() {
 		return {
 			duration: '7d',
-			durationOptions: [
-				{ label: '1 giờ', value: '1h' },
-				{ label: '6 giờ', value: '6h' },
-				{ label: '24 giờ', value: '24h' },
-				{ label: '7 ngày', value: '7d' },
-				{ label: '15 ngày', value: '15d' }
-			]
+			durationOptions: this.getOptionsDuration()
 		};
 	},
 	resources: {
@@ -212,6 +211,17 @@ export default {
 			return {
 				datasets: [jobCpuTime.map(d => [+new Date(d.date), d.value / 1000000])]
 			};
+		}
+	},
+	methods: {
+		getOptionsDuration() {
+			return [
+				{ label: `1 ${this.$t('hour')}`, value: '1h' },
+				{ label: `6 ${this.$t('hour')}`, value: '6h' },
+				{ label: `24 ${this.$t('hour')}`, value: '24h' },
+				{ label: `7 ${this.$t('days')}`, value: '7d' },
+				{ label: `15 ${this.$t('days')}`, value: '15d' }
+			];
 		}
 	}
 };

@@ -1,8 +1,8 @@
 <template>
 	<Card
 		class="h-full max-h-96 min-h-full"
-		title="Hoạt động tổ chức"
-		subtitle="Các hoạt động được thực hiện trên tổ chức của bạn"
+		:title="$t('Site_Activity')"
+		:subtitle="$t('Log_of_activities_performed_on_your_site')"
 	>
 		<div class="divide-y">
 			<ListItem
@@ -18,21 +18,21 @@
 				loadingText="Fetching..."
 				@click="$resources.activities.next()"
 			>
-				Tải thêm
+				{{ $t('load_more') }}
 			</Button>
 		</div>
 
 		<template v-slot:actions>
 			<Button @click="showChangeNotifyEmailDialog = true">
-				Thay đổi email thông báo
+				{{ $t('Change_Notify_Email') }}
 			</Button>
 		</template>
 		<Dialog
 			:options="{
-				title: 'Thay đổi email thông báo',
+				title: $t('Change_Notify_Email'),
 				actions: [
 					{
-						label: 'Lưu thay đổi',
+						label: $t('save_changes'),
 						variant: 'solid',
 						loading: $resources.changeNotifyEmail.loading,
 						onClick: () => $resources.changeNotifyEmail.submit()
@@ -78,7 +78,7 @@ export default {
 				onSuccess() {
 					this.showChangeNotifyEmailDialog = false;
 					notify({
-						title: 'Email thông báo đã được thay đổi!',
+						title: $t('Notify_Email_Changed'),
 						icon: 'check',
 						color: 'green'
 					});
@@ -100,7 +100,7 @@ export default {
 		getDescription(activity) {
 			let description = '';
 			if (activity.reason) {
-				description += `Lý do: ${activity.reason}\n`;
+				description += `${this.$t('Reason')}: ${activity.reason}\n`;
 			}
 			description += this.$formatDateDetail(activity.creation);
 			return description;

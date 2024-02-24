@@ -356,7 +356,7 @@ export default {
 		dropdownItems(site) {
 			return [
 				{
-					label: 'Truy cập tổ chức',
+					label: this.$t('visit_site'),
 					onClick: () => {
 						window.open(`https://${site.name}`, '_blank');
 					}

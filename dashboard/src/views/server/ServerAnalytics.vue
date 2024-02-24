@@ -2,7 +2,7 @@
 	<div class="space-y-4">
 		<FormControl
 			class="w-32"
-			label="Khoảng thời gian"
+			:label="$t('Duration')"
 			type="select"
 			:options="
 				durationOptions.map(option => ({ label: option, value: option }))
@@ -32,7 +32,7 @@
 
 			<LineChart
 				type="time"
-				title="Load Average"
+				:title="$t('Load_Average')"
 				:key="loadAverageData"
 				:data="loadAverageData"
 				:loading="$resources.loadavg.loading"
@@ -52,7 +52,7 @@
 
 			<LineChart
 				type="time"
-				title="Disk Space"
+				:title="$t('Disk_Space')"
 				:key="spaceData"
 				:data="spaceData"
 				unit="%"

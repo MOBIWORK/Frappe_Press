@@ -2,17 +2,22 @@
 	<Dialog
 		v-model="show"
 		@close="resetValues"
-		:options="{ title: 'Nâng cấp phiên bản tổ chức' }"
+		:options="{ title: $t('upgrade_site_version') }"
 	>
 		<template #body-content>
 			<div class="space-y-4">
 				<p v-if="site?.is_public && nextVersion" class="text-base">
-					Tổ chức <b>{{ site.host_name }}</b> sẽ được nâng cấp lên
+					{{ $t('the_site') }} <b>{{ site.host_name }}</b>
+					{{ $t('will_be_upgraded_to') }}
 					<b>{{ nextVersion }}</b>
 				</p>
 				<FormControl
 					v-else-if="privateReleaseGroups.length > 0 && nextVersion"
-					:label="`Vui lòng chọn một bench ${nextVersion} để nâng cấp tổ chức từ ${site.frappe_version}`"
+					:label="`${$t(
+						'SiteVersionUpgradeDialog_content_1'
+					)} ${nextVersion} ${$t('SiteVersionUpgradeDialog_content_2')} ${
+						site.frappe_version
+					}`"
 					class="w-full"
 					type="select"
 					:options="privateReleaseGroups"
@@ -28,7 +33,7 @@
 				<FormControl
 					class="mt-4"
 					v-if="(site.is_public && nextVersion) || benchHasCommonServer"
-					label="Lên lịch di chuyển tổ chức"
+					:label="$t('schedule_site_migration')"
 					type="datetime-local"
 					:min="new Date().toISOString().slice(0, 16)"
 					v-model="targetDateTime"
@@ -51,7 +56,7 @@
 				v-if="!site.is_public"
 				class="mb-2 w-full"
 				:disabled="benchHasCommonServer || !privateReleaseGroup"
-				label="Thêm server vào bench"
+				:label="$t('add_server_to_bench')"
 				@click="$resources.addServerToReleaseGroup.submit()"
 				:loading="
 					$resources.addServerToReleaseGroup.loading ||
@@ -61,7 +66,7 @@
 			<Button
 				class="w-full"
 				variant="solid"
-				label="Nâng cấp"
+				:label="$t('upgrade')"
 				:disabled="
 					(!benchHasCommonServer || !privateReleaseGroup) && !site.is_public
 				"
@@ -115,24 +120,28 @@ export default {
 		},
 		message() {
 			if (this.site.frappe_version === this.site.latest_frappe_version) {
-				return 'Tổ chức này đã ở phiên bản mới nhất.';
+				return this.$t('SiteVersionUpgradeDialog_content_3');
 			} else if (!this.privateReleaseGroup) {
 				return '';
 			} else if (!this.site.is_public && !this.privateReleaseGroups.length)
-				return `Nhóm của bạn không sở hữu bất kỳ bench riêng nào có sẵn để nâng cấp tổ chức này lên ${this.nextVersion}.`;
+				return `${this.$t('SiteVersionUpgradeDialog_content_4')} ${
+					this.nextVersion
+				}.`;
 			else if (!this.site.is_public && !this.benchHasCommonServer)
-				return `Bench đã chọn và tổ chức của bạn không có server chung. Vui lòng thêm server của tổ chức vào bench.`;
+				return this.$t('SiteVersionUpgradeDialog_content_5');
 			else if (!this.site.is_public && this.benchHasCommonServer)
-				return `Bench đã chọn và tổ chức của bạn có server chung. Bạn có thể tiếp tục với việc nâng cấp lên ${this.nextVersion}.`;
+				return `${this.$t('SiteVersionUpgradeDialog_content_6')} ${
+					this.nextVersion
+				}.`;
 			else return '';
 		},
-		datetimeInIST() {
+		datetimeInVN() {
 			if (!this.targetDateTime) return null;
-			const datetimeInIST = this.$dayjs(this.targetDateTime)
-				.tz('Asia/Kolkata')
+			const datetimeInVN = this.$dayjs(this.targetDateTime)
+				.tz('Asia/Ho_Chi_Minh')
 				.format('YYYY-MM-DDTHH:mm');
 
-			return datetimeInIST;
+			return datetimeInVN;
 		}
 	},
 	resources: {
@@ -142,12 +151,14 @@ export default {
 				params: {
 					name: this.site?.name,
 					destination_group: this.privateReleaseGroup,
-					scheduled_datetime: this.datetimeInIST
+					scheduled_datetime: this.datetimeInVN
 				},
 				onSuccess() {
 					notify({
-						title: 'Nâng cấp phiên bản tổ chức',
-						message: `Lên lịch nâng cấp tổ chức cho <b>${this.site?.host_name}</b> đến <b>${this.nextVersion}</b>`,
+						title: $t('site_version_upgrade'),
+						message: `${this.$t('SiteVersionUpgradeDialog_content_7')} <b>${
+							this.site?.host_name
+						}</b> ${this.$t('to')} <b>${this.nextVersion}</b>`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -180,8 +191,10 @@ export default {
 				},
 				onSuccess(data) {
 					notify({
-						title: 'Server đã được thêm vào Bench',
-						message: `Đã thêm một server vào bench <b>${this.privateReleaseGroup}</b>. Vui lòng đợi cho đến khi bench hoàn tất việc triển khai.`,
+						title: this.$t('server_added_to_the_bench'),
+						message: `${this.$t('SiteVersionUpgradeDialog_content_8')} <b>${
+							this.privateReleaseGroup
+						}</b>. ${this.$t('SiteVersionUpgradeDialog_content_9')}`,
 						icon: 'check',
 						color: 'green'
 					});

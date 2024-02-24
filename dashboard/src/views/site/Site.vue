@@ -17,7 +17,7 @@
 						<Button
 							v-if="site?.status === 'Active'"
 							icon-left="external-link"
-							label="Truy cập tổ chức"
+							:label="$t('visit_site')"
 							:link="`https://${site?.name}`"
 						/>
 						<Dropdown :options="siteActions">
@@ -101,10 +101,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Đăng nhập với tư cách Quản trị viên',
+				title: $t('login_as_administrator'),
 				actions: [
 					{
-						label: 'Tiếp tục',
+						label: $t('proceed'),
 						variant: 'solid',
 						onClick: proceedWithLoginAsAdmin
 					}
@@ -114,7 +114,7 @@
 		>
 			<template v-slot:body-content>
 				<FormControl
-					label="Lý do đăng nhập với tư cách Quản trị viên"
+					:label="$t('reason_for_logging_in_as_administrator')"
 					type="textarea"
 					v-model="reasonForAdminLogin"
 					required
@@ -125,10 +125,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Chuyển giao tổ chức cho nhóm',
+				title: $t('transfer_site_to_team'),
 				actions: [
 					{
-						label: 'Gửi',
+						label: $t('submit'),
 						variant: 'solid',
 						onClick: () =>
 							$resources.transferSite.submit({
@@ -142,7 +142,7 @@
 		>
 			<template #body-content>
 				<FormControl
-					label="Nhập tiêu đề của nhóm con"
+					:label="$t('enter_title_of_the_child_team')"
 					v-model="emailOfChildTeam"
 					required
 				/>
@@ -172,7 +172,7 @@ export default {
 	name: 'Site',
 	pageMeta() {
 		return {
-			title: `Tổ chức - ${this.siteName} - MBW Cloud`
+			title: `${this.$t('sites')} - ${this.siteName} - MBW Cloud`
 		};
 	},
 	props: ['siteName'],
@@ -236,8 +236,8 @@ export default {
 					this.showTransferSiteDialog = false;
 					this.emailOfChildTeam = null;
 					notify({
-						title: 'Tổ chức đã được chuyển giao cho nhóm con',
-						message: 'Tổ chức đã được chuyển giao cho nhóm con',
+						title: this.$t('Site_content_1'),
+						message: this.$t('Site_content_1'),
 						color: 'green',
 						icon: 'check'
 					});
@@ -318,9 +318,9 @@ export default {
 		},
 		onActivateClick() {
 			this.$confirm({
-				title: 'Kích hoạt tổ chức',
-				message: `Bạn có chắc chắn muốn kích hoạt tổ chức này không?`,
-				actionLabel: 'Kích hoạt',
+				title: this.$t('site_activation'),
+				message: this.$t('Site_content_2'),
+				actionLabel: this.$t('enable'),
 				action: () => this.activate()
 			});
 		},
@@ -329,8 +329,8 @@ export default {
 				name: this.site.name
 			});
 			notify({
-				title: 'Tổ chức đã được kích hoạt thành công!',
-				message: 'Bạn có thể truy cập tổ chức của mình ngay bây giờ',
+				title: this.$t('Site_content_3'),
+				message: this.$t('Site_content_4'),
 				icon: 'check',
 				color: 'green'
 			});
@@ -351,7 +351,7 @@ export default {
 		siteActions() {
 			return [
 				{
-					label: 'Xem trên Desk',
+					label: this.$t('view_in_desk'),
 					icon: 'external-link',
 					condition: () => this.$account.user.user_type === 'System User',
 					onClick: () => {
@@ -362,7 +362,7 @@ export default {
 					}
 				},
 				{
-					label: 'Quản lý Bench',
+					label: this.$t('manage_bench'),
 					icon: 'tool',
 					route: `/benches/${this.site?.group}`,
 					condition: () => this.site?.group,
@@ -371,7 +371,7 @@ export default {
 					}
 				},
 				{
-					label: 'Đăng nhập với tư cách Quản trị viên',
+					label: this.$t('login_as_administrator'),
 					icon: 'external-link',
 					loading: this.$resources.loginAsAdmin.loading,
 					condition: () => this.site?.status === 'Active',
@@ -386,21 +386,21 @@ export default {
 					}
 				},
 				{
-					label: 'Nhóm mạo danh',
+					label: this.$t('impersonate_team'),
 					icon: 'tool',
 					condition: () => this.$account.user.user_type === 'System User',
 					onClick: async () => {
 						await this.$account.switchTeam(this.site?.team);
 						notify({
-							title: 'Chuyển nhóm',
-							message: `Chuyển đến ${this.site?.team}`,
+							title: this.$t('switch_team'),
+							message: `${this.$t('switched_to')} ${this.site?.team}`,
 							icon: 'check',
 							color: 'green'
 						});
 					}
 				},
 				{
-					label: 'Chuyển giao tổ chức',
+					label: this.$t('transfer_site'),
 					icon: 'tool',
 					loading: this.$resources.transferSite.loading,
 					condition: () =>
@@ -410,25 +410,25 @@ export default {
 					}
 				},
 				{
-					label: 'Thay đổi Bench',
+					label: this.$t('change_bench'),
 					icon: 'package',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showChangeGroupDialog = true)
 				},
 				{
-					label: 'Thay đổi khu vực',
+					label: this.$t('change_region'),
 					icon: 'globe',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showChangeRegionDialog = true)
 				},
 				{
-					label: 'Nâng cấp phiên bản',
+					label: this.$t('upgrade_version'),
 					icon: 'arrow-up',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showVersionUpgradeDialog = true)
 				},
 				{
-					label: 'Thay đổi Server',
+					label: this.$t('change_server'),
 					icon: 'server',
 					condition: () => this.site?.status === 'Active',
 					onClick: () => (this.showChangeServerDialog = true)
@@ -445,67 +445,67 @@ export default {
 			let siteMonitorTab = '';
 			let tabRoute = subRoute => `/sites/${this.siteName}/${subRoute}`;
 			let tabs = [
-				{ label: 'Tổng quan', route: 'overview' },
-				{ label: 'Ứng dụng', route: 'apps' },
-				{ label: 'Phân tích', route: 'analytics' },
-				{ label: 'Giám sát', route: 'monitor' },
-				{ label: 'Database', route: 'database' },
-				{ label: 'Cấu hình', route: 'site-config' },
-				{ label: 'Công việc', route: 'jobs', showRedDot: this.runningJob },
-				{ label: 'Logs', route: 'logs' },
-				{ label: 'Cài đặt', route: 'settings' }
+				{ label: 'overview', route: 'overview' },
+				{ label: 'apps', route: 'apps' },
+				{ label: 'analytics', route: 'analytics' },
+				{ label: 'monitor', route: 'monitor' },
+				{ label: 'database', route: 'database' },
+				{ label: 'config', route: 'site-config' },
+				{ label: 'jobs', route: 'jobs', showRedDot: this.runningJob },
+				{ label: 'logs', route: 'logs' },
+				{ label: 'settings', route: 'settings' }
 			];
 
 			if (this.site && this.site?.hide_config !== 1) {
-				siteConfig = 'Cấu hình';
+				siteConfig = 'config';
 			}
 
 			if (this.site && this.hasMonitorAccess) {
-				siteMonitorTab = 'Giám sát';
+				siteMonitorTab = 'monitor';
 			}
 
 			let tabsByStatus = {
 				Active: [
-					'Tổng quan',
-					'Ứng dụng',
-					'Phân tích',
-					'Database',
+					'overview',
+					'apps',
+					'analytics',
+					'database',
 					siteConfig,
-					'Công việc',
-					'Logs',
+					'jobs',
+					'logs',
 					'Request Logs',
-					'Cài đặt',
+					'settings',
 					siteMonitorTab
 				],
 				Inactive: [
-					'Tổng quan',
-					'Ứng dụng',
-					'Database',
+					'overview',
+					'apps',
+					'database',
 					siteConfig,
-					'Công việc',
-					'Logs',
-					'Cài đặt'
+					'jobs',
+					'logs',
+					'settings'
 				],
-				Installing: ['Công việc'],
-				Pending: ['Công việc'],
+				Installing: ['jobs'],
+				Pending: ['jobs'],
 				Broken: [
-					'Tổng quan',
-					'Ứng dụng',
+					'overview',
+					'apps',
 					siteConfig,
-					'Database',
-					'Công việc',
-					'Logs',
-					'Cài đặt',
+					'database',
+					'jobs',
+					'logs',
+					'settings',
 					siteMonitorTab
 				],
 				Suspended: [
-					'Tổng quan',
-					'Ứng dụng',
-					'Database',
-					'Công việc',
-					'Gói',
-					'Logs',
-					'Cài đặt'
+					'overview',
+					'apps',
+					'database',
+					'jobs',
+					'Plan',
+					'logs',
+					'settings'
 				]
 			};
 			if (this.site) {
@@ -516,6 +516,7 @@ export default {
 				return tabs.map(tab => {
 					return {
 						...tab,
+						label: this.$t(tab.label),
 						route: tabRoute(tab.route)
 					};
 				});

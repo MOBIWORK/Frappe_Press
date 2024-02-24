@@ -1,8 +1,8 @@
 <template>
 	<ConfigEditor
 		v-if="site"
-		title="Cấu hình tổ chức"
-		subtitle="Add and update key value pairs to your site's site_config.json"
+		:title="$t('Site_Config')"
+		:subtitle="$t('SiteConfig_content_1')"
 		configName="site_config.json"
 		:configData="siteConfig"
 		:updateConfigMethod="updateSiteConfig"

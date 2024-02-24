@@ -1,54 +1,72 @@
 <template>
 	<div>
-		<label class="text-lg font-semibold"> Thông tin khởi tạo tổ chức </label>
+		<label class="text-lg font-semibold">
+			{{ $t('SiteSummaryBilling_content_1') }}
+		</label>
 		<p class="text-base text-gray-700">
-			Thông tin tóm tắt cho việc tạo tổ chức của bạn
+			{{ $t('SiteSummaryBilling_content_2') }}
 		</p>
 		<div
 			class="mt-2 flex flex-col space-y-2 rounded-md border p-2 text-base leading-5"
 		>
-			<div><strong>Tên miền: </strong>{{ detail.subdomain }}</div>
 			<div>
-				<strong>Các ứng dụng đã đăng ký: </strong>
+				<strong>{{ $t('Domains') }}: </strong>{{ detail.subdomain }}
+			</div>
+			<div>
+				<strong>{{ $t('SiteSummaryBilling_content_3') }}: </strong>
 				<div class="ml-6">
 					<div v-for="(app, index) in detail.selectedApps" :key="app">
-						{{ index + 1 }}. {{ app }} {{ app == 'frappe' ? '(mặc định)' : '' }}
+						{{ index + 1 }}. {{ app }}
+						{{ app == 'frappe' ? `(${$t('default')})` : '' }}
 					</div>
 				</div>
 			</div>
 			<div>
-				<strong>Máy chủ: </strong>
+				<strong>{{ $t('Server') }}: </strong>
 				<div class="ml-6" v-if="detail?.selectedPlan">
 					<div>
-						Mức sử dụng: {{ detail.selectedPlan.cpu_time_per_day }}
-						{{ $plural(detail.selectedPlan.cpu_time_per_day, 'giờ', 'giờ') }} /
-						ngày
+						{{ $t('Compute') }}: {{ detail.selectedPlan.cpu_time_per_day }}
+						{{
+							$plural(
+								detail.selectedPlan.cpu_time_per_day,
+								$t('hour'),
+								$t('hours')
+							)
+						}}
+						/
+						{{ $t('day') }}
 					</div>
 					<div>
 						Database:
 						{{ formatBytes(detail.selectedPlan.max_database_usage, 0, 2) }}
 					</div>
 					<div>
-						Ổ cứng:
+						{{ $t('Disk') }}:
 						{{ formatBytes(detail.selectedPlan.max_storage_usage, 0, 2) }}
 					</div>
 				</div>
 			</div>
 			<div class="overflow-x-auto">
 				<strong
-					>Hóa đơn cần chi trả cho {{ this.$resources.dayRequire.data }} ngày:
+					>{{ $t('SiteSummaryBilling_content_4') }}
+					{{ this.$resources.dayRequire.data }}
+					{{ $plural(this.$resources.dayRequire.data, $t('day'), $t('days')) }}:
 				</strong>
 				<table v-if="infoInvoice" class="text w-full text-sm">
 					<thead>
 						<tr class="text-gray-600">
-							<th class="border-b py-3 pr-2 text-left font-normal">Mô tả</th>
+							<th class="border-b py-3 pr-2 text-left font-normal">
+								{{ $t('description') }}
+							</th>
 
 							<th
 								class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
 							>
-								Tỉ lệ
+								{{ $t('rate') }}
 							</th>
-							<th class="border-b py-3 pr-2 text-right font-normal">Số tiền</th>
+							<th class="border-b py-3 pr-2 text-right font-normal">
+								{{ $t('amount_of_money') }}
+							</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -66,7 +84,9 @@
 					<tfoot>
 						<tr>
 							<td></td>
-							<td class="pb-2 pr-2 pt-4 text-right font-semibold">Tổng cộng</td>
+							<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+								{{ $t('total') }}
+							</td>
 							<td
 								class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 							>

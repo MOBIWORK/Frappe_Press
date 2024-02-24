@@ -10,11 +10,11 @@
 			<Report
 				:filters="filters"
 				:columns="[
-					{ label: 'Timestamp', name: 'timestamp', class: 'w-2/12' },
-					{ label: 'Query', name: 'query', class: 'w-10/12' }
+					{ label: $t('Timestamp'), name: 'timestamp', class: 'w-2/12' },
+					{ label: $t('Query'), name: 'query', class: 'w-10/12' }
 				]"
 				:data="formatDeadlockData"
-				title="Báo cáo Deadlock của MariaDB"
+				:title="$t('MariaDB_Deadlock_Report')"
 			/>
 			<div
 				class="px-2 py-2 text-base text-gray-600"
@@ -32,7 +32,7 @@
 					$resources.deadlockReport.data.length == 0
 				"
 			>
-				Không có dữ liệu
+				{{ $t('no_data') }}
 			</div>
 			<Button
 				v-if="
@@ -40,16 +40,16 @@
 					$resources.deadlockReport.data.length
 				"
 				:loading="$resources.deadlockReport.loading"
-				loadingText="Đang tải..."
+				:loadingText="`${$t('loading')}...`"
 				@click="max_lines += 10"
 			>
-				Load more
+				{{ $t('load_more') }}
 			</Button>
 		</Card>
 	</div>
 	<div class="flex justify-center" v-else>
 		<span class="mt-16 text-base text-gray-700">
-			Your plan doesn't support this feature. Please upgrade your plan.
+			{{ $t('SiteBinaryLogs_content_1') }}
 		</span>
 	</div>
 </template>
@@ -68,16 +68,37 @@ export default {
 			filters: [
 				{
 					name: 'start_datetime',
-					label: 'From:',
+					label: `${this.$t('from')}:`,
 					type: 'date',
 					value: this.today
 				},
-				{ name: 'end_datetime', label: 'To:', type: 'date', value: this.today }
+				{
+					name: 'end_datetime',
+					label: `${this.$t('to')}:`,
+					type: 'date',
+					value: this.today
+				}
 			],
 			max_lines: 20
 		};
 	},
 	watch: {
+		'$i18n.locale'() {
+			this.filters = [
+				{
+					name: 'start_datetime',
+					label: `${this.$t('from')}:`,
+					type: 'date',
+					value: this.today
+				},
+				{
+					name: 'end_datetime',
+					label: `${this.$t('to')}:`,
+					type: 'date',
+					value: this.today
+				}
+			];
+		},
 		startTime() {
 			this.reset();
 		},

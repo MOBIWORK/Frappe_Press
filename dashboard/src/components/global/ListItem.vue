@@ -1,6 +1,6 @@
 <template>
-	<div class="flex items-center justify-between py-3">
-		<div>
+	<div class="flex flex-wrap items-center justify-between py-3">
+		<div class="mb-2">
 			<div class="flex justify-start">
 				<img class="mr-2 h-4" v-if="image" :src="image" :alt="title" />
 				<h3 class="text-base font-medium text-gray-900">

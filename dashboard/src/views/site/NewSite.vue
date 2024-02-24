@@ -5,27 +5,30 @@
 		>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Tổ chức', route: { name: 'Sites' } },
-					{ label: 'Mới', route: { name: 'NewSite' } }
+					{ label: $t('sites'), route: { name: 'Sites' } },
+					{ label: $t('New'), route: { name: 'NewSite' } }
 				]"
 			/>
 			<div v-if="$resources.upcomingInvoice.data" class="flex flex-wrap">
 				<div class="mr-5">
-					<strong>Số dư tài khoản: </strong>{{ soDu() }} VND
+					<strong>{{ $t('account_balance') }}: </strong>{{ soDu() }} VND
 				</div>
-				<div><strong>Số dư khả dụng: </strong>{{ soDuKhaDung() }} VND</div>
+				<div>
+					<strong>{{ $t('available_balance') }}: </strong
+					>{{ soDuKhaDung() }} VND
+				</div>
 			</div>
 			<Button
 				v-if="$resources.upcomingInvoice.loading"
 				:loading="true"
-				loadingText="Đang tải"
+				:loadingText="$t('loading')"
 			/>
 		</header>
 		<WizardCard>
 			<div class="mb-2 text-center">
-				<h1 class="text-2xl font-bold">Tổ chức mới</h1>
+				<h1 class="text-2xl font-bold">{{ $t('New_Site') }}</h1>
 				<p v-if="benchTitle" class="text-base text-gray-700">
-					Tổ chức sẽ được tạo trên bench
+					{{ $t('NewSite_content_4') }}
 					<span class="font-medium">{{ benchTitle }}</span>
 				</p>
 			</div>
@@ -96,14 +99,16 @@
 							<FormControl
 								type="checkbox"
 								v-model="agreedToRegionConsent"
-								label="Tôi đồng ý với các chính sách của MBW."
+								:label="$t('NewSite_content_1')"
 							/>
 						</div>
 
 						<ErrorMessage class="mb-4" :message="$resources.newSite.error" />
 
 						<div class="flex items-center justify-between">
-							<Button v-show="hasPrevious" @click="previous"> Quay lại </Button>
+							<Button v-show="hasPrevious" @click="previous">
+								{{ $t('Back') }}
+							</Button>
 							<Button
 								v-show="
 									(activeStep.name !== 'Restore' || wantsToRestore) && hasNext
@@ -113,9 +118,9 @@
 								@click="nextStep(activeStep, next)"
 								:class="{ 'mt-2': hasPrevious }"
 								:loading="loadingPlans"
-								loadingText="Đang tải"
+								:loadingText="$t('loading')"
 							>
-								Tiếp theo
+								{{ $t('Next') }}
 							</Button>
 							<Button
 								v-show="
@@ -125,7 +130,7 @@
 								variant="solid"
 								@click="nextStep(activeStep, next)"
 							>
-								Bỏ qua
+								{{ $t('Skip') }}
 							</Button>
 							<Button
 								v-show="!hasNext"
@@ -135,7 +140,7 @@
 								@click="handleCreateSite"
 								:loading="$resources.newSite.loading"
 							>
-								Tạo tổ chức
+								{{ $t('Create_site') }}
 							</Button>
 						</div>
 					</div>
@@ -205,7 +210,7 @@ export default {
 					validate: () => {
 						if (this.privateBench) return true;
 						if (!this.selectedRegion) {
-							this.validationMessage = 'Vui lòng chọn khu vực';
+							this.validationMessage = this.$t('Please_select_the_region');
 							return false;
 						} else {
 							this.validationMessage = null;
@@ -300,7 +305,7 @@ export default {
 						(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Vui lòng đồng ý với chính sách của MBW để tạo tổ chức';
+						return this.$t('NewSite_content_5');
 					}
 
 					if (!this.infoBench) {
@@ -309,12 +314,12 @@ export default {
 							this.totalBilling >
 							this.$resources.upcomingInvoice.data?.available_balances
 						) {
-							return 'Số dư tài khoản không đủ để tạo tổ chức';
+							return this.$t('NewSite_content_6');
 						}
 					}
 
 					if (!canCreate) {
-						return 'Không thể tạo tổ chức';
+						return this.$t('NewSite_content_7');
 					}
 				}
 			};
@@ -383,7 +388,7 @@ export default {
 			if (activeStep.name == 'Hostname') {
 				this.validationMessage = '';
 				if (!this.subdomain) {
-					this.validationMessage = 'Vui lòng điền đầy đủ thông tin';
+					this.validationMessage = this.$t('NewSite_content_8');
 				}
 			}
 			// lay ti le su dung cho plan
@@ -440,7 +445,9 @@ export default {
 					validate: () => {
 						for (let app of Object.keys(this.selectedAppPlans)) {
 							if (!this.selectedAppPlans[app]) {
-								this.validationMessage = `Vui lòng chọn một gói cho ${app}`;
+								this.validationMessage = `${this.$t(
+									'NewSite_content_9'
+								)} ${app}`;
 								return false;
 							} else {
 								this.validationMessage = null;

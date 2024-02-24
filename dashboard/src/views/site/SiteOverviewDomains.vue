@@ -1,10 +1,10 @@
 <template>
 	<Card
-		title="Tên miền"
+		:title="$t('Domains')"
 		:subtitle="
 			domains.data && domains.data.length
-				? 'Tên miền trỏ đến tổ chức của bạn'
-				: 'Không có tên miền nào đang trỏ đến tổ chức của bạn'
+				? $t('Domains_pointing_to_your_site')
+				: $t('No_domains_pointing_to_your_site')
 		"
 	>
 		<template #actions>
@@ -12,7 +12,7 @@
 				@click="showDialog = true"
 				:disabled="site.status === 'Suspended'"
 			>
-				Thêm tên miền
+				{{ $t('Add_Domain') }}
 			</Button>
 		</template>
 		<div class="divide-y" v-if="domains.data">
@@ -60,10 +60,10 @@
 									})
 								"
 							>
-								Thử lại
+								{{ $t('Retry') }}
 							</Button>
 							<Button v-if="$resources.removeDomain.loading" :loading="true">
-								Gỡ bỏ tên miền
+								{{ $t('Removing_domain') }}
 							</Button>
 							<Dropdown v-else :options="actionItems(d)">
 								<template v-slot="{ open }">
@@ -74,19 +74,18 @@
 					</div>
 					<ErrorMessage
 						v-if="d.status == 'Broken'"
-						error="Chúng tôi gặp sự cố khi thêm tên miền."
+						:error="$t('SiteOverviewDomains_content_1')"
 					/>
 					<ErrorMessage :message="$resources.removeDomain.error" />
 					<ErrorMessage :message="$resources.setHostName.error" />
 				</div>
 			</div>
 		</div>
-		<Dialog v-model="showDialog" :options="{ title: 'Thêm tên miền' }">
+		<Dialog v-model="showDialog" :options="{ title: $t('Add_Domain') }">
 			<template v-slot:body-content>
 				<div class="space-y-4">
 					<p class="text-base">
-						Để thêm một tên miền tùy chỉnh, bạn phải đã sở hữu nó trước. Nếu bạn
-						chưa có một, hãy mua và quay lại đây.
+						{{ $t('SiteOverviewDomains_content_2') }}
 					</p>
 					<FormControl
 						placeholder="www.example.com"
@@ -95,23 +94,25 @@
 					/>
 
 					<div v-if="newDomain && !dnsVerified" class="space-y-2 text-base">
-						<p>Tạo một trong các bản ghi DNS sau đây</p>
+						<p>{{ $t('SiteOverviewDomains_content_3') }}</p>
 						<p class="px-2">
-							<span class="font-semibold text-gray-700">CNAME</span> bản ghi từ
+							<span class="font-semibold text-gray-700">CNAME</span>
+							{{ $t('record_from') }}
 							<span class="font-semibold text-gray-700">{{ newDomain }}</span>
-							đến
+							{{ $t('to') }}
 							<span class="font-semibold text-gray-700">{{ site.name }}</span>
 						</p>
 						<p class="px-2">
-							<span class="font-semibold text-gray-700">A</span> bản ghi từ
+							<span class="font-semibold text-gray-700">A</span>
+							{{ $t('record_from') }}
 							<span class="font-semibold text-gray-700">{{ newDomain }}</span>
-							đến
+							{{ $t('to') }}
 							<span class="font-semibold text-gray-700">{{ site.ip }}</span>
 						</p>
 					</div>
 					<div v-if="dnsResult && !dnsResult.matched" class="space-y-2">
 						<p class="text-base">
-							Nhận các phản hồi truy vấn DNS sau cho
+							{{ $t('SiteOverviewDomains_content_4') }}
 							<span class="font-semibold text-gray-700">{{ newDomain }}</span
 							>.
 						</p>
@@ -155,14 +156,14 @@
 							name="x"
 							class="mr-2 h-5 w-5 rounded-full bg-red-100 p-1 text-red-500"
 						/>
-						Xác minh DNS thất bại
+						{{ $t('DNS_Verification_Failed') }}
 					</p>
 					<p class="flex text-base" v-if="dnsVerified === true">
 						<FeatherIcon
 							name="check"
 							class="mr-2 h-5 w-5 rounded-full bg-green-100 p-1 text-green-500"
 						/>
-						Bản ghi DNS đã được xác minh thành công. Nhấp vào 'Thêm tên miền'.
+						{{ $t('SiteOverviewDomains_content_5') }}
 					</p>
 					<ErrorMessage :message="$resources.checkDNS.error" />
 					<ErrorMessage :message="$resources.addDomain.error" />
@@ -183,7 +184,7 @@
 						})
 					"
 				>
-					Xác minh DNS
+					{{ $t('Verify') }}
 				</Button>
 				<Button
 					v-if="dnsVerified"
@@ -197,7 +198,7 @@
 						})
 					"
 				>
-					Thêm tên miền
+					{{ $t('Add_Domain') }}
 				</Button>
 			</template>
 		</Dialog>
@@ -227,7 +228,7 @@ export default {
 		checkDNS: {
 			url: 'press.api.site.check_dns',
 			validate() {
-				if (!this.newDomain) return 'Tên miền không thể để trống';
+				if (!this.newDomain) return this.$t('Domain_cannot_be_empty');
 			}
 		},
 		addDomain: {
@@ -292,16 +293,16 @@ export default {
 		actionItems(domain) {
 			return [
 				{
-					label: 'Xóa',
+					label: this.$t('remove'),
 					onClick: () => this.confirmRemoveDomain(domain.domain)
 				},
 				{
-					label: 'Đặt làm chính',
+					label: this.$t('Set_Primary'),
 					condition: () => domain.status == 'Active' && !domain.primary,
 					onClick: () => this.confirmSetPrimary(domain.domain)
 				},
 				{
-					label: 'Chuyển hướng đến Chính',
+					label: this.$t('Redirect_to_Primary'),
 					condition: () =>
 						domain.status == 'Active' &&
 						!domain.primary &&
@@ -309,7 +310,7 @@ export default {
 					onClick: () => this.confirmSetupRedirect(domain.domain)
 				},
 				{
-					label: 'Xóa chuyển hướng',
+					label: this.$t('Remove_Redirect'),
 					condition: () =>
 						domain.status == 'Active' &&
 						!domain.primary &&
@@ -320,9 +321,11 @@ export default {
 		},
 		confirmRemoveDomain(domain) {
 			this.$confirm({
-				title: 'Gỡ bỏ tên miền',
-				message: `Bạn có chắc chắn muốn gỡ bỏ tên miền <b>${domain}</b>?`,
-				actionLabel: 'Gỡ',
+				title: this.$t('Remove_Domain'),
+				message: `${this.$t(
+					'SiteOverviewDomains_content_6'
+				)} <b>${domain}</b>?`,
+				actionLabel: this.$t('remove'),
 				actionColor: 'red',
 				action: closeDialog => {
 					closeDialog();
@@ -343,15 +346,17 @@ export default {
 
 			if (workingRedirects) {
 				notify({
-					title: 'Vui lòng gỡ bỏ tất cả các chuyển hướng đang hoạt động',
+					title: this.$t('SiteOverviewDomains_content_7'),
 					color: 'red',
 					icon: 'x'
 				});
 			} else {
 				this.$confirm({
-					title: 'Đặt làm tên miền chính',
-					message: `Đặt làm chính sẽ làm cho <b>${domain}</b> trở thành URL chính cho tổ chức của bạn. Bạn có muốn tiếp tục không?`,
-					actionLabel: 'Đặt làm chính',
+					title: this.$t('Set_as_Primary_Domain'),
+					message: `${this.$t(
+						'SiteOverviewDomains_content_8'
+					)} <b>${domain}</b> ${this.$t('SiteOverviewDomains_content_9')}`,
+					actionLabel: this.$t('Set_Primary'),
 					action: closeDialog => {
 						closeDialog();
 						this.$resources.setHostName.submit({
@@ -364,9 +369,13 @@ export default {
 		},
 		confirmSetupRedirect(domain) {
 			this.$confirm({
-				title: 'Chuyển hướng đến tên miền chính',
-				message: `Chuyển hướng đến Chính sẽ chuyển hướng <b>${domain}</b> đến <b>${this.primaryDomain}</b>. Bạn có muốn tiếp tục không?`,
-				actionLabel: 'Chuyển hướng đến chính',
+				title: this.$t('Redirect_to_Primary_Domain'),
+				message: `${this.$t(
+					'SiteOverviewDomains_content_10'
+				)} <b>${domain}</b> ${this.$t('to')} <b>${
+					this.primaryDomain
+				}</b>. ${this.$t('SiteOverviewDomains_content_11')}`,
+				actionLabel: this.$t('Redirect_to_Primary'),
 				action: closeDialog => {
 					closeDialog();
 					this.$resources.setupRedirect.submit({
@@ -378,9 +387,13 @@ export default {
 		},
 		confirmRemoveRedirect(domain) {
 			this.$confirm({
-				title: 'Xóa chuyển hướng',
-				message: `Xóa chuyển hướng sẽ gỡ bỏ chuyển hướng đã thiết lập trước đó từ <b>${domain}</b> đến <b>${this.primaryDomain}</b>. Bạn có muốn tiếp tục không?`,
-				actionLabel: 'Xóa chuyển hướng',
+				title: this.$t('Remove_Redirect'),
+				message: `${this.$t(
+					'SiteOverviewDomains_content_12'
+				)} <b>${domain}</b> ${this.$t('to')} <b>${
+					this.primaryDomain
+				}</b>. ${this.$t('SiteOverviewDomains_content_11')}`,
+				actionLabel: this.$t('Remove_Redirect'),
 				action: closeDialog => {
 					closeDialog();
 					this.$resources.removeRedirect.submit({

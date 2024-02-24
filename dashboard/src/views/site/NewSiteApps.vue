@@ -5,9 +5,9 @@
 		</div>
 		<div class="space-y-6" v-if="$resources.versions.data">
 			<div v-if="!this.privateBench">
-				<h2 class="text-lg font-semibold">Chọn phiên bản Frappe</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Select_a_Frappe_version') }}</h2>
 				<p class="text-base text-gray-700">
-					Chọn phiên bản Frappe cho tổ chức của bạn
+					{{ $t('NewSiteApps_content_1') }}
 				</p>
 				<div class="mt-4">
 					<FormControl
@@ -18,9 +18,9 @@
 				</div>
 			</div>
 			<div v-if="regionOptions.length > 0">
-				<h2 class="text-lg font-semibold">Chọn khu vực</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Select_Region') }}</h2>
 				<p class="text-base text-gray-700">
-					Chọn khu vực trung tâm dữ liệu nơi tổ chức của bạn sẽ được tạo
+					{{ $t('NewSiteApps_content_2') }}
 				</p>
 				<div class="mt-4">
 					<RichSelect
@@ -33,16 +33,14 @@
 			<div
 				v-if="publicApps.length > 1 || privateApps.length || featureApp.length"
 			>
-				<h2 class="text-lg font-semibold">Chọn ứng dụng cài đặt</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Select_apps_to_install') }}</h2>
 				<p class="text-base text-gray-700">
-					Chọn các ứng dụng để cài đặt trên tổ chức của bạn. Bạn có thể chọn các
-					ứng dụng được xuất bản trên thị trường hoặc các ứng dụng riêng của
-					bạn.
+					{{ $t('NewSiteApps_content_3') }}
 				</p>
 				<div class="mt-4 space-y-4">
 					<div v-if="featureApp.length > 0">
 						<h3 class="text-sm font-medium">
-							Ứng dụng từ tính năng quan tâm của bạn
+							{{ $t('NewSiteApps_content_4') }}
 						</h3>
 						<div
 							class="-mx-2 mt-1 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
@@ -71,7 +69,7 @@
 										target="_blank"
 										@click.stop
 									>
-										Chi tiết
+										{{ $t('Details') }}
 									</a>
 									<span class="text-sm leading-snug text-gray-700" v-else>
 										{{ publicApp.repository_owner }}/{{ publicApp.repository }}
@@ -82,7 +80,7 @@
 						</div>
 					</div>
 					<div v-if="privateApps.length > 0">
-						<h3 class="text-sm font-medium">Ứng dụng riêng của bạn</h3>
+						<h3 class="text-sm font-medium">{{ $t('Your_Private_Apps') }}</h3>
 						<div
 							class="-mx-2 mt-1 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>
@@ -119,7 +117,7 @@
 							@click="() => (this.showMore = !this.showMore)"
 						>
 							<div class="text-sm font-medium text-gray-700 underline">
-								{{ this.showMore ? `Xem tất cả` : `Ẩn xem thêm` }}
+								{{ this.showMore ? $t('View_all') : $t('Hide_more') }}
 							</div>
 						</Button>
 					</div>
@@ -132,7 +130,7 @@
 									: showMore
 						}"
 					>
-						<h3 class="text-sm font-medium">Tất cả ứng dụng</h3>
+						<h3 class="text-sm font-medium">{{ $t('All_applications') }}</h3>
 						<!-- <h3 class="sr-only">Ứng dụng từ thị trường</h3> -->
 						<div
 							class="-mx-2 mt-1 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
@@ -161,7 +159,7 @@
 										target="_blank"
 										@click.stop
 									>
-										Chi tiết
+										{{ $t('Details') }}
 									</a>
 									<span class="text-sm leading-snug text-gray-700" v-else>
 										{{ publicApp.repository_owner }}/{{ publicApp.repository }}
@@ -176,7 +174,7 @@
 			<div v-if="selectedApps.includes('erpnext')">
 				<FormControl
 					type="checkbox"
-					label="Tôi đã đọc và đồng ý với Điều khoản dịch vụ của MBW Cloud."
+					:label="$t('NewSiteApps_content_5')"
 					@change="
 						val => $emit('update:shareDetailsConsent', val.target.checked)
 					"

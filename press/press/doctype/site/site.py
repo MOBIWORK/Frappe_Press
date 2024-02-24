@@ -867,8 +867,12 @@ class Site(Document):
 
         sid = self.get_login_sid()
         conn = FrappeClient(f"https://{self.name}?sid={sid}")
-        value = conn.get_value(
-            "System Settings", "setup_complete", "System Settings")
+        try:
+            value = conn.get_value(
+                "System Settings", "setup_complete", "System Settings")
+        except:
+            return
+
         if value:
             setup_complete = cint(value["setup_complete"])
             self.setup_wizard_complete = setup_complete

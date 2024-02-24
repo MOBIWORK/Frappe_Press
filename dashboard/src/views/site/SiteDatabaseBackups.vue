@@ -1,8 +1,8 @@
 <template>
 	<Card
 		v-if="site"
-		title="Sao lưu"
-		subtitle="Sao lưu được kích hoạt và được lên lịch chạy sáu giờ một lần."
+		:title="$t('Backups')"
+		:subtitle="$t('SiteDatabaseBackups_content_1')"
 	>
 		<template #actions>
 			<Button
@@ -10,14 +10,14 @@
 				@click="$resources.scheduleBackup.fetch()"
 				:loading="$resources.scheduleBackup.loading"
 			>
-				Tạo bản sao lưu
+				{{ $t('Create_Backup') }}
 			</Button>
 			<Dialog
-				:options="{ title: 'Khôi phục bản sao lưu trên tổ chức khác' }"
+				:options="{ title: $t('Restore_Backup_on_Another_Site') }"
 				v-model="showRestoreOnAnotherSiteDialog"
 			>
 				<template v-slot:body-content>
-					<p class="text-base">Chọn tổ chức mà bạn muốn khôi phục sao lưu</p>
+					<p class="text-base">{{ $t('SiteDatabaseBackups_content_2') }}</p>
 					<SiteRestoreSelector
 						:sites="
 							$resources.sites.data.filter(site => site.name !== this.site.name)
@@ -27,10 +27,10 @@
 					/>
 					<div v-if="selectedSite" class="mt-4">
 						<p class="text-base">
-							Bạn có chắc chắn muốn khôi phục sao lưu từ
-							<b>{{ site?.name }}</b> được thực hiện vào
-							<b>{{ formatDate(backupToRestore.creation) }}</b> đến tổ chức của
-							bạn <b>{{ selectedSite.name }}</b
+							{{ $t('SiteDatabaseBackups_content_3') }}
+							<b>{{ site?.name }}</b> {{ $t('taken_on') }}
+							<b>{{ formatDate(backupToRestore.creation) }}</b>
+							{{ $t('to_your_site') }} <b>{{ selectedSite.name }}</b
 							>?
 						</p>
 					</div>
@@ -46,7 +46,7 @@
 						v-if="selectedSite"
 						@click="restoreOffsiteBackupOnAnotherSite(backupToRestore)"
 					>
-						Khôi phục
+						{{ $t('Restore') }}
 					</Button>
 				</template>
 			</Dialog>
@@ -63,10 +63,11 @@
 						class="flex items-center justify-between"
 					>
 						<span>
-							Sao lưu vào <FormatDate>{{ backup.creation }}</FormatDate>
+							{{ $t('Backup_on') }}
+							<FormatDate>{{ backup.creation }}</FormatDate>
 						</span>
 					</span>
-					<span v-else> Thực hiện sao lưu... </span>
+					<span v-else> {{ $t('Performing_Backup') }}... </span>
 				</div>
 				<div class="flex items-center space-x-2">
 					<Badge v-if="backup.offsite" label="Offsite" theme="green" />
@@ -75,8 +76,8 @@
 							<Tooltip
 								:text="
 									!permissions.backups
-										? `Bạn không có đủ quyền để thực hiện hành động này`
-										: 'Tải xuống bản sao lưu'
+										? $t('SiteDatabaseBackups_content_4')
+										: $t('Download_Backups')
 								"
 							>
 								<Button
@@ -93,9 +94,9 @@
 			<Button
 				v-if="$resources.backups.loading"
 				:loading="true"
-				loading-text="Đang tải"
+				:loading-text="$t('loading')"
 			/>
-			<span v-else> Không tìm thấy bản sao lưu nào </span>
+			<span v-else> {{ $t('No_backups_found') }} </span>
 		</div>
 	</Card>
 </template>
@@ -148,7 +149,7 @@ export default {
 				},
 				onError: err => {
 					notify({
-						title: 'Không thể tạo sao lưu',
+						title: this.$t('Couldnt_create_backup'),
 						message: err.messages.join('\n'),
 						color: 'red',
 						icon: err.messages[0].includes('suspension')
@@ -185,7 +186,7 @@ export default {
 		dropdownItems(backup) {
 			return [
 				{
-					group: 'Tải xuống',
+					group: this.$t('download'),
 					items: [
 						{
 							label: `Database (${this.formatBytes(
@@ -229,7 +230,7 @@ export default {
 							}
 						},
 						{
-							label: `Cấu hình tổ chức (${this.formatBytes(
+							label: `${this.$t('Site_Config')} (${this.formatBytes(
 								backup.config_file_size || 0
 							)})`,
 							condition: () => backup.config_file_size,
@@ -245,17 +246,17 @@ export default {
 					]
 				},
 				{
-					group: 'Khôi phục',
+					group: this.$t('Restore'),
 					condition: () => backup.offsite,
 					items: [
 						{
-							label: 'Khôi phục sao lưu',
+							label: this.$t('Restore_Backup'),
 							onClick: () => {
 								this.$confirm({
-									title: 'Khôi phục sao lưu',
+									title: this.$t('Restore_Backup'),
 									// prettier-ignore
-									message: `Bạn có chắc chắn muốn khôi phục tổ chức của bạn đến <b>${this.formatDate(backup.creation)}</b> không?`,
-									actionLabel: 'Khôi phục',
+									message: `${this.$t('SiteDatabaseBackups_content_5')} <b>${this.formatDate(backup.creation)}</b> ${this.$t('SiteDatabaseBackups_content_6')}?`,
+									actionLabel: this.$t('Restore'),
 									action: closeDialog => {
 										closeDialog();
 										this.restoreOffsiteBackup(backup);
@@ -264,7 +265,7 @@ export default {
 							}
 						},
 						{
-							label: 'Khôi phục sao lưu trên tổ chức khác',
+							label: this.$t('Restore_Backup_on_Another_Site'),
 							onClick: () => {
 								this.showRestoreOnAnotherSiteDialog = true;
 								this.backupToRestore = backup;

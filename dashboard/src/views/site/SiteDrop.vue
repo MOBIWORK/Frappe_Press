@@ -3,10 +3,12 @@
 		<slot v-bind="{ showDialog }"></slot>
 		<Dialog
 			:options="{
-				title: 'Xóa tổ chức',
+				title: $t('Drop_Site'),
 				actions: [
 					{
-						label: site.archive_failed ? 'Ép buộc xóa' : 'Xóa',
+						label: site.archive_failed
+							? $t('Force_Drop_Site')
+							: $t('Drop_Site'),
 						variant: 'solid',
 						theme: 'red',
 						loading: $resources.dropSite.loading,
@@ -18,13 +20,12 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					Bạn có chắc chắn muốn xóa tổ chức không? Tổ chức sẽ được lưu trữ và
-					tất cả các tệp tin và bản sao lưu ngoại vi sẽ bị xóa. Hành động này
-					không thể được hoàn tác.
+					{{ $t('SiteDrop_content_1') }}
 				</p>
 				<p class="mt-4 text-base">
-					Vui lòng nhập
-					<span class="font-semibold">{{ site.name }}</span> để xác nhận.
+					{{ $t('Please_type') }}
+					<span class="font-semibold">{{ site.name }}</span>
+					{{ $t('to_confirm') }}.
 				</p>
 				<FormControl class="mt-4 w-full" v-model="confirmSiteName" />
 				<div class="mt-4">
@@ -67,7 +68,7 @@ export default {
 				},
 				validate() {
 					if (this.site?.name !== this.confirmSiteName) {
-						return 'Vui lòng nhập tên tổ chức để xác nhận';
+						return this.$t('Please_type_the_site_name_to_confirm');
 					}
 				}
 			};

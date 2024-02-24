@@ -3,6 +3,21 @@ import theme from '../tailwind.theme.json';
 
 let utils = {
 	methods: {
+		$validateSubdomain(subdomain) {
+			if (!subdomain) {
+				return this.$t('Subdomain_cannot_be_empty');
+			}
+			if (subdomain.length < 5) {
+				return this.$t('utils_content_1');
+			}
+			if (subdomain.length > 32) {
+				return this.$t('utils_content_2');
+			}
+			if (!subdomain.match(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/)) {
+				return this.$t('utils_content_3');
+			}
+			return null;
+		},
 		$plural(number, singular, plural) {
 			if (number === 1) {
 				return singular;
@@ -143,9 +158,9 @@ let utils = {
 		},
 		$invoiceStatus(status) {
 			let objStatus = {
-				Paid: 'Đã thanh toán',
-				Unpaid: 'Chưa thanh toán',
-				'Invoice Created': 'Đã tạo hóa đơn'
+				Paid: this.$t('paid'),
+				Unpaid: this.$t('unpaid'),
+				'Invoice Created': this.$t('invoice_created')
 			};
 			return objStatus[status] || status;
 		},
@@ -249,22 +264,6 @@ export async function trypromise(promise) {
 	} catch (error) {
 		return [error, null];
 	}
-}
-
-export function validateSubdomain(subdomain) {
-	if (!subdomain) {
-		return 'Tên miền không thể trống.';
-	}
-	if (subdomain.length < 5) {
-		return 'Tên miền quá ngắn. Hãy sử dụng 5 ký tự trở lên.';
-	}
-	if (subdomain.length > 32) {
-		return 'Tên miền quá dài. Sử dụng 32 ký tự trở xuống';
-	}
-	if (!subdomain.match(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/)) {
-		return 'Tên miền chứa các ký tự không hợp lệ. Sử dụng ký tự chữ thường, số và dấu gạch nối';
-	}
-	return null;
 }
 
 export { utils };

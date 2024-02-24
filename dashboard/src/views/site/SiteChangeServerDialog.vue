@@ -3,10 +3,12 @@
 		v-model="show"
 		@close="resetValues"
 		:options="{
-			title: 'Move Site to another Server',
+			title: $t('move_site_to_another_server'),
 			actions: [
 				{
-					label: checkForBench ? 'Check for Available Benches' : 'Submit',
+					label: checkForBench
+						? $t('check_for_available_benches')
+						: $t('submit'),
 					loading: $resources.changeServer.loading,
 					variant: 'solid',
 					disabled: !$resources.changeServerOptions?.data?.length,
@@ -32,19 +34,18 @@
 			/>
 			<FormControl
 				v-else-if="$resources.changeServerOptions.data.length > 0"
-				label="Select Server"
+				:label="$t('select_server')"
 				type="select"
 				:options="$resources.changeServerOptions.data"
 				v-model="targetServer"
 			/>
 			<p v-else class="text-base">
-				There are no servers available to move this site. Please create a new
-				server first.
+				{{ $t('SiteChangeServerDialog_content_1') }}
 			</p>
 			<FormControl
 				class="mt-4"
 				v-if="$resources.changeServerBenchOptions.data.length > 0"
-				label="Select Bench"
+				:label="$t('select_bench')"
 				type="select"
 				:options="$resources.changeServerBenchOptions.data"
 				v-model="targetBench"
@@ -52,7 +53,7 @@
 			<FormControl
 				class="mt-4"
 				v-if="$resources.changeServerBenchOptions.data.length > 0"
-				label="Schedule Site Migration (IST)"
+				:label="$t('schedule_site_migration')"
 				type="datetime-local"
 				:min="new Date().toISOString().slice(0, 16)"
 				v-model="targetDateTime"
@@ -141,8 +142,10 @@ export default {
 				url: 'press.api.site.change_server',
 				onSuccess() {
 					notify({
-						title: 'Site Change Server',
-						message: `Site <b>${this.site?.name}</b> has been scheduled to move to <b>${this.targetServer}</b>`,
+						title: this.$t('site_change_server'),
+						message: `${this.$t('site')} <b>${this.site?.name}</b> ${this.$t(
+							'SiteChangeServerDialog_content_2'
+						)} <b>${this.targetServer}</b>`,
 						icon: 'check',
 						color: 'green'
 					});

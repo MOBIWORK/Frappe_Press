@@ -3,8 +3,8 @@
 		<Header>
 			<Breadcrumbs
 				:items="[
-					{ label: 'Tổ chức', route: '/sites' },
-					{ label: 'Tổ chức mới', route: '/sites/new' }
+					{ label: $t('Sites'), route: '/sites' },
+					{ label: $t('New_Site'), route: '/sites/new' }
 				]"
 			/>
 		</Header>
@@ -15,7 +15,7 @@
 			<div>
 				<div class="flex items-center justify-between">
 					<h2 class="text-sm font-medium leading-6 text-gray-900">
-						Select Frappe Framework Version
+						{{ $t('Select_Frappe_Framework_Version') }}
 					</h2>
 				</div>
 				<div class="mt-2">
@@ -40,7 +40,9 @@
 				</div>
 			</div>
 			<div class="flex flex-col" v-if="options.apps.length">
-				<h2 class="text-sm font-medium leading-6 text-gray-900">Select Apps</h2>
+				<h2 class="text-sm font-medium leading-6 text-gray-900">
+					{{ $t('Select_Apps') }}
+				</h2>
 				<div class="mt-2 w-full space-y-2">
 					<div class="grid grid-cols-2 gap-3 sm:grid-cols-2">
 						<button
@@ -82,7 +84,7 @@
 			</div>
 			<div class="flex flex-col" v-if="options.clusters.length">
 				<h2 class="text-sm font-medium leading-6 text-gray-900">
-					Select Region
+					{{ $t('Select_Region') }}
 				</h2>
 				<div class="mt-2 w-full space-y-2">
 					<div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -108,19 +110,21 @@
 					<FormControl
 						type="checkbox"
 						v-model="agreedToRegionConsent"
-						label="I agree that the laws of the region selected by me shall stand applicable to me and Frappe."
+						:label="$t('NewSite_content_1')"
 					/>
 				</div>
 			</div>
 			<div v-if="version && cluster">
-				<h2 class="text-sm font-medium leading-6 text-gray-900">Choose Plan</h2>
+				<h2 class="text-sm font-medium leading-6 text-gray-900">
+					{{ $t('Choose_Plan') }}
+				</h2>
 				<div class="mt-2">
 					<SitePlansCards v-model="plan" />
 				</div>
 			</div>
 			<div v-if="version && plan && cluster">
 				<h2 class="text-sm font-medium leading-6 text-gray-900">
-					Choose Subdomain
+					{{ $t('Choose_Subdomain') }}
 				</h2>
 				<div class="mt-2 grid grid-cols-2 items-center gap-3 sm:grid-cols-4">
 					<div class="col-span-2 flex w-full">
@@ -137,7 +141,7 @@
 						v-if="$resources.subdomainExists.loading"
 						class="text-base text-gray-600"
 					>
-						Checking...
+						{{ $t('Checking') }}...
 					</div>
 				</div>
 				<div class="mt-1">
@@ -152,10 +156,10 @@
 							v-if="$resources.subdomainExists.data"
 							class="text-sm text-green-600"
 						>
-							{{ subdomain }}.{{ options.domain }} is available
+							{{ subdomain }}.{{ options.domain }} {{ $t('is_available') }}
 						</div>
 						<div v-else class="text-sm text-red-600">
-							{{ subdomain }}.{{ options.domain }} is not available
+							{{ subdomain }}.{{ options.domain }} {{ $t('is_not_available') }}
 						</div>
 					</template>
 				</div>
@@ -163,7 +167,7 @@
 			<div v-if="version && plan" class="flex flex-col space-y-4">
 				<FormControl
 					type="checkbox"
-					label="I am okay if my details are shared with local partner"
+					:label="$t('NewSite_content_2')"
 					@change="val => (this.shareDetailsConsent = val.target.checked)"
 				/>
 				<ErrorMessage class="my-2" :message="$resources.newSite.error" />
@@ -173,7 +177,7 @@
 					@click="$resources.newSite.submit()"
 					:loading="$resources.newSite.loading"
 				>
-					Create site
+					{{ $t('Create_site') }}
 				</Button>
 			</div>
 		</div>
@@ -188,7 +192,6 @@ import {
 	TextInput,
 	debounce
 } from 'frappe-ui';
-import { validateSubdomain } from '../../src/utils.js';
 import router from '../router';
 
 export default {
@@ -215,7 +218,7 @@ export default {
 	watch: {
 		subdomain: {
 			handler: debounce(function (value) {
-				let invalidMessage = validateSubdomain(value);
+				let invalidMessage = this.$validateSubdomain(value);
 				this.$resources.subdomainExists.error = invalidMessage;
 				if (!invalidMessage) {
 					this.$resources.subdomainExists.submit();
@@ -246,7 +249,7 @@ export default {
 					subdomain: this.subdomain
 				},
 				validate() {
-					return validateSubdomain(this.subdomain);
+					return this.$validateSubdomain(this.subdomain);
 				},
 				transform(data) {
 					return !Boolean(data);
@@ -275,7 +278,7 @@ export default {
 					// 	(!this.wantsToRestore || this.selectedFiles.database);
 
 					if (!this.agreedToRegionConsent) {
-						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo tổ chức';
+						return this.$t('NewSite_content_3');
 					}
 
 					// if (!canCreate) {

@@ -1,8 +1,8 @@
 <template>
 	<ConfigEditor
 		v-if="bench && !bench?.public"
-		title="Cấu hình tổ chức chung"
-		subtitle="Thêm và cập nhật các cặp giá trị khóa cho tệp common_site_config.json và bench_config.json của bench của bạn."
+		:title="$t('Common_Site_Config')"
+		:subtitle="$t('BenchConfig_content_1')"
 		:configData="benchConfig"
 		:updateConfigMethod="updateBenchConfigMethod"
 	/>

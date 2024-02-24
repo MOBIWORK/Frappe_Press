@@ -1,11 +1,11 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Thay đổi gói',
+			title: $t('Change_Plan'),
 			size: '3xl',
 			actions: [
 				{
-					label: 'Xác nhận',
+					label: $t('confirm'),
 					variant: 'solid',
 					loading: $resources.changePlan.loading,
 					onClick: () => {
@@ -82,7 +82,9 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: `Plan changed to ${this.selectedPlan.plan_title}`,
+						title: `${this.$t('Plan_changed_to')} ${
+							this.selectedPlan.plan_title
+						}`,
 						icon: 'check',
 						color: 'green'
 					});

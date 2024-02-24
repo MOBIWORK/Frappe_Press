@@ -8,13 +8,13 @@
 	<div v-else-if="$resources.getPlan?.data?.monitor_access">
 		<Card>
 			<Report
-				title="Logs yêu cầu"
+				:title="$t('Request_Logs')"
 				:columns="[
-					{ label: 'Time', name: 'time', class: 'w-2/12' },
-					{ label: 'Method', name: 'method', class: 'w-1/12' },
-					{ label: 'Path', name: 'path', class: 'w-5/12' },
-					{ label: 'Status Code', name: 'status', class: 'w-2/12' },
-					{ label: 'CPU Time (seconds)', name: 'cpu_time', class: 'w-2/12' }
+					{ label: $t('Time'), name: 'time', class: 'w-2/12' },
+					{ label: $t('Method'), name: 'method', class: 'w-1/12' },
+					{ label: $t('Path'), name: 'path', class: 'w-5/12' },
+					{ label: $t('Status_Code'), name: 'status', class: 'w-2/12' },
+					{ label: $t('CPU_Time_(seconds)'), name: 'cpu_time', class: 'w-2/12' }
 				]"
 				:data="formatData"
 				:filters="[sortFilter, dateFilter]"
@@ -36,21 +36,21 @@
 					$resources.requestLogs.data.length == 0
 				"
 			>
-				Không có dữ liệu
+				{{ $t('no_data') }}
 			</div>
 			<Button
 				v-if="$resources.requestLogs.data && $resources.requestLogs.data.length"
 				:loading="$resources.requestLogs.loading"
-				loadingText="Đang tải..."
+				:loadingText="`${$t('loading')}...`"
 				@click="start += 10"
 			>
-				Tải thêm
+				{{ $t('load_more') }}
 			</Button>
 		</Card>
 	</div>
 	<div class="flex justify-center" v-else>
 		<span class="mt-16 text-base text-gray-700">
-			Your plan doesn't support this feature. Please upgrade your plan.
+			{{ $t('SiteRequestLogs_content_1') }}
 		</span>
 	</div>
 </template>
@@ -70,16 +70,7 @@ export default {
 			date: null,
 			sort: 'CPU Time (Descending)',
 			start: 0,
-			sortFilter: {
-				name: 'sort',
-				options: [
-					'Time (Ascending)',
-					'Time (Descending)',
-					'CPU Time (Descending)'
-				],
-				type: 'select',
-				value: 'CPU Time (Descending)'
-			},
+			sortFilter: {},
 			dateFilter: {
 				name: 'date',
 				type: 'date',
@@ -88,9 +79,15 @@ export default {
 		};
 	},
 	watch: {
+		'$i18n.locale'(val) {
+			this.setValueFilter();
+		},
 		sort(value) {
 			this.reset();
 		}
+	},
+	mounted() {
+		this.setValueFilter();
 	},
 	resources: {
 		requestLogs() {
@@ -120,6 +117,32 @@ export default {
 		}
 	},
 	methods: {
+		setValueFilter() {
+			let val_selected = 'CPU Time (Descending)';
+			if (this.sortFilter?.value) {
+				val_selected = this.sortFilter?.value;
+			}
+			let config = {
+				name: 'sort',
+				options: [
+					{
+						label: this.$t('Time_(Ascending)'),
+						value: 'Time (Ascending)'
+					},
+					{
+						label: this.$t('Time_(Descending)'),
+						value: 'Time (Descending)'
+					},
+					{
+						label: this.$t('CPU_Time_(Descending)'),
+						value: 'CPU Time (Descending)'
+					}
+				],
+				type: 'select',
+				value: val_selected
+			};
+			this.sortFilter = config;
+		},
 		reset() {
 			this.$resources.requestLogs.reset();
 			this.start = 0;
@@ -140,11 +163,15 @@ export default {
 				log.cpu_time = this.$formatCPUTime(log.duration);
 
 				let row = [
-					{ name: 'Time', value: log.time, class: 'w-2/12' },
-					{ name: 'Method', value: log.method, class: 'w-1/12' },
-					{ name: 'Path', value: log.path, class: 'w-5/12 break-all pr-2' },
-					{ name: 'Status', value: log.status, class: 'w-2/12' },
-					{ name: 'CPU Time', value: log.cpu_time, class: 'w-2/12' }
+					{ name: $t('Time'), value: log.time, class: 'w-2/12' },
+					{ name: $t('Method'), value: log.method, class: 'w-1/12' },
+					{ name: $t('Path'), value: log.path, class: 'w-5/12 break-all pr-2' },
+					{ name: $t('Status_Code'), value: log.status, class: 'w-2/12' },
+					{
+						name: $t('CPU_Time_(seconds)'),
+						value: log.cpu_time,
+						class: 'w-2/12'
+					}
 				];
 				data.push(row);
 			});

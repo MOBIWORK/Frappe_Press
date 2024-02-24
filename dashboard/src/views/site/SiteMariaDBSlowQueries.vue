@@ -10,14 +10,14 @@
 			<Report
 				:filters="filters"
 				:columns="[
-					{ label: 'Timestamp', name: 'timestamp', class: 'w-2/12' },
-					{ label: 'Query', name: 'query', class: 'w-7/12' },
-					{ label: 'Duration', name: 'duration', class: 'w-1/12' },
-					{ label: 'Rows Examined', name: 'examined', class: 'w-1/12' },
-					{ label: 'Rows Sent', name: 'sent', class: 'w-1/12' }
+					{ label: $t('Timestamp'), name: 'timestamp', class: 'w-2/12' },
+					{ label: $t('Query'), name: 'query', class: 'w-7/12' },
+					{ label: $t('Duration'), name: 'duration', class: 'w-1/12' },
+					{ label: $t('Rows_Examined'), name: 'examined', class: 'w-1/12' },
+					{ label: $t('Rows_Sent'), name: 'sent', class: 'w-1/12' }
 				]"
 				:data="formatSlowQueries"
-				title="Báo cáo truy vấn chậm của MariaDB"
+				:title="$t('Mariadb_Slow_Queries_Report')"
 			/>
 			<div
 				class="px-2 py-2 text-base text-gray-600"
@@ -35,21 +35,21 @@
 					$resources.slowQueries.data.length == 0
 				"
 			>
-				Không có dữ liệu
+				{{ $t('no_data') }}
 			</div>
 			<Button
 				v-if="$resources.slowQueries.data && $resources.slowQueries.data.length"
 				:loading="$resources.slowQueries.loading"
-				loadingText="Đang tải..."
+				:loadingText="`${$t('loading')}...`"
 				@click="max_lines += 20"
 			>
-				Tải thêm
+				{{ $t('load_more') }}
 			</Button>
 		</Card>
 	</div>
 	<div class="flex justify-center" v-else>
 		<span class="mt-16 text-base text-gray-700">
-			Gói của bạn không hỗ trợ tính năng này. Vui lòng nâng cấp gói của bạn
+			{{ $t('SiteBinaryLogs_content_1') }}
 		</span>
 	</div>
 </template>
@@ -67,17 +67,49 @@ export default {
 			filters: [
 				{
 					name: 'pattern',
-					label: 'Search:',
+					label: `${this.$t('search')}:`,
 					type: 'text',
 					value: this.pattern
 				},
-				{ name: 'start', label: 'From:', type: 'datetime-local', value: '' },
-				{ name: 'end', label: 'To:', type: 'datetime-local', value: '' }
+				{
+					name: 'start',
+					label: `${this.$t('from')}:`,
+					type: 'datetime-local',
+					value: ''
+				},
+				{
+					name: 'end',
+					label: `${this.$t('to')}:`,
+					type: 'datetime-local',
+					value: ''
+				}
 			],
 			max_lines: 20
 		};
 	},
 	watch: {
+		'$i18n.locale'() {
+			this.filters = [
+				{
+					name: 'pattern',
+					label: `${this.$t('search')}:`,
+					type: 'text',
+					value: this.pattern
+				},
+				{
+					name: 'start',
+					label: `${this.$t('from')}:`,
+					type: 'datetime-local',
+					value: ''
+				},
+				{
+					name: 'end',
+					label: `${this.$t('to')}:`,
+					type: 'datetime-local',
+					value: ''
+				}
+			];
+		},
 		pattern() {
 			this.reset();
 		},

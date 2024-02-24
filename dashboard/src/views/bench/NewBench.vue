@@ -2,9 +2,9 @@
 	<WizardCard>
 		<div>
 			<div class="mb-6 text-center">
-				<h1 class="text-2xl font-bold sm:text-center">Bench mới</h1>
+				<h1 class="text-2xl font-bold sm:text-center">{{ $t('New_Bench') }}</h1>
 				<p v-if="serverTitle" class="text-base text-gray-700">
-					Bench sẽ được tạo trên máy chủ
+					{{ $t('Bench_will_be_created_on_server') }}
 					<span class="font-medium">{{ serverTitle.slice(0, -14) }}</span>
 				</p>
 			</div>
@@ -14,18 +14,17 @@
 			<div class="space-y-8 sm:space-y-6" v-else>
 				<div>
 					<label class="text-lg font-semibold">
-						Chọn một tên cho Bench của bạn
+						{{ $t('Choose_a_name_for_your_bench') }}
 					</label>
 					<p class="text-base text-gray-700">
-						Đặt tên cho bench dựa trên mục đích của nó. Ví dụ, Websites Cá nhân,
-						Bench Staging, v.v.
+						{{ $t('NewBench_content_1') }}
 					</p>
 					<FormControl class="mt-2" v-model="benchTitle" />
 				</div>
 				<div v-if="regionOptions.length > 0">
-					<h2 class="text-lg font-semibold">Chọn Khu vực</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Select_Region') }}</h2>
 					<p class="text-base text-gray-700">
-						Chọn khu vực trung tâm dữ liệu nơi Bench của bạn sẽ được tạo
+						{{ $t('NewBench_content_2') }}
 					</p>
 					<div class="mt-2">
 						<RichSelect
@@ -36,9 +35,9 @@
 					</div>
 				</div>
 				<div>
-					<label class="text-lg font-semibold"> Chọn phiên bản Frappe </label>
+					<label class="text-lg font-semibold"> {{ $t('Select_a_Frappe_version') }} </label>
 					<p class="text-base text-gray-700">
-						Chọn phiên bản Frappe cho Bench của bạn.
+						{{ $t('NewBench_content_3') }}
 					</p>
 					<FormControl
 						class="mt-2"
@@ -50,11 +49,10 @@
 
 				<div v-if="selectedVersionName">
 					<label class="text-lg font-semibold">
-						Chọn ứng dụng để cài đặt
+						{{ $t('Select_apps_to_install') }}
 					</label>
 					<p class="text-base text-gray-700">
-						Những ứng dụng này sẽ có sẵn cho các tổ chức trên Bench của bạn. Bạn
-						cũng có thể thêm ứng dụng vào Bench của bạn sau này.
+						{{ $t('NewBench_content_4') }}
 					</p>
 					<div class="mt-4">
 						<AppSourceSelector
@@ -76,7 +74,7 @@
 						for="region-consent"
 						class="ml-1 text-sm font-semibold text-gray-900"
 					>
-						Tôi đồng ý với các chính sách của MBW.
+						{{ $t('NewSite_content_1') }}
 					</label>
 				</div>
 
@@ -88,7 +86,7 @@
 						:loading="$resources.createBench.loading"
 						@click="$resources.createBench.submit()"
 					>
-						Tạo Bench
+						{{ $t('Create_Bench') }}
 					</Button>
 				</div>
 			</div>
@@ -155,18 +153,18 @@ export default {
 				},
 				validate() {
 					if (!this.benchTitle) {
-						return 'Tiêu đề Bench không thể để trống';
+						return this.$t('NewBench_content_5');
 					}
 					if (!this.selectedVersionName) {
-						return 'Chọn một phiên bản để tạo Bench';
+						return this.$t('NewBench_content_6');
 					}
 					if (this.selectedApps.length < 1) {
-						return 'Chọn ít nhất một ứng dụng để tạo Bench';
+						return this.$t('NewBench_content_7');
 					}
 
 					if (!this.agreedToRegionConsent) {
 						document.getElementById('region-consent').focus();
-						return 'Vui lòng đồng ý với sự đồng thuận trên để tạo Bench';
+						return this.$t('NewBench_content_8');
 					}
 				},
 				onSuccess(benchName) {

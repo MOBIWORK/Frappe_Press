@@ -1,5 +1,8 @@
 <template>
-	<Card title="Thông tin tổ chức" subtitle="Thông tin chung về tổ chức của bạn">
+	<Card
+		:title="$t('Site_Info')"
+		:subtitle="$t('General_information_about_your_site')"
+	>
 		<div class="divide-y">
 			<div class="flex items-center py-3">
 				<Avatar
@@ -9,20 +12,20 @@
 				/>
 				<div class="ml-3 flex flex-1 items-center justify-between">
 					<div>
-						<div class="text-base text-gray-600">Sở hữu bởi</div>
+						<div class="text-base text-gray-600">{{ $t('Owned_By') }}</div>
 						<div class="text-base font-medium text-gray-900">
 							{{ info.owner.first_name }}
 							{{ info.owner.last_name }}
 						</div>
 					</div>
 					<div class="text-right">
-						<div class="text-base text-gray-600">Ngày tạo</div>
+						<div class="text-base text-gray-600">{{ $t('Created_On') }}</div>
 						<div class="text-base font-medium text-gray-900">
 							{{ $date(info.created_on).toFormat('dd-MM-yyyy') }}
 						</div>
 					</div>
 					<div v-if="info.last_deployed" class="text-right">
-						<div class="text-base text-gray-600">Lần triển khai cuối cùng</div>
+						<div class="text-base text-gray-600">{{ $t('Last_Deployed') }}</div>
 						<div class="text-base font-medium text-gray-900">
 							{{ $date(info.last_deployed).toFormat('dd-MM-yyyy') }}
 						</div>
@@ -32,9 +35,9 @@
 
 			<ListItem
 				v-if="site.group && site.status !== 'Pending'"
-				title="Tự động cập nhật tổ chức"
+				:title="$t('Auto_Update_Site')"
 				class="overflow-x-hidden"
-				description="Lên lịch tự động cập nhật tổ chức khi có sẵn"
+				:description="$t('SiteOverviewInfo_content_1')"
 			>
 				<template v-slot:actions>
 					<LoadingIndicator class="h-4 w-4" v-if="loading" />
@@ -49,15 +52,15 @@
 			</ListItem>
 			<ListItem
 				v-if="site.status == 'Active'"
-				title="Ngưng hoạt động tổ chức"
-				description="Tổ chức sẽ không hoạt động và sẽ không thể truy cập công khai"
+				:title="$t('Deactivate_Site')"
+				:description="$t('SiteOverviewInfo_content_2')"
 			>
 				<template v-slot:actions>
 					<Tooltip
 						:text="
 							!permissions.deactivate
-								? `Bạn không có đủ quyền để thực hiện hành động này`
-								: 'Ngưng hoạt động tổ chức'
+								? $t('SiteOverviewPlan_content_3')
+								: $t('Deactivate_Site')
 						"
 					>
 						<Button
@@ -65,7 +68,7 @@
 							class="shrink-0"
 							:disabled="!permissions.deactivate"
 						>
-							Tắt
+							{{ $t('btn_Deactivate_Site') }}
 						</Button>
 					</Tooltip>
 				</template>
@@ -73,8 +76,8 @@
 
 			<ListItem
 				v-if="['Inactive', 'Broken'].includes(site.status)"
-				title="Kích hoạt tổ chức"
-				description="Tổ chức sẽ hoạt động và có thể truy cập được"
+				:title="$t('Activate_Site')"
+				:description="$t('SiteOverviewInfo_content_3')"
 			>
 				<template v-slot:actions>
 					<Button
@@ -82,23 +85,23 @@
 						class="shrink-0"
 						:variant="site.status === 'Broken' ? 'solid' : 'subtle'"
 					>
-						Kích hoạt
+						{{ $t('Activate_Site') }}
 					</Button>
 				</template>
 			</ListItem>
 
 			<ListItem
 				v-if="site.status !== 'Pending'"
-				title="Xóa tổ chức"
-				description="Một khi bạn xóa tổ chức, không có cách nào quay lại"
+				:title="$t('Drop_Site')"
+				:description="$t('SiteOverviewInfo_content_4')"
 			>
 				<template v-slot:actions>
 					<SiteDrop :site="site" v-slot="{ showDialog }">
 						<Tooltip
 							:text="
 								!permissions.drop
-									? `Bạn không có đủ quyền để thực hiện hành động này`
-									: 'Xóa tổ chức'
+									? $t('SiteOverviewPlan_content_3')
+									: $t('Drop_Site')
 							"
 						>
 							<Button
@@ -106,7 +109,7 @@
 								:disabled="!permissions.drop"
 								@click="showDialog"
 							>
-								Xóa
+								{{ $t('Drop_Site') }}
 							</Button>
 						</Tooltip>
 					</SiteDrop>
@@ -149,21 +152,18 @@ export default {
 		},
 		onDeactivateClick() {
 			this.$confirm({
-				title: 'Ngưng hoạt động tổ chức',
-				message: `
-				Bạn có chắc chắn muốn ngưng hoạt động tổ chức này không? Tổ chức sẽ chuyển sang trạng thái không hoạt động. Nó sẽ không thể truy cập và các công việc nền sẽ không chạy. Bạn vẫn sẽ bị tính phí <strong>kể cả khi tắt</strong>.
-				`,
-				actionLabel: 'Ngưng hoạt động',
+				title: this.$t('Deactivate_Site'),
+				message: this.$t('SiteOverviewInfo_content_5'),
+				actionLabel: this.$t('Deactivate'),
 				actionColor: 'red',
 				action: () => this.deactivate()
 			});
 		},
 		onActivateClick() {
 			this.$confirm({
-				title: 'Kích hoạt tổ chức',
-				message: `Bạn có chắc chắn muốn kích hoạt tổ chức này không?
-<br><br><strong>Ghi chú: Sử dụng điều này như một phương án cuối cùng nếu tổ chức gặp sự cố và không thể truy cập được.</strong>`,
-				actionLabel: 'Kích hoạt',
+				title: this.$t('Activate_Site'),
+				message: this.$t('SiteOverviewInfo_content_6'),
+				actionLabel: this.$t('Activate'),
 				action: () => this.activate()
 			});
 		},
@@ -179,8 +179,8 @@ export default {
 				name: this.site.name
 			});
 			notify({
-				title: 'Tổ chức đã được kích hoạt thành công!',
-				message: 'Bạn có thể truy cập tổ chức của mình ngay bây giờ',
+				title: this.$t('Site_content_3'),
+				message: this.$t('Site_content_4'),
 				icon: 'check',
 				color: 'green'
 			});

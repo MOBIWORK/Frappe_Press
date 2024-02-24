@@ -1,8 +1,5 @@
 <template>
-	<Card
-		title="Gói"
-		:subtitle="'Nâng cấp hoặc hạ cấp gói của bạn dựa trên việc sử dụng của bạn'"
-	>
+	<Card :title="$t('plan')" :subtitle="$t('ServerOverviewPlan_content_1')">
 		<template #actions>
 			<Button
 				@click="
@@ -12,7 +9,7 @@
 					}
 				"
 			>
-				Thay đổi
+				{{ $t('Change') }}
 			</Button>
 		</template>
 
@@ -21,7 +18,9 @@
 			<div class="ml-4">
 				<h4 class="text-4xl font-semibold text-gray-900">
 					{{ $planTitle(plan) }}
-					<span v-if="plan.price_vnd > 0" class="text-lg"> /tháng </span>
+					<span v-if="plan.price_vnd > 0" class="text-lg">
+						/{{ $t('month') }}
+					</span>
 				</h4>
 				<p class="text-base text-gray-700">
 					{{ plan.vcpu }} {{ $plural(plan.vcpu, 'vCPU', 'vCPUs') }} +
@@ -45,10 +44,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Thay đổi gói',
+				title: $t('Change_Plan'),
 				actions: [
 					{
-						label: 'Gửi',
+						label: $t('submit'),
 						variant: 'solid',
 						loading: $resources.changePlan.loading,
 						onClick: () => $resources.changePlan.submit()
@@ -118,7 +117,9 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: `Gói đã được thay đổi thành ${this.selectedPlan.plan_title}`,
+						title: `${this.$t('Plan_changed_to')} ${
+							this.selectedPlan.plan_title
+						}`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -140,11 +141,9 @@ export default {
 	},
 	methods: {
 		plan_title(plan) {
-			let india = this.$account.team.country == 'India';
-			let currency = india ? '₹' : '$';
-			let price_field = india ? 'price_inr' : 'price_usd';
-			let price = plan[price_field];
-			return price > 0 ? `${currency}${price}` : plan.plan_title;
+			let currency = 'VND';
+			let price = plan['price_vnd'];
+			return price > 0 ? `${price} ${currency}` : plan.plan_title;
 		}
 	},
 	computed: {

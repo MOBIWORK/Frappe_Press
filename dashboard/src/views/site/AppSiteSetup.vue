@@ -69,7 +69,6 @@ import { ref, computed } from 'vue';
 import { ErrorMessage, Progress, createResource } from 'frappe-ui';
 import LoginBox from '../partials/LoginBox.vue';
 import { useElementSize } from '@vueuse/core';
-import { validateSubdomain } from '@/utils';
 
 const props = defineProps(['product']);
 const state = ref('Pending'); // Pending, Wait for Site, Site Created
@@ -101,7 +100,7 @@ const createSite = createResource({
 		};
 	},
 	validate() {
-		return validateSubdomain(subdomain.value);
+		return this.$validateSubdomain(subdomain.value);
 	},
 	onSuccess() {
 		state.value = 'Wait for Site';

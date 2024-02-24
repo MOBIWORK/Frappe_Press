@@ -1,7 +1,7 @@
 <template>
 	<CardWithDetails
 		title="Logs"
-		subtitle="Log có sẵn cho tổ chức của bạn"
+		:subtitle="$t('Available_logs_for_your_site')"
 		:showDetails="logName"
 	>
 		<div v-if="$resources.logs.data && $resources.logs.data.length">
@@ -25,9 +25,9 @@
 			<Button
 				v-if="$resources.logs.loading"
 				:loading="true"
-				loading-text="Đang tải..."
+				:loading-text="`${$t('loading')}...`"
 			/>
-			<span v-else class="text-base text-gray-600">Không có log</span>
+			<span v-else class="text-base text-gray-600">{{ $t('No_logs') }}</span>
 		</div>
 		<template #details>
 			<SiteLogsDetail :site="site" :logName="logName" />

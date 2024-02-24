@@ -64,7 +64,6 @@
 </template>
 <script>
 import { Autocomplete, FormControl, TextInput, debounce } from 'frappe-ui';
-import { validateSubdomain } from '../../src/utils.js';
 
 export default {
 	name: 'NewSiteDialog',
@@ -108,7 +107,7 @@ export default {
 		},
 		subdomainInvalidMessage() {
 			if (this.selectedValues.subdomain) {
-				return validateSubdomain(this.selectedValues.subdomain);
+				return this.$validateSubdomain(this.selectedValues.subdomain);
 			}
 		}
 	}

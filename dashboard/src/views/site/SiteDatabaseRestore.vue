@@ -1,27 +1,24 @@
 <template>
 	<Card
 		v-if="site"
-		title="Khôi phục, Di chuyển và Đặt lại"
+		:title="$t('SiteDatabaseRestore_content_1')"
 		:subtitle="
-			site.status === 'Suspended'
-				? 'Kích hoạt tổ chức để kích hoạt những hành động này'
-				: ''
+			site.status === 'Suspended' ? $t('SiteDatabaseRestore_content_2') : ''
 		"
 	>
 		<div class="divide-y">
 			<div class="flex flex-wrap items-center justify-between py-3">
 				<div class="mb-2">
-					<h3 class="text-lg">Khôi phục</h3>
+					<h3 class="text-lg">{{ $t('Restore') }}</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Khôi phục cơ sở dữ liệu của bạn bằng cách sử dụng một bản sao lưu
-						trước đó
+						{{ $t('SiteDatabaseRestore_content_3') }}
 					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.restore
-							? `Bạn không có đủ quyền để thực hiện hành động này`
-							: 'Khôi phục Database'
+							? $t('SiteOverviewPlan_content_3')
+							: $t('Restore_Database')
 					"
 				>
 					<Button
@@ -29,7 +26,7 @@
 						:disabled="site.status === 'Suspended' || !permissions.restore"
 						@click="showRestoreDialog = true"
 					>
-						Khôi phục
+						{{ $t('Restore') }}
 					</Button>
 				</Tooltip>
 			</div>
@@ -37,13 +34,13 @@
 				<div class="mb-2">
 					<h3 class="text-lg">Migrate</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Chạy lệnh `bench migrate` trên database của bạn.
+						{{ $t('SiteDatabaseRestore_content_4') }}
 					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.migrate
-							? `Bạn không có đủ quyền để thực hiện hành động này`
+							? $t('SiteOverviewPlan_content_3')
 							: 'Migrate Database'
 					"
 				>
@@ -57,16 +54,16 @@
 			</div>
 			<div class="flex flex-wrap items-center justify-between py-3">
 				<div class="mb-2">
-					<h3 class="text-lg">Đặt lại</h3>
+					<h3 class="text-lg">{{ $t('Reset') }}</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Đặt lại database của bạn về trạng thái sạch sẽ.
+						{{ $t('SiteDatabaseRestore_content_5') }}
 					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.reset
-							? `Bạn không có đủ quyền để thực hiện hành động này`
-							: 'Đặt lại Database'
+							? $t('SiteOverviewPlan_content_3')
+							: $t('Reset_Database')
 					"
 				>
 					<Button
@@ -74,22 +71,22 @@
 						:disabled="site.status === 'Suspended' || !permissions.reset"
 						@click="showResetDialog = true"
 					>
-						Đặt lại
+						{{ $t('Reset') }}
 					</Button>
 				</Tooltip>
 			</div>
 			<div class="flex flex-wrap items-center justify-between py-3">
 				<div class="mb-2">
-					<h3 class="text-lg">Xóa Cache</h3>
+					<h3 class="text-lg">{{ $t('Clear_Cache') }}</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Xóa bộ nhớ cache của tổ chức của bạn
+						{{ $t('SiteDatabaseRestore_content_6') }}
 					</p>
 				</div>
 				<Button
 					:disabled="site.status === 'Suspended'"
 					@click="confirmClearCache"
 				>
-					Xóa
+					{{ $t('Clear') }}
 				</Button>
 			</div>
 			<div
@@ -97,16 +94,16 @@
 				v-if="$account.team.database_access_enabled"
 			>
 				<div class="mb-2">
-					<h3 class="text-lg">Truy cập</h3>
+					<h3 class="text-lg">{{ $t('Access') }}</h3>
 					<p class="mt-1 text-base text-gray-600">
-						Kết nối vào database của bạn
+						{{ $t('Connect_to_your_database') }}
 					</p>
 				</div>
 				<Tooltip
 					:text="
 						!permissions.access
-							? `Bạn không có đủ quyền để thực hiện hành động này`
-							: 'Truy cập Database'
+							? $t('SiteOverviewPlan_content_3')
+							: $t('Access_Database')
 					"
 				>
 					<Button
@@ -114,8 +111,8 @@
 						icon-left="database"
 						@click="showDatabaseAccessDialog = true"
 					>
-						Truy cập</Button
-					>
+						{{ $t('Access') }}
+					</Button>
 				</Tooltip>
 			</div>
 		</div>
@@ -143,9 +140,8 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					Lệnh <b>bench migrate</b> sẽ được thực hiện trên database của bạn. Bạn
-					có chắc chắn muốn chạy lệnh này không? Chúng tôi khuyên bạn nên tải về
-					một bản sao lưu database trước khi tiếp tục.
+					{{ $t('SiteDatabaseRestore_content_13') }} <b>bench migrate</b>
+					{{ $t('SiteDatabaseRestore_content_7') }}
 				</p>
 				<ErrorMessage
 					class="mt-2"
@@ -160,8 +156,7 @@
 						v-model="wantToSkipFailingPatches"
 					/>
 					<label for="skip-failing" class="ml-2 text-sm text-gray-900">
-						Bỏ qua các bản vá (patch) không thành công (nếu có bất kỳ bản vá nào
-						thất bại)
+						{{ $t('SiteDatabaseRestore_content_8') }}
 					</label>
 				</div>
 			</template>
@@ -169,10 +164,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Khôi phục',
+				title: $t('Restore'),
 				actions: [
 					{
-						label: 'Khôi phục',
+						label: $t('Restore'),
 						variant: 'solid',
 						loading: $resources.restoreBackup.loading,
 						onClick: () => $resources.restoreBackup.submit()
@@ -184,8 +179,7 @@
 			<template v-slot:body-content>
 				<div class="space-y-4">
 					<p class="text-base">
-						Khôi phục database của bạn bằng cách sử dụng một bản sao lưu trước
-						đó.
+						{{ $t('SiteDatabaseRestore_content_9') }}
 					</p>
 					<BackupFilesUploader v-model:backupFiles="selectedFiles" />
 				</div>
@@ -198,8 +192,7 @@
 						v-model="wantToSkipFailingPatches"
 					/>
 					<label for="skip-failing" class="ml-2 text-sm text-gray-900">
-						Bỏ qua các bản vá (patch) không thành công (nếu có bất kỳ bản vá nào
-						thất bại)
+						{{ $t('SiteDatabaseRestore_content_8') }}
 					</label>
 				</div>
 				<ErrorMessage class="mt-2" :message="$resources.restoreBackup.error" />
@@ -214,10 +207,10 @@
 
 		<Dialog
 			:options="{
-				title: 'Khôi phục Database',
+				title: $t('Restore_Database'),
 				actions: [
 					{
-						label: 'Khôi phục',
+						label: $t('Restore'),
 						variant: 'solid',
 						theme: 'red',
 						loading: $resources.resetDatabase.loading,
@@ -229,12 +222,12 @@
 		>
 			<template v-slot:body-content>
 				<p class="text-base">
-					Tất cả dữ liệu từ tổ chức của bạn sẽ bị mất. Bạn có chắc chắn muốn đặt
-					lại database không?
+					{{ $t('SiteDatabaseRestore_content_10') }}
 				</p>
 				<p class="mt-4 text-base">
-					Vui lòng nhập
-					<span class="font-semibold">{{ site.name }}</span> để xác nhận.
+					{{ $t('Please_type') }}
+					<span class="font-semibold">{{ site.name }}</span>
+					{{ $t('to_confirm') }}.
 				</p>
 				<FormControl class="mt-4 w-full" v-model="confirmSiteName" />
 				<ErrorMessage class="mt-2" :message="$resources.resetDatabase.error" />
@@ -282,7 +275,7 @@ export default {
 				},
 				validate() {
 					if (!this.filesUploaded) {
-						return 'Vui lòng tải lên database, public và private files để khôi phục.';
+						return this.$t('SiteDatabaseRestore_content_11');
 					}
 				},
 				onSuccess(jobName) {
@@ -302,7 +295,7 @@ export default {
 				},
 				validate() {
 					if (this.confirmSiteName !== this.site?.name) {
-						return 'Vui lòng nhập tên tổ chức để xác nhận.';
+						return this.$t('Please_type_the_site_name_to_confirm');
 					}
 				},
 				onSuccess(jobName) {
@@ -357,11 +350,15 @@ export default {
 		},
 		confirmClearCache() {
 			this.$confirm({
-				title: 'Xóa Cache',
-				message: `
-				<b>bench clear-cache</b> và <b>bench clear-website-cache</b> sẽ được thực hiện trên tổ chức của bạn. Bạn có chắc chắn muốn chạy các lệnh này không?
-				`,
-				actionLabel: 'Xóa Cache',
+				title: this.$t('Clear_Cache'),
+				message: `${this.$t(
+					'SiteDatabaseRestore_content_13'
+				)} <b>bench clear-cache</b> ${this.$t(
+					'and'
+				)} <b>bench clear-website-cache</b> ${this.$t(
+					'SiteDatabaseRestore_content_12'
+				)}`,
+				actionLabel: this.$t('Clear_Cache'),
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.clearCache.submit();

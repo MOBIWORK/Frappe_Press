@@ -1,9 +1,8 @@
 <template>
 	<div>
-		<label class="text-lg font-semibold"> Chọn một tên miền </label>
+		<label class="text-lg font-semibold"> {{ $t('Choose_a_hostname') }} </label>
 		<p class="text-base text-gray-700">
-			Đặt tên cho tổ chức của bạn. Chỉ có thể chứa các ký tự chữ và số cũng như
-			dấu gạch ngang.
+			{{ $t('NewSiteHostname_content_1') }}
 		</p>
 		<div class="mt-4 flex">
 			<input
@@ -23,7 +22,7 @@
 				class="text-sm text-green-600"
 				role="alert"
 			>
-				{{ modelValue }}.{{ domain }} hợp lệ
+				{{ modelValue }}.{{ domain }} {{ $t('is_available') }}
 			</div>
 			<ErrorMessage :message="errorMessage" />
 		</div>
@@ -39,7 +38,9 @@
 					value="new"
 					@change="checkRestoreChange"
 				/>
-				<label class="ml-2 text-base" for="checkrestore">Tạo mới dữ liệu</label>
+				<label class="ml-2 text-base" for="checkrestore">{{
+					$t('Create_new_data')
+				}}</label>
 			</div>
 			<div class="mt-2">
 				<input
@@ -52,15 +53,13 @@
 					@change="checkRestoreChange"
 				/>
 				<label class="ml-2 text-base" for="checkrestore1">
-					Lấy dữ liệu cũ</label
+					{{ $t('Retrieve_old_data') }}</label
 				>
 			</div>
 		</div>
 	</div>
 </template>
 <script>
-import { validateSubdomain } from '@/utils';
-
 export default {
 	name: 'Hostname',
 	props: ['modelValue', 'checkRestore', 'checkRestore'],
@@ -93,23 +92,20 @@ export default {
 			this.$emit('update:modelValue', subdomain);
 			this.subdomainAvailable = false;
 
-			let error = this.validateSubdomain(subdomain);
+			let error = this.$validateSubdomain(subdomain);
 			if (!error) {
 				let subdomainTaken = await this.$call('press.api.site.exists', {
 					subdomain,
 					domain: this.domain
 				});
 				if (subdomainTaken) {
-					error = `${subdomain}.${this.domain} đã tồn tại.`;
+					error = `${subdomain}.${this.domain} ${this.$t('already_exists')}.`;
 				} else {
 					this.subdomainAvailable = true;
 				}
 			}
 			this.errorMessage = error;
 			this.$emit('error', error);
-		},
-		validateSubdomain(subdomain) {
-			return validateSubdomain(subdomain);
 		}
 	}
 };

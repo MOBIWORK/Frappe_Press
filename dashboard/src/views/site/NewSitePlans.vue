@@ -1,8 +1,8 @@
 <template>
 	<div>
-		<label class="text-lg font-semibold"> Chọn gói của bạn </label>
+		<label class="text-lg font-semibold"> {{ $t('Choose_your_plans') }} </label>
 		<p class="text-base text-gray-700">
-			Chọn một gói dựa trên loại sử dụng mà bạn mong muốn trên tổ chức của mình.
+			{{ $t('NewSitePlans_content_1') }}
 		</p>
 		<div class="mt-4">
 			<div v-if="$resources.plans.loading" class="flex justify-center">

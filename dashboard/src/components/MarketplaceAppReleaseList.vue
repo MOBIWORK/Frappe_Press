@@ -101,8 +101,8 @@
 						@click="$resources.releases.next()"
 						v-if="$resources.releases.hasNextPage"
 						:loading="$resources.releases.list.loading"
-						loadingText="Đang tải..."
-						>Tải thêm</Button
+						:loadingText="`${$t('loading')}...`"
+						>{{ $t('load_more') }}</Button
 					>
 				</div>
 			</div>

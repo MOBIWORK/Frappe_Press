@@ -4,11 +4,11 @@
 			class="bg-gray-0 flex rounded-t-md border border-b-0 px-4 py-3 text-base text-gray-800"
 		>
 			<div class="w-10"></div>
-			<div class="w-1/4">Gói</div>
-			<div class="w-1/4">Mức sử dụng</div>
-			<div class="w-1/4">Database</div>
-			<div class="w-1/4">Ổ cứng</div>
-			<div class="w-1/4">Hỗ trợ</div>
+			<div class="w-1/4">{{ $t('Plan') }}</div>
+			<div class="w-1/4">{{ $t('Compute') }}</div>
+			<div class="w-1/4">{{ $t('Database') }}</div>
+			<div class="w-1/4">{{ $t('Disk') }}</div>
+			<div class="w-1/4">{{ $t('Support') }}</div>
 		</div>
 		<div
 			class="focus-within:shadow-outline flex cursor-pointer border px-4 py-3 text-left text-base"
@@ -40,7 +40,8 @@
 			</div>
 			<div class="w-1/4 text-gray-700" :class="{ 'opacity-25': plan.disabled }">
 				{{ plan.cpu_time_per_day }}
-				{{ $plural(plan.cpu_time_per_day, 'giờ', 'giờ') }} / ngày
+				{{ $plural(plan.cpu_time_per_day, $t('hour'),
+								$t('hours')) }} / {{ $t('day') }}
 			</div>
 			<div class="w-1/4 text-gray-700" :class="{ 'opacity-25': plan.disabled }">
 				{{ formatBytes(plan.max_database_usage, 0, 2) }}
@@ -54,15 +55,15 @@
 				target="_blank"
 				class="w-1/4"
 			>
-				<Tooltip text="Được hỗ trợ và bảo hành sản phẩm" placement="top">
-					<Badge class="hover:cursor-pointer" color="blue" label="Có" />
+				<Tooltip :text="$t('SitePlansTable_content_1')" placement="top">
+					<Badge class="hover:cursor-pointer" color="blue" :label="$t('Yes')" />
 				</Tooltip>
 			</a>
 			<div v-else class="w-1/4"></div>
 		</div>
 	</div>
 	<div class="text-center" v-else>
-		<Button :loading="true">Đang tải</Button>
+		<Button :loading="true">{{ $t('Loading') }}</Button>
 	</div>
 </template>
 

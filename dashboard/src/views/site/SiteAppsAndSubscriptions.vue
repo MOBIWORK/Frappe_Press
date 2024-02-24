@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="Ứng dụng"
-		subtitle="Các ứng dụng đã được cài đặt trên tổ chức của bạn"
+		:title="$t('apps')"
+		:subtitle="$t('SiteAppsAndSubscriptions_content_1')"
 	>
 		<template #actions>
 			<Button
@@ -13,15 +13,15 @@
 				"
 				:disabled="site?.status === 'Suspended'"
 			>
-				Thêm ứng dụng
+				{{ $t('Add_App') }}
 			</Button>
 		</template>
 
 		<div class="flex text-base text-gray-600">
-			<span class="w-2/6">Ứng dụng</span>
-			<span class="hidden w-1/6 md:inline">Gói</span>
-			<span class="w-1/6">Trạng thái</span>
-			<span class="hidden w-1/6 md:inline">Giá</span>
+			<span class="w-2/6">{{ $t('apps') }}</span>
+			<span class="hidden w-1/6 md:inline">{{ $t('plan') }}</span>
+			<span class="w-1/6">{{ $t('status') }}</span>
+			<span class="hidden w-1/6 md:inline">{{ $t('Price') }}</span>
 			<span></span>
 		</div>
 
@@ -78,7 +78,7 @@
 
 				<div class="ml-auto flex items-center space-x-2">
 					<Button v-if="app.plan_info" @click="changeAppPlan(app)"
-						>Thay đổi gói</Button
+						>{{ $t('Change_Plan') }}</Button
 					>
 					<Button
 						v-if="!app.plan_info && app.subscription_available"
@@ -88,7 +88,7 @@
 								appToInstall = app;
 							}
 						"
-						>Đăng ký</Button
+						>{{ $t('Subscribe') }}</Button
 					>
 					<Dropdown :options="dropdownItems(app)" right>
 						<template v-slot="{ open }">
@@ -101,7 +101,7 @@
 
 		<Dialog
 			:options="{
-				title: 'Cài đặt một ứng dụng trên tổ chức của bạn',
+				title: $t('Install_an_app_on_your_site'),
 				position: 'top',
 				size: 'lg'
 			}"
@@ -110,7 +110,7 @@
 			<template v-slot:body-content>
 				<FormControl
 					class="mb-2"
-					placeholder="Search for Apps"
+					:placeholder="$t('Search_for_Apps')"
 					v-on:input="e => updateSearchTerm(e.target.value)"
 				/>
 				<div
@@ -138,18 +138,18 @@
 								$resources.installApp.loading && appToInstall.name == app.name
 							"
 						>
-							Cài đặt
+							{{ $t('Install') }}
 						</Button>
 					</div>
 				</div>
 				<div class="text-base text-gray-600" v-else>
-					Không có ứng dụng nào có sẵn để cài đặt
+					{{ $t('No_apps_available_to_install') }}
 				</div>
 
 				<div v-if="site?.group">
 					<p class="mt-4 text-sm text-gray-700">
 						<Link :to="`/benches/${site.group}/apps`" class="font-medium">
-							Thêm nhiều ứng dụng khác vào bench của bạn
+							{{ $t('Add_more_apps_to_your_bench') }}
 						</Link>
 					</p>
 				</div>
@@ -160,11 +160,11 @@
 		<Dialog
 			v-model="showPlanSelectionDialog"
 			:options="{
-				title: 'Chọn gói ứng dụng',
+				title: $t('Select_app_plan'),
 				size: '2xl',
 				actions: [
 					{
-						label: 'Tiếp tục',
+						label: $t('proceed'),
 						variant: 'solid',
 						onClick: handlePlanSelection
 					}
@@ -192,11 +192,11 @@
 		<!-- Plan Change Dialog -->
 		<Dialog
 			:options="{
-				title: 'Chọn gói',
+				title: $t('Select_Plan'),
 				size: '2xl',
 				actions: [
 					{
-						label: 'Thay đổi gói',
+						label: $t('Change_Plan'),
 						variant: 'solid',
 						onClick: handlePlanChange,
 						loading: $resources.changePlan.loading
@@ -223,7 +223,7 @@
 
 		<Dialog
 			v-model="showCheckoutDialog"
-			:options="{ title: 'Chi tiết thanh toán' }"
+			:options="{ title: $t('Checkout_Details') }"
 			:dismissable="true"
 		>
 			<template v-slot:body-content>
@@ -331,7 +331,7 @@ export default {
 				},
 				validate() {
 					if (this.showPlanSelectionDialog && !this.selectedPlan) {
-						return 'Vui lòng chọn một gói để tiếp tục';
+						return this.$t('Please_select_a_plan_to_continue');
 					}
 				},
 				onSuccess() {
@@ -461,7 +461,7 @@ export default {
 		dropdownItems(app) {
 			return [
 				{
-					label: 'View in Desk',
+					label: this.$t('view_in_desk'),
 					onClick: () =>
 						window.open(
 							`${window.location.protocol}//${window.location.host}/app/app/${app.name}`,
@@ -470,12 +470,12 @@ export default {
 					condition: () => this.$account.user.user_type == 'System User'
 				},
 				{
-					label: 'Gỡ bỏ ứng dụng',
+					label: this.$t('Remove_App'),
 					onClick: () => this.confirmRemoveApp(app),
 					condition: () => app.app != 'frappe'
 				},
 				{
-					label: 'Truy cập kho lưu trữ',
+					label: this.$t('Visit_Repo'),
 					onClick: () =>
 						window.open(`${app.repository_url}/tree/${app.branch}`, '_blank')
 				}
@@ -483,9 +483,9 @@ export default {
 		},
 		confirmRemoveApp(app) {
 			this.$confirm({
-				title: 'Gỡ bỏ ứng dụng',
-				message: `Bạn có chắc chắn muốn gỡ bỏ ứng dụng ${app.title} khỏi tổ chức không?`,
-				actionLabel: 'Gỡ bỏ ứng dụng',
+				title: this.$t('Remove_App'),
+				message: `${this.$t('SiteAppsAndSubscriptions_content_2')} ${app.title} ${this.$t('SiteAppsAndSubscriptions_content_3')}`,
+				actionLabel: this.$t('Remove_App'),
 				actionColor: 'red',
 				action: closeDialog => {
 					closeDialog();

@@ -16,7 +16,7 @@
 							class="mr-4"
 							@click="redirectToUbuntuPage(secUpdateInfo.package)"
 						>
-							<span class="text-base text-blue-600">More Info</span>
+							<span class="text-base text-blue-600">{{ $t('More_Info') }}</span>
 						</button>
 
 						<Badge
@@ -32,7 +32,7 @@
 			<div v-else>
 				<LoadingText v-if="loading" />
 				<span v-else class="text-center text-base text-gray-600">
-					Không có mục nào được chọn
+					{{ $t('No_item_selected') }}
 				</span>
 			</div>
 		</div>

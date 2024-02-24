@@ -41,10 +41,10 @@
 				<div class="py-3" v-if="$resources.candidates.hasNextPage">
 					<Button
 						:loading="$resources.candidates.list.loading"
-						loadingText="Đang tải..."
+						:loadingText="`${$t('loading')}...`"
 						@click="$resources.candidates.next()"
 					>
-						Tải thêm
+						{{ $t('load_more') }}
 					</Button>
 				</div>
 			</div>

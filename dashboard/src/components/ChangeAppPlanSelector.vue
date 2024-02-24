@@ -8,7 +8,7 @@
 				$resources.getMarketplaceAppInfo.loading
 			"
 			:loading="true"
-			loadingText="Đang tải gói..."
+			:loadingText="`${$t('Loading_Plans')}...`"
 		></Button>
 
 		<div v-if="plans && appInfo" class="mb-6 flex flex-row items-center">
@@ -22,7 +22,7 @@
 
 			<div class="flex flex-col">
 				<h4 class="text-xl font-semibold text-gray-900">{{ appInfo.title }}</h4>
-				<p class="text-base text-gray-600">Chọn gói của bạn</p>
+				<p class="text-base text-gray-600">{{ $t('Choose_your_plans') }}</p>
 			</div>
 		</div>
 

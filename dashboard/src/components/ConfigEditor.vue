@@ -1,5 +1,5 @@
 <template>
-	<Card :title="title || 'Cấu hình tổ chức'">
+	<Card :title="title || $t('Site_Config')">
 		<template #actions>
 			<Button
 				class="mr-2"
@@ -13,7 +13,7 @@
 					}
 				"
 			>
-				Loại bỏ các thay đổi
+			{{ $t('Discard_changes') }}
 			</Button>
 			<Button
 				variant="solid"
@@ -21,7 +21,7 @@
 				@click="updateConfig"
 				:loading="$resources.updateConfig.loading"
 			>
-				Lưu các thay đổi
+				{{ $t('Save_changes') }}
 			</Button>
 		</template>
 		<div class="flex space-x-4">
@@ -48,10 +48,10 @@
 						/>
 					</div>
 					<p v-else class="my-2 text-base text-gray-600">
-						Chưa thêm khóa nào. Nhấp vào "Thêm Khóa" để thêm một.
+						{{ $t('ConfigEditor_content_1') }}
 					</p>
 					<Button class="mt-4" @click="showAddConfigKeyDialog = true"
-						>Thêm Khóa</Button
+						>{{ $t('Add_Key') }}</Button
 					>
 				</div>
 			</div>
@@ -63,10 +63,10 @@
 			</div>
 			<Dialog
 				:options="{
-					title: 'Thêm khóa cấu hình',
+					title: $t('Add_Config_Key'),
 					actions: [
 						{
-							label: 'Thêm Khóa',
+							label: $t('Add_Key'),
 							variant: 'solid',
 							onClick: addConfig
 						}
@@ -77,9 +77,9 @@
 				<template v-slot:body-content>
 					<div class="space-y-4">
 						<div>
-							<span class="mb-1 block text-xs text-gray-600">Khóa</span>
+							<span class="mb-1 block text-xs text-gray-600">{{ $t('Key') }}</span>
 							<Autocomplete
-								placeholder="Khóa"
+								:placeholder="$t('Key')"
 								:options="getStandardConfigKeys"
 								v-model="chosenStandardConfig"
 								@update:modelValue="handleAutocompleteSelection"
@@ -88,12 +88,12 @@
 						<FormControl
 							v-if="showCustomKeyInput"
 							v-model="newConfig.key"
-							label="Khóa tùy chỉnh"
+							:label="$t('Custom_Key')"
 							class="w-full"
 							@change="isDirty = true"
 						/>
 						<FormControl
-							label="Loại"
+							:label="$t('Type')"
 							v-model="newConfig.type"
 							type="select"
 							:disabled="chosenStandardConfig && !showCustomKeyInput"
@@ -103,7 +103,7 @@
 						<FormControl
 							v-bind="configInputProps()"
 							v-model="newConfig.value"
-							label="Giá trị"
+							:label="$t('Value')"
 							class="w-full"
 							@change="isDirty = true"
 						/>
@@ -176,27 +176,27 @@ export default {
 				async validate() {
 					let keys = updatedConfig.map(d => d.key);
 					if (keys.length !== [...new Set(keys)].length) {
-						return 'Khóa trùng lặp';
+						return this.$t('Duplicate_key');
 					}
 					this.$resources.validateKeys.submit({
 						keys: JSON.stringify(keys)
 					});
 					let invalidKeys = this.$resources.validateKeys.data;
 					if (invalidKeys?.length > 0) {
-						return `'Khóa không hợp lệ: ${invalidKeys.join(', ')}`;
+						return `${this.$t('Invalid_key')}: ${invalidKeys.join(', ')}`;
 					}
 					for (let config of updatedConfig) {
 						if (config.type === 'JSON') {
 							try {
 								JSON.parse(JSON.stringify(config.value));
 							} catch (error) {
-								return `JSON không hợp Lệ -- ${error}`;
+								return `${this.$t('Invalid_JSON')} -- ${error}`;
 							}
 						} else if (config.type === 'Number') {
 							try {
 								Number(config.value);
 							} catch (error) {
-								return 'Số không hợp lệ';
+								return this.$t('Invalid_Number');
 							}
 						}
 					}
@@ -237,11 +237,11 @@ export default {
 		getStandardConfigKeys() {
 			return [
 				{
-					group: 'Custom',
-					items: [{ label: 'Tạo một khóa tùy chỉnh', value: 'custom_key' }]
+					group: this.$t('Custom'),
+					items: [{ label: this.$t('Create_a_custom_key'), value: 'custom_key' }]
 				},
 				{
-					group: 'Standard',
+					group: this.$t('Standard'),
 					items: this.$resources.standardConfigKeys.data.map(d => ({
 						label: d.title,
 						value: d.key

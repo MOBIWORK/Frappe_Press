@@ -1,10 +1,10 @@
 <template>
-	<Card title="Thời gian hoạt động" :subtitle="subtitle" :loading="loading">
+	<Card :title="$t('uptime')" :subtitle="subtitle" :loading="loading">
 		<div
 			v-if="!data || data[0].date === undefined"
 			class="flex h-full items-center justify-center"
 		>
-			<div class="text-base text-gray-600">Không có dữ liệu</div>
+			<div class="text-base text-gray-600">{{ $t('no_data') }}</div>
 		</div>
 		<div v-else class="mt-8" v-for="type in uptimeTypes" :key="type.key">
 			<div class="flex h-10 justify-between">
@@ -23,7 +23,9 @@
 					]"
 					:title="
 						d[type.key]
-							? `${formatDate(d.date)} | Uptime: ${(d.value * 100).toFixed(2)}%`
+							? `${formatDate(d.date)} | ${$t('uptime')}: ${(
+									d.value * 100
+							  ).toFixed(2)}%`
 							: ''
 					"
 				></div>
@@ -54,7 +56,7 @@ export default {
 			}
 			const average = ((total / i) * 100).toFixed(2);
 
-			return !isNaN(average) ? `Average: ${average}%` : '';
+			return !isNaN(average) ? `${this.$t('Average')}: ${average}%` : '';
 		}
 	},
 	methods: {

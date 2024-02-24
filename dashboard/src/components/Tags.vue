@@ -1,7 +1,7 @@
 <template>
-	<Card title="Thẻ">
+	<Card :title="$t('Tags')">
 		<template #actions>
-			<Button label="Thêm thẻ" @click="showAddDialog = true" />
+			<Button :label="$t('Add_Tag')" @click="showAddDialog = true" />
 		</template>
 		<div class="divide-y" v-if="addedTags?.length">
 			<ListItem v-for="tag in addedTags" :key="tag.name" :title="tag.tag">
@@ -11,7 +11,7 @@
 			</ListItem>
 		</div>
 		<div v-else class="m-4 text-center">
-			<p class="text-base text-gray-500">Chưa thêm thẻ nào</p>
+			<p class="text-base text-gray-500">{{ $t('No_tags_added_yet') }}</p>
 		</div>
 		<ErrorMessage
 			:message="
@@ -22,12 +22,12 @@
 		/>
 	</Card>
 	<Dialog
-		:options="{ title: `Thêm một thẻ mới cho ${doctype}` }"
+		:options="{ title: `${$t('Add_a_New_Tag_for')} ${doctype}` }"
 		v-model="showAddDialog"
 	>
 		<template #body-content>
 			<Autocomplete
-				placeholder="Thẻ"
+				:placeholder="$t('Tags')"
 				:options="getAutocompleteOptions"
 				v-model="chosenTag"
 				@update:modelValue="handleAutocompleteSelection"
@@ -36,12 +36,12 @@
 				v-if="showNewTagInput"
 				v-model="newTag"
 				class="mt-4"
-				placeholder="Nhập tên thẻ mới"
+				:placeholder="$t('Enter_New_Tags_name')"
 			/>
 		</template>
 		<template #actions>
 			<Button variant="solid" class="w-full" @click="addTag()">{{
-				showNewTagInput ? 'Tạo một thẻ Mới' : 'Thêm thẻ'
+				showNewTagInput ? $t('Create_a_New_Tag') : $t('Add_Tag')
 			}}</Button>
 		</template>
 	</Dialog>
@@ -71,7 +71,7 @@ export default {
 				},
 				validate() {
 					if (this.addedTags.find(t => t.name == this.newTag)) {
-						return 'Thẻ đã được thêm vào trước đó';
+						return this.$t('Tag_already_added');
 					}
 				},
 				onSuccess(d) {
@@ -100,7 +100,7 @@ export default {
 				},
 				validate() {
 					if (this.tags.find(t => t.tag === this.newTag)) {
-						return 'Thẻ đã tồn tại';
+						return this.$t('Tag_already_exists');
 					}
 				},
 				onSuccess(d) {
@@ -129,10 +129,10 @@ export default {
 			});
 		},
 		handleAutocompleteSelection() {
-			if (this.chosenTag.value === 'new_tag') {
+			if (this.chosenTag?.value === 'new_tag') {
 				this.showNewTagInput = true;
 			} else {
-				this.newTag = this.chosenTag.value;
+				this.newTag = this.chosenTag?.value;
 				this.showNewTagInput = false;
 			}
 		}
@@ -144,11 +144,11 @@ export default {
 		getAutocompleteOptions() {
 			return [
 				{
-					group: 'Thẻ mới',
-					items: [{ label: 'Tạo một thẻ mới', value: 'new_tag' }]
+					group: this.$t('New_Tag'),
+					items: [{ label: this.$t('Create_a_New_Tag'), value: 'new_tag' }]
 				},
 				{
-					group: 'Các thẻ đã tồn tại',
+					group: this.$t('Existing_Tags'),
 					items: this.tags.map(t => ({ label: t.tag, value: t.name }))
 				}
 			];

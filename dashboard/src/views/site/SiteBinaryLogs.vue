@@ -9,12 +9,9 @@
 		<Card>
 			<Report
 				:filters="filters"
-				:columns="[
-					{ label: 'Timestamp', name: 'timestamp', class: 'w-3/12' },
-					{ label: 'Query', name: 'query', class: 'w-9/12' }
-				]"
+				:columns="colTable"
 				:data="formatData"
-				title="Báo cáo Binary Log của MariaDB"
+				:title="$t('mariadb_binary_log_report')"
 			/>
 			<div
 				class="px-2 py-2 text-base text-gray-600"
@@ -26,21 +23,21 @@
 				class="py-2 text-base text-gray-600"
 				v-else-if="$resources.binaryLogs.data.length == 0"
 			>
-				Không có dữ liệu
+				{{ $t('no_data') }}
 			</div>
 			<Button
 				v-if="$resources.binaryLogs.data && $resources.binaryLogs.data.length"
 				:loading="$resources.binaryLogs.loading"
-				loadingText="Đang tải..."
+				:loadingText="`${$t('loading')}...`"
 				@click="max_lines += 10"
 			>
-				Tải thêm
+				{{ $t('load_more') }}
 			</Button>
 		</Card>
 	</div>
 	<div class="flex justify-center" v-else>
 		<span class="mt-16 text-base text-gray-700">
-			Gói của bạn không hỗ trợ tính năng này. Vui lòng nâng cấp gói của bạn.
+			{{ $t('SiteBinaryLogs_content_1') }}
 		</span>
 	</div>
 </template>
@@ -54,22 +51,26 @@ export default {
 	components: { Report },
 	data() {
 		return {
+			colTable: [
+				{ label: this.$t('Timestamp'), name: 'timestamp', class: 'w-3/12' },
+				{ label: this.$t('Query'), name: 'query', class: 'w-9/12' }
+			],
 			filters: [
 				{
 					name: 'pattern',
-					label: 'Tìm kiếm:',
+					label: `${this.$t('search')}:`,
 					type: 'text',
 					value: this.pattern
 				},
 				{
 					name: 'start_datetime',
-					label: 'Từ:',
+					label: `${this.$t('from')}:`,
 					type: 'datetime-local',
 					value: ''
 				},
 				{
 					name: 'end_datetime',
-					label: 'Đến:',
+					label: `${this.$t('To')}:`,
 					type: 'datetime-local',
 					value: ''
 				}
@@ -79,6 +80,9 @@ export default {
 		};
 	},
 	watch: {
+		'$i18n.locale'() {
+			this.setValueChangeLang();
+		},
 		patternFilter() {
 			this.reset();
 		},
@@ -117,6 +121,33 @@ export default {
 		}
 	},
 	methods: {
+		setValueChangeLang() {
+			this.colTable = [
+				{ label: this.$t('Timestamp'), name: 'timestamp', class: 'w-3/12' },
+				{ label: this.$t('Query'), name: 'query', class: 'w-9/12' }
+			];
+
+			this.filters = [
+				{
+					name: 'pattern',
+					label: `${this.$t('search')}:`,
+					type: 'text',
+					value: this.pattern
+				},
+				{
+					name: 'start_datetime',
+					label: `${this.$t('from')}:`,
+					type: 'datetime-local',
+					value: ''
+				},
+				{
+					name: 'end_datetime',
+					label: `${this.$t('To')}:`,
+					type: 'datetime-local',
+					value: ''
+				}
+			];
+		},
 		reset() {
 			this.$resources.binaryLogs.reset();
 		}

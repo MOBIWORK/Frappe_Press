@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Di chuyển tổ chức sang bench khác',
+			title: $t('move_site_to_another_bench'),
 			actions: [
 				{
-					label: 'Xác nhận',
+					label: $t('confirm'),
 					loading: this.$resources.changeGroup.loading,
 					disabled: !$resources.changeGroupOptions?.data?.length,
 					variant: 'solid',
@@ -25,7 +25,7 @@
 			/>
 			<FormControl
 				v-else-if="$resources.changeGroupOptions.data.length > 0"
-				label="Chọn Bench"
+				:label="$t('select_bench')"
 				type="select"
 				:options="
 					$resources.changeGroupOptions.data.map(group => ({
@@ -36,7 +36,7 @@
 				v-model="targetGroup"
 			/>
 			<p v-else class="text-md text-base text-gray-800">
-				Không có bench khác mà bạn sở hữu cho tổ chức này để di chuyển đến.
+				{{ $t('SiteChangeGroupDialog_content_1') }}
 			</p>
 			<ErrorMessage class="mt-3" :message="$resources.changeGroup.error" />
 		</template>
@@ -84,8 +84,8 @@ export default {
 						).title;
 
 					notify({
-						title: 'Thay bench đã Được lên lịch',
-						message: `Tổ chức đã được lên lịch để được di chuyển đến <b>${destinationGroupTitle}</b>`,
+						title: this.$t('scheduled_bench_change'),
+						message: `${this.$t('SiteChangeGroupDialog_content_2')} <b>${destinationGroupTitle}</b>`,
 						color: 'green',
 						icon: 'check'
 					});

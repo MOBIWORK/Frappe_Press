@@ -1,12 +1,10 @@
 <template>
 	<Alert
-		title="Kích hoạt tổ chức"
+		:title="$t('site_activation')"
 		v-if="site.status == 'Active' && !site.setup_wizard_complete"
 	>
 		<span>
-			Vui lòng đăng nhập và hoàn thành hướng dẫn thiết lập trên tổ chức của bạn.
-			Dữ liệu phân tích sẽ chỉ được thu thập sau khi quá trình thiết lập hoàn
-			tất.
+			{{ $t('AlertSiteActivation_content_1') }}
 		</span>
 		<template #actions>
 			<Button

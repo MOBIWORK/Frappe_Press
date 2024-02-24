@@ -8,7 +8,7 @@
 			class="flex h-full items-center justify-center"
 		>
 			<ErrorMessage v-if="error" :message="error" />
-			<span v-else class="text-base text-gray-700">Không có dữ liệu</span>
+			<span v-else class="text-base text-gray-700">{{ $t('no_data') }}</span>
 		</div>
 		<VChart
 			v-else

@@ -1,10 +1,10 @@
 <template>
 	<Dialog
 		:options="{
-			title: 'Create Code Server',
+			title: $t('Create_Code_Server'),
 			actions: [
 				{
-					label: 'Create',
+					label: $t('Create'),
 					variant: 'solid',
 					loading: $resources.newCodeServer.loading,
 					onClick: () => $resources.newCodeServer.submit()
@@ -20,8 +20,7 @@
 	>
 		<template v-slot:body-content>
 			<p class="text-base text-gray-700">
-				Give your code server a unique name. It can only contain alphanumeric
-				characters and dashes.
+				{{ $t('CreateCodeServerDialog_content_1') }}
 			</p>
 			<div class="mt-4 flex">
 				<input
@@ -41,7 +40,7 @@
 					class="text-sm text-green-600"
 					role="alert"
 				>
-					{{ modelValue }}.{{ domain }} is available
+					{{ modelValue }}.{{ domain }} {{ $t('is_available') }}
 				</div>
 				<ErrorMessage :message="errorMessage" />
 			</div>
@@ -69,35 +68,22 @@ export default {
 			this.subdomain = e.target.value;
 			this.subdomainAvailable = false;
 
-			let error = this.validateSubdomain(this.subdomain);
+			let error = this.$validateSubdomain(this.subdomain);
 			if (!error) {
 				let subdomainTaken = await this.$call('press.api.spaces.exists', {
 					subdomain: this.subdomain,
 					domain: this.domain
 				});
 				if (subdomainTaken) {
-					error = `${this.subdomain}.${this.domain} already exists.`;
+					error = `${this.subdomain}.${this.domain} ${this.$t(
+						'already_exists'
+					)}.`;
 				} else {
 					this.subdomainAvailable = true;
 				}
 			}
 			this.errorMessage = error;
 			this.$emit('error', error);
-		},
-		validateSubdomain(subdomain) {
-			if (!subdomain) {
-				return 'Tên miền không thể trống.';
-			}
-			if (subdomain.length < 5) {
-				return 'Tên miền quá ngắn. Hãy sử dụng 5 ký tự trở lên.';
-			}
-			if (subdomain.length > 32) {
-				return 'Tên miền quá dài. Sử dụng 32 ký tự trở xuống';
-			}
-			if (!subdomain.match(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/)) {
-				return 'Tên miền chứa các ký tự không hợp lệ. Sử dụng ký tự chữ thường, số và dấu gạch nối';
-			}
-			return null;
 		}
 	},
 	resources: {

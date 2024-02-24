@@ -15,7 +15,7 @@ export default {
 		let value = node.children;
 		value = value.trim();
 
-		let formattedDate = this.formatDate(value, this.type);
+		let formattedDate = this.$formatDate(value, this.type);
 		return h(
 			'span',
 			{

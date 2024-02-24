@@ -1,10 +1,10 @@
 <template>
 	<Card
-		title="Gói"
+		:title="$t('plan')"
 		:subtitle="
 			site.status == 'Suspended'
-				? 'Đặt gói để kích hoạt tổ chức bị tạm ngừng của bạn'
-				: 'Nâng cấp hoặc hạ cấp gói của bạn dựa trên việc sử dụng của bạn'
+				? $t('SiteOverviewPlan_content_1')
+				: $t('SiteOverviewPlan_content_2')
 		"
 		v-if="site.status != 'Inactive'"
 	>
@@ -12,8 +12,8 @@
 			<Tooltip
 				:text="
 					!permissions.changePlan
-						? `Bạn không có đủ quyền để thực hiện hành động này`
-						: 'Thay đổi gói'
+						? $t('SiteOverviewPlan_content_3')
+						: $t('Change_Plan')
 				"
 			>
 				<Button
@@ -26,13 +26,13 @@
 						}
 					"
 				>
-					{{ site.status == 'Suspended' ? 'Chọn gói' : 'Thay đổi gói' }}
+					{{ site.status == 'Suspended' ? $t('Set_Plan') : $t('Change_Plan') }}
 				</Button>
 			</Tooltip>
 		</template>
 
 		<div v-if="!plan" class="flex items-center justify-center py-20">
-			<Button :loading="true" loading-text="Đang tải" />
+			<Button :loading="true" :loading-text="$t('loading')" />
 		</div>
 		<div v-else>
 			<div
@@ -44,7 +44,7 @@
 					<h4 class="text-4xl font-semibold text-gray-900">
 						{{ $planTitle(plan.current_plan) }}
 						<span v-if="plan.current_plan.price_vnd > 0" class="text-lg">
-							/tháng
+							/{{ $t('month') }}
 						</span>
 					</h4>
 					<p
@@ -52,15 +52,21 @@
 						v-if="plan.current_plan.name != 'Unlimited'"
 					>
 						{{ plan.current_plan.cpu_time_per_day }}
-						{{ $plural(plan.current_plan.cpu_time_per_day, 'giờ', 'giờ') }}
-						CPU / ngày
+						{{
+							$plural(
+								plan.current_plan.cpu_time_per_day,
+								$t('hour'),
+								$t('hours')
+							)
+						}}
+						CPU / {{ $t('day') }}
 					</p>
 				</div>
 			</div>
 			<div v-else class="flex rounded-lg bg-gray-50 p-5">
 				<div>
 					<h4 class="font-semibold text-gray-600">
-						Không có gói được thiết lập
+						{{ $t('No_Plan_Set') }}
 					</h4>
 				</div>
 			</div>
@@ -153,9 +159,6 @@ export default {
 	},
 	methods: {
 		plan_title(plan) {
-			// let india = this.$account.team.country == 'India';
-			// let currency = india ? '₹' : '$';
-			// let price_field = india ? 'price_inr' : 'price_usd';
 			let currency = 'VND';
 			let price_field = 'price_vnd';
 			let price = plan.current_plan[price_field];
@@ -177,7 +180,7 @@ export default {
 			return [
 				{
 					label: 'CPU',
-					value: `${this.plan.total_cpu_usage_hours} giờ`
+					value: `${this.plan.total_cpu_usage_hours} ${this.$t('hours')}`
 				},
 				{
 					label: 'Database',
@@ -241,15 +244,15 @@ export default {
 						this.plan.current_plan.name === 'Unlimited'
 							? `${this.plan.total_cpu_usage_hours} ${this.$plural(
 									this.plan.current_plan.cpu_time_per_day,
-									'giờ',
-									'giờ'
+									this.$t('hour'),
+									this.$t('hours')
 							  )}`
 							: `${this.plan.total_cpu_usage_hours} / ${
 									this.plan.current_plan.cpu_time_per_day
 							  } ${this.$plural(
 									this.plan.current_plan.cpu_time_per_day,
-									'giờ',
-									'giờ'
+									this.$t('hour'),
+									this.$t('hours')
 							  )}`,
 					percentage:
 						(this.plan.total_cpu_usage_hours /

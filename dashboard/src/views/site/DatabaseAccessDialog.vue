@@ -1,6 +1,6 @@
 <template>
 	<Dialog
-		:options="{ title: 'Truy cập Database' }"
+		:options="{ title: $t('Access_Database') }"
 		v-if="site"
 		:modelValue="Boolean(site) && show"
 		@close="dialogClosed"
@@ -12,24 +12,23 @@
 			<div v-else-if="!databaseAccessInfo?.is_available_on_current_plan">
 				<div>
 					<p class="text-base">
-						Truy cập database không khả dụng trên gói dịch vụ hiện tại của bạn.
-						Vui lòng nâng cấp gói dịch vụ để truy cập database tổ chức của bạn.
+						{{ $t('DatabaseAccessDialog_content_1') }}
 					</p>
 
 					<Button
 						class="mt-4 w-full"
 						variant="solid"
 						@click="showChangePlanDialog = true"
-						>Nâng cấp gói dịch vụ tổ chức</Button
+						>{{ $t('Upgrade_Site_Plan') }}</Button
 					>
 				</div>
 
 				<Dialog
 					:options="{
-						title: 'Nâng cấp gói',
+						title: $t('Upgrade_Plan'),
 						actions: [
 							{
-								label: 'Gửi',
+								label: $t('submit'),
 								variant: 'solid',
 								loading: $resources.changePlan.loading,
 								onClick: () => $resources.changePlan.submit()
@@ -55,11 +54,10 @@
 					<div v-if="databaseAccessInfo.is_database_access_enabled">
 						<div>
 							<p class="mb-2 text-base font-semibold text-gray-700">
-								Sử dụng một công cụ phân tích hoặc kinh doanh thông minh
+								{{ $t('DatabaseAccessDialog_content_2') }}
 							</p>
 							<p class="mb-2 text-base">
-								Sử dụng các thông tin đăng nhập sau với công cụ phân tích hoặc
-								kinh doanh thông minh của bạn
+								{{ $t('DatabaseAccessDialog_content_3') }}
 							</p>
 							<p class="ml-1 font-mono text-sm">
 								Host: {{ databaseAccessInfo.credentials.host }}
@@ -68,7 +66,8 @@
 								Port: {{ databaseAccessInfo.credentials.port }}
 							</p>
 							<p class="ml-1 font-mono text-sm">
-								Database Name: {{ databaseAccessInfo.credentials.database }}
+								{{ $t('Database_Name') }}:
+								{{ databaseAccessInfo.credentials.database }}
 							</p>
 							<p class="ml-1 font-mono text-sm">
 								Username: {{ databaseAccessInfo.credentials.username }}
@@ -79,25 +78,22 @@
 						</div>
 						<div class="pb-2 pt-5">
 							<p class="mb-2 text-base font-semibold text-gray-700">
-								Sử dụng MariaDB Client
+								{{ $t('Using_MariaDB_Client') }}
 							</p>
 							<p class="mb-2 text-base">
-								<span
-									>Chạy lệnh sau trong terminal của bạn để truy cập MariaDB
-									console</span
-								>
+								<span>{{ $t('DatabaseAccessDialog_content_4') }}</span>
 							</p>
 							<ClickToCopyField class="ml-1" :textContent="dbAccessCommand" />
 							<p class="mt-3 text-sm">
-								Lưu ý: Bạn cần có
-								<span class="font-mono">mariadb</span> client được cài đặt trên
-								máy tính của bạn.
+								{{ $t('DatabaseAccessDialog_content_5') }}
+								<span class="font-mono">mariadb</span>
+								{{ $t('DatabaseAccessDialog_content_6') }}
 							</p>
 						</div>
 					</div>
 					<div v-else>
 						<p class="mb-2 text-sm">
-							Truy cập bảng điều khiển database đã bị tắt cho tổ chức này.
+							{{ $t('DatabaseAccessDialog_content_7') }}
 						</p>
 					</div>
 				</div>
@@ -121,13 +117,13 @@
 							for="enable-read-write-access"
 							class="ml-1 text-sm text-gray-900"
 						>
-							Bật quyền truy cập Read-Write
+							{{ $t('DatabaseAccessDialog_content_8') }}
 						</label>
 						<ErrorMessage
 							class="mt-2"
 							:message="
 								(enableReadWriteAccess &&
-									'Thông tin đăng nhập của bạn có thể được sử dụng để sửa đổi hoặc xóa database của bạn.') ||
+									$t('DatabaseAccessDialog_content_9')) ||
 								error
 							"
 						/>
@@ -143,11 +139,11 @@
 						"
 						variant="solid"
 						class="mt-2 w-full"
-						>Bật
-						{{ enableReadWriteAccess ? 'Read-Write' : 'Read-Only' }}
-						Truy cập</Button
 					>
-
+						{{ $t('DatabaseAccessDialog_content_10') }}
+						{{ enableReadWriteAccess ? 'Read-Write' : 'Read-Only' }}
+						{{ $t('DatabaseAccessDialog_content_11') }}
+					</Button>
 					<Button
 						v-if="
 							databaseAccessInfo &&
@@ -158,7 +154,7 @@
 							$resources.disableDatabaseAccess.loading || pollingAgentJob
 						"
 						class="w-full"
-						>Tắt truy cập</Button
+						>{{ $t('Disable_Access') }}</Button
 					>
 				</div>
 			</div>
@@ -238,7 +234,7 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: `Gói đã được thay đổi thành ${this.selectedPlan.plan_title}`,
+						title: `${this.$t('Plan_changed_to')} ${this.selectedPlan.plan_title}`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -302,7 +298,7 @@ export default {
 					this.$resources.fetchDatabaseAccessInfo.fetch();
 				} else if (message.status === 'Failure') {
 					this.pollingAgentJob = false;
-					this.error = 'Đã xảy ra lỗi. Vui lòng thử lại.';
+					this.error = this.$t('an_error_occurred');
 				} else {
 					setTimeout(() => {
 						this.pollDatabaseAccessJob(jobName);
