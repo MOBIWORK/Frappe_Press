@@ -61,12 +61,12 @@ let utils = {
 		},
 		$formatTitleJob(value) {
 			let nameTitle = {
-				'New Site': 'Tạo tổ chức',
-				'Install Apps': 'Cài đặt app',
-				'Update Site Configuration': 'Cấu hình hệ thống',
-				'Enable Scheduler': 'Bật trình lập lịch',
-				'Bench Setup NGINX': 'Khởi tạo tên miền',
-				'Reload NGINX': 'Hoàn thành'
+				'New Site': this.$t('utils_content_4'),
+				'Install Apps': this.$t('utils_content_5'),
+				'Update Site Configuration': this.$t('utils_content_6'),
+				'Enable Scheduler': this.$t('utils_content_7'),
+				'Bench Setup NGINX': this.$t('utils_content_8'),
+				'Reload NGINX': this.$t('utils_content_9')
 			};
 			return nameTitle[value] || value;
 		},
@@ -82,9 +82,13 @@ let utils = {
 				.join(':');
 
 			const dateTime = Duration.fromISOTime(formattedDuration).toObject();
-			const hourString = dateTime.hours ? `${dateTime.hours} giờ` : '';
-			const minuteString = dateTime.minutes ? `${dateTime.minutes} phút` : '';
-			const secondString = `${dateTime.seconds} giây`;
+			const hourString = dateTime.hours
+				? `${dateTime.hours} ${this.$t('hour')}`
+				: '';
+			const minuteString = dateTime.minutes
+				? `${dateTime.minutes} ${this.$t('minute')}`
+				: '';
+			const secondString = `${dateTime.seconds} ${this.$t('second')}`;
 
 			return `${hourString} ${minuteString} ${secondString}`;
 		},
@@ -123,9 +127,9 @@ let utils = {
 
 			let days = diff.days;
 			if (days > 1) {
-				return `in ${Math.floor(days)} days`;
+				return `${this.$t('in')} ${Math.floor(days)} ${this.$t('days')}`;
 			}
-			return 'in a day';
+			return this.$t('utils_content_10');
 		},
 		$routeTo404PageIfNotFound(errorMessage) {
 			if (errorMessage.indexOf('not found') >= 0) {
@@ -166,11 +170,11 @@ let utils = {
 		},
 		$jobStatus(status) {
 			let objStatus = {
-				Undelivered: 'Chưa được giao',
-				Pending: 'Đang xử lý',
-				Running: 'Đang chạy',
-				Success: 'Thành công',
-				Failure: 'Thât bại'
+				Undelivered: this.$t('Undelivered'),
+				Pending: this.$t('Pending'),
+				Running: this.$t('Running'),
+				Success: this.$t('Success'),
+				Failure: this.$t('Failure')
 			};
 			return objStatus[status] || status;
 		},
@@ -188,7 +192,7 @@ let utils = {
 			let status = statusSite[site.status] || site.status;
 
 			if (site.update_available && site.status == 'Active') {
-				status = 'Cập nhật có sẵn';
+				status = this.$t('Updates_available');
 			}
 
 			let usage = Math.max(
@@ -197,10 +201,10 @@ let utils = {
 				site.current_disk_usage
 			);
 			if (usage && usage >= 80 && status == 'Active') {
-				status = 'Chú ý';
+				status = this.$t('Note');
 			}
 			if (site.trial_end_date) {
-				status = 'Dùng thử';
+				status = this.$t('Trial');
 			}
 			return status;
 		}
