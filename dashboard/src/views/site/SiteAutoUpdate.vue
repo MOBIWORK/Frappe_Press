@@ -1,20 +1,20 @@
 <template>
 	<div>
 		<div v-if="!$resources.getSiteAutoUpdateInfo.loading && !autoUpdateEnabled">
-			<Alert title="Cập nhật tự động đã bị tắt cho tổ chức này.">
+			<Alert :title="$t('SiteAutoUpdate_content_1')">
 				<template #actions>
 					<Button
 						variant="solid"
 						@click="enableAutoUpdate"
 						:loading="$resources.enableAutoUpdate.loading"
-						loadingText="Đang bật"
-						>Bật</Button
+						:loadingText="$t('Enabling')"
+						>{{ $t('Enable') }}</Button
 					>
 				</template>
 			</Alert>
 		</div>
 		<div v-else class="md:grid md:grid-cols-2">
-			<Card title="Tự đông cập nhật">
+			<Card :title="$t('Auto_Update')">
 				<template
 					#actions
 					v-if="!$resources.getSiteAutoUpdateInfo.loading && autoUpdateEnabled"
@@ -23,12 +23,12 @@
 					<Button
 						@click="disableAutoUpdate"
 						:loading="$resources.disableAutoUpdate.loading"
-						loadingText="Đang tắt"
-						>Tắ tự động cập nhật</Button
+						:loadingText="$t('Disabling')"
+						>{{ $t('Disable_Auto_Updates') }}</Button
 					>
-					<Button icon-left="edit" @click="showEditDialog = true"
-						>Chỉnh sửa</Button
-					>
+					<Button icon-left="edit" @click="showEditDialog = true">{{
+						$t('Edit')
+					}}</Button>
 				</template>
 
 				<div
@@ -36,24 +36,24 @@
 					v-if="!$resources.getSiteAutoUpdateInfo.loading && autoUpdateEnabled"
 				>
 					<ListItem
-						title="Chu kỳ cập nhật"
+						:title="$t('Update_cycle')"
 						:description="
-							siteAutoUpdateInfo.update_trigger_frequency || 'Chưa đặt'
+							siteAutoUpdateInfo.update_trigger_frequency || $t('not_set')
 						"
 					/>
 
 					<!-- For weekly updates only -->
 					<ListItem
 						v-if="siteAutoUpdateInfo.update_trigger_frequency === 'Weekly'"
-						title="Vào ngày trong tuần"
+						:title="$t('SiteAutoUpdate_content_2')"
 						:description="siteAutoUpdateInfo.update_on_weekday"
 					/>
 
 					<ListItem
-						title="Thời gian cập nhật"
+						:title="$t('SiteAutoUpdate_content_3')"
 						:description="
 							getFormattedTime(siteAutoUpdateInfo.update_trigger_time) ||
-							'Chưa đặt'
+							$t('not_set')
 						"
 					/>
 
@@ -61,28 +61,28 @@
 					<div v-if="siteAutoUpdateInfo.update_trigger_frequency === 'Monthly'">
 						<ListItem
 							v-if="!siteAutoUpdateInfo.update_end_of_month"
-							title="Vào ngày trong tháng"
+							:title="$t('SiteAutoUpdate_content_4')"
 							:description="
 								siteAutoUpdateInfo.update_on_day_of_month.toString()
 							"
 						/>
 						<ListItem
 							v-else
-							title="Vào ngày trong tháng"
-							description="Cuối tháng"
+							:title="$t('SiteAutoUpdate_content_4')"
+							:description="$t('SiteAutoUpdate_content_5')"
 						/>
 					</div>
 
 					<!-- Last triggered At -->
 					<ListItem
 						v-if="siteAutoUpdateInfo.auto_update_last_triggered_on"
-						title="Cập nhật lần cuối vào"
+						:title="$t('SiteAutoUpdate_content_6')"
 						:description="siteAutoUpdateInfo.auto_update_last_triggered_on"
 					/>
 					<ListItem
 						v-else
-						title="Cập nhật lần cuối vào"
-						description="Không bao giờ kích hoạt"
+						:title="$t('SiteAutoUpdate_content_6')"
+						:description="$t('SiteAutoUpdate_content_7')"
 					/>
 				</div>
 
@@ -92,7 +92,7 @@
 					v-if="!$resources.getSiteAutoUpdateInfo.loading && !autoUpdateEnabled"
 				>
 					<h3 class="text-sm text-gray-800">
-						Cập nhật tự động đã bị tắt cho tổ chức này.
+						{{ $t('SiteAutoUpdate_content_8') }}
 					</h3>
 					<Button
 						class="mt-3"
@@ -100,7 +100,7 @@
 						@click="enableAutoUpdate"
 						:loading="this.$resources.enableAutoUpdate.loading"
 						loadingText="Enabling"
-						>Bật cập nhật tự động</Button
+						>{{ $t('SiteAutoUpdate_content_9') }}</Button
 					>
 				</div>
 
@@ -109,15 +109,15 @@
 					v-if="$resources.getSiteAutoUpdateInfo.loading"
 					class="py-10 text-center"
 				>
-					<Button :loading="true">Đang tải</Button>
+					<Button :loading="true">{{ $t('Loading') }}</Button>
 				</div>
 
 				<Dialog
 					:options="{
-						title: 'Schedule Auto Updates',
+						title: $t('SiteAutoUpdate_content_10'),
 						actions: [
 							{
-								label: 'Lưu thay đổi',
+								label: $t('save_changes'),
 								variant: 'solid',
 								loading: $resources.updateAutoUpdateInfo.loading,
 								onClick: () => $resources.updateAutoUpdateInfo.submit()
@@ -131,7 +131,7 @@
 						<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 							<FormControl
 								type="select"
-								label="Tần suất cập nhật"
+								:label="$t('SiteAutoUpdate_content_11')"
 								:options="frequencyOptions"
 								v-model="updateFrequency"
 							/>
@@ -139,14 +139,14 @@
 							<FormControl
 								type="select"
 								:options="timeOptions"
-								label="Thời gian cập nhật"
+								:label="$t('SiteAutoUpdate_content_3')"
 								v-model="updateTime"
 							/>
 
 							<FormControl
 								v-if="updateFrequency === 'Weekly'"
 								type="select"
-								label="Ngày trong tuần"
+								:label="$t('SiteAutoUpdate_content_12')"
 								:options="weekDayOptions"
 								v-model="weekDay"
 							/>
@@ -155,13 +155,13 @@
 								v-if="updateFrequency === 'Monthly'"
 								type="select"
 								:options="monthDayOptions"
-								label="Ngày trong tháng"
+								:label="$t('SiteAutoUpdate_content_13')"
 								v-model.number="monthDay"
 							/>
 							<FormControl
 								v-if="updateFrequency === 'Monthly'"
 								type="checkbox"
-								label="Cập nhật cuối tháng"
+								:label="$t('SiteAutoUpdate_content_14')"
 								:checked="endOfMonth"
 								v-model="endOfMonth"
 							/>
@@ -179,8 +179,8 @@
 				</Dialog>
 
 				<h4 class="mt-2 text-base text-gray-600">
-					<strong>Chú ý:</strong> Tất cả các thời gian đều ở múi giờ IST (UTC +
-					5:30 giờ).
+					<strong>{{ $t('Note') }}:</strong>
+					{{ $t('SiteAutoUpdate_content_15') }}
 				</h4>
 
 				<ErrorMessage
@@ -302,13 +302,34 @@ export default {
 		},
 		weekDayOptions() {
 			return [
-				'Sunday',
-				'Monday',
-				'Tuesday',
-				'Wednesday',
-				'Thursday',
-				'Friday',
-				'Saturday'
+				{
+					label: this.$t('Sunday'),
+					value: 'Sunday'
+				},
+				{
+					label: this.$t('Monday'),
+					value: 'Monday'
+				},
+				{
+					label: this.$t('Tuesday'),
+					value: 'Tuesday'
+				},
+				{
+					label: this.$t('Wednesday'),
+					value: 'Wednesday'
+				},
+				{
+					label: this.$t('Thursday'),
+					value: 'Thursday'
+				},
+				{
+					label: this.$t('Friday'),
+					value: 'Friday'
+				},
+				{
+					label: this.$t('Saturday'),
+					value: 'Saturday'
+				}
 			];
 		},
 		monthDayOptions() {

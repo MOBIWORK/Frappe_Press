@@ -1,5 +1,5 @@
 <template>
-	<Card title="Bản phát hành ứng dụng">
+	<Card :title="$t('App_Releases')">
 		<div v-if="sources.length">
 			<div class="flex flex-row items-baseline">
 				<FormControl
@@ -17,15 +17,14 @@
 		</div>
 		<div v-if="!sources.length">
 			<p class="mt-3 text-center text-lg text-gray-600">
-				Không có nguồn ứng dụng đã xuất bản cho ứng dụng này. Vui lòng liên hệ
-				với bộ phận hỗ trợ để xuất bản một phiên bản của ứng dụng này.
+				{{ $t('MarketplaceAppReleaseList_content_1') }}
 			</p>
 		</div>
 		<div
 			v-else-if="releasesList.length === 0 && !$resources.releases.list.loading"
 		>
 			<p class="mt-3 text-center text-lg text-gray-600">
-				Không có phiên bản của ứng dụng đã được tạo ra cho phiên bản này.
+				{{ $t('MarketplaceAppReleaseList_content_2') }}
 			</p>
 		</div>
 
@@ -34,10 +33,10 @@
 				<div
 					class="grid grid-cols-3 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-6"
 				>
-					<span class="md:col-span-2">Tin nhắn xác nhận</span>
-					<span class="hidden md:inline">Thẻ</span>
-					<span class="hidden md:inline">Tác giả</span>
-					<span>Trạng thái</span>
+					<span class="md:col-span-2">{{ $t('Commit_Message') }}</span>
+					<span class="hidden md:inline">{{ $t('Tag') }}</span>
+					<span class="hidden md:inline">{{ $t('Author') }}</span>
+					<span>{{ $t('Status') }}</span>
 					<span></span>
 				</div>
 
@@ -71,24 +70,23 @@
 							"
 							@click="confirmApprovalRequest(release.name)"
 						>
-							Xuất bản
+							{{ $t('Publish') }}
 						</Button>
 
 						<Button
 							v-else-if="release.status == 'Awaiting Approval'"
 							@click="confirmCancelRequest(release.name)"
-							>Hủy</Button
-						>
-
+							>
+							{{ $t('Cancel') }}
+						</Button>
 						<Button
 							v-else-if="release.status == 'Rejected'"
 							@click="showFeedback(release)"
-							>Xem phản hồi</Button
-						>
+							>{{ $t('View_Feedback') }}</Button>
 					</span>
 				</div>
 				<Dialog
-					:options="{ title: 'Lý do từ chối' }"
+					:options="{ title: $t('Reason_for_Rejection') }"
 					v-model="showRejectionFeedbackDialog"
 				>
 					<template v-slot:body-content>
@@ -179,14 +177,14 @@ export default {
 
 					if (requestAlreadyExists)
 						notify({
-							title: 'Yêu cầu đã tồn tại',
+							title: this.$t('Request_already_exists'),
 							message: err.messages.join('\n'),
 							color: 'red',
 							icon: 'x'
 						});
 					else
 						notify({
-							title: 'Lỗi',
+							title: this.$t('Error'),
 							message: err.messages.join('\n'),
 							color: 'red',
 							icon: 'x'
@@ -235,10 +233,9 @@ export default {
 		},
 		confirmApprovalRequest(appRelease) {
 			this.$confirm({
-				title: 'Xuất bản phiên bản',
-				message:
-					'Bạn có chắc muốn xuất bản phiên bản này lên marketplace không? Khi xác nhận, phiên bản sẽ được gửi đi để được xác nhận bởi nhóm đánh giá.',
-				actionLabel: 'Xuất bản',
+				title: this.$t('Publish_Release'),
+				message: this.$t('MarketplaceAppReleaseList_content_3'),
+				actionLabel: this.$t('Publish'),
 				action: closeDialog => {
 					closeDialog();
 					this.createApprovalRequest(appRelease);
@@ -247,10 +244,10 @@ export default {
 		},
 		confirmCancelRequest(appRelease) {
 			this.$confirm({
-				title: 'Hủy yêu cầu phê duyệt phiên bản',
+				title: this.$t('MarketplaceAppReleaseList_content_4'),
 				message:
-					'Bạn có chắc muốn <strong>hủy</strong> yêu cầu xuất bản cho phiên bản này không?',
-				actionLabel: 'Tiếp tục',
+					`${this.$t('MarketplaceAppReleaseList_content_5')} <strong>${this.$t('cancel')}</strong> ${this.$t('MarketplaceAppReleaseList_content_6')}`,
+				actionLabel: this.$t('Proceed'),
 				actionColor: 'red',
 				action: closeDialog => {
 					closeDialog();

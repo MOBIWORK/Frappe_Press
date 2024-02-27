@@ -1,7 +1,7 @@
 <template>
 	<Card
-		title="Đối tác MBW"
-		subtitle="Đối tác MBW được liên kết với tài khoản của bạn"
+		:title="$t('AccountPartner_content_1')"
+		:subtitle="$t('AccountPartner_content_2')"
 		v-if="!$account.team.erpnext_partner"
 	>
 		<div>
@@ -14,14 +14,15 @@
 
 			<div class="py-4">
 				<h3 class="text-base text-gray-700" v-if="$account.parent_team">
-					Chỉ nhóm cha mới có thể kết nối với đối tác MBW.
+					{{ $t('AccountPartner_content_3') }}
 				</h3>
 				<h3
 					class="text-base text-gray-700"
 					v-if="!$account.partner_email && !$account.parent_team"
 				>
-					Có mã giới thiệu đối tác MBW không? Nhấp vào
-					<strong>Thêm mã đối tác</strong> để liên kết với nhóm đối tác của bạn.
+					{{ $t('AccountPartner_content_4') }}
+					<strong>{{ $t('AccountPartner_content_5') }}</strong>
+					{{ $t('AccountPartner_content_6') }}
 				</h3>
 			</div>
 		</div>
@@ -30,16 +31,16 @@
 				@click="showPartnerReferralDialog = true"
 				v-if="!$account.partner_email"
 			>
-				Thêm mã đối tác
+				{{ $t('AccountPartner_content_5') }}
 			</Button>
 		</template>
 		<Dialog
-			:options="{ title: 'Mã giới thiệu đối tác' }"
+			:options="{ title: $t('AccountPartner_content_7') }"
 			v-model="showPartnerReferralDialog"
 		>
 			<template v-slot:body-content>
 				<FormControl
-					label="Nhập mã giới thiệu đối tác"
+					:label="$t('AccountPartner_content_8')"
 					type="input"
 					v-model="referralCode"
 					placeholder="e.g. rGjw3hJ81b"
@@ -48,7 +49,8 @@
 				<ErrorMessage class="mt-2" :message="$resources.addPartner.error" />
 				<div class="mt-1">
 					<div v-if="partnerExists" class="text-sm text-green-600" role="alert">
-						Mã giới thiệu {{ referralCode }} thuộc về {{ partner }}
+						{{ $t('AccountPartner_content_9') }} {{ referralCode }}
+						{{ $t('AccountPartner_content_10') }} {{ partner }}
 					</div>
 					<ErrorMessage :message="errorMessage" />
 				</div>
@@ -57,10 +59,10 @@
 				<Button
 					variant="solid"
 					:loading="$resources.addPartner.loading"
-					loadingText="Đang lưu..."
+					:loadingText="`${$t('Saving')}...`"
 					@click="$resources.addPartner.submit()"
 				>
-					Thêm đối tác
+					{{ $t('Add_partner') }}
 				</Button>
 			</template>
 		</Dialog>
@@ -90,7 +92,7 @@ export default {
 				onSuccess(res) {
 					this.showPartnerReferralDialog = false;
 					notify({
-						title: 'Email đã được gửi đến đối tác',
+						title: this.$t('AccountPartner_content_11'),
 						icon: 'check',
 						color: 'green'
 					});
@@ -115,7 +117,7 @@ export default {
 				this.partner = partnerName;
 				this.partnerExists = true;
 			} else {
-				this.errorMessage = `${code} là mã giới thiệu không hợp lệ`;
+				this.errorMessage = `${code} ${this.$t('AccountPartner_content_12')}`;
 			}
 		}
 	}

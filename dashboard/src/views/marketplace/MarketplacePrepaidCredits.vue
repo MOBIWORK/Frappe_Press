@@ -1,7 +1,7 @@
 <template>
 	<div v-if="step == 'Confirm Checkout'" class="flex-row text-sm">
 		<div class="mb-4 flex justify-between">
-			<p class="my-auto">Thanh toán</p>
+			<p class="my-auto">{{ $t('Billing') }}</p>
 			<FormControl
 				type="select"
 				:options="paymentOptions"
@@ -12,14 +12,14 @@
 		<table v-if="$account.team" class="text w-full text-sm">
 			<thead>
 				<tr class="text-gray-600">
-					<th class="border-b text-left font-normal">Ứng dụng</th>
+					<th class="border-b text-left font-normal">{{ $t('App') }}</th>
 					<th
 						class="whitespace-nowrap border-b py-2 pr-2 text-center font-normal"
 					>
-						Gói
+						{{ $t('Plan') }}
 					</th>
 					<th class="border-b py-3 pr-2 text-right font-normal">
-						Số tiền /tháng
+						{{ $t('Amount') }} /{{ $t('month') }}
 					</th>
 				</tr>
 			</thead>
@@ -62,27 +62,27 @@
 
 		<div class="mt-4 flex-row" v-if="$account.team">
 			<div class="mb-3 flex justify-between">
-				<p>Tổng phụ</p>
+				<p>{{ $t('Subtotal') }}</p>
 				<p class="text-lg">
 					{{ getCurrencySymbol() + subtotal }}
 				</p>
 			</div>
 
 			<div class="mb-3 flex justify-between">
-				<p>Giảm giá</p>
+				<p>{{ $t('Discount') }}</p>
 				<p class="text-lg text-green-500">
 					{{ discount_percent == 0 ? '-' : discount_percent + '%' }}
 				</p>
 			</div>
 
 			<div class="flex justify-between">
-				GST (nếu áp dụng)
+				GST ({{$t('if_applicable')}})
 				<p class="text-lg text-red-500">{{ gstApplicable() ? '18%' : '-' }}</p>
 			</div>
 
 			<hr class="my-4" />
 			<div class="flex justify-between">
-				<p class="mb-3">Tín dụng đã phân bổ</p>
+				<p class="mb-3">{{ $t('Allocated_Credits') }}</p>
 				<p class="text-lg">
 					{{ creditsToBuy }}
 				</p>
@@ -91,7 +91,7 @@
 				class="flex justify-between"
 				v-if="$resources.subscriptions.data || planData"
 			>
-				<p class="mb-3 font-medium">Tổng cộng</p>
+				<p class="mb-3 font-medium">{{ $t('Total') }}</p>
 				<p class="text-xl font-semibold">
 					{{ getCurrencySymbol() + getTotal() }}
 				</p>
@@ -111,14 +111,14 @@
 			@click="$resources.usePartnerCredits.submit()"
 			:loading="$resources.usePartnerCredits.loading"
 		>
-			Sử dụng tín dụng đối tác
+			{{ $t('Use_Partner_Credits') }}
 		</Button>
 		<Button
 			class="w-full"
 			v-if="!$account.team.erpnext_partner && $account.balance >= creditsToBuy"
 			@click="step = 'Use Existing Credits'"
 		>
-			Sử dụng tín dụng hiện tại
+			{{ $t('Use_Existing_Credits') }}
 		</Button>
 		<Button
 			class="mt-2 w-full"
@@ -126,18 +126,16 @@
 			@click="$resources.changePlan.submit()"
 			:loading="$resources.changePlan.loading"
 		>
-			Thanh toán số tiền
+			{{ $t('Pay_Amount') }}
 		</Button>
 	</div>
 
 	<!-- Use existing credits dialog -->
 	<div v-if="step == 'Use Existing Credits'">
 		<p class="text-base">
-			Số dư tín dụng hiện tại của bạn là
+			{{ $t('MarketplacePrepaidCredits_content_1') }}
 			<span class="font-bold">{{ this.$account.balance }}</span
-			>. Chọn tùy chọn này sẽ áp dụng tín dụng hiện tại vào đăng ký mới. Điều
-			này có thể ảnh hưởng đến thời hạn của các đăng ký đang hoạt động khác. Bạn
-			có chắc chắn muốn tiếp tục không?
+			>. {{ $t('MarketplacePrepaidCredits_content_2') }}
 		</p>
 		<div class="mt-6">
 			<Button
@@ -145,7 +143,7 @@
 				type="secondary"
 				@click="() => (this.step = 'Confirm Checkout')"
 			>
-				Quay lại
+				{{ $t('Back') }}
 			</Button>
 			<Button
 				class="mt-2 w-full"
@@ -153,13 +151,13 @@
 				@click="$resources.useCredits.submit()"
 				:loading="$resources.useCredits.loading"
 			>
-				Xác nhận
+				{{ $t('Confirm') }}
 			</Button>
 		</div>
 	</div>
 
 	<!--Add Card Details, Stripe Step-->
-	<div v-if="step == 'Add Card Details'" class="text-sm">Card Details</div>
+	<div v-if="step == 'Add Card Details'" class="text-sm">{{ $t('Card_Details') }}</div>
 	<div
 		v-if="step == 'Add Card Details'"
 		class="form-input my-2 block w-full py-2 pl-3"
@@ -181,7 +179,7 @@
 					}
 				"
 			>
-				Hủy
+				{{ $t('Cancel') }}
 			</Button>
 			<Button
 				class="ml-2"
@@ -189,7 +187,7 @@
 				@click="onBuyClick"
 				:loading="paymentInProgress"
 			>
-				Thanh toán
+				{{ $t('Pay') }}
 			</Button>
 		</div>
 	</div>
@@ -200,10 +198,9 @@
 		class="sr-result requires-auth form-input my-2 block w-full py-2 pl-3"
 	>
 		<p>
-			Please authenticate your
-			<span id="card-brand">{{ this.card.brand }}</span> card ending in
-			<span class="font-semibold">** {{ this.card.last4 }}</span> to authorize
-			your purchase of {{ creditsToBuy }} credits.
+			{{ $t('MarketplacePrepaidCredits_content_3') }}
+			<span id="card-brand">{{ this.card.brand }}</span> {{ $t('MarketplacePrepaidCredits_content_4') }}
+			<span class="font-semibold">** {{ this.card.last4 }}</span> {{ $t('MarketplacePrepaidCredits_content_5') }} {{ creditsToBuy }} {{ $t('MarketplacePrepaidCredits_content_6') }}
 		</p>
 		<Button
 			variant="solid"
@@ -212,7 +209,7 @@
 			id="authenticate"
 		>
 			<div class="spinner hidden"></div>
-			<span class="button-text">Authenticate purchase</span>
+			<span class="button-text">{{ $t('Authenticate_purchase') }}</span>
 		</Button>
 	</div>
 
@@ -276,7 +273,7 @@ export default {
 	},
 	methods: {
 		getCurrencySymbol() {
-			return this.$account.team.country == 'India' ? '₹' : '$';
+			return 'VND';
 		},
 		getSubtotal() {
 			let amount = 0;

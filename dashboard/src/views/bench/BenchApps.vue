@@ -1,8 +1,8 @@
 <template>
 	<div class="space-y-5">
 		<Card
-			title="Ứng dụng"
-			subtitle="Các ứng dụng có sẵn trên bench của bạn"
+			:title="$t('Apps')"
+			:subtitle="$t('BenchApps_content_1')"
 			:loading="$resources.apps.loading"
 		>
 			<template #actions>
@@ -14,7 +14,7 @@
 						showAddAppDialog = true;
 					"
 				>
-					Thêm ứng dụng
+					{{ $t('Add_App') }}
 				</Button>
 			</template>
 			<div class="max-h-96 divide-y">
@@ -39,7 +39,7 @@
 							>
 								<Tooltip
 									class="mr-2 flex cursor-pointer items-center rounded-full bg-gray-100 p-1"
-									text="Điều này là gì?"
+									:text="$t('BenchApps_content_2')"
 									placement="top"
 								>
 									<a
@@ -53,11 +53,11 @@
 									</a>
 								</Tooltip>
 
-								<Badge label="Cần chú ý" theme="red" />
+								<Badge :label="$t('Attention_Required')" theme="red" />
 							</span>
 							<Badge
 								v-if="!app.last_github_poll_failed && !app.deployed"
-								label="Chưa triển khai"
+								:label="$t('BenchApps_content_3')"
 								theme="orange"
 							/>
 							<Badge
@@ -66,7 +66,7 @@
 									app.update_available &&
 									app.deployed
 								"
-								label="Cập nhật có sẵn"
+								:label="$t('Update_Available')"
 								theme="blue"
 							/>
 							<Dropdown :options="dropdownItems(app)" right>
@@ -82,13 +82,13 @@
 			<ErrorMessage :message="$resources.fetchLatestAppUpdate.error" />
 
 			<Dialog
-				:options="{ title: 'Thêm ứng dụng vào bench của bạn', position: 'top' }"
+				:options="{ title: $t('BenchApps_content_4'), position: 'top' }"
 				v-model="showAddAppDialog"
 			>
 				<template v-slot:body-content>
 					<FormControl
 						class="mb-2"
-						placeholder="Search for Apps"
+						:placeholder="$t('Search_for_Apps')"
 						v-on:input="e => updateSearchTerm(e.target.value)"
 					/>
 					<LoadingText class="py-2" v-if="$resources.installableApps.loading" />
@@ -101,8 +101,8 @@
 						:multiple="true"
 					/>
 					<p class="mt-4 text-base" @click="showAddAppDialog = false">
-						Không tìm thấy ứng dụng của bạn ở đây?
-						<Link :to="`/benches/${benchName}/apps/new`"> Thêm từ GitHub </Link>
+						{{ $t('MarketplaceApp_content_2') }}
+						<Link :to="`/benches/${benchName}/apps/new`"> {{ $t('Add_from_GitHub') }} </Link>
 					</p>
 				</template>
 				<template v-slot:actions>
@@ -121,7 +121,7 @@
 							})
 						"
 					>
-						Thêm ứng dụng
+						{{ $t('Add_App') }}
 						<!-- {{ selectedApps.length > 1 ? 's' : '' }} -->
 					</Button>
 				</template>
@@ -207,7 +207,7 @@ export default {
 				},
 				onError(e) {
 					notify({
-						title: 'Lỗi',
+						title: this.$t('Error'),
 						message: e,
 						icon: 'x',
 						color: 'red'
@@ -229,7 +229,7 @@ export default {
 		dropdownItems(app) {
 			return [
 				{
-					label: 'Xem trong Desk',
+					label: this.$t('view_in_desk'),
 					onClick: () =>
 						window.open(
 							`${window.location.protocol}//${window.location.host}/app/app/${app.name}`,
@@ -238,22 +238,22 @@ export default {
 					condition: () => this.$account.user.user_type == 'System User'
 				},
 				{
-					label: 'Tải về cập nhật mới nhất',
+					label: this.$t('BenchApps_content_5'),
 					onClick: () => this.fetchLatestUpdate(app)
 				},
 				{
-					label: 'Xóa ứng dụng',
+					label: this.$t('Remove_App'),
 					onClick: () => this.confirmRemoveApp(app),
 					condition: () => app.name != 'frappe'
 				},
 				{
-					label: 'Thay đổi nhánh',
+					label: this.$t('Change_Branch'),
 					onClick: () => {
 						this.appToChangeBranchOf = app;
 					}
 				},
 				{
-					label: 'Truy cập kho lưu trữ',
+					label: this.$t('Visit_Repo'),
 					onClick: () =>
 						window.open(`${app.repository_url}/tree/${app.branch}`, '_blank')
 				}
@@ -267,9 +267,9 @@ export default {
 		},
 		confirmRemoveApp(app) {
 			this.$confirm({
-				title: 'Xóa ứng dụng',
-				message: `Bạn có chắc chắn muốn xóa ứng dụng ${app.name} khỏi bench này không?`,
-				actionLabel: 'Xóa ứng dụng',
+				title: this.$t('Remove_App'),
+				message: `${this.$t('BenchApps_content_6')} ${app.name} ${this.$t('BenchApps_content_7')}`,
+				actionLabel: this.$t('Remove_App'),
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.removeApp.submit({

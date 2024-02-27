@@ -21,10 +21,10 @@ const submitReply = createResource({
 	url: 'press.api.marketplace.submit_developer_reply',
 	validate() {
 		if (!reply.reply) {
-			return 'Reply cannot be empty';
+			return this.$t('ReplyMarketplaceApp_content_1');
 		}
 		if (!$account.team.is_developer) {
-			return 'You must be a developer to reply to reviews';
+			return this.$t('ReplyMarketplaceApp_content_2');
 		}
 	},
 	onSuccess() {
@@ -37,7 +37,7 @@ const submitReply = createResource({
 	<div class="px-4 py-4 text-base sm:px-8">
 		<div>
 			<h1 class="mb-4 text-xl font-semibold">
-				Phản hồi về ứng dụng: {{ appTitle }}
+				{{ $t('ReplyMarketplaceApp_content_3') }}: {{ appTitle }}
 			</h1>
 		</div>
 
@@ -46,7 +46,7 @@ const submitReply = createResource({
 				<FormControl
 					v-model="reply.reply"
 					type="textarea"
-					label="Viết Phản hồi"
+					:label="$t('Write_Reply')"
 				/>
 
 				<ErrorMessage class="mt-2" :message="submitReply.error" />
@@ -55,7 +55,7 @@ const submitReply = createResource({
 					:loading="submitReply.loading"
 					variant="solid"
 					@click="submitReply.submit({ ...reply })"
-					>Gửi</Button
+					>{{ $t('Submit') }}</Button
 				>
 			</div>
 		</div>

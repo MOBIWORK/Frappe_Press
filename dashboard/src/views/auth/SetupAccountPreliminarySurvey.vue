@@ -3,28 +3,10 @@
 		<div>
 			<div>
 				<div class="mb-4 w-36">
-					<FormControl
-						type="select"
-						:options="[
-							{
-								label: 'Tiếng Việt',
-								value: 'vi'
-							}
-						]"
-						size="md"
-						variant="outline"
-						placeholder="Placeholder"
-						:disabled="false"
-						label=""
-						modelValue="vi"
-					>
-						<template #prefix>
-							<img src="../../assets/icon_flag_vi.svg" alt="Flag Icon" />
-						</template>
-					</FormControl>
+					<SelectLanguage></SelectLanguage>
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
-					<div>Khảo sát sơ bộ</div>
+					<div>{{ $t('Preliminary_survey') }}</div>
 				</div>
 				<div ref="address-form">
 					<p class="text-base" v-if="message">
@@ -33,12 +15,12 @@
 					<div class="mt-3">
 						<div class="mb-1">
 							<label class="typo__label text-lg text-gray-600"
-								>Lĩnh vực kinh doanh</label
+								>{{ $t('Business_sector') }}</label
 							>
 						</div>
 						<multiselect
 							v-model="valueAreasOfConcern"
-							placeholder="Tìm kiếm lĩnh vực"
+							:placeholder="$t('Search')"
 							label="name"
 							track-by="name"
 							:options="optionsAreasOfConcern"
@@ -54,17 +36,17 @@
 							@tag="addTag"
 						>
 							<template v-slot:noResult>
-								<span>Không tìm thấy lĩnh vực nào.</span>
+								<span>{{ $t('SetupAccountPreliminarySurvey_content_1') }}</span>
 							</template>
 							<template v-slot:noOptions>
-								<span>Không có lĩnh vực nào.</span>
+								<span>{{ $t('no_data') }}</span>
 							</template>
 						</multiselect>
 					</div>
 					<div class="mt-3">
 						<FormControl
 							size="lg"
-							label="Quy mô nhân sự"
+							:label="$t('SetupAccountPreliminarySurvey_content_2')"
 							type="text"
 							variant="outline"
 							name="number_of_employees"
@@ -78,18 +60,18 @@
 						<ErrorMessage
 							class="mt-1"
 							v-if="requiredFieldNotSet.includes('number_of_employees')"
-							message="Quy mô nhân sự không được để trống"
+							:message="$t('SetupAccountPreliminarySurvey_content_3')"
 						/>
 					</div>
 					<div class="mt-3">
 						<div class="mb-1">
 							<label class="typo__label text-lg text-gray-600"
-								>Tính năng quan tâm</label
+								>{{ $t('SetupAccountPreliminarySurvey_content_4') }}</label
 							>
 						</div>
 						<multiselect
 							v-model="valueConcernsFeature"
-							placeholder="Tìm kiếm tính năng"
+							:placeholder="$t('Search')"
 							label="name"
 							track-by="name"
 							:options="optionsConcernsFeature"
@@ -103,10 +85,10 @@
 							"
 						>
 							<template v-slot:noResult>
-								<span>Không tìm thấy tính năng nào.</span>
+								<span>{{ $t('SetupAccountPreliminarySurvey_content_5') }}</span>
 							</template>
 							<template v-slot:noOptions>
-								<span>Không có tính năng nào.</span>
+								<span>{{ $t('no_data') }}</span>
 							</template>
 						</multiselect>
 					</div>
@@ -122,7 +104,7 @@
 						:loading="$resources.updateBillingInformation.loading"
 						:onClick="() => $resources.updateBillingInformation.submit()"
 					>
-						Gửi thông tin
+						{{ $t('Submit_information') }}
 					</Button>
 				</div>
 			</div>
@@ -134,13 +116,15 @@
 import LoginBox from '@/views/partials/LoginBox.vue';
 import { notify } from '@/utils/toast';
 import Multiselect from 'vue-multiselect';
+import SelectLanguage from '../../components/global/SelectLanguage.vue';
 
 export default {
 	name: 'SetupAccountPreliminarySurvey',
 	props: ['message'],
 	components: {
 		Multiselect,
-		LoginBox
+		LoginBox,
+		SelectLanguage
 	},
 	data() {
 		return {
@@ -226,7 +210,7 @@ export default {
 					notify({
 						icon: 'check',
 						color: 'green',
-						title: 'Gửi thông tin thành công!'
+						title: this.$t('SetupAccountPreliminarySurvey_content_6')
 					});
 					// this.$router.push('/sites/new');
 					window.location.href = '/dashboard/sites/new';
@@ -280,7 +264,7 @@ export default {
 			this.requiredFieldNotSet = fieldNotSetNew;
 
 			if (!values.every(Boolean)) {
-				return 'Vui lòng điền đầy đủ thông tin';
+				return this.$t('please_fill_required_values');
 			}
 		},
 		validPhone(e) {

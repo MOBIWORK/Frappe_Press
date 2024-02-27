@@ -1,9 +1,11 @@
 <template>
 	<div>
 		<div v-if="publisherProfileInfo && !publisherProfileInfo.profile_created">
-			<Alert title="Bạn chưa tạo hồ sơ của mình.">
+			<Alert :title="$t('MarketplacePublisherProfile_content_1')">
 				<template #actions>
-					<Button variant="solid" @click="showEditDialog = true"> Tạo </Button>
+					<Button variant="solid" @click="showEditDialog = true">
+						{{ $t('Create') }}
+					</Button>
 				</template>
 			</Alert>
 		</div>
@@ -11,12 +13,12 @@
 		<Button
 			v-if="$resources.getPublisherProfileInfo.loading"
 			:loading="true"
-			loadingText="Đang tải..."
+			:loadingText="`${$t('Loading')}...`"
 		></Button>
 
 		<div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 			<PublisherProfileCard
-				:showEditDialog="showEditDialog"
+				v-model:showEditDialog="showEditDialog"
 				:profileData="publisherProfileInfo"
 				@profile-updated="$resources.getPublisherProfileInfo.fetch()"
 			/>

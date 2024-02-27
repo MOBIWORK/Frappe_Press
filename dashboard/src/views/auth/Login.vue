@@ -1,7 +1,7 @@
 <template>
 	<LoginBox
 		v-if="!successMessage"
-		:title="!forgot ? 'Log in to your account' : 'Reset your password'"
+		:title="!forgot ? $t('Login_content_1') : $t('Login_content_2')"
 	>
 		<form class="flex flex-col" @submit.prevent="login">
 			<FormControl
@@ -16,7 +16,7 @@
 			<FormControl
 				class="mt-4"
 				v-if="!forgot"
-				label="Password"
+				:label="$t('Password')"
 				type="password"
 				placeholder="•••••"
 				v-model="password"
@@ -26,9 +26,11 @@
 			/>
 			<div class="mt-2 text-sm">
 				<router-link v-if="forgot" to="/login">
-					I remember my password
+					{{ $t('Login_content_3') }}
 				</router-link>
-				<router-link v-else to="/login/forgot"> Forgot Password? </router-link>
+				<router-link v-else to="/login/forgot">
+					{{ $t('Login_content_4') }}
+				</router-link>
 			</div>
 			<ErrorMessage :message="errorMessage" class="mt-4" />
 			<Button
@@ -37,7 +39,7 @@
 				@click="loginOrResetPassword"
 				variant="solid"
 			>
-				{{ !forgot ? 'Log in with email' : 'Reset Password' }}
+				{{ !forgot ? $t('Login_content_5') : $t('Reset_Password') }}
 			</Button>
 			<template v-if="!forgot">
 				<div class="-mb-2 mt-6 border-t text-center">
@@ -45,7 +47,7 @@
 						<span
 							class="bg-white px-2 text-xs uppercase leading-8 tracking-wider text-gray-800"
 						>
-							Or
+							{{ $t('Or') }}
 						</span>
 					</div>
 				</div>
@@ -60,18 +62,18 @@
 			>
 				<div class="flex">
 					<GoogleIcon />
-					<span class="ml-2">Log in with Google</span>
+					<span class="ml-2">{{ $t('Login_content_6') }}</span>
 				</div>
 			</Button>
 			<router-link class="mt-10 text-center text-base" to="/signup">
-				Sign up for a new account
+				{{ $t('Login_content_7') }}
 			</router-link>
 		</div>
 	</LoginBox>
 	<div class="mx-auto mt-20 w-96 sm:ml-auto sm:mr-auto" v-else>
 		<SuccessCard title="Password Reset Link Sent.">
-			We have sent an email to <span class="font-semibold">{{ email }}</span
-			>. Please click on the link received to reset your password.
+			{{ $t('Auth_content_5') }} <span class="font-semibold">{{ email }}</span
+			>{{ $t('Login_content_8') }}
 		</SuccessCard>
 	</div>
 </template>

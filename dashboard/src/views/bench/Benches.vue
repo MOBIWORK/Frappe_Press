@@ -10,7 +10,7 @@
 					<Button
 						variant="solid"
 						icon-left="plus"
-						label="Tạo mới"
+						:label="$t('Create')"
 						class="ml-2"
 						@click="showBillingDialog"
 					/>
@@ -21,13 +21,13 @@
 		<div class="mx-5 mt-5">
 			<div class="flex">
 				<div class="flex w-full space-x-2 pb-4">
-					<FormControl label="Tìm kiếm Benches" v-model="searchTerm">
+					<FormControl :label="$t('Search_Benches')" v-model="searchTerm">
 						<template #prefix>
 							<FeatherIcon name="search" class="w-4 text-gray-600" />
 						</template>
 					</FormControl>
 					<FormControl
-						label="Trạng thái"
+						:label="$t('Status')"
 						class="mr-8"
 						type="select"
 						:options="benchStatusFilterOptions"
@@ -35,7 +35,7 @@
 					/>
 					<FormControl
 						v-if="$resources.benchTags.data.length > 0"
-						label="Thẻ"
+						:label="$t('Tag')"
 						class="mr-8"
 						type="select"
 						:options="benchTagFilterOptions"
@@ -45,18 +45,11 @@
 				<div class="w-10"></div>
 			</div>
 			<Table
-				:columns="[
-					{ label: 'Tên Bench', name: 'name', width: 2 },
-					{ label: 'Trạng thái', name: 'status' },
-					{ label: 'Phiên bản', name: 'version' },
-					{ label: 'Thẻ', name: 'tags' },
-					{ label: 'Thống kê', name: 'stats' },
-					{ label: '', name: 'actions', width: 0.5 }
-				]"
+				:columns="getHeaderTable()"
 				:rows="benches"
 				v-slot="{ rows, columns }"
 			>
-				<TableHeader class="hidden lg:grid" />
+				<TableHeaderCustom :columns="getHeaderTable()" class="hidden lg:grid" />
 				<TableRow
 					v-for="row in rows"
 					:key="row.name"
@@ -92,16 +85,16 @@
 							{{
 								`${row.stats.number_of_sites} ${$plural(
 									row.stats.number_of_sites,
-									'Site',
-									'Sites'
+									$t('Site'),
+									$t('Sites')
 								)}`
 							}}
 							&middot;
 							{{
 								`${row.stats.number_of_apps} ${$plural(
 									row.stats.number_of_apps,
-									'App',
-									'Apps'
+									$t('App'),
+									$t('Apps')
 								)}`
 							}}
 						</div>
@@ -131,14 +124,14 @@
 						v-else-if="$resources.allBenches.fetched && rows.length === 0"
 						class="text-base text-gray-700"
 					>
-						Không có Benches
+						{{ $t('No_Benches') }}
 					</div>
 				</div>
 			</Table>
 		</div>
 
 		<Dialog
-			:options="{ title: 'Add card to create new benches' }"
+			:options="{ title: $t('Benches_content_1') }"
 			v-model="showAddCardDialog"
 		>
 			<template v-slot:body-content>
@@ -158,7 +151,7 @@
 <script>
 import Table from '@/components/Table/Table.vue';
 import TableCell from '@/components/Table/TableCell.vue';
-import TableHeader from '@/components/Table/TableHeader.vue';
+import TableHeaderCustom from '@/components/Table/TableHeaderCustom.vue';
 import TableRow from '@/components/Table/TableRow.vue';
 import { defineAsyncComponent } from 'vue';
 
@@ -179,9 +172,9 @@ export default {
 	},
 	components: {
 		Table,
-		TableHeader,
 		TableRow,
 		TableCell,
+		TableHeaderCustom,
 		StripeCard: defineAsyncComponent(() =>
 			import('@/components/StripeCard.vue')
 		)
@@ -240,15 +233,15 @@ export default {
 		benchStatusFilterOptions() {
 			return [
 				{
-					label: 'Tất cả',
+					label: this.$t('All'),
 					value: 'All'
 				},
 				{
-					label: 'Hoạt động',
+					label: this.$t('Active'),
 					value: 'Active'
 				},
 				{
-					label: 'Chờ triển khai',
+					label: this.$t('Awaiting_Deploy'),
 					value: 'Awaiting Deploy'
 				}
 			];
@@ -273,6 +266,16 @@ export default {
 		}
 	},
 	methods: {
+		getHeaderTable() {
+			return [
+				{ label: this.$t('Bench_Name'), name: 'name', width: 2 },
+				{ label: this.$t('Status'), name: 'status', width: 1 },
+				{ label: this.$t('Version'), name: 'version', width: 1 },
+				{ label: this.$t('Tag'), name: 'tags', width: 1 },
+				{ label: this.$t('Stats'), name: 'stats', width: 1 },
+				{ label: '', name: 'actions', width: 0.5 }
+			];
+		},
 		showBillingDialog() {
 			// if (!this.$account.hasBillingInfo) {
 			// 	this.showAddCardDialog = true;
@@ -285,7 +288,7 @@ export default {
 		dropdownItems(bench) {
 			return [
 				{
-					label: 'Tạo tổ chức mới',
+					label: this.$t('New_Site'),
 					onClick: () => {
 						this.$router.push({
 							name: 'NewBenchSite',
@@ -295,7 +298,7 @@ export default {
 					condition: () => bench.status === 'Active'
 				},
 				{
-					label: 'Xem Trang web',
+					label: this.$t('View_Sites'),
 					onClick: () => {
 						this.$router.push({
 							name: 'BenchSiteList',

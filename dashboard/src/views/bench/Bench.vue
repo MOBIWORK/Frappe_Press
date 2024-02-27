@@ -20,7 +20,7 @@
 						<Button
 							v-if="bench?.status === 'Active'"
 							icon-left="plus"
-							label="Tổ chức mới"
+							:label="$t('New_Site')"
 							@click="$router.push(`/${this.bench.name}/new`)"
 						/>
 						<Dropdown :options="benchActions">
@@ -106,8 +106,8 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: 'Switched Team',
-						message: `Switched to ${this.bench.team}`,
+						title: this.$t('Switched_Team'),
+						message: `${this.$t('Switched_to')} ${this.bench.team}`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -159,18 +159,18 @@ export default {
 			let tabRoute = subRoute => `/benches/${this.benchName}/${subRoute}`;
 			let tabs = [
 				{
-					label: 'Tổ chức',
+					label: this.$t('Sites'),
 					route: 'sites'
 				},
-				{ label: 'Ứng dụng', route: 'apps' },
-				{ label: 'Triển khai', route: 'deploys' },
+				{ label: this.$t('Apps'), route: 'apps' },
+				{ label: this.$t('Deploys'), route: 'deploys' },
 				{
-					label: 'Cấu hình',
+					label: this.$t('Config'),
 					route: 'bench-config',
 					condition: () => !this.bench?.public
 				},
-				{ label: 'Công việc', route: 'jobs' },
-				{ label: 'Cài đặt', route: 'settings' }
+				{ label: this.$t('Jobs'), route: 'jobs' },
+				{ label: this.$t('Settings'), route: 'settings' }
 			].filter(tab => (tab.condition ? tab.condition() : true));
 
 			if (this.bench) {
@@ -186,12 +186,12 @@ export default {
 		benchActions() {
 			return [
 				{
-					label: 'Chỉnh sửa tiêu đề',
+					label: this.$t('Edit_Title'),
 					icon: 'edit',
 					onClick: () => (this.showEditTitleDialog = true)
 				},
 				{
-					label: 'Xem trong Desk',
+					label: this.$t('view_in_desk'),
 					icon: 'external-link',
 					condition: () => this.$account.user.user_type == 'System User',
 					onClick: () => {
@@ -202,7 +202,7 @@ export default {
 					}
 				},
 				{
-					label: 'Nhóm mạo danh',
+					label: this.$t('Impersonate_Team'),
 					icon: 'tool',
 					condition: () => this.$account.user.user_type == 'System User',
 					onClick: async () => {
@@ -210,22 +210,21 @@ export default {
 					}
 				},
 				{
-					label: 'Cập nhật tất cả các tổ chức',
+					label: this.$t('Update_All_Sites'),
 					icon: 'arrow-up-circle',
 					condition: () => this.bench.status == 'Active' && !this.bench.public,
 					onClick: async () => {
 						await this.$resources.updateAllSites.submit();
 						notify({
-							title: 'Lên lịch cập nhật tổ chức thành công',
-							message:
-								'Tất cả các tổ chức trên bench này sẽ được cập nhật lên phiên bản mới nhất',
+							title: this.$t('AlertSiteUpdate_content_5'),
+							message: this.$t('Bench_content_1'),
 							icon: 'check',
 							color: 'green'
 						});
 					}
 				},
 				{
-					label: 'Xóa Bench',
+					label: this.$t('Drop_Bench'),
 					icon: 'trash',
 					condition: () => !this.bench.public,
 					onClick: () => (this.showDropBenchDialog = true)

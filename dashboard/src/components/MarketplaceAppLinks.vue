@@ -1,15 +1,17 @@
 <template>
-	<Card title="Liên kết" subtitle="Sẽ được hiển thị trên marketplace">
+	<Card :title="$t('Links')" :subtitle="$t('MarketplaceAppLinks_content_1')">
 		<template #actions>
-			<Button icon-left="edit" @click="showEditLinksDialog = true">Edit</Button>
+			<Button icon-left="edit" @click="showEditLinksDialog = true">{{
+				$t('Edit')
+			}}</Button>
 		</template>
 		<Dialog
 			:options="{
-				title: 'Cập nhật liên kết',
+				title: $t('Update_Links'),
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Lưu thay đổi',
+						label: $t('save_changes'),
 						loading: $resources.updateAppLinks.loading,
 						onClick: () => $resources.updateAppLinks.submit()
 					}
@@ -19,15 +21,18 @@
 		>
 			<template v-slot:body-content>
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<FormControl label="Trang web" v-model="app.website" />
-					<FormControl label="Hỗ trợ" v-model="app.support" />
-					<FormControl label="Tài liệu" v-model="app.documentation" />
+					<FormControl :label="$t('Website')" v-model="app.website" />
+					<FormControl :label="$t('Support')" v-model="app.support" />
 					<FormControl
-						label="Chính sách quyền riêng tư"
+						:label="$t('Documentation')"
+						v-model="app.documentation"
+					/>
+					<FormControl
+						:label="$t('Privacy_Policy')"
 						v-model="app.privacy_policy"
 					/>
 					<FormControl
-						label="Điều khoản dịch vụ"
+						:label="$t('Terms_of_Service')"
 						v-model="app.terms_of_service"
 					/>
 				</div>
@@ -36,15 +41,18 @@
 			</template>
 		</Dialog>
 		<div class="divide-y" v-if="app">
-			<ListItem title="Trang web" :description="app.website || 'N/A'" />
-			<ListItem title="Hỗ trợ" :description="app.support || 'N/A'" />
-			<ListItem title="Tài liệu" :description="app.documentation || 'N/A'" />
+			<ListItem :title="$t('Website')" :description="app.website || 'N/A'" />
+			<ListItem :label="$t('Support')" :description="app.support || 'N/A'" />
 			<ListItem
-				title="Chính sách quyền riêng tư"
+				:label="$t('Documentation')"
+				:description="app.documentation || 'N/A'"
+			/>
+			<ListItem
+				:label="$t('Privacy_Policy')"
 				:description="app.privacy_policy || 'N/A'"
 			/>
 			<ListItem
-				title="Điều khoản dịch vụ"
+				:label="$t('Terms_of_Service')"
 				:description="app.terms_of_service || 'N/A'"
 			/>
 		</div>
@@ -81,7 +89,7 @@ export default {
 				onSuccess() {
 					this.showEditLinksDialog = false;
 					notify({
-						title: 'Liên kết đã được cập nhật!',
+						title: this.$t('MarketplaceAppLinks_content_2'),
 						icon: 'check',
 						color: 'green'
 					});

@@ -156,11 +156,11 @@ export default {
 		return {
 			optionsEnterprise: [
 				{
-					label: 'Công ty',
+					label: this.$t('Company'),
 					value: 'Công ty'
 				},
 				{
-					label: 'Cá nhân',
+					label: this.$t('Individual'),
 					value: 'Cá nhân'
 				}
 			],

@@ -13,7 +13,9 @@
 				v-if="popular"
 				class="absolute -top-3 left-1/4 rounded-md bg-blue-500 px-2 py-1 text-center text-xs"
 			>
-				<h5 class="font-medium uppercase text-white">Phổ biến nhất</h5>
+				<h5 class="font-medium uppercase text-white">
+					{{ $t('Most_Popular') }}
+				</h5>
 			</div>
 
 			<input
@@ -26,19 +28,21 @@
 
 			<h4 class="flex justify-between text-xl font-semibold text-gray-900">
 				<div>
-					<span v-if="plan.is_free"> Free </span>
+					<span v-if="plan.is_free"> {{ $t('Free') }} </span>
 
 					<span v-else>
 						{{ $planTitle(plan) }}
 						<span class="text-base font-normal text-gray-600">
-							{{ plan.block_monthly === 1 ? '/năm' : '/tháng' }}
+							{{
+								plan.block_monthly === 1 ? `/${$t('year')}` : `/${$t('month')}`
+							}}
 						</span>
 					</span>
 				</div>
 				<div v-if="editable">
-					<Button icon-left="edit" @click="e => $emit('beginEdit', e)"
-						>Chỉnh sửa</Button
-					>
+					<Button icon-left="edit" @click="e => $emit('beginEdit', e)">{{
+						$t('Edit')
+					}}</Button>
 				</div>
 			</h4>
 			<!--<h4

@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<CardWithDetails
-			title="Triển khai"
+			:title="$t('Deploys')"
 			:subtitle="
 				candidates.length
-					? 'Triển khai trên bench của bạn'
-					: 'Không có triển khai trên bench của bạn'
+					? $t('BenchDeploys_content_1')
+					: $t('BenchDeploys_content_2')
 			"
 			:show-details="selectedCandidate"
 		>
@@ -22,7 +22,7 @@
 					:to="`/benches/${benchName}/deploys/${candidate.name}`"
 				>
 					<ListItem
-						:title="`Triển khai trên ${formatDate(
+						:title="`${$t('Deploy_on')} ${formatDate(
 							candidate.creation,
 							'DATETIME_SHORT'
 						)}`"
@@ -53,7 +53,7 @@
 					:showDetails="selectedCandidate"
 					:loading="$resources.selectedCandidate.loading"
 					:steps="getSteps(selectedCandidate)"
-					title="Log xây dựng"
+					:title="$t('Build_Log')"
 					:subtitle="subtitle"
 				/>
 			</template>
@@ -149,10 +149,12 @@ export default {
 			let bench = this.bench;
 			let jobs = candidate.jobs.map(job => {
 				return {
-					name: `Deploy ${job.bench}`,
+					name: `${this.$t('Deploy')} ${job.bench}`,
 					output:
 						job.status == 'Success'
-							? `Triển khai hoàn thành trong ${job.duration.split('.')[0]}`
+							? `${this.$t('BenchDeploys_content_3')} ${
+									job.duration.split('.')[0]
+							  }`
 							: null,
 					status: job.status,
 					completed: job.status == 'Success',
@@ -165,7 +167,7 @@ export default {
 									props: { to: `/benches/${bench?.name}/jobs/${job.name}` },
 									class: 'text-sm'
 								},
-								'Log công việc →'
+								`${this.$t('Job_Log')} →`
 							);
 						}
 					}
@@ -195,19 +197,19 @@ export default {
 				let duration = this.$formatDuration(
 					this.selectedCandidate.build_duration
 				);
-				return `Hoàn thành lúc ${when} trong ${duration}`;
+				return `${this.$t('Completed')} ${when} ${this.$t('in')} ${duration}`;
 			} else if (this.selectedCandidate?.status === 'Running') {
 				const when = this.formatDate(
 					this.selectedCandidate.build_start,
 					'relative'
 				);
-				return `Bắt đầu ${when}`;
+				return `${this.$t('Started')} ${when}`;
 			} else if (this.selectedCandidate?.status === 'Failure') {
 				const when = this.formatDate(
 					this.selectedCandidate.build_end,
 					'relative'
 				);
-				return `Thất bại ${when}`;
+				return `${this.$t('Failed')} ${when}`;
 			}
 		},
 		candidates() {

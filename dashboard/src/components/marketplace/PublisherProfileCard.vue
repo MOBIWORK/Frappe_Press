@@ -2,35 +2,35 @@
 	<div>
 		<Card
 			v-if="profileData && profileData.profile_created"
-			title="Hồ sơ nhà xuất bản"
-			subtitle="Hiển thị trên tổ chức marketplace"
+			:title="$t('Publisher_Profile')"
+			:subtitle="$t('PublisherProfileCard_content_1')"
 		>
 			<div class="divide-y-2">
 				<ListItem
-					title="Tên hiển thị"
-					:description="displayName || 'Chưa đặt'"
+					:title="$t('Display_Name')"
+					:description="displayName || $t('not_set')"
 				/>
 				<ListItem
-					title="Email liên hệ"
-					:description="contactEmail || 'Chưa đặt'"
+					:title="$t('Contact_Email')"
+					:description="contactEmail || $t('not_set')"
 				/>
-				<ListItem title="Website" :description="website || 'Chưa đặt'" />
+				<ListItem title="Website" :description="website || $t('not_set')" />
 			</div>
 
 			<template #actions>
-				<Button icon-left="edit" @click="showEditProfileDialog = true"
-					>Chỉnh sửa</Button
-				>
+				<Button icon-left="edit" @click="showEditProfileDialog = true">{{
+					$t('Edit')
+				}}</Button>
 			</template>
 		</Card>
 
 		<Dialog
 			:options="{
-				title: 'Chỉnh sửa hồ sơ nhà xuất bản',
+				title: $t('PublisherProfileCard_content_2'),
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Lưu thay đổi',
+						label: $t('save_changes'),
 						loading: $resources.updatePublisherProfile.loading,
 						onClick: () => $resources.updatePublisherProfile.submit()
 					}
@@ -40,9 +40,9 @@
 		>
 			<template v-slot:body-content>
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<FormControl label="Tên hiển thị" v-model="displayName" />
+					<FormControl :label="$t('Display_Name')" v-model="displayName" />
 					<FormControl
-						label="Email liên hệ"
+						:label="$t('Contact_Email')"
 						type="email"
 						v-model="contactEmail"
 					/>
@@ -61,7 +61,7 @@
 <script>
 export default {
 	props: ['profileData', 'showEditDialog'],
-	emits: ['profileUpdated'],
+	emits: ['profileUpdated', 'update:showEditDialog'],
 	data() {
 		return {
 			showEditProfileDialog: false,
@@ -83,7 +83,7 @@ export default {
 				},
 				validate() {
 					if (!this.displayName) {
-						return 'Yêu cầu có tên hiển thị.';
+						return this.$t('PublisherProfileCard_content_3');
 					}
 				},
 				onSuccess() {
@@ -99,6 +99,11 @@ export default {
 				this.displayName = data.profile_info.display_name;
 				this.contactEmail = data.profile_info.contact_email;
 				this.website = data.profile_info.website;
+			}
+		},
+		showEditProfileDialog(value) {
+			if (!value) {
+				this.$emit('update:showEditDialog', false);
 			}
 		},
 		showEditDialog(value) {

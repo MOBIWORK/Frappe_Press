@@ -1,7 +1,7 @@
 <template>
 	<WizardCard v-if="options">
 		<div class="mb-6 text-center">
-			<h1 class="text-2xl font-bold">Tạo máy chủ mới</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Create_a_new_server') }}</h1>
 		</div>
 		<Steps :steps="steps">
 			<template
@@ -46,13 +46,13 @@
 							for="region-consent"
 							class="ml-1 text-sm font-semibold text-gray-900"
 						>
-							Tôi đã đọc và đồng ý với
+							{{ $t('NewServer_content_1') }}
 							<Link
 								class="border-none"
 								href="/thoa-thuan-su-dung-dich-vu"
 								target="_blank"
 								><span class="text-blue-500 hover:text-blue-700"
-									>Điều khoản dịch vụ
+									>{{ $t('NewServer_content_2') }}
 								</span></Link
 							>.
 						</label>
@@ -61,7 +61,7 @@
 					<ErrorMessage class="mb-4" :message="$resources.newServer.error" />
 
 					<div class="flex justify-between">
-						<Button v-if="hasPrevious" @click="previous"> Back </Button>
+						<Button v-if="hasPrevious" @click="previous"> {{ $t('Back') }} </Button>
 						<Button
 							v-if="hasNext"
 							class="ml-auto"
@@ -69,7 +69,7 @@
 							@click="nextStep(activeStep, next)"
 							:class="{ 'mt-2': hasPrevious }"
 						>
-							Tiếp theo
+							{{ $t('Next') }}
 						</Button>
 						<Button
 							v-show="!hasNext"
@@ -78,7 +78,7 @@
 							@click="$resources.newServer.submit()"
 							:loading="$resources.newServer.loading"
 						>
-							Tạo Máy chủ
+							{{ $t('Create_Servers') }}
 						</Button>
 					</div>
 				</div>
@@ -174,25 +174,25 @@ export default {
 						this.selectedRegion;
 
 					if (!this.selectedAppPlan) {
-						return 'Vui lòng chọn một gói cho máy chủ ứng dụng';
+						return this.$t('NewServer_content_3');
 					}
 
 					if (!this.selectedDBPlan) {
-						return 'Vui lòng chọn một gói cho máy chủ database';
+						return this.$t('NewServer_content_4');
 					}
 
 					if (!this.selectedRegion) {
-						return 'Vui lòng chọn khu vực';
+						return this.$t('NewServer_content_5');
 					}
 
 					if (!this.agreedToRegionConsent) {
 						document.getElementById('region-consent').focus();
 
-						return 'Vui lòng đồng ý với điều kiện trên để tạo máy chủ';
+						return this.$t('NewServer_content_6');
 					}
 
 					if (!canCreate) {
-						return 'Không thể tạo máy chủ';
+						return this.$t('NewServer_content_7');
 					}
 				}
 			};

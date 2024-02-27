@@ -1,8 +1,8 @@
 <template>
 	<CardWithDetails
 		v-if="reviewStages"
-		title="Xem xét các bước"
-		subtitle="Hoàn thành tất cả các bước trước khi gửi đề xuất để xem xét"
+		:title="$t('Review_Steps')"
+		:subtitle="$t('MarketplaceAppReviewStages_content_1')"
 	>
 		<ListItem
 			v-for="step in steps"
@@ -17,7 +17,7 @@
 		</ListItem>
 		<template #actions>
 			<Button v-if="showButton()" @click="$resources.startReview.submit()">
-				Sẵn sàng để xem xét
+				{{ $t('Ready_for_Review') }}
 			</Button>
 		</template>
 		<template #details>
@@ -25,14 +25,14 @@
 				<div class="h-full px-6 py-5">
 					<div class="flex justify-between">
 						<div>
-							<h2 class="text-xl font-semibold">Xem xét giao tiếp</h2>
+							<h2 class="text-xl font-semibold">{{ $t('Review_Communication') }}</h2>
 							<p class="mt-1.5 text-base text-gray-600">
-								Trò chuyện với nhà phát triển được phân công để xem xét
+								{{ $t('MarketplaceAppReviewStages_content_2') }}
 							</p>
 						</div>
 
 						<div>
-							<Button @click="showReplyDialog = true"> Trả lời </Button>
+							<Button @click="showReplyDialog = true"> {{ $t('Reply') }} </Button>
 						</div>
 					</div>
 					<div class="mt-4 h-full overflow-auto py-5">
@@ -65,10 +65,10 @@
 	<Dialog
 		v-model="showReplyDialog"
 		:options="{
-			title: 'Reply',
+			title: $t('Reply'),
 			actions: [
 				{
-					label: 'Gửi',
+					label: $t('Send'),
 					variant: 'solid',
 					onClick: () => $resources.addReply.submit()
 				}
@@ -141,8 +141,8 @@ export default {
 				onSuccess() {
 					this.showReplyDialog = false;
 					notify({
-						title: 'Trả lời đang Chờ',
-						message: 'Trả lời tin nhắn đã được đưa vào hàng đợi để gửi đi',
+						title: this.$t('Reply_Queued'),
+						message: this.$t('MarketplaceAppReviewStages_content_3'),
 						icon: 'check',
 						color: 'green'
 					});
@@ -158,24 +158,23 @@ export default {
 			return [
 				{
 					key: 'logo',
-					title: 'Thêm logo',
-					description: 'Đảm bảo rằng nó có kích thước ít nhất là 300x300'
+					title: this.$t('Add_a_Logo'),
+					description: this.$t('MarketplaceAppReviewStages_content_4')
 				},
 				{
 					key: 'description',
-					title: 'Thêm mô tả',
-					description: 'Thêm mô tả ngắn và mô tả dài cho ứng dụng của bạn'
+					title: this.$t('Add_Description'),
+					description: this.$t('MarketplaceAppReviewStages_content_5')
 				},
 				{
 					key: 'links',
-					title: 'Thêm liên kết',
-					description:
-						'Hãy chắc chắn bạn đã thêm tất cả các liên kết cho ứng dụng của bạn'
+					title: this.$t('Add_Links'),
+					description: this.$t('MarketplaceAppReviewStages_content_6')
 				},
 				{
 					key: 'publish',
-					title: 'Xuất bản một phiên bản',
-					description: 'Xuất bản phiên bản đầu tiên của bạn từ tab Phiên bản'
+					title: this.$t('Publish_a_Release'),
+					description: this.$t('MarketplaceAppReviewStages_content_7')
 				}
 			];
 		},

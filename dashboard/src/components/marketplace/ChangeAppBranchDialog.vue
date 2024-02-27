@@ -2,10 +2,10 @@
 	<Dialog
 		v-if="source"
 		:options="{
-			title: `Thay đổi nhánh cho ${app.title}`,
+			title: `${$t('ChangeAppBranchDialog_content_1')} ${app.title}`,
 			actions: [
 				{
-					label: 'Thay đổi nhánh',
+					label: $t('Select_Branch'),
 					variant: 'solid',
 					loading: $resources.changeBranch.loading,
 					onClick: () => $resources.changeBranch.submit()
@@ -57,7 +57,7 @@ export default {
 				},
 				validate() {
 					if (this.selectedBranch == this.app.branch) {
-						return 'Vui lòng chọn một nhánh khác';
+						return this.$t('ChangeAppBranchDialog_content_2');
 					}
 				}
 			};

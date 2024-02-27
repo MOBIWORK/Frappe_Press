@@ -1,32 +1,27 @@
 <template>
-	<Alert title="Cập nhật có sẵn" v-if="show">
+	<Alert :title="$t('Update_Available')" v-if="show">
 		<span>
-			Một bản cập nhật mới đã sẵn có cho tổ chức của bạn. Bạn có muốn cập nhật
-			tổ chức của mình ngay bây giờ không?
+			{{ $t('AlertSiteUpdate_content_1') }}
 		</span>
 		<template #actions>
 			<Tooltip
-				:text="
-					!permissions.update
-						? `Bạn không có đủ quyền để thực hiện hành động này`
-						: ''
-				"
+				:text="!permissions.update ? $t('SiteOverviewPlan_content_3') : ''"
 			>
 				<Button
 					:disabled="!permissions.update"
 					variant="solid"
 					@click="showUpdatesDialog = true"
 				>
-					Hiện thị cập nhật
+					{{ $t('Show_updates') }}
 				</Button>
 			</Tooltip>
 		</template>
 		<Dialog
 			:options="{
-				title: 'Có cập nhật mới',
+				title: $t('Updates_available'),
 				actions: [
 					{
-						label: 'Cập nhật ngay',
+						label: $t('Update_Now'),
 						variant: 'solid',
 						onClick: () => $resources.scheduleUpdate.fetch()
 					}
@@ -45,7 +40,7 @@
 						v-model="wantToSkipFailingPatches"
 					/>
 					<label for="skip-failing" class="ml-1 text-sm text-gray-900">
-						Bỏ qua các bản vá nếu có lỗi?
+						{{ $t('AlertSiteUpdate_content_2') }}
 					</label>
 				</div>
 
@@ -58,10 +53,10 @@
 						v-model="wantToSkipBackups"
 					/>
 					<label for="skip-backup" class="ml-1 text-sm text-gray-900">
-						Cập nhật mà không sao lưu tổ chức?
+						{{ $t('AlertSiteUpdate_content_3') }}
 					</label>
 					<div class="mt-1 text-sm text-red-600" v-if="wantToSkipBackups">
-						Trong trường hợp thất bại, bạn sẽ không thể khôi phục lại tổ chức.
+						{{ $t('AlertSiteUpdate_content_4') }}
 					</div>
 				</div>
 				<ErrorMessage class="mt-1" :message="$resources.scheduleUpdate.error" />
@@ -115,7 +110,7 @@ export default {
 				onSuccess() {
 					this.showUpdatesDialog = false;
 					notify({
-						title: 'Cập nhật tổ chức đã được đặt lịch thành công',
+						title: this.$t('AlertSiteUpdate_content_5'),
 						icon: 'check',
 						color: 'green'
 					});

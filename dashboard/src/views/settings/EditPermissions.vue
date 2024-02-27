@@ -1,8 +1,8 @@
 <template>
 	<Dialog
 		:options="{
-			title: `Chỉnh sửa quyền cho ${
-				type === 'group' ? 'nhóm' : 'thành viên'
+			title: `${$t('EditPermissions_content_1')} ${
+				type === 'group' ? $t('group') : $t('member')
 			} ${name}`,
 			size: '3xl'
 		}"
@@ -16,16 +16,16 @@
 		<template v-slot:body-content>
 			<Input
 				class="mb-2"
-				placeholder="Tìm kiếm"
+				:placeholder="$t('Search')"
 				v-on:input="e => updateSearchTerm(e)"
 			/>
 			<LoadingText v-if="$resources.options.loading" />
 			<div v-else class="flex max-h-96 flex-col overflow-auto">
 				<div v-if="options.length === 0" class="mt-4 text-center">
 					<span class="text-gray-500">
-						Không có tùy chọn nào để thêm quyền, hãy tạo một số tổ chức!
+						{{ $t('EditPermissions_content_2') }}
 						<router-link :to="'/sites/new'" class="text-gray-900">
-							Nhấp vào đây
+							{{ $t('Click_here') }}
 						</router-link>
 					</span>
 				</div>
@@ -43,7 +43,7 @@
 					<Input
 						class="pt-4"
 						type="checkbox"
-						label="Chọn tất cả"
+						:label="$t('Select_All')"
 						@change="val => toggleSelectAll(option, index, val)"
 					/>
 					<div class="grid grid-cols-4 gap-4 py-4">
@@ -66,7 +66,7 @@
 				@click="$resources.updatePermissions.submit()"
 				:disabled="options.length === 0"
 			>
-				Lưu
+				{{ $t('Save') }}
 			</Button>
 		</template>
 	</Dialog>
@@ -113,7 +113,7 @@ export default {
 				},
 				onSuccess() {
 					notify({
-						title: 'Quyền đã được cập nhật',
+						title: this.$t('Permissions_Updated'),
 						color: 'green',
 						icon: 'check'
 					});

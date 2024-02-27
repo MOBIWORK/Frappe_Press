@@ -1,17 +1,17 @@
 <template>
 	<div class="px-4 py-4 text-base sm:px-8">
 		<Button v-if="$resources.opionsForQuickInstall" :loading="true"
-			>Đang tải</Button
+			>{{ $t('Loading') }}</Button
 		>
 		<div v-else>
 			<h1 class="mb-4 text-xl font-semibold">
-				Cài đặt ứng dụng: {{ options ? options.title : '' }}
+				{{ $t('Install_App') }}: {{ options ? options.title : '' }}
 			</h1>
 
 			<ErrorMessage :message="$resources.optionsForQuickInstall.error" />
 
 			<div v-if="options" class="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
-				<Card title="Tổ chức" subtitle="Chọn một tổ chức để cài đặt">
+				<Card :title="$t('Sites')" :subtitle="$t('Select_a_site_to_install')">
 					<ul v-if="options.sites?.length">
 						<li
 							v-for="site in options.sites"
@@ -23,21 +23,21 @@
 							<Button
 								@click="installAppOnSite(site)"
 								:loading="$resources.installAppOnSite.loading"
-								>Install</Button
+								>{{ $t('Install') }}</Button
 							>
 						</li>
 					</ul>
 
 					<div v-else>
-						<p class="text-sm text-gray-700">Không có tổ chức nào để cài đặt</p>
+						<p class="text-sm text-gray-700">{{ $t('No_site_available_for_install') }}</p>
 					</div>
 
 					<template v-slot:actions>
-						<Button variant="solid" route="/sites/new">Tổ chức mới</Button>
+						<Button variant="solid" route="/sites/new">{{ $t('New_Site') }}</Button>
 					</template>
 				</Card>
 
-				<Card title="Private Benches" subtitle="Select a bench to install">
+				<Card :title="$t('Private_Benches')" :subtitle="$t('Select_a_bench_to_install')">
 					<ul v-if="options.release_groups?.length" class="space-y-3">
 						<li
 							v-for="bench in options.release_groups"
@@ -49,18 +49,18 @@
 							<Button
 								@click="addAppToBench(bench)"
 								:loading="$resources.addAppToBench.loading"
-								>Add</Button
+								>{{ $t("Add") }}</Button
 							>
 						</li>
 					</ul>
 
 					<div v-else>
 						<p class="text-sm text-gray-700">
-							Không có bench có sẵn để cài đặt
+							{{ $t('No_benches_available_for_install') }}
 						</p>
 					</div>
 					<template v-slot:actions>
-						<Button variant="solid" route="/benches/new">Tạo Bench mới</Button>
+						<Button variant="solid" route="/benches/new">{{ $t('New_Bench') }}</Button>
 					</template>
 				</Card>
 			</div>
@@ -69,7 +69,7 @@
 		<Dialog
 			v-model="showPlanSelectionDialog"
 			:options="{
-				title: 'Select app plan',
+				title: $t('Select_app_plan'),
 				size: 'xl'
 			}"
 		>
@@ -87,7 +87,7 @@
 					variant="solid"
 					:loading="$resources.installAppOnSite.loading"
 					@click="installAppOnSite(selectedSite)"
-					>Proceed</Button
+					>{{ $t('Proceed') }}</Button
 				>
 			</template>
 		</Dialog>
@@ -127,7 +127,7 @@ export default {
 				url: 'press.api.bench.add_app',
 				onSuccess() {
 					notify({
-						title: 'Ứng dụng đã được thêm thành công!',
+						title: this.$t('InstallMarketplaceApp_content_1'),
 						icon: 'check',
 						color: 'green'
 					});
@@ -141,12 +141,12 @@ export default {
 				url: 'press.api.site.install_app',
 				validate() {
 					if (this.showPlanSelectionDialog && !this.selectedPlan) {
-						return 'Please select a plan to continue';
+						return this.$t('Please_select_a_plan_to_continue');
 					}
 				},
 				onSuccess() {
 					notify({
-						title: 'Ứng dụng đã được cài đặt thành công!',
+						title: this.$t('InstallMarketplaceApp_content_2'),
 						icon: 'check',
 						color: 'green'
 					});

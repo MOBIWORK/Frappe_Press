@@ -1,22 +1,19 @@
 <template>
 	<div class="space-y-8">
 		<Table
-			:columns="[
-				{ label: 'Tên tổ chức', name: 'name', width: 2 },
-				{ label: 'Trạng thái', name: 'status' },
-				{ label: 'Khu vực', name: 'region' },
-				{ label: 'Thẻ', name: 'tags' },
-				{ label: 'Gói', name: 'plan' },
-				{ label: '', name: 'actions', width: 0.5 }
-			]"
+			:columns="getHeaderTable()"
 			:rows="versions"
 			v-slot="{ rows, columns }"
 		>
-			<TableHeader v-if="rows.length !== 0" class="mb-4 hidden sm:grid" />
+			<TableHeaderCustom
+				:columns="getHeaderTable()"
+				v-if="rows.length !== 0"
+				class="mb-4 hidden sm:grid"
+			/>
 			<div class="flex items-center justify-center">
 				<LoadingText class="mt-8" v-if="$resources.versions.loading" />
 				<div v-else-if="rows.length === 0" class="mt-8">
-					<div class="text-base text-gray-700">Không có tổ chức</div>
+					<div class="text-base text-gray-700">{{ $t('no_sites') }}</div>
 				</div>
 			</div>
 			<div
@@ -31,7 +28,7 @@
 						class="cursor-default font-semibold text-gray-900"
 						:title="
 							group.deployed_on
-								? 'Deployed on ' +
+								? `${$t('Deployed_on')} ` +
 								  formatDate(group.deployed_on, 'DATETIME_SHORT', true)
 								: ''
 						"
@@ -42,7 +39,7 @@
 					<div class="flex items-center space-x-2">
 						<Button
 							variant="ghost"
-							label="Hiển thị ứng dụng"
+							:label="$t('Show_Apps')"
 							@click="
 								$resources.versionApps.submit({ name: group.name });
 								showAppsDialog = true;
@@ -63,7 +60,7 @@
 					v-if="!group.sites?.length"
 					class="flex items-center justify-center border-b py-4.5"
 				>
-					<div class="text-base text-gray-600">Không có tổ chức</div>
+					<div class="text-base text-gray-600">{{ $t('no_sites') }}</div>
 				</div>
 				<TableRow
 					v-for="(row, index) in group.sites"
@@ -96,7 +93,7 @@
 							{{
 								row.plan
 									? `${$planTitle(row.plan)}${
-											row.plan.price_vnd > 0 ? '/tháng' : ''
+											row.plan.price_vnd > 0 ? `/${$t('month')}` : ''
 									  }`
 									: ''
 							}}
@@ -130,7 +127,7 @@
 		</Table>
 	</div>
 
-	<Dialog :options="{ title: 'Ứng dụng', size: 'xl' }" v-model="showAppsDialog">
+	<Dialog :options="{ title: $t('Apps'), size: 'xl' }" v-model="showAppsDialog">
 		<template #body-content>
 			<ListItem
 				class="mb-3 flex items-center rounded-md border px-4 py-3 shadow ring-1 ring-gray-300"
@@ -163,10 +160,10 @@
 
 	<Dialog
 		:options="{
-			title: 'Đăng nhập với tư cách Quản trị viên',
+			title: $t('login_as_administrator'),
 			actions: [
 				{
-					label: 'Tiếp tục',
+					label: $t('Proceed'),
 					variant: 'solid',
 					onClick: proceedWithLoginAsAdmin
 				}
@@ -176,7 +173,7 @@
 	>
 		<template #body-content>
 			<FormControl
-				label="Lý do đăng nhập với tư cách quản trị viên"
+				:label="$t('reason_for_logging_in_as_administrator')"
 				type="textarea"
 				v-model="reasonForAdminLogin"
 				required
@@ -185,24 +182,28 @@
 		</template>
 	</Dialog>
 
-	<Dialog :options="{ title: 'SSH Access' }" v-model="showSSHDialog">
+	<Dialog :options="{ title: $t('SSH_Access') }" v-model="showSSHDialog">
 		<template v-slot:body-content>
 			<div v-if="certificate" class="space-y-4" style="max-width: 29rem">
 				<div class="space-y-2">
-					<h4 class="text-base font-semibold text-gray-700">Step 1</h4>
+					<h4 class="text-base font-semibold text-gray-700">
+						{{ $t('BenchSites_content_1') }}
+					</h4>
 					<div class="space-y-1">
 						<p class="text-base">
-							Thực hiện lệnh shell sau để lưu chứng chỉ SSH cục bộ.
+							{{ $t('BenchSites_content_2') }}
 						</p>
 						<ClickToCopyField :textContent="certificateCommand" />
 					</div>
 				</div>
 
 				<div class="space-y-2">
-					<h4 class="text-base font-semibold text-gray-700">Step 2</h4>
+					<h4 class="text-base font-semibold text-gray-700">
+						{{ $t('BenchSites_content_3') }}
+					</h4>
 					<div class="space-y-1">
 						<p class="text-base">
-							Thực hiện lệnh shell sau để kết nối SSH vào bench của bạn.
+							{{ $t('BenchSites_content_4') }}
 						</p>
 						<ClickToCopyField :textContent="sshCommand" />
 					</div>
@@ -210,16 +211,14 @@
 			</div>
 			<div v-if="!certificate">
 				<p class="mb-4 text-base">
-					Bạn sẽ cần một chứng chỉ SSH để có quyền truy cập SSH vào bench của
-					bạn. Chứng chỉ này chỉ hoạt động với cặp khóa public-private của bạn
-					và sẽ có hiệu lực trong 6 giờ.
+					{{ $t('BenchSites_content_5') }}
 				</p>
 				<p class="text-base">
-					Vui lòng tham khảo tại
-					<a href="/docs/benches/ssh" class="underline"
-						>Tài liệu truy cập SSH</a
-					>
-					để biết thêm chi tiết.
+					{{ $t('BenchSites_content_6') }}
+					<a href="/docs/benches/ssh" class="underline">{{
+						$t('BenchSites_content_7')
+					}}</a>
+					{{ $t('BenchSites_content_8') }}
 				</p>
 			</div>
 		</template>
@@ -229,7 +228,7 @@
 				@click="$resources.generateCertificate.fetch()"
 				variant="solid"
 				class="w-full"
-				>Tạo chứng chỉ SSH</Button
+				>{{ $t('BenchSites_content_9') }}</Button
 			>
 		</template>
 		<ErrorMessage
@@ -246,20 +245,20 @@
 <script>
 import { loginAsAdmin } from '@/controllers/loginAsAdmin';
 import Table from '@/components/Table/Table.vue';
-import TableHeader from '@/components/Table/TableHeader.vue';
 import TableRow from '@/components/Table/TableRow.vue';
 import TableCell from '@/components/Table/TableCell.vue';
 import CommitTag from '@/components/utils/CommitTag.vue';
 import CodeServer from '@/views/spaces/CreateCodeServerDialog.vue';
 import ClickToCopyField from '@/components/ClickToCopyField.vue';
 import { notify } from '@/utils/toast';
+import TableHeaderCustom from '@/components/Table/TableHeaderCustom.vue';
 
 export default {
 	name: 'BenchSites',
 	props: ['bench', 'benchName'],
 	components: {
 		Table,
-		TableHeader,
+		TableHeaderCustom,
 		TableRow,
 		TableCell,
 		ClickToCopyField,
@@ -333,10 +332,10 @@ export default {
 				url: 'press.api.bench.update',
 				onSuccess() {
 					notify({
-						title: 'Lên lịch cập nhật tổ chức thành công',
-						message: `Tất cả các tổ chức trong ${
+						title: this.$t('AlertSiteUpdate_content_5'),
+						message: `${this.$t('BenchSites_content_10')} ${
 							this.versions[this.selectedVersionIndex]?.name
-						} sẽ được cập nhật lên phiên bản mới nhất`,
+						} ${this.$t('BenchSites_content_11')}`,
 						icon: 'check',
 						color: 'green'
 					});
@@ -353,6 +352,16 @@ export default {
 		}
 	},
 	methods: {
+		getHeaderTable() {
+			return [
+				{ label: this.$t('Site_Name'), name: 'name', width: 2 },
+				{ label: this.$t('Status'), name: 'status', width: 1 },
+				{ label: this.$t('Region'), name: 'region', width: 1 },
+				{ label: this.$t('Tags'), name: 'tags', width: 1 },
+				{ label: this.$t('Plan'), name: 'plan', width: 1 },
+				{ label: '', name: 'actions', width: 0.5 }
+			];
+		},
 		dropdownItems(site) {
 			return [
 				{
@@ -362,7 +371,7 @@ export default {
 					}
 				},
 				{
-					label: 'Đăng nhập với tư cách quản trị viên',
+					label: this.$t('login_as_administrator'),
 					onClick: () => {
 						if (this.$account.team.name === site.team) {
 							return this.$resources.loginAsAdmin.submit({
@@ -379,7 +388,7 @@ export default {
 		benchDropdownItems(i) {
 			return [
 				{
-					label: 'Xem trong Desk',
+					label: this.$t('view_in_desk'),
 					onClick: () => {
 						window.open(
 							`${window.location.protocol}//${window.location.host}/app/bench/${this.versions[i].name}`,
@@ -389,7 +398,7 @@ export default {
 					condition: () => this.$account.user.user_type === 'System User'
 				},
 				{
-					label: 'Truy cập SSH',
+					label: this.$t('SSH_Access'),
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.showSSHDialog = true;
@@ -401,7 +410,7 @@ export default {
 						this.permissions.sshAccess
 				},
 				{
-					label: 'Xem Logs',
+					label: this.$t('View_Logs'),
 					onClick: () => {
 						this.$router.push(
 							`/benches/${this.bench.name}/logs/${this.versions[i].name}/`
@@ -410,7 +419,7 @@ export default {
 					condition: () => this.versions[i].status === 'Active'
 				},
 				{
-					label: 'Cập nhật tất cả các tổ chức',
+					label: this.$t('Update_All_Sites'),
 					onClick: () => {
 						this.$resources.updateAllSites.submit({
 							name: this.versions[i]?.name
@@ -422,7 +431,7 @@ export default {
 						this.versions[i].sites.length > 0
 				},
 				{
-					label: 'Khởi động lại Bench',
+					label: this.$t('Restart_Bench'),
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.confirmRestart();
@@ -432,7 +441,7 @@ export default {
 						this.permissions.restartBench
 				},
 				{
-					label: 'Xây dựng Assets',
+					label: this.$t('Build_Assets'),
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.confirmRebuild();
@@ -442,7 +451,7 @@ export default {
 						this.permissions.rebuildBench
 				},
 				{
-					label: 'Tạo mã máy chủ',
+					label: this.$t('Create_Code_Server'),
 					onClick: () => {
 						this.selectedVersionIndex = i;
 						this.showCodeServerDialog = true;
@@ -455,7 +464,7 @@ export default {
 			this.errorMessage = '';
 
 			if (!this.reasonForAdminLogin.trim()) {
-				this.errorMessage = 'Yêu cầu một lý do';
+				this.errorMessage = this.$t('reason_is_required');
 				return;
 			}
 
@@ -468,11 +477,13 @@ export default {
 		},
 		confirmRestart() {
 			this.$confirm({
-				title: 'Khởi động lại bench',
+				title: this.$t('Restart_Bench'),
 				message: `
-					Lệnh <b>bench restart</b> sẽ được thực hiện trên bench của bạn. Điều này sẽ tạm dừng tất cả các web và workers nền. Bạn có chắc chắn muốn chạy lệnh này không?
+					${this.$t('BenchSites_content_12')} <b>bench restart</b> ${this.$t(
+					'BenchSites_content_13'
+				)}
 				`,
-				actionLabel: 'Khởi động lại bench',
+				actionLabel: this.$t('Restart_Bench'),
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.restartBench.submit();
@@ -482,11 +493,13 @@ export default {
 		},
 		confirmRebuild() {
 			this.$confirm({
-				title: 'Xây dựng Assets',
+				title: this.$t('Build_Assets'),
 				message: `
-					Lệnh <b>bench build</b> sẽ được thực hiện trên bench của bạn. Điều này sẽ tạo lại tất cả các asset tĩnh. Bạn có chắc chắn muốn chạy lệnh này không?
+				${this.$t('BenchSites_content_12')} <b>bench build</b> ${this.$t(
+					'BenchSites_content_14'
+				)}
 				`,
-				actionLabel: 'Xây dựng Assets',
+				actionLabel: this.$t('Build_Assets'),
 				actionColor: 'red',
 				action: closeDialog => {
 					this.$resources.rebuildBench.submit();

@@ -3,28 +3,10 @@
 		<div>
 			<div>
 				<div class="mb-4 w-36">
-					<FormControl
-						type="select"
-						:options="[
-							{
-								label: 'Tiếng Việt',
-								value: 'vi'
-							}
-						]"
-						size="md"
-						variant="outline"
-						placeholder="Placeholder"
-						:disabled="false"
-						label=""
-						modelValue="vi"
-					>
-						<template #prefix>
-							<img src="../../assets/icon_flag_vi.svg" alt="Flag Icon" />
-						</template>
-					</FormControl>
+					<SelectLanguage></SelectLanguage>
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
-					<div>Cập nhật thông tin hóa đơn</div>
+					<div>{{ $t('SetupAccountBilling_content_1') }}</div>
 				</div>
 				<div>
 					<p class="text-base" v-if="message">
@@ -48,7 +30,7 @@
 						:loading="$resources.updateBillingInformation.loading"
 						:onClick="() => $resources.updateBillingInformation.submit()"
 					>
-						Xác nhận thông tin
+						{{ $t('confirm_information') }}
 					</Button>
 				</div>
 			</div>
@@ -60,13 +42,16 @@
 import LoginBox from '@/views/partials/LoginBox.vue';
 import AddressForm from '@/components/AddressForm.vue';
 import { notify } from '@/utils/toast';
+import SelectLanguage from '../../components/global/SelectLanguage.vue';
+
 
 export default {
 	name: 'SetupAccountBilling',
 	props: ['message'],
 	components: {
 		AddressForm,
-		LoginBox
+		LoginBox,
+		SelectLanguage
 	},
 	data() {
 		return {
@@ -131,7 +116,7 @@ export default {
 					notify({
 						icon: 'check',
 						color: 'green',
-						title: 'Địa chỉ đã được cập nhật thành công!'
+						title: this.$t('SetupAccountBilling_content_2')
 					});
 
 					await this.$call('press.api.billing.setup_intent_success', {

@@ -5,7 +5,9 @@
 		</div>
 		<div class="space-y-6" v-if="$resources.versions.data">
 			<div v-if="!this.privateBench">
-				<h2 class="text-lg font-semibold">{{ $t('Select_a_Frappe_version') }}</h2>
+				<h2 class="text-lg font-semibold">
+					{{ $t('Select_a_Frappe_version') }}
+				</h2>
 				<p class="text-base text-gray-700">
 					{{ $t('NewSiteApps_content_1') }}
 				</p>
@@ -33,7 +35,9 @@
 			<div
 				v-if="publicApps.length > 1 || privateApps.length || featureApp.length"
 			>
-				<h2 class="text-lg font-semibold">{{ $t('Select_apps_to_install') }}</h2>
+				<h2 class="text-lg font-semibold">
+					{{ $t('Select_apps_to_install') }}
+				</h2>
 				<p class="text-base text-gray-700">
 					{{ $t('NewSiteApps_content_3') }}
 				</p>
@@ -131,7 +135,6 @@
 						}"
 					>
 						<h3 class="text-sm font-medium">{{ $t('All_applications') }}</h3>
-						<!-- <h3 class="sr-only">Ứng dụng từ thị trường</h3> -->
 						<div
 							class="-mx-2 mt-1 grid max-h-56 grid-cols-2 gap-4 overflow-y-auto px-2 py-2"
 						>

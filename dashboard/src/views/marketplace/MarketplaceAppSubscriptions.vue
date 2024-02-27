@@ -15,22 +15,22 @@ const appSubscriptions = createResource({
 </script>
 
 <template>
-	<Card title="Đăng ký">
+	<Card :title="$t('Subscriptions')">
 		<div v-if="appSubscriptions.data">
 			<div v-if="appSubscriptions.data.length === 0">
 				<p class="my-3 text-center text-base text-gray-600">
-					Ứng dụng của bạn không có người đăng ký đang hoạt động.
+					{{ $t('MarketplaceAppSubscriptions_content_1') }}
 				</p>
 			</div>
 			<div v-else class="divide-y">
 				<div
 					class="grid grid-cols-3 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-5"
 				>
-					<span class="col-span-2 md:col-span-1">Trang web</span>
-					<span>Trạng thái</span>
-					<span class="hidden md:inline">Giá</span>
-					<span class="hidden md:inline">Hoạt động cho</span>
-					<span class="hidden md:inline">Liên hệ</span>
+					<span class="col-span-2 md:col-span-1">{{ $t('Site') }}</span>
+					<span>{{ $t('Status') }}</span>
+					<span class="hidden md:inline">{{ $t('Price') }}</span>
+					<span class="hidden md:inline">{{ $t('Active_For') }}</span>
+					<span class="hidden md:inline">{{ $t('Contact') }}</span>
 				</div>
 
 				<div
@@ -49,12 +49,12 @@ const appSubscriptions = createResource({
 					</p>
 
 					<p class="hidden md:inline">
-						{{ $planTitle(subscription) || 'Free' }} /mo
+						{{ $planTitle(subscription) || 'Free' }} /{{ $t('month') }}
 					</p>
 
 					<p class="hidden text-gray-700 md:inline">
 						{{ subscription.active_days }}
-						{{ subscription.active_days == 1 ? 'day' : 'days' }}
+						{{ subscription.active_days == 1 ? $t('day') : $t('days') }}
 					</p>
 
 					<a
@@ -68,7 +68,7 @@ const appSubscriptions = createResource({
 		</div>
 
 		<div v-else-if="appSubscriptions.loading">
-			<Button :loading="true">Đang tải</Button>
+			<Button :loading="true">{{ $t('Loading') }}</Button>
 		</div>
 
 		<ErrorMessage :message="appSubscriptions.error" />

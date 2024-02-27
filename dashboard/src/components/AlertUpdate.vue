@@ -1,23 +1,20 @@
 <template>
 	<Alert :title="alertTitle" v-if="show">
-		<span v-if="deployInformation.deploy_in_progress"
-			>Quá trình triển khai cho bench này đang được tiến hành</span
-		>
+		<span v-if="deployInformation.deploy_in_progress">
+			{{ $t('AlertUpdate_content_1') }}
+		</span>
 		<span v-else-if="bench.status == 'Active'">
-			Có bản cập nhật mới cho bench của bạn. Bạn có muốn triển khai cập nhật
-			ngay bây giờ không?
+			{{ $t('AlertUpdate_content_2') }}
 		</span>
 		<span v-else>
-			Bench của bạn chưa được triển khai. Bạn có thể thêm nhiều ứng dụng khác
-			vào bench trước khi triển khai. Nếu bạn muốn triển khai ngay bây giờ, hãy
-			nhấp vào nút `Hiển thị cập nhật`.
+			{{ $t('AlertUpdate_content_3') }}
 		</span>
 		<template #actions>
 			<Button
 				v-if="deployInformation.deploy_in_progress"
 				variant="solid"
 				:route="`/benches/${bench.name}/deploys/${deployInformation.last_deploy.name}`"
-				>Xem tiến trình</Button
+				>{{ $t('View_Progress') }}</Button
 			>
 			<Button
 				v-else
@@ -29,7 +26,7 @@
 					}
 				"
 			>
-				Hiển thị cập nhật
+				{{ $t('Show_Updates') }}
 			</Button>
 		</template>
 
@@ -37,8 +34,8 @@
 			:options="{
 				title:
 					step == 'Apps'
-						? 'Chọn các ứng dụng bạn muốn cập nhật'
-						: 'Chọn các tổ chức bạn muốn cập nhật'
+						? $t('AlertUpdate_content_4')
+						: $t('AlertUpdate_content_5')
 			}"
 			v-model="showDeployDialog"
 		>
@@ -59,7 +56,7 @@
 			</template>
 			<template v-slot:actions>
 				<Button v-if="step == 'Sites'" class="w-full" @click="step = 'Apps'">
-					Quay lại
+					{{ $t('Back') }}
 				</Button>
 				<Button
 					v-if="step == 'Sites'"
@@ -68,10 +65,10 @@
 					@click="$resources.deploy.submit()"
 					:loading="$resources.deploy.loading"
 				>
-					{{ selectedSites.length > 0 ? 'Cập nhật' : 'Bỏ qua và Triển khai' }}
+					{{ selectedSites.length > 0 ? $t('Update') : $t('Skip_and_Deploy') }}
 				</Button>
 				<Button v-else variant="solid" class="w-full" @click="step = 'Sites'">
-					Tiếp theo
+					{{ $t('Next') }}
 				</Button>
 			</template>
 		</Dialog>
@@ -123,7 +120,7 @@ export default {
 						this.selectedApps.length === 0 &&
 						this.deployInformation.removed_apps.length === 0
 					) {
-						return 'Bạn phải chọn ít nhất 1 ứng dụng để tiếp tục cập nhật.';
+						return this.$t('AlertUpdate_content_6');
 					}
 				},
 				onSuccess(new_candidate_name) {
@@ -134,7 +131,7 @@ export default {
 						last_deploy: { name: new_candidate_name, status: 'Running' }
 					});
 					notify({
-						title: 'Cập nhật đã được lên lịch thành công',
+						title: this.$t('AlertUpdate_content_7'),
 						icon: 'check',
 						color: 'green'
 					});
@@ -155,7 +152,7 @@ export default {
 			return (
 				this.$resources.deploy.error ||
 				(this.bench.team !== $account.team.name
-					? 'Nhóm hiện tại không có đủ quyền hạn'
+					? this.$t('AlertUpdate_content_8')
 					: '')
 			);
 		},
@@ -164,7 +161,7 @@ export default {
 		},
 		alertTitle() {
 			if (this.deployInformation && this.deployInformation.deploy_in_progress) {
-				return 'Triển khai đang được tiến hành';
+				return this.$t('Deploy_in_Progress');
 			}
 			return this.bench.status == 'Active' ? 'Update Available' : 'Deploy';
 		}

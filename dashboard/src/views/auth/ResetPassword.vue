@@ -6,10 +6,9 @@
 					<div class="mb-10 flex justify-center">
 						<img src="../../assets/icon_tick.svg" alt="Key Icon" />
 					</div>
-					<div class="text-3xl">Cập nhật mật khẩu thành công</div>
+					<div class="text-3xl">{{ $t('ResetPassword_content_1') }}</div>
 					<div class="mt-2 text-lg font-[400] text-gray-600">
-						Mật khẩu mới đã được thay đổi, giờ bạn có thể đăng nhập vào tài
-						khoản của mình.
+						{{ $t('ResetPassword_content_2') }}
 					</div>
 				</div>
 				<router-link to="/login">
@@ -17,7 +16,7 @@
 						class="my-6 h-9 w-full bg-red-600 text-base font-[700] text-white hover:bg-red-700"
 						variant="solid"
 					>
-						Trở về trang đăng nhập
+						{{ $t('return_to_login_page') }}
 					</Button>
 				</router-link>
 			</div>
@@ -25,7 +24,7 @@
 		<div v-else>
 			<div v-if="!$resources.validateResetKey.loading && email">
 				<div class="my-4 text-3xl font-[500] text-gray-900">
-					<div>Đặt lại mật khẩu</div>
+					<div>{{ $t('Reset_Password') }}</div>
 				</div>
 				<form
 					class="flex flex-col"
@@ -49,7 +48,7 @@
 						</div>
 						<div class="relative">
 							<div class="mb-2 mt-5">
-								<label class="text-base" for="password">Mật khẩu</label>
+								<label class="text-base" for="password">{{ $t('Password') }}</label>
 							</div>
 							<FormControl
 								id="password"
@@ -94,7 +93,7 @@
 						:disabled="!password"
 						:loading="$resources.resetPassword.loading"
 					>
-						Đặt lại mật khẩu
+						{{ $t('Reset_Password') }}
 					</Button>
 				</form>
 			</div>
@@ -102,8 +101,7 @@
 				class="text-center"
 				v-else-if="!$resources.validateResetKey.loading && !email"
 			>
-				Khóa tài khoản <strong>{{ requestKey }}</strong> không hợp lệ hoặc hết
-				hạn. Quay trở lại
+				{{ $t('ResetPassword_content_3') }} <strong>{{ requestKey }}</strong> {{ $t('ResetPassword_content_4') }}
 				<router-link class="underline" to="/login"
 					><span class="font-[600] text-red-600 hover:text-red-700">{{
 						$t('login')

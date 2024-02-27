@@ -3,69 +3,51 @@
 		v-if="$resources.analytics.data"
 		class="grid grid-cols-1 gap-5 sm:grid-cols-2"
 	>
-		<Card title="Thu nhập">
+		<Card :title="$t('Earnings')">
 			<template #actions>
 				<a
 					class="text-base text-gray-700 hover:text-gray-800"
 					href="/support/tickets"
 					target="_blank"
 				>
-					Liên hệ hỗ trợ →
+					{{ $t('Contact_Support') }} →
 				</a>
 			</template>
 			<ListItem
-				title="Tổng thu nhập"
-				:subtitle="`Tổng thu nhập cho ${app.title}`"
+				:title="$t('Total_Earnings')"
+				:subtitle="`${$t('MarketplaceAppAnalytics_content_1')} ${app.title}`"
 			>
 				<template #actions>
 					<span class="text-base font-semibold text-green-500">{{
-						'VND' +
 						paymentAnalytics.total_payout.usd +
-						' + ' +
-						'$' +
-						paymentAnalytics.total_payout.usd +
-						' + ' +
-						'₹' +
-						paymentAnalytics.total_payout.inr
+						' VND'
 					}}</span>
 				</template>
 			</ListItem>
 			<ListItem
-				title="Đang chờ thanh toán"
-				subtitle="Thanh toán mà bạn vẫn chưa nhận từ MBW Cloud."
+				:title="$t('Pending_Payout')"
+				:subtitle="$t('MarketplaceAppAnalytics_content_2')"
 			>
 				<template #actions>
 					<span class="text-base font-semibold">{{
-						'VND' +
 						paymentAnalytics.total_payout.usd +
-						' + ' +
-						'$' +
-						paymentAnalytics.pending_payout.usd +
-						' + ' +
-						'₹' +
-						paymentAnalytics.pending_payout.inr
+						' VND'
 					}}</span>
 				</template>
 			</ListItem>
 			<ListItem
-				title="Hoa hồng"
-				subtitle="Tiền hoa hồng bắt đầu khi bạn vượt qua ngưỡng $500."
+				:title="$t('Commission')"
+				:subtitle="$t('MarketplaceAppAnalytics_content_3')"
 			>
 				<template #actions>
 					<span class="text-base font-semibold">{{
-						'VND' +
 						paymentAnalytics.total_payout.usd +
-						' + ' +
-						'$' +
-						paymentAnalytics.commission.usd +
-						' + ' +
-						'₹' +
-						paymentAnalytics.commission.inr
+						' VND'
 					}}</span>
 				</template>
 			</ListItem>
 		</Card>
-		<Card title="Cài đặt">
+		<Card :title="$t('Installs')">
 			<div class="divide-y" v-if="analytics">
 				<ListItem
 					v-for="stat in analytics"
@@ -77,15 +59,15 @@
 			</div>
 
 			<div class="py-10 text-center" v-if="$resources.analytics.loading">
-				<Button :loading="true">Đang tải</Button>
+				<Button :loading="true">{{ $t('Loading') }}</Button>
 			</div>
 		</Card>
 		<LineChart
-			title="Số lượt xem trang"
+			:title="$t('Pageviews')"
 			type="time"
 			:key="pageViewsData"
 			:data="pageViewsData"
-			unit="Lượt"
+			:unit="$t('views')"
 			:chartTheme="[$theme.colors.purple[500]]"
 			:loading="$resources.plausible_analytics.loading"
 			:error="$resources.plausible_analytics.error"
@@ -97,16 +79,16 @@
 					:href="`/marketplace/apps/${app.app}`"
 					target="_blank"
 				>
-					Xem trang từ Marketplace →
+					{{ $t('View_Marketplace_Page') }} →
 				</a>
 			</template>
 		</LineChart>
 		<LineChart
-			title="Số lượng khách truy cập"
+			:title="$t('Unique_Visitors')"
 			type="time"
 			:key="visitorsData"
 			:data="visitorsData"
-			unit="khách"
+			:unit="$t('visitors')"
 			:chartTheme="[$theme.colors.green[500]]"
 			:loading="$resources.plausible_analytics.loading"
 			:error="$resources.plausible_analytics.error"
@@ -184,21 +166,21 @@ export default {
 
 				return [
 					{
-						title: 'Tổng số lượt cài đặt',
+						title: this.$t('Total_Installs'),
 						value:
 							total_installs.toString() +
 							' ' +
 							(total_installs == 1 ? 'Site' : 'Sites')
 					},
 					{
-						title: 'Các tổ chức hoạt động với ứng dụng này',
+						title: this.$t('Active_Sites_with_this_App'),
 						value:
 							num_installs_active_sites.toString() +
 							' ' +
 							(num_installs_active_sites == 1 ? 'Site' : 'Sites')
 					},
 					{
-						title: 'Các bench làm việc hoạt động với ứng dụng này',
+						title: this.$t('Active_Benches_with_this_App'),
 						value:
 							num_installs_active_benches.toString() +
 							' ' +

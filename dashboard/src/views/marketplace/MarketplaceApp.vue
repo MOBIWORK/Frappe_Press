@@ -7,7 +7,7 @@
 				<Breadcrumbs
 					:items="[
 						{
-							label: 'Ứng dụng',
+							label: $t('Apps'),
 							route: {
 								name: 'MarketplaceApps',
 								params: { appName: app.name }
@@ -27,7 +27,7 @@
 							v-if="app.status === 'Published'"
 							variant="solid"
 							icon-left="external-link"
-							label="Xem trên Marketplace"
+							:label="$t('View_in_Marketplace')"
 							class="ml-2"
 							:link="`/${app.route}`"
 						/>
@@ -96,34 +96,34 @@ export default {
 		},
 		tabs() {
 			let tabsByStatus = {
-				Draft: ['Tổng quan', 'Bản phát hành', 'Đánh giá'],
-				'In Review': ['Tổng quan', 'Bản phát hành', 'Đánh giá'],
-				Rejected: ['Tổng quan', 'Bản phát hành', 'Đánh giá'],
+				Draft: ['Overview', 'Releases', 'Review'],
+				'In Review': ['Overview', 'Releases', 'Review'],
+				Rejected: ['Overview', 'Releases', 'Review'],
 				Published: [
-					'Tổng quan',
-					'Bản phát hành',
-					'Phân tich',
-					'Đăng ký',
-					'Định giá'
+					'Overview',
+					'Releases',
+					'Analytics',
+					'Subscriptions',
+					'Pricing'
 				],
 				'Attention Required': [
-					'Tổng quan',
-					'Bản phát hành',
-					'Đánh giá',
-					'Phân tich',
-					'Đăng ký',
-					'Định giá'
+					'Overview',
+					'Releases',
+					'Review',
+					'Analytics',
+					'Subscriptions',
+					'Pricing'
 				]
 			};
 			let tabRoute = subRoute =>
 				`/marketplace/apps/${this.appName}/${subRoute}`;
 			let tabs = [
-				{ label: 'Tổng quan', route: 'overview' },
-				{ label: 'Bản phát hành', route: 'releases' },
-				{ label: 'Đánh giá', route: 'review' },
-				{ label: 'Phân tích', route: 'analytics' },
-				{ label: 'Đăng ký', route: 'subscriptions' },
-				{ label: 'Định giá', route: 'pricing' }
+				{ label: 'Overview', route: 'overview' },
+				{ label: 'Releases', route: 'releases' },
+				{ label: 'Review', route: 'review' },
+				{ label: 'Analytics', route: 'analytics' },
+				{ label: 'Subscriptions', route: 'subscriptions' },
+				{ label: 'Pricing', route: 'pricing' }
 			];
 
 			if (this.app) {
@@ -135,6 +135,7 @@ export default {
 				return tabs.map(tab => {
 					return {
 						...tab,
+						label: this.$t(tab.label),
 						route: tabRoute(tab.route)
 					};
 				});

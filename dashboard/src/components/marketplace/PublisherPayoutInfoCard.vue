@@ -2,48 +2,48 @@
 	<div>
 		<Card
 			v-if="profileData && profileData.profile_created"
-			title="Ưu tiên thanh toán"
-			subtitle="Được sử dụng để thanh toán cho các ứng dụng cao cấp của bạn"
+			:title="$t('Payout_Preferences')"
+			:subtitle="$t('PublisherPayoutInfoCard_content_1')"
 		>
 			<div class="divide-y-2">
 				<ListItem
-					title="Phương thức thanh toán"
-					:description="payoutMethod || 'Chưa đặt'"
+					:title="$t('Payout_Method')"
+					:description="payoutMethod || $t('not_set')"
 				/>
 
 				<ListItem
 					v-if="payoutMethod == 'PayPal'"
 					title="PayPal ID"
-					:description="payPalId || 'Chưa đặt'"
+					:description="payPalId || $t('not_set')"
 				/>
 
 				<ListItem
 					v-if="payoutMethod == 'Bank Transfer'"
 					title="Account Holder Name"
-					:description="acName || 'Chưa đặt'"
+					:description="acName || $t('not_set')"
 				/>
 
 				<ListItem
 					v-if="payoutMethod == 'Bank Transfer'"
 					title="Account Number"
-					:description="acNumber || 'Chưa đặt'"
+					:description="acNumber || $t('not_set')"
 				/>
 			</div>
 
 			<template #actions>
 				<Button icon-left="edit" @click="showEditProfileDialog = true"
-					>Edit</Button
+					>{{ $t('Edit') }}</Button
 				>
 			</template>
 		</Card>
 
 		<Dialog
 			:options="{
-				title: 'Chỉnh sửa hồ sơ nhà xuất bản',
+				title: $t('Edit_Publisher_Profile'),
 				actions: [
 					{
 						variant: 'solid',
-						label: 'Lưu thay đổi',
+						label: $t('save_changes'),
 						loading: $resources.updatePublisherProfile.loading,
 						onClick: () => $resources.updatePublisherProfile.submit()
 					}
@@ -54,7 +54,7 @@
 			<template v-slot:body-content>
 				<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 					<FormControl
-						label="Phương thức thanh toán ưu tiên"
+						:label="$t('Preferred_Payment_Method')"
 						type="select"
 						:options="[
 							'MBW Cloud Credits',

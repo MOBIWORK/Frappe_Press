@@ -1,8 +1,8 @@
 <template>
 	<Card
 		class="md:col-span-2"
-		title="Ảnh chụp màn hình"
-		subtitle="Thêm ảnh chụp màn hình để hiển thị trên tổ chức marketplace."
+		:title="$t('Screenshots')"
+		:subtitle="$t('MarketplaceAppScreenshots_content_1')"
 	>
 		<div>
 			<div class="flex flex-row">
@@ -55,7 +55,7 @@ export default {
 		onAppImageAdd(file) {
 			this.app.screenshots.push({ image: file });
 			notify({
-				title: 'Ảnh chụp màn hình đã được thêm thành công!',
+				title: this.$t('MarketplaceAppScreenshots_content_2'),
 				icon: 'check',
 				color: 'green'
 			});

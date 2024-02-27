@@ -17,7 +17,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes(field.fieldname)"
-				:message="field.label + ' không được để trống'"
+				:message="field.label + $t('is_required')"
 			/>
 		</div>
 	</div>

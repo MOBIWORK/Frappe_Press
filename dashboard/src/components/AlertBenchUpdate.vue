@@ -1,30 +1,26 @@
 <template>
 	<Alert :title="alertTitle" v-if="show">
 		<span v-if="deployInformation.deploy_in_progress"
-			>Một quá trình triển khai cho bench này đang trong quá trình tiến
-			hành.</span
+			>{{ $t('AlertBenchUpdate_content_1') }}</span
 		>
 		<span v-else-if="bench.status == 'Active'">
-			Cập nhật mới đã sẵn có cho bench của bạn. Bạn có muốn triển khai cập nhật
-			ngay bây giờ không?
+			{{ $t('AlertBenchUpdate_content_2') }}
 		</span>
 		<span v-else>
-			Bench của bạn chưa được triển khai. Bạn có thể thêm nhiều ứng dụng khác
-			vào bench trước khi triển khai. Nếu bạn muốn triển khai ngay bây giờ, hãy
-			nhấp vào "Triển khai".
+			{{ $t('AlertBenchUpdate_content_3') }}
 		</span>
 		<template #actions>
 			<Button
 				v-if="deployInformation.deploy_in_progress"
 				variant="solid"
 				:route="`/benches/${bench.name}/deploys/${deployInformation.last_deploy.name}`"
-				>Xem tiến trình</Button
+				>{{ $t('View_Progress') }}</Button
 			>
 			<Tooltip
 				v-else
 				:text="
 					!permissions.update
-						? `Bạn không có đủ quyền để thực hiện hành động này`
+						? $t('SiteOverviewPlan_content_3')
 						: ''
 				"
 			>
@@ -33,13 +29,13 @@
 					:disabled="!permissions.update"
 					@click="showDeployDialog = true"
 				>
-					Hiển thị cập nhật
+					{{ $t('Show_Updates') }}
 				</Button>
 			</Tooltip>
 		</template>
 
 		<Dialog
-			:options="{ title: 'Chọn các ứng dụng mà bạn muốn cập nhật' }"
+			:options="{ title: $t('AlertBenchUpdate_content_4') }"
 			v-model="showDeployDialog"
 		>
 			<template v-slot:body-content>
@@ -58,7 +54,7 @@
 					:loading="$resources.deploy.loading"
 					v-if="this.bench.team === $account.team.name"
 				>
-					Triển khai
+					{{ $t('Deploy') }}
 				</Button>
 				<Button
 					class="w-full"
@@ -66,7 +62,7 @@
 					@click="showTeamSwitcher = true"
 					v-else
 				>
-					Chuyển nhóm
+					{{ $t('switch_team') }}
 				</Button>
 				<SwitchTeamDialog v-model="showTeamSwitcher" />
 			</template>
@@ -112,7 +108,7 @@ export default {
 						this.selectedApps.length === 0 &&
 						this.deployInformation.removed_apps.length === 0
 					) {
-						return 'Bạn phải chọn ít nhất 1 ứng dụng để tiếp tục với quá trình cập nhật.';
+						return this.$t('AlertUpdate_content_6');
 					}
 				},
 				onSuccess(candidate) {
@@ -143,7 +139,7 @@ export default {
 			return (
 				this.$resources.deploy.error ||
 				(this.bench.team !== $account.team.name
-					? 'Nhóm hiện tại không có đủ quyền.'
+					? this.$t('AlertUpdate_content_8')
 					: '')
 			);
 		},
@@ -152,7 +148,7 @@ export default {
 		},
 		alertTitle() {
 			if (this.deployInformation && this.deployInformation.deploy_in_progress) {
-				return 'Quá trình triển khai đang được thực hiện.';
+				return this.$t('Deploy_in_Progress');
 			}
 			return this.bench.status == 'Active' ? 'Update Available' : 'Deploy';
 		}

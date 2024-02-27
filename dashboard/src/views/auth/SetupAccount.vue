@@ -7,7 +7,7 @@
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div v-if="!isInvitation">{{ $t('set_up_your_account') }}</div>
-					<div v-else>Lời mời tham gia nhóm: {{ invitationToTeam }}</div>
+					<div v-else>{{ $t('SetupAccount_content_1') }}: {{ invitationToTeam }}</div>
 				</div>
 				<div class="mb-6">
 					<div class="text-base font-medium">
@@ -139,56 +139,29 @@
 							:fields="signupFields"
 							v-model="signupValues"
 						/>
-						<div v-if="this.$i18n.locale == 'vi'" class="mt-4 flex items-start">
+						<div class="mt-4 flex items-start">
 							<label class="text-base text-gray-900">
 								<FormControl
 									size="lg"
 									type="checkbox"
 									v-model="termsAccepted"
 								/>
-								Tôi đã đọc và đồng ý với
+								{{ $t('NewServer_content_1') }}
 								<Link
 									class="border-none"
 									href="/thoa-thuan-su-dung-dich-vu"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700"
-										>Điều khoản dịch vụ
+										>{{ $t('NewServer_content_2') }}
 									</span></Link
 								>
-								và
+								{{ $t('and') }}
 								<Link
 									class="border-none"
 									href="/chinh-sach-bao-mat-thong-tin"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700">
-										Chính sách quyền riêng tư
-									</span></Link
-								>
-							</label>
-						</div>
-						<div v-else class="mt-4 flex items-start">
-							<label class="text-base text-gray-900">
-								<FormControl
-									size="lg"
-									type="checkbox"
-									v-model="termsAccepted"
-								/>
-								I have read and agree to
-								<Link
-									class="border-none"
-									href="/thoa-thuan-su-dung-dich-vu"
-									target="_blank"
-									><span class="text-blue-500 hover:text-blue-700"
-										>The terms of service
-									</span></Link
-								>
-								and
-								<Link
-									class="border-none"
-									href="/chinh-sach-bao-mat-thong-tin"
-									target="_blank"
-									><span class="text-blue-500 hover:text-blue-700">
-										Privacy policy
+										{{ $t('Privacy_Policy') }}
 									</span></Link
 								>
 							</label>
@@ -208,24 +181,15 @@
 				class="text-center"
 				v-else-if="!$resources.validateRequestKey.loading && !email"
 			>
-				<p v-if="this.$i18n.locale == 'vi'">
-					Liên kết xác minh không hợp lệ hoặc đã hết hạn.
+					{{ $t('SetupAccount_content_2') }}
 					<Link to="/signup"
 						><span class="font-[600] text-red-600 hover:text-red-700"
-							>Đăng ký</span
+							>{{
+							$t('sign_up')
+						}}</span
 						></Link
 					>
-					một tài khoản mới.
-				</p>
-				<p v-else>
-					The verification link is invalid or has expired.
-					<Link to="/signup"
-						><span class="font-[600] text-red-600 hover:text-red-700">{{
-							$t('sign_up')
-						}}</span></Link
-					>
-					a new account.
-				</p>
+					{{ $t('SetupAccount_content_3') }}
 			</div>
 			<div v-else></div>
 		</div>
@@ -236,16 +200,8 @@
 						<img src="../../assets/icon_tick.svg" alt="Key Icon" />
 					</div>
 					<div class="text-3xl">{{ $t('registration_successful') }}</div>
-					<div
-						v-if="this.$i18n.locale == 'vi'"
-						class="mt-2 text-lg font-[400] text-gray-600"
-					>
-						Tài khoản của bạn đã được tạo thành công, đăng nhập để trải nghiệm
-						dịch vụ của chúng tôi.
-					</div>
-					<div v-else class="mt-2 text-lg font-[400] text-gray-600">
-						Your account has been successfully created. Log in to experience our
-						services.
+					<div	class="mt-2 text-lg font-[400] text-gray-600">
+						{{ $t('SetupAccount_content_4') }}
 					</div>
 				</div>
 				<router-link :to="dashboardRoute">

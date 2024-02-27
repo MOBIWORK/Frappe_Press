@@ -3,12 +3,12 @@
 		<header
 			class="sticky top-0 z-10 flex items-center justify-between border-b bg-white px-5 py-2.5"
 		>
-			<Breadcrumbs :items="[{ label: 'Ứng dụng', route: '/marketplace' }]">
+			<Breadcrumbs :items="[{ label: $t('Apps'), route: '/marketplace' }]">
 				<template #actions>
 					<Button
 						variant="solid"
 						icon-left="plus"
-						label="Thêm mới"
+						:label="$t('New')"
 						class="ml-2"
 						@click="
 							!$resources.appOptions.data
@@ -20,11 +20,11 @@
 				</template>
 			</Breadcrumbs>
 		</header>
-		<SectionHeader class="mx-5 mt-6" heading="Ứng dụng" />
+		<SectionHeader class="mx-5 mt-6" :heading="$t('Apps')" />
 
 		<Dialog
 			:options="{
-				title: 'Thêm ứng dụng vào marketplace',
+				title: $t('Add_App_to_Marketplace'),
 				size: 'xl'
 			}"
 			v-model="showAddAppDialog"
@@ -40,7 +40,7 @@
 					v-model="selectedApp"
 					:multiple="false"
 				/>
-				<p v-else class="text-base">Không có nguồn ứng dụng khả dụng.</p>
+				<p v-else class="text-base">{{ $t('MarketplaceApp_content_1') }}</p>
 
 				<ErrorMessage
 					class="mt-2"
@@ -48,8 +48,10 @@
 				/>
 
 				<p class="mt-4 text-base" @click="showAddAppDialog = false">
-					Không tìm thấy ứng dụng của bạn ở đây?
-					<Link :to="`/marketplace/apps/new`"> Thêm từ GitHub </Link>
+					{{ $t('MarketplaceApp_content_2') }}
+					<Link :to="`/marketplace/apps/new`">
+						{{ $t('Add_from_GitHub') }}
+					</Link>
 				</p>
 			</template>
 			<template #actions>
@@ -65,7 +67,7 @@
 						})
 					"
 				>
-					Thêm {{ selectedApp.app }}
+					{{ $t('Add') }} {{ selectedApp.app }}
 				</Button>
 			</template>
 		</Dialog>
@@ -84,22 +86,25 @@ export default {
 	name: 'Marketplace',
 	pageMeta() {
 		return {
-			title: 'Developer - MBW Cloud'
+			title: `${this.$t('Developer')} - MBW Cloud`
 		};
 	},
 	components: {
 		Tabs,
 		AppSourceSelector
 	},
-	data: () => ({
-		tabs: [
-			{ label: 'Ứng dụng của tôi', route: '/marketplace/apps' },
-			{ label: 'Hồ sơ nhà xuất bản', route: '/marketplace/publisher-profile' },
-			{ label: 'Tiền chi trả', route: '/marketplace/payouts' }
-		],
-		showAddAppDialog: false,
-		selectedApp: null
-	}),
+	data() {
+		return {
+			tabs: this.getLangTabs(),
+			showAddAppDialog: false,
+			selectedApp: null
+		};
+	},
+	watch: {
+		'$i18n.locale'() {
+			this.tabs = this.getLangTabs();
+		}
+	},
 	resources: {
 		appOptions() {
 			return {
@@ -119,6 +124,18 @@ export default {
 	computed: {
 		availableApps() {
 			return this.$resources.appOptions.data;
+		}
+	},
+	methods: {
+		getLangTabs() {
+			return [
+				{ label: this.$t('My_Apps'), route: '/marketplace/apps' },
+				{
+					label: this.$t('Publisher_Profile'),
+					route: '/marketplace/publisher-profile'
+				},
+				{ label: this.$t('Payouts'), route: '/marketplace/payouts' }
+			];
 		}
 	},
 	activated() {

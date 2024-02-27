@@ -17,22 +17,22 @@ const payouts = createResource({
 <template>
 	<Card
 		v-if="!props.payoutOrderName"
-		title="Tiền chi trả"
-		subtitle="Xem những gì bạn đã kiếm được"
+		:title="$t('Payouts')"
+		:subtitle="$t('MarketplacePayouts_content_1')"
 	>
-		<Button v-if="payouts.loading" :loading="true">Đang tải</Button>
+		<Button v-if="payouts.loading" :loading="true">{{ $t('Loading') }}</Button>
 
 		<div v-else-if="payouts.data && payouts.data.length > 0">
 			<div class="divide-y">
 				<div
 					class="grid grid-cols-4 items-center gap-x-8 py-4 text-base text-gray-600 md:grid-cols-6"
 				>
-					<span>Ngày đến hạn</span>
-					<span class="hidden md:inline">Phương thức thanh toán</span>
-					<span class="hidden md:inline">Trạng thái</span>
+					<span>{{ $t('Due_Date') }}</span>
+					<span class="hidden md:inline">{{ $t('Payment_Mode') }}</span>
+					<span class="hidden md:inline">{{ $t('Status') }}</span>
 					<!-- <span>Net INR</span>
 					<span>Net USD</span> -->
-					<span>Net VND</span>
+					<span>{{ $t('Net_VND') }}</span>
 					<span></span>
 				</div>
 
@@ -50,7 +50,7 @@ const payouts = createResource({
 							})
 						}}
 					</div>
-					<div v-else>Chưa đặt</div>
+					<div v-else>{{ $t('not_set') }}</div>
 
 					<div class="hidden md:inline">
 						{{ payout.mode_of_payment }}
@@ -63,11 +63,11 @@ const payouts = createResource({
 					<!-- <div>₹{{ round(payout.net_total_inr, 2) }}</div> -->
 					<!-- <div>${{ round(payout.net_total_usd, 2) }}</div> -->
 
-					<div>${{ round(payout.net_total_vnd, 0) }}</div>
+					<div>{{ round(payout.net_total_vnd, 0) }} VND</div>
 
 					<div>
 						<Button :route="`/marketplace/payouts/${payout.name}`"
-							>Xem chi tiết</Button
+							>{{ $t('view_details') }}</Button
 						>
 					</div>
 				</div>
@@ -76,14 +76,14 @@ const payouts = createResource({
 
 		<div v-if="payouts.data && payouts.data.length == 0">
 			<p class="my-3 text-center text-base text-gray-600">
-				Bạn chưa có khoản tiền chi trả nào.
+				{{ $t('MarketplacePayouts_content_2') }}
 			</p>
 		</div>
 		<ErrorMessage :message="payouts.error" />
 	</Card>
-	<Card v-else title="Chi tiết tiền chi trả">
+	<Card v-else :title="$t('MarketplacePayouts_content_3')">
 		<template #actions-left>
-			<Button route="/marketplace/payouts"> ← Trở lại </Button>
+			<Button route="/marketplace/payouts"> ← {{ $t('Back') }} </Button>
 		</template>
 		<MarketplacePayoutDetails :payoutOrderName="payoutOrderName" />
 	</Card>

@@ -24,7 +24,7 @@
 						<div>{{ $t('forgot_password') }}</div>
 					</div>
 					<div v-else-if="saasProduct">
-						Đăng nhập vào MBW Cloud để bắt đầu sử dụng
+						{{ $t('Auth_content_1') }}
 						<span class="font-semibold">{{ saasProduct.title }}</span>
 					</div>
 					<div v-else-if="isLogin">{{ $t('login') }}</div>
@@ -67,14 +67,7 @@
 					class="text-center text-lg font-[400] text-gray-600"
 					v-if="hasForgotPassword"
 				>
-					<p v-if="this.$i18n.locale == 'vi'">
-						Một liên kết đặt lại mật khẩu sẽ được gửi tới email của bạn. Nếu bạn
-						không nhận được email trong vòng vài phút, vui lòng thử lại.
-					</p>
-					<p v-else>
-						A password reset link will be sent to your email. If you don't
-						receive the email within a few minutes, please try again.
-					</p>
+					{{ $t('Auth_content_2') }}
 				</div>
 				<form class="flex flex-col" @submit.prevent="submitForm">
 					<template v-if="hasForgotPassword">
@@ -249,18 +242,10 @@
 						</h3>
 					</template>
 					<template #body-content>
-						<div
-							v-if="this.$i18n.locale == 'vi'"
-							class="text-left text-base text-gray-600"
-						>
-							Chúng tôi đã gửi một đường dẫn liên kết tới email
+						<div class="text-left text-base text-gray-600">
+							{{ $t('Auth_content_3') }}
 							<span class="text-gray-900">{{ email }}</span
-							>. Vui lòng kiểm tra hộp thư để thiết lập lại mật khẩu của bạn.
-						</div>
-						<div v-else class="text-left text-base text-gray-600">
-							We have sent a link to the email
-							<span class="text-gray-900">{{ email }}</span
-							>. Please check your inbox to reset your password.
+							>{{ $t('Auth_content_4') }}
 						</div>
 					</template>
 				</Dialog>
@@ -273,19 +258,11 @@
 					</template>
 					<template #body-content>
 						<div
-							v-if="this.$i18n.locale == 'vi'"
 							class="text-center text-base text-gray-600"
 						>
-							Chúng tôi đã gửi email tới
+							{{ $t('Auth_content_5') }}
 							<span class="text-gray-900">{{ email }}</span
-							>. Vui lòng nhấp vào liên kết nhận được để xác minh email và thiết
-							lập tài khoản của bạn.
-						</div>
-						<div v-else class="text-center text-base text-gray-600">
-							We have sent an email to
-							<span class="text-gray-900">{{ email }}</span
-							>. Please click on the link received to verify your email and set
-							up your account.
+							>{{ $t('Auth_content_6') }}
 						</div>
 					</template>
 				</Dialog>

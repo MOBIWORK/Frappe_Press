@@ -23,11 +23,11 @@ const submitReview = createResource({
 	url: 'press.api.marketplace.submit_user_review',
 	validate() {
 		if (!review.title) {
-			return 'Vui lòng thêm tiêu đề cho đánh giá của bạn';
+			return this.$t('ReviewMarketplaceApp_content_1');
 		}
 
 		if (!review.review) {
-			return 'Đánh giá không thể trống';
+			return this.$t('ReviewMarketplaceApp_content_2');
 		}
 	},
 	onSuccess() {
@@ -40,7 +40,7 @@ const submitReview = createResource({
 	<div class="px-4 py-4 text-base sm:px-8">
 		<div>
 			<h1 class="mb-4 text-xl font-semibold">
-				Đánh giá ứng dụng: {{ appTitle }}
+				{{ $t('Review_App') }}: {{ appTitle }}
 			</h1>
 		</div>
 
@@ -48,7 +48,7 @@ const submitReview = createResource({
 			<div>
 				<div class="mb-3">
 					<span class="mb-2 block text-sm leading-4 text-gray-700">
-						Xếp hạng
+						{{ $t('Rating') }}
 					</span>
 					<StarRatingInput v-model="review.rating" />
 				</div>
@@ -56,15 +56,15 @@ const submitReview = createResource({
 				<FormControl
 					class="mb-3"
 					v-model="review.title"
-					label="Tiêu đề"
-					placeholder="Tiêu đề đánh giá"
+					:label="$t('Title')"
+					:placeholder="$t('Review_Title')"
 				/>
 
 				<FormControl
 					v-model="review.review"
 					type="textarea"
-					label="Đánh giá sản phẩm này"
-					placeholder="Viết Đánh giá"
+					:label="$t('Review_this_product')"
+					:placeholder="$t('Write_Review')"
 				/>
 
 				<ErrorMessage class="mt-2" :message="submitReview.error" />
@@ -73,7 +73,7 @@ const submitReview = createResource({
 					:loading="submitReview.loading"
 					variant="solid"
 					@click="submitReview.submit({ ...review })"
-					>Gửi</Button
+					>{{ $t('Submit') }}</Button
 				>
 			</div>
 		</div>

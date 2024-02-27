@@ -1,16 +1,18 @@
 <template>
 	<WizardCard>
 		<div class="mb-6 text-center">
-			<h1 class="text-2xl font-bold">Thêm ứng dụng mới</h1>
-			<p class="text-base text-gray-700">Thêm ứng dụng vào marketplace</p>
+			<h1 class="text-2xl font-bold">{{ $t('Add_a_New_App') }}</h1>
+			<p class="text-base text-gray-700">
+				{{ $t('Add_an_app_to_marketplace') }}
+			</p>
 		</div>
 
 		<SelectAppFromGithub @onSelect="d => (app = d)" />
 
 		<div v-if="app">
-			<label class="mb-3 text-base" for="version-select"
-				>Phiên bản Frappe tương thích</label
-			>
+			<label class="mb-3 text-base" for="version-select">{{
+				$t('Compatible_Frappe_Version')
+			}}</label>
 			<select
 				id="version-select"
 				class="form-select mb-4 block"
@@ -28,7 +30,7 @@
 				@click="$resources.addApp.submit()"
 				variant="solid"
 				class="w-full"
-				>Thêm vào marketplace</Button
+				>{{ $t('Add_to_marketplace') }}</Button
 			>
 		</div>
 	</WizardCard>

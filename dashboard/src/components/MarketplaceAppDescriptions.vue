@@ -1,23 +1,23 @@
 <template>
 	<Card
 		class="md:col-span-2"
-		title="Mô tả ứng dụng"
-		subtitle="Thông tin chi tiết về ứng dụng của bạn"
+		:title="$t('App_Descriptions')"
+		:subtitle="$t('MarketplaceAppDescriptions_content_1')"
 	>
 		<div class="divide-y" v-if="app">
-			<ListItem title="Bản tóm tắt" :description="app.description">
+			<ListItem :title="$t('Summary')" :description="app.description">
 				<template #actions>
 					<Button icon-left="edit" @click="showEditSummaryDialog = true">
-						Chỉnh sửa
+						{{ $t('Edit') }}
 					</Button>
 				</template>
 			</ListItem>
 			<Dialog
 				:options="{
-					title: 'Cập nhật tóm tắt ứng dụng',
+					title: $t('Update_App_Summary'),
 					actions: [
 						{
-							label: 'Lưu thay đổi',
+							label: $t('save_changes'),
 							variant: 'solid',
 							loading: $resources.updateAppSummary.loading,
 							onClick: () => $resources.updateAppSummary.submit()
@@ -28,7 +28,7 @@
 			>
 				<template v-slot:body-content>
 					<FormControl
-						label="Tóm tắt ứng dụng"
+						:label="$t('Summary_of_the_app')"
 						type="textarea"
 						v-model="app.description"
 					/>
@@ -39,10 +39,10 @@
 				</template>
 			</Dialog>
 			<div class="py-3">
-				<ListItem title="Mô tả">
+				<ListItem :title="$t('description')">
 					<template #actions>
 						<Button icon-left="edit" @click="showEditDescriptionDialog = true">
-							Chỉnh sửa
+							{{ $t('Edit') }}
 						</Button>
 					</template>
 				</ListItem>
@@ -53,11 +53,11 @@
 				></div>
 				<Dialog
 					:options="{
-						title: 'Cập nhật mô tả ứng dụng',
+						title: $t('Update_App_Description'),
 						size: '5xl',
 						actions: [
 							{
-								label: 'Lưu thay đổi',
+								label: $t('save_changes'),
 								variant: 'solid',
 								loading: $resources.updateAppDescription.loading,
 								onClick: () => $resources.updateAppDescription.submit()
@@ -91,7 +91,7 @@
 				:loading="$resources.fetchReadme.loading"
 				@click="$resources.fetchReadme.submit()"
 			>
-				Tìm nạp Readme
+				{{ $t('Fetch_Readme') }}
 			</Button>
 		</template>
 	</Card>
@@ -122,7 +122,7 @@ export default {
 					summary: description
 				},
 				onSuccess() {
-					this.notifySuccess('Tóm tắt ứng dụng đã được cập nhật!');
+					this.notifySuccess(this.$t('MarketplaceAppDescriptions_content_2'));
 					this.showEditSummaryDialog = false;
 				}
 			};
@@ -136,7 +136,7 @@ export default {
 					description: long_description
 				},
 				onSuccess() {
-					this.notifySuccess('Mô tả ứng dụng đã được cập nhật!');
+					this.notifySuccess(this.$t('MarketplaceAppDescriptions_content_3'));
 					this.showEditDescriptionDialog = false;
 				}
 			};
@@ -147,8 +147,8 @@ export default {
 				params: { name: this.app.name },
 				onSuccess() {
 					notify({
-						title: 'Tìm nạp thành công Readme mới nhất.',
-						message: 'Mô tả chi tiết đã được cập nhật!',
+						title: this.$t('MarketplaceAppDescriptions_content_4'),
+						message: this.$t('MarketplaceAppDescriptions_content_5'),
 						icon: 'check',
 						color: 'green'
 					});

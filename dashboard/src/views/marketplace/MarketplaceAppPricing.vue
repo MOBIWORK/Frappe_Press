@@ -38,7 +38,7 @@ const createAppPlan = createResource({
 	url: 'press.api.marketplace.create_app_plan',
 	validate() {
 		if (!currentEditingPlan.plan_title) {
-			return 'Yêu cầu nhập tên gói';
+			return this.$t('Plan_name_is_required');
 		}
 	},
 	onSuccess() {
@@ -102,10 +102,10 @@ function resetCurrentEditingPlan() {
 
 <template>
 	<div>
-		<Card title="Giá gói" subtitle="Thiết lập giá gói cho ứng dụng này">
+		<Card :title="$t('Pricing_Plans')" :subtitle="$t('MarketplaceAppPricing_content_1')">
 			<div class="m-4">
 				<div class="flex justify-center" v-if="appPlans.loading">
-					<Button :loading="true">Đang tải</Button>
+					<Button :loading="true">{{ $t('Loading') }}</Button>
 				</div>
 
 				<div v-else-if="appPlans.data">
@@ -126,23 +126,23 @@ function resetCurrentEditingPlan() {
 						<div class="mt-7 flex flex-col items-center justify-center">
 							<PrinterIcon class="mb-5 h-20 w-20" />
 							<p class="mb-1 text-2xl font-semibold text-gray-900">
-								Tạo một gói
+								{{ $t('Create_a_plan') }}
 							</p>
 							<p class="mb-3.5 text-base text-gray-700">
-								Dường như bạn chưa tạo bất kỳ gói nào.
+								{{ $t('MarketplaceAppPricing_content_2') }}
 							</p>
-							<Button variant="solid" @click="editPlan()">Tạo gói</Button>
+							<Button variant="solid" @click="editPlan()">{{ $t('Create_plan') }}</Button>
 						</div>
 					</div>
 				</div>
 			</div>
 
 			<template v-if="appPlans.data && 0 < appPlans.data.length" #actions>
-				<Button @click="editPlan()">Gói mới</Button>
+				<Button @click="editPlan()">{{ $t('New_Plan') }}</Button>
 			</template>
 		</Card>
 
-		<Dialog :options="{ title: 'Chỉnh sửa gói' }" v-model="showEditPlanDialog">
+		<Dialog :options="{ title: $t('Edit_Plan') }" v-model="showEditPlanDialog">
 			<template v-slot:body-content>
 				<div>
 					<div class="mb-4">
@@ -153,21 +153,21 @@ function resetCurrentEditingPlan() {
 							v-model="currentEditingPlan.enabled"
 						/>
 						<label for="enabled-checkbox" class="ml-1 text-sm text-gray-900">
-							Đã kích hoạt
+							{{ $t('Enabled') }}
 						</label>
 					</div>
 					<div class="mb-4">
 						<FormControl
-							placeholder="Nhập tên gói"
-							label="Tên"
+							:placeholder="$t('Enter_plan_name')"
+							:label="$t('Name')"
 							v-model="currentEditingPlan.plan_title"
 						></FormControl>
 					</div>
 					<div class="mb-8">
-						<h3 class="mb-4 text-lg font-semibold">Giá đăng ký</h3>
+						<h3 class="mb-4 text-lg font-semibold">{{ $t('Subscription_Price') }}</h3>
 						<div class="grid grid-cols-2 gap-2">
 							<FormControl
-								label="Giá VND"
+								:label="`${$t('Price')} VND`"
 								v-model="currentEditingPlan.price_vnd"
 							></FormControl>
 							<!-- <FormControl
@@ -181,7 +181,7 @@ function resetCurrentEditingPlan() {
 						</div>
 					</div>
 					<div>
-						<h3 class="mb-4 text-lg font-semibold">Tính năng</h3>
+						<h3 class="mb-4 text-lg font-semibold">{{ $t('Features') }}</h3>
 						<div>
 							<div
 								v-for="(feature, idx) in currentEditingPlan.features"
@@ -209,7 +209,7 @@ function resetCurrentEditingPlan() {
 							</div>
 						</div>
 						<div>
-							<Button icon-left="plus" @click="addFeatureInput">Thêm</Button>
+							<Button icon-left="plus" @click="addFeatureInput">{{ $t('Add') }}</Button>
 						</div>
 
 						<div>
@@ -227,7 +227,7 @@ function resetCurrentEditingPlan() {
 					:loading="updateAppPlan.loading || createAppPlan.loading"
 					@click="savePlan"
 					@close="resetCurrentEditingPlan"
-					>Lưu</Button
+					>{{ $t('Save') }}</Button
 				>
 			</template>
 		</Dialog>

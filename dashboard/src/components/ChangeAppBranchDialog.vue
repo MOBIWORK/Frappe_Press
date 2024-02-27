@@ -2,7 +2,7 @@
 	<Dialog
 		v-if="app"
 		v-model="show"
-		:options="{ title: `Thay đổi nhánh cho ${app.title}` }"
+		:options="{ title: `${$t('ChangeAppBranchDialog_content_1')} ${app.title}` }"
 	>
 		<template v-slot:body-content>
 			<div class="flex flex-col items-center">
@@ -10,12 +10,12 @@
 					class="w-min"
 					v-if="$resources.branches.loading"
 					:loading="true"
-					loadingText="Đang tải..."
+					:loadingText="`${$t('Loading')}...`"
 				/>
 				<FormControl
 					v-else
 					class="w-full"
-					label="Chọn nhánh"
+					:label="$t('Select_Branch')"
 					type="select"
 					:options="branchList()"
 					v-model="selectedBranch"
@@ -31,7 +31,7 @@
 				v-if="!$resources.branches.loading"
 				class="w-full"
 				variant="solid"
-				label="Thay đổi nhánh"
+				:label="$t('Change_Branch')"
 				:loading="$resources.changeBranch.loading"
 				@click="changeBranch()"
 			/>
@@ -63,7 +63,7 @@ export default {
 				},
 				validate() {
 					if (this.selectedBranch == this.app.branch) {
-						return 'Vui lòng chọn một nhánh khác';
+						return this.$t('ChangeAppBranchDialog_content_2');
 					}
 				}
 			};
