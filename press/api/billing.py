@@ -98,16 +98,7 @@ def upcoming_invoice():
     date_promotion_1 = get_date_expire_promotion(team.name)
 
     # lay so tien no chua tra
-    total_unpaid_amount = (
-        frappe.get_all(
-            "Invoice",
-            {"status": "Unpaid", "team": get_current_team(),
-             "type": "Subscription"},
-            ["sum(total) as total"],
-            pluck="total",
-        )[0]
-        or 0
-    )
+    total_unpaid_amount = team.get_total_unpaid_amount()
 
     amount_upcoming_invoice = 0
     so_tien_goi_y_thanh_toan = 0

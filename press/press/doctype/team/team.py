@@ -809,6 +809,19 @@ class Team(Document):
         return res[0] if len(res) else {'ending_balance': 0, 'promotion_balance_1': 0, "promotion_balance_2": 0}
 
     @frappe.whitelist()
+    def get_total_unpaid_amount(self):
+        return (
+            frappe.get_all(
+                "Invoice",
+                {"status": "Unpaid", "team": self.name,
+                 "type": "Subscription"},
+                ["sum(total) as total"],
+                pluck="total",
+            )[0]
+            or 0
+        )
+
+    @frappe.whitelist()
     def get_available_partner_credits(self):
         client = get_frappe_io_connection()
         response = client.session.post(

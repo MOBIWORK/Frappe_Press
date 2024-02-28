@@ -156,10 +156,83 @@ class Subscription(Document):
         )
 
 
+def suspend_site_when_account_balance_is_insufficient():
+    print('=========================')
+    # from press.press.doctype.subscription.subscription import sites_with_free_hosting, paid_plans, created_usage_records
+
+    free_sites = sites_with_free_hosting()
+    subscriptions = frappe.db.get_all(
+        "Subscription",
+        fields=['name', 'plan', 'document_name', 'interval', 'team'],
+        filters={
+            "enabled": True,
+            "document_type": "Site",
+            "plan": ("in", paid_plans()),
+            "name": ("not in", created_usage_records(free_sites)),
+            "document_name": ("not in", free_sites),
+        },
+        limit=2000,
+    )
+
+    # khoi tao su du kha dung
+    available_balances_team = {}
+    for sub in subscriptions:
+        total_amount = 0
+        plan_site = frappe.get_doc("Plan", sub.get('plan'))
+        team_name = sub.get('team')
+        team = frappe.get_doc("Team", team_name)
+        upcoming_invoice = team.get_upcoming_invoice()
+        vat = upcoming_invoice.vat if upcoming_invoice else 0
+
+        if plan_site and team:
+            total_amount += plan_site.get_price_for_interval(
+                sub.get('interval'), team.currency)
+
+        site_name = sub.get('document_name')
+        apps_sub = frappe.get_all(
+            "Marketplace App Subscription",
+            fields=['name', 'plan', 'subscription', 'interval'],
+            filters={
+                "site": site_name,
+                "status": "Active",
+            },
+        )
+        for app_sub in apps_sub:
+            plan_app = frappe.get_doc("Plan", app_sub.get('plan'))
+            if plan_app and team:
+                total_amount += plan_app.get_price_for_interval(
+                    app_sub.get('interval'), team.currency)
+
+        total_amount_vat = total_amount + (total_amount*vat/100)
+        # luu lai so tien su dung cua 1 site
+        if available_balances_team.get(team_name):
+            amount_remaining = available_balances_team[team_name] - \
+                total_amount_vat
+        else:
+            invoice = team.get_upcoming_invoice()
+            amount_upcoming_invoice = invoice.total if invoice else 0
+            # tinh so du kha dung sau khi tru no
+            available_balances = team.get_balance_all() - (amount_upcoming_invoice +
+                                                           team.get_total_unpaid_amount())
+            amount_remaining = available_balances - total_amount_vat
+        # kiem tra su du
+        if amount_remaining >= 0:
+            available_balances_team[team_name] = amount_remaining
+        else:
+            # khoa site
+            reason = 'Khong du so du'
+            frappe.get_doc("Site", site_name).suspend(reason)
+
+    print('=========================')
+
+
 def create_usage_records():
     """
     Creates daily usage records for paid Subscriptions
     """
+    # truoc khi tao ho so du dung hang ngay kiem tra va khoa site
+    suspend_site_when_account_balance_is_insufficient()
+
     free_sites = sites_with_free_hosting()
     subscriptions = frappe.db.get_all(
         "Subscription",
@@ -192,7 +265,6 @@ def paid_plans():
                  "Self Hosted Server", "Marketplace App"),
             ),
             "is_trial_plan": 0,
-            # "price_inr": (">", 0),
             "price_vnd": (">", 0),
         },
         pluck="name",
