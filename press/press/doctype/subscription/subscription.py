@@ -209,8 +209,7 @@ def suspend_site_when_account_balance_is_insufficient():
             amount_remaining = available_balances_team[team_name] - \
                 total_amount_vat
         else:
-            invoice = team.get_upcoming_invoice()
-            amount_upcoming_invoice = invoice.total if invoice else 0
+            amount_upcoming_invoice = upcoming_invoice.total if upcoming_invoice else 0
             # tinh so du kha dung sau khi tru no
             available_balances = team.get_balance_all() - (amount_upcoming_invoice +
                                                            team.get_total_unpaid_amount())

@@ -259,16 +259,11 @@ export default {
 			};
 		},
 		minimumAmount() {
-			const unpaidAmount =
-				this.$resources.upcomingInvoice.data?.total_unpaid_amount;
-			// const minimumDefault = $account.team.currency == 'INR' ? 800 : 10;
+			const minimumDefault = 10000;
 			let sotien =
 				this.$resources.upcomingInvoice.data?.so_tien_goi_y_thanh_toan || 0;
-			const minimumDefault = sotien || 2000;
 
-			return unpaidAmount && unpaidAmount > minimumDefault
-				? unpaidAmount
-				: minimumDefault;
+			return sotien > minimumDefault ? sotien : minimumDefault;
 		},
 		upcomingInvoice() {
 			return this.$resources.upcomingInvoice.data?.upcoming_invoice;

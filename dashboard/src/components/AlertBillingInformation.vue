@@ -30,7 +30,7 @@
 		<PrepaidCreditsDialog
 			v-if="showPrepaidCreditsDialog"
 			v-model:show="showPrepaidCreditsDialog"
-			:minimum-amount="2000"
+			:minimum-amount="10000"
 			@success="handleAddPrepaidCreditsSuccess"
 		/>
 	</Alert>

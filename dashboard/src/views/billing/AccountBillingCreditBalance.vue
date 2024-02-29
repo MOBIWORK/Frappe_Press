@@ -227,8 +227,7 @@ export default {
 			if (d.type === 'Applied To Invoice' && d.formatted.invoice_for) {
 				return `${this.$t('invoice_for')} ${d.formatted.invoice_for}`;
 			}
-
-			return d.amount < 0 ? d.type : this.$getTypeSource(d.source);
+			return this.$getTypeSource(d.source);
 		}
 	}
 };

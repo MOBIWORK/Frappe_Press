@@ -103,13 +103,15 @@ def upcoming_invoice():
     amount_upcoming_invoice = 0
     so_tien_goi_y_thanh_toan = 0
     if invoice:
+        vat = invoice.vat or 0
         amount_upcoming_invoice = invoice.total
         for item in invoice.items:
             so_tien_goi_y_thanh_toan += item.rate * day_left
 
+        so_tien_goi_y_thanh_toan = round(
+            so_tien_goi_y_thanh_toan + (vat*so_tien_goi_y_thanh_toan/100))
         upcoming_invoice = invoice.as_dict()
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
-
     else:
         upcoming_invoice = None
 

@@ -37,7 +37,7 @@
 	<PrepaidCreditsDialog
 		v-if="showPrepaidCreditsDialog"
 		v-model:show="showPrepaidCreditsDialog"
-		:minimumAmount="2000"
+		:minimumAmount="10000"
 		@success="
 			() => {
 				$resources.upcomingInvoice.reload();

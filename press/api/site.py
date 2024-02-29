@@ -103,6 +103,7 @@ def validate_balance_account(site):
     invoice = team.get_upcoming_invoice()
     amount_available_credits = team.get_balance_all()
     amount_upcoming_invoice = 0
+    vat = 0
     unpaid_amount_due = (
         frappe.get_all(
             "Invoice",
@@ -115,9 +116,12 @@ def validate_balance_account(site):
     )
 
     if invoice:
+        vat = invoice.vat or 0
         upcoming_invoice = invoice.as_dict()
         amount_upcoming_invoice = upcoming_invoice.get('total')
-
+    else:
+        vat = frappe.db.get_single_value(
+            "Press Settings", "vat_percentage") or 0
     available_balances = amount_available_credits - \
         amount_upcoming_invoice - unpaid_amount_due
 
@@ -155,6 +159,9 @@ def validate_balance_account(site):
         for price in price_plans:
             total_amount += round(price/period) * site_num_days_required
 
+    # su du co VAT
+    fee_vat = round(total_amount*vat/100)
+    total_amount = total_amount + fee_vat
     # kiem tra so du
     if total_amount > available_balances:
         frappe.throw(
@@ -571,6 +578,19 @@ def options_for_new():
 @frappe.whitelist()
 def get_domain():
     return frappe.db.get_value("Press Settings", "Press Settings", ["domain"])
+
+
+@frappe.whitelist()
+def get_vat_upcoming_invoice():
+    team = get_current_team(True)
+    invoice = team.get_upcoming_invoice()
+    vat = 0
+    if invoice:
+        vat = invoice.vat
+    else:
+        vat = frappe.db.get_single_value(
+            "Press Settings", "vat_percentage") or 0
+    return vat
 
 
 @frappe.whitelist()

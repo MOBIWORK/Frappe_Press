@@ -815,8 +815,8 @@ class Team(Document):
                 "Invoice",
                 {"status": "Unpaid", "team": self.name,
                  "type": "Subscription"},
-                ["sum(total) as total"],
-                pluck="total",
+                ["sum(amount_due) as amount_due"],
+                pluck="amount_due",
             )[0]
             or 0
         )

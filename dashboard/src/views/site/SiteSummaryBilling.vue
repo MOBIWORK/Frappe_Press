@@ -85,7 +85,29 @@
 						<tr>
 							<td></td>
 							<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-								{{ $t('total') }}
+								{{ $t('invoiceusagetable_content_2') }}
+							</td>
+							<td
+								class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+							>
+								{{ infoInvoice.formatter.total_befor_tax }} VND
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+								{{ $t('vat_tax') }} {{ Number($resources.vat.data) }}%
+							</td>
+							<td
+								class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+							>
+								{{ infoInvoice.formatter.fee_vat }} VND
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+								{{ $t('total_payment_amount') }}
 							</td>
 							<td
 								class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -104,10 +126,6 @@ export default {
 	name: 'SiteSummaryBilling',
 	emits: ['update:totalBilling'],
 	props: ['detail', 'totalBilling'],
-	components: {},
-	data() {
-		return {};
-	},
 	mounted() {
 		// this.$socket.on('press_job_update', data => {
 		// 	console.log(data);
@@ -125,6 +143,12 @@ export default {
 				auto: true
 			};
 		},
+		vat() {
+			return {
+				url: 'press.api.site.get_vat_upcoming_invoice',
+				auto: true
+			};
+		},
 		dayRequire() {
 			return {
 				url: 'press.api.site.get_day_required_register_site',
@@ -132,12 +156,13 @@ export default {
 			};
 		}
 	},
-	methods: {},
 	computed: {
 		infoInvoice() {
 			let info = this.detail;
 			let items = [];
 			let total = 0;
+			let total_befor_tax = 0;
+			let fee_vat = 0;
 			const daysInSeptember = this.$getDays(
 				new Date().getFullYear(),
 				new Date().getMonth() + 1
@@ -150,7 +175,7 @@ export default {
 						(info.selectedPlan?.price_vnd / daysInSeptember).toFixed(2)
 					);
 					let price = Math.round(rate * day_required);
-					total += price;
+					total_befor_tax += price;
 
 					items.push({
 						name: this.detail.subdomain + '.' + this.$resources.domain.data,
@@ -177,7 +202,7 @@ export default {
 						if (plan) {
 							let rate = Number.parseFloat((plan / daysInSeptember).toFixed(2));
 							let price = Math.round(rate * day_required);
-							total += price;
+							total_befor_tax += price;
 							item = {
 								...item,
 								rate: rate,
@@ -191,18 +216,25 @@ export default {
 						items.push(item);
 					});
 				}
+				fee_vat = Math.round(
+					(total_befor_tax * this.$resources.vat.data) / 100
+				);
+				total = total_befor_tax + fee_vat;
 				this.$emit('update:totalBilling', total);
 			}
 
 			return {
 				items: items,
+				total_befor_tax: total_befor_tax,
+				fee_vat: fee_vat,
 				total: total,
 				formatter: {
+					total_befor_tax: this.$formatMoney(total_befor_tax),
+					fee_vat: this.$formatMoney(fee_vat),
 					total: this.$formatMoney(total)
 				}
 			};
 		}
-	},
-	watch: {}
+	}
 };
 </script>
