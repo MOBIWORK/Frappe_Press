@@ -198,7 +198,7 @@ scheduler_events = {
         "press.press.doctype.usage_record.usage_record.link_unlinked_usage_records",
         "press.press.doctype.bench.bench.sync_benches",
         "press.press.doctype.invoice.invoice.finalize_draft_invoices",
-        "press.press.doctype.app.app.poll_new_releases",
+        # "press.press.doctype.app.app.poll_new_releases",
         "press.press.doctype.agent_job.agent_job.fail_old_jobs",
         "press.press.doctype.site_update.site_update.mark_stuck_updates_as_fatal",
         "press.press.doctype.deploy_candidate.deploy_candidate.cleanup_build_directories",
@@ -249,7 +249,10 @@ scheduler_events = {
             "press.saas.doctype.saas_product.pooling.create",
             "press.press.doctype.site.saas_pool.create",
         ],
-        "*/30 * * * *": ["press.press.doctype.site_update.scheduled_auto_updates.trigger"],
+        "*/30 * * * *": [
+            "press.press.doctype.site_update.scheduled_auto_updates.trigger",
+            "press.press.doctype.app.app.poll_new_releases",
+        ],
         "15,45 * * * *": [
             "press.press.doctype.site.site_usages.update_cpu_usages",
             "press.press.doctype.site.site_usages.update_disk_usages",

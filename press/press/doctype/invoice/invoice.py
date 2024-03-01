@@ -585,50 +585,48 @@ class Invoice(Document):
         if balance <= 0:
             return
 
-        unallocated_balances = frappe.db.get_all(
-            "Balance Transaction",
-            filters={
-                "team": self.team,
-                "type": "Adjustment",
-                "unallocated_amount": (">", 0),
-                "docstatus": ("<", 2),
-            },
-            fields=["name", "unallocated_amount", "source", "amount",
-                    "amount_promotion_1", "amount_promotion_2"],
-            order_by="creation desc",
-        )
+        values = {'team': self.team}
+        unallocated_balances = frappe.db.sql("""
+            SELECT
+                bt.name,
+                bt.unallocated_amount,
+                bt.unallocated_amount_1,
+                bt.unallocated_amount_2,
+                bt.source
+            FROM `tabBalance Transaction` bt
+            WHERE bt.team = %(team)s
+            AND bt.type = 'Adjustment'
+            AND (bt.unallocated_amount > 0 OR bt.unallocated_amount_1 > 0 OR bt.unallocated_amount_2 > 0)
+            AND bt.docstatus < 2
+        """, values=values, as_dict=1)
         # sort by ascending for FIFO
         unallocated_balances.reverse()
 
         total_allocated = 0
         total_allocated_1 = 0
         total_allocated_2 = 0
+        # tien con phai tra cho hoa don
         due = self.total
         for balance in unallocated_balances:
             if due == 0:
                 break
 
-            amount_root = balance.amount or 0
-            amount_promotion_1 = balance.amount_promotion_1 or 0
-            amount_promotion_2 = balance.amount_promotion_2 or 0
             allocated_root = 0
             allocated_promotion_1 = 0
             allocated_promotion_2 = 0
-            remaining_due = due
-            # so tien km1 tra duoc
-            allocated_promotion_1 = min(remaining_due, amount_promotion_1)
-            remaining_due -= allocated_promotion_1
-            # so tien goc tra duoc
-            if remaining_due:
-                allocated_root = min(remaining_due, amount_root)
-                remaining_due -= allocated_root
-            # so tien km2 tra duoc
-            if remaining_due:
-                allocated_promotion_2 = min(remaining_due, amount_promotion_2)
 
-            # cap nhan lai 'due' cho hoa don sau
-            allocated = min(due, balance.unallocated_amount)
-            due -= allocated
+            # so tien km1 tra duoc
+            allocated_promotion_1 = min(due, balance.unallocated_amount_1)
+            due -= allocated_promotion_1
+            # so tien goc tra duoc
+            if due > 0:
+                allocated_root = min(due, balance.unallocated_amount)
+                due -= allocated_root
+            # so tien km2 tra duoc
+            if due > 0:
+                allocated_promotion_2 = min(due, balance.unallocated_amount_2)
+                due -= allocated_promotion_2
+
             self.append(
                 "credit_allocations",
                 {
@@ -656,7 +654,7 @@ class Invoice(Document):
             total_allocated_1 += allocated_promotion_1
             total_allocated_2 += allocated_promotion_2
 
-        # tinh toan lai so tien sau khi chi tra hoa don
+        # tinh toan so tien sau khi chi tra hoa don
         balance_transaction = frappe.get_doc(
             doctype="Balance Transaction",
             team=self.team,
