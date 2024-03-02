@@ -12,7 +12,8 @@
   "document_name",
   "plan",
   "interval",
-  "marketplace_app_subscription"
+  "marketplace_app_subscription",
+  "number_days_used"
  ],
  "fields": [
   {
@@ -66,6 +67,12 @@
    "fieldtype": "Link",
    "label": "Marketplace App Subscription",
    "options": "Marketplace App Subscription"
+  },
+  {
+   "default": "0",
+   "fieldname": "number_days_used",
+   "fieldtype": "Int",
+   "label": "S\u1ed1 ng\u00e0y d\u00f9ng tr\u01b0\u1edbc kh\u00f3a site"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -75,7 +82,7 @@
    "link_fieldname": "subscription"
   }
  ],
- "modified": "2023-06-27 21:57:40.400786",
+ "modified": "2024-03-02 09:24:39.514165",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Subscription",

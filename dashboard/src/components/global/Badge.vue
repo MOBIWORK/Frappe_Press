@@ -26,7 +26,6 @@ export default {
 				'Thât bại': 'red',
 				Lỗi: 'red',
 				'Đã lưu trữ': 'gray',
-				'Đình chỉ': 'red',
 				Approved: 'green',
 				Broken: 'red',
 				Installing: 'orange',

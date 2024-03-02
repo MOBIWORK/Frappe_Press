@@ -5,12 +5,28 @@ image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
 		<p>
-			<strong class="text-lg">Các tổ chức của bạn đã bị khóa!</strong>
+			<strong class="text-lg">Kính gửi Khách hàng,</strong>
 		</p>
 		<p>
-			Không đủ số dư tài khoản để thanh toán cho hóa đơn, chúng tôi đã khóa các
-			tổ chức của bạn.
+			Tổ chức <strong class="text-lg">{{ site_name }}</strong> của bạn đã bị
+			khóa!
 		</p>
+		<p>
+			Chúng tôi xin thông báo rằng việc truy cập vào tổ chức của bạn đã bị tạm
+			khóa. Lý do cho việc này là do tài khoản của bạn không đủ để thanh toán
+			cho hóa đơn. Do đó, chúng tôi không thể tiếp tục cung cấp dịch vụ cho bạn
+			cho đến khi vấn đề thanh toán được giải quyết. Để tiếp tục sử dụng dịch vụ
+			của chúng tôi, vui lòng nạp thêm tiền vào tài khoản của bạn.
+		</p>
+		<p>
+			Nếu bạn cần hỗ trợ hoặc có bất kỳ câu hỏi nào, vui lòng liên hệ với bộ
+			phận dịch vụ khách hàng của chúng tôi để được giúp đỡ.
+		</p>
+		<p>
+			Chúng tôi rất mong muốn sớm nhận được sự phản hồi từ bạn và hy vọng rằng
+			vấn đề này sẽ được giải quyết một cách thuận lợi và nhanh chóng.
+		</p>
+		<p>Trân trọng,</p>
 		<!-- {{ utils.button('Kích hoạt tài khoản', link, true) }}  -->
 		{{ utils.separator() }} {{ utils.footer() }}
 	</div>

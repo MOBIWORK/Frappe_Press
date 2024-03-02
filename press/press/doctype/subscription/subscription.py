@@ -10,6 +10,7 @@ import frappe
 from frappe.model.document import Document
 from press.utils import log_error
 from press.overrides import get_permission_query_conditions_for_doctype
+from jinja2 import Template
 
 
 class Subscription(Document):
@@ -32,6 +33,7 @@ class Subscription(Document):
     def enable(self):
         try:
             self.enabled = True
+            self.number_days_used = 0
             self.save()
         except Exception:
             frappe.log_error(title="Enable Subscription Error")
@@ -156,6 +158,27 @@ class Subscription(Document):
         )
 
 
+def send_email_handle_site(type, site_name, team):
+    args = {'site_name': site_name}
+    if type == 'lock':
+        subject = """[MBWCloud] - Khóa truy cập vào tổ chức {{ site_name }} của bạn"""
+        template = 'site_lock_email'
+    elif type == 'warning':
+        subject = """[MBWCloud] - Sắp khóa truy cập vào tổ chức {{ site_name }} của bạn"""
+        template = 'site_lock_warning_email'
+
+    template_subject = Template(subject)
+    subject = template_subject.render(args)
+    frappe.sendmail(
+        recipients=team.user,
+        subject=subject,
+        template=template,
+        args=args,
+        now=True,
+    )
+    print('send email done!', team.user)
+
+
 def suspend_site_when_account_balance_is_insufficient():
     print('=========================')
     # from press.press.doctype.subscription.subscription import sites_with_free_hosting, paid_plans, created_usage_records
@@ -218,9 +241,31 @@ def suspend_site_when_account_balance_is_insufficient():
         if amount_remaining >= 0:
             available_balances_team[team_name] = amount_remaining
         else:
-            # khoa site
-            reason = 'Khong du so du'
-            frappe.get_doc("Site", site_name).suspend(reason)
+            # kiem tra so ngay de khoa site
+            site_num_days_past_lock = frappe.db.get_single_value(
+                "Press Settings", "site_num_days_past_lock") or 0
+            subscription = frappe.get_doc("Subscription", sub.get('name'))
+            if subscription:
+                number_days_used = (subscription.number_days_used or 0) + 1
+                if number_days_used > site_num_days_past_lock:
+                    # khoa site
+                    reason = 'Khong du so du'
+                    frappe.get_doc("Site", site_name).suspend(reason)
+                    try:
+                        send_email_handle_site('lock', site_name, team)
+                    except Exception as e:
+                        print('=================', str(e))
+                        pass
+                else:
+                    # tang so lan su dung
+                    subscription.number_days_used = number_days_used
+                    subscription.save()
+                    frappe.db.commit()
+                    try:
+                        send_email_handle_site('warning', site_name, team)
+                    except Exception as e:
+                        print('=================', str(e))
+                        pass
 
     print('=========================')
 
