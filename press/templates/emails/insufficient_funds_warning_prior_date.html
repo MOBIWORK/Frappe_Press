@@ -9,14 +9,15 @@ image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
 		</p>
 		<p>
 			Chúng tôi viết thư này để cảnh báo về tình trạng thanh toán của tài khoản
-			của bạn và nguy cơ sắp tới của việc khóa truy cập vào tổ chức
+			của bạn và nguy cơ sắp tới của việc không duy trì số dư đủ trong
+			{{number_day}} ngày tới đối với tổ chức
 			<strong class="text-lg">{{ site_name }}</strong>.
 		</p>
 		<p>
 			Sau quá trình xử lý giao dịch thanh toán gần đây, chúng tôi đã phát hiện
-			rằng tài khoản của bạn không đủ số dư để thanh toán các dịch vụ của chúng
-			tôi. Điều này có thể dẫn đến việc ngừng hoạt động của tổ chức của bạn
-			trong tương lai gần.
+			rằng tài khoản của bạn trong {{number_day}} ngày tới không đủ số dư để
+			thanh toán các dịch vụ của chúng tôi. Điều này có thể dẫn đến việc ngừng
+			hoạt động của tổ chức của bạn trong tương lai gần.
 		</p>
 		<p>
 			Để tránh tình trạng này, chúng tôi khuyến nghị bạn kiểm tra lại tài khoản

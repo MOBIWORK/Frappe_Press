@@ -18,6 +18,7 @@
   "tab_site_config",
   "site_num_days_required",
   "site_num_days_advance_warning",
+  "num_advance_warning",
   "site_num_days_past_lock",
   "col_b_1",
   "number_days_promotion",
@@ -1180,7 +1181,7 @@
   {
    "fieldname": "site_num_days_advance_warning",
    "fieldtype": "Int",
-   "label": "S\u1ed1 ng\u00e0y c\u1ea3nh b\u00e1o h\u1ea1n site Email"
+   "label": "S\u1ed1 ng\u00e0y c\u1ea3nh b\u00e1o tr\u01b0\u1edbc cho site"
   },
   {
    "default": "0",
@@ -1218,11 +1219,17 @@
   {
    "fieldname": "col_b_2",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "num_advance_warning",
+   "fieldtype": "Int",
+   "label": "S\u1ed1 l\u1ea7n c\u1ea3nh b\u00e1o tr\u01b0\u1edbc cho site"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2024-01-30 14:35:36.248895",
+ "modified": "2024-03-04 15:23:54.133924",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

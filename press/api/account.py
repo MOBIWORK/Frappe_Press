@@ -622,12 +622,17 @@ def update_feature_flags(values=None):
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60 * 60)
 def send_reset_password_email(email):
+    from datetime import datetime
     frappe.utils.validate_email_address(email, True)
 
     email = email.strip()
     key = random_string(32)
     if frappe.db.exists("User", email):
-        frappe.db.set_value("User", email, "reset_password_key", key)
+        frappe.db.set_value('User', email, {
+            'reset_password_key': key,
+            'last_reset_password_key_generated_on': datetime.now()
+        })
+
         url = get_url("/dashboard/reset-password/" + key)
         subject = f"Thiết lập lại mật khẩu"
         frappe.sendmail(

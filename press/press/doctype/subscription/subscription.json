@@ -13,7 +13,8 @@
   "plan",
   "interval",
   "marketplace_app_subscription",
-  "number_days_used"
+  "number_days_used",
+  "estimated_number_of_notifications"
  ],
  "fields": [
   {
@@ -73,6 +74,12 @@
    "fieldname": "number_days_used",
    "fieldtype": "Int",
    "label": "S\u1ed1 ng\u00e0y d\u00f9ng tr\u01b0\u1edbc kh\u00f3a site"
+  },
+  {
+   "default": "0",
+   "fieldname": "estimated_number_of_notifications",
+   "fieldtype": "Int",
+   "label": "S\u1ed1 l\u1ea7n c\u1ea3nh b\u00e1o tr\u01b0\u1edbc cho site"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -82,7 +89,7 @@
    "link_fieldname": "subscription"
   }
  ],
- "modified": "2024-03-02 09:24:39.514165",
+ "modified": "2024-03-04 15:43:13.145025",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Subscription",
