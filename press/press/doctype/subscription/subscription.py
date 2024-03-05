@@ -271,6 +271,10 @@ def suspend_site_when_account_balance_is_insufficient():
                 except Exception as e:
                     print('=================', str(e))
                     pass
+        # cap nhat subscription
+        subscription.save()
+        frappe.db.commit()
+        subscription.reload()
 
         # luu lai so tien con lai khi su dung cua 1 site
         if available_balances_team.get(team_name):
@@ -303,14 +307,14 @@ def suspend_site_when_account_balance_is_insufficient():
                 else:
                     # tang so lan su dung
                     subscription.number_days_used = number_days_used
+                    # cap nhat subscription
+                    subscription.save()
+                    frappe.db.commit()
                     try:
                         send_email_handle_site('warning', site_name, team)
                     except Exception as e:
                         print('=================', str(e))
                         pass
-        # cap nhat subscription
-        subscription.save()
-        frappe.db.commit()
 
     print('=========================')
 
