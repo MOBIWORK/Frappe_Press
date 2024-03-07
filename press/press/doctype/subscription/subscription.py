@@ -34,6 +34,7 @@ class Subscription(Document):
         try:
             self.enabled = True
             self.number_days_used = 0
+            self.estimated_number_of_notifications = 0
             self.save()
         except Exception:
             frappe.log_error(title="Enable Subscription Error")
