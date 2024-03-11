@@ -208,6 +208,9 @@ export default {
 		},
 		disableAccount: {
 			url: 'press.api.account.disable_account',
+			params: {
+				lang: this.$i18n.locale
+			},
 			onSuccess(data) {
 				this.showDisableAccountDialog = false;
 
@@ -226,6 +229,9 @@ export default {
 		},
 		enableAccount: {
 			url: 'press.api.account.enable_account',
+			params: {
+				lang: this.$i18n.locale
+			},
 			onSuccess() {
 				notify({
 					title: this.$t('account_enabled'),

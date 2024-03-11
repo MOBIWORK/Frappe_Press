@@ -38,7 +38,9 @@
 		<div v-if="options">
 			<div v-if="options.authorized && options.installations.length > 0">
 				<div class="flex items-baseline justify-between border-b pb-1">
-					<label class="text-lg font-semibold"> {{ $t('Select_a_repository') }} </label>
+					<label class="text-lg font-semibold">
+						{{ $t('Select_a_repository') }}
+					</label>
 					<span class="text-sm text-gray-600">
 						{{ $t('SelectAppFromGithub_content_2') }}
 						<Link
@@ -63,7 +65,9 @@
 					>
 						<div v-if="validatedApp" class="flex">
 							<GreenCheckIcon class="mr-2 w-4" />
-							{{ $t('Found') }} {{ validatedApp.title }} ({{ validatedApp.name }})
+							{{ $t('Found') }} {{ validatedApp.title }} ({{
+								validatedApp.name
+							}})
 						</div>
 					</div>
 				</div>
@@ -134,7 +138,8 @@ export default {
 				installation: this.selectedInstallation?.id,
 				owner: this.selectedInstallation?.login,
 				repository: this.selectedRepo?.name,
-				branch: this.selectedBranch
+				branch: this.selectedBranch,
+				lang: this.$i18n.locale
 			};
 			return {
 				url: 'press.api.github.app',

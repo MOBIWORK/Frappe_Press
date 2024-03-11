@@ -115,7 +115,8 @@ export default {
 				url: 'press.api.site.change_region',
 				params: {
 					name: this.site?.name,
-					cluster: this.selectedRegion
+					cluster: this.selectedRegion,
+					lang: this.$i18n.locale
 				},
 				validate() {
 					if (

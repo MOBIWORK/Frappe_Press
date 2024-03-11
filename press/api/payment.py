@@ -4,6 +4,7 @@
 
 
 import frappe
+from frappe import _
 from frappe.utils import fmt_money
 
 from press.utils import check_payos_settings

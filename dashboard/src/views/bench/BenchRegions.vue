@@ -51,7 +51,8 @@
 					@click="
 						$resources.addRegion.submit({
 							name: benchName,
-							region: selectedRegion
+							region: selectedRegion,
+							lang: this.$i18n.locale
 						})
 					"
 				>

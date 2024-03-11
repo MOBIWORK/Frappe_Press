@@ -19,7 +19,7 @@ export default {
 				auto: true,
 				validate() {
 					if (document.cookie.includes('user_id=Guest')) {
-						return 'Not logged in';
+						return this.$t('Not_logged_in');
 					}
 				}
 			};

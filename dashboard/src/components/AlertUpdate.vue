@@ -113,7 +113,8 @@ export default {
 				params: {
 					name: this.bench?.name,
 					apps: this.selectedApps,
-					sites: this.selectedSites
+					sites: this.selectedSites,
+					lang: this.$i18n.locale
 				},
 				validate() {
 					if (

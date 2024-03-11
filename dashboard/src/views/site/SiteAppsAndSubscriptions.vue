@@ -77,9 +77,9 @@
 				</div>
 
 				<div class="ml-auto flex items-center space-x-2">
-					<Button v-if="app.plan_info" @click="changeAppPlan(app)"
-						>{{ $t('Change_Plan') }}</Button
-					>
+					<Button v-if="app.plan_info" @click="changeAppPlan(app)">{{
+						$t('Change_Plan')
+					}}</Button>
 					<Button
 						v-if="!app.plan_info && app.subscription_available"
 						@click="
@@ -421,7 +421,8 @@ export default {
 			if (this.currentAppPlan !== this.newAppPlan) {
 				this.$resources.changePlan.submit({
 					subscription: this.appToChangePlan.subscription,
-					new_plan: this.newAppPlan
+					new_plan: this.newAppPlan,
+					lang: this.$i18n.locale
 				});
 			} else {
 				this.showAppPlanChangeDialog = false;
@@ -484,7 +485,9 @@ export default {
 		confirmRemoveApp(app) {
 			this.$confirm({
 				title: this.$t('Remove_App'),
-				message: `${this.$t('SiteAppsAndSubscriptions_content_2')} ${app.title} ${this.$t('SiteAppsAndSubscriptions_content_3')}`,
+				message: `${this.$t('SiteAppsAndSubscriptions_content_2')} ${
+					app.title
+				} ${this.$t('SiteAppsAndSubscriptions_content_3')}`,
 				actionLabel: this.$t('Remove_App'),
 				actionColor: 'red',
 				action: closeDialog => {

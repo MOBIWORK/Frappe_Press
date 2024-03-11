@@ -4,6 +4,7 @@
 
 import json
 import frappe
+from frappe import _
 import math
 
 from typing import Dict, List
@@ -296,7 +297,7 @@ def update_app_description(name: str, description: str) -> None:
 
 @frappe.whitelist()
 def releases(
-        filters=None, order_by=None, limit_start=None, limit_page_length=None
+        filters=None, order_by=None, limit_start=None, limit_page_length=None, lang='vi'
 ) -> List[Dict]:
     """Return list of App Releases for this `app` and `source` in order of creation time"""
 
@@ -312,7 +313,7 @@ def releases(
     for release in app_releases:
         # Attach rejection feedback (if any)
         try:
-            feedback = reason_for_rejection(release.name)
+            feedback = reason_for_rejection(release.name, lang)
         except frappe.ValidationError:
             feedback = ""
         release.reason_for_rejection = feedback
@@ -345,24 +346,25 @@ def create_approval_request(marketplace_app: str, app_release: str):
 
 
 @frappe.whitelist()
-def cancel_approval_request(app_release: str):
+def cancel_approval_request(app_release: str, lang='vi'):
     """Cancel Approval Request for given `app_release`"""
-    get_latest_approval_request(app_release).cancel()
+    get_latest_approval_request(app_release, lang).cancel()
 
 
 @frappe.whitelist()
-def reason_for_rejection(app_release: str) -> str:
+def reason_for_rejection(app_release: str, lang='vi') -> str:
     """Return feedback given on a `Rejected` approval request"""
     approval_request = get_latest_approval_request(app_release)
     app_release = frappe.get_doc("App Release", app_release)
 
     if app_release.status != "Rejected":
-        frappe.throw("The request for the given app release was not rejected!")
+        frappe.throw(
+            _("The request for the given app release was not rejected!", lang))
 
     return approval_request.reason_for_rejection
 
 
-def get_latest_approval_request(app_release: str):
+def get_latest_approval_request(app_release: str, lang: str = 'vi'):
     """Return Approval request for the given `app_release`, throws if not found"""
     approval_requests = frappe.get_all(
         "App Release Approval Request",
@@ -372,7 +374,8 @@ def get_latest_approval_request(app_release: str):
     )
 
     if len(approval_requests) == 0:
-        frappe.throw("No approval request exists for the given app release")
+        frappe.throw(
+            _("No approval request exists for the given app release", lang))
 
     approval_request: AppReleaseApprovalRequest = frappe.get_doc(
         "App Release Approval Request", approval_requests[0]
@@ -442,7 +445,7 @@ def is_on_marketplace(app: str) -> bool:
 
 
 @frappe.whitelist()
-def new_app(app: Dict):
+def new_app(app: Dict, lang='vi'):
     name = app["name"]
     team = get_current_team()
 
@@ -459,11 +462,11 @@ def new_app(app: Dict):
         app["github_installation_id"],
     )
 
-    return add_app(source.name, app_doc.name)
+    return add_app(source.name, app_doc.name, lang)
 
 
 @frappe.whitelist()
-def add_app(source: str, app: str):
+def add_app(source: str, app: str, lang: str = 'vi'):
     if not is_on_marketplace(app):
         supported_versions = frappe.get_all(
             "App Source Version", filters={"parent": source}, pluck="version"
@@ -482,7 +485,8 @@ def add_app(source: str, app: str):
 
         if marketplace_app.team != get_current_team():
             frappe.throw(
-                f"The app {marketplace_app.name} already exists and is owned by some other team."
+                _("The app {0} already exists and is owned by some other team.", lang).format(
+                    marketplace_app.name)
             )
 
         # Versions on marketplace
@@ -501,7 +505,7 @@ def add_app(source: str, app: str):
                 marketplace_app.save(ignore_permissions=True)
         else:
             frappe.throw(
-                "A marketplace app already exists with the given versions!")
+                _("A marketplace app already exists with the given versions!", lang))
 
     return marketplace_app.name
 
@@ -617,13 +621,13 @@ def get_apps_with_plans(apps, release_group: str):
 
 
 @frappe.whitelist()
-def change_app_plan(subscription, new_plan):
+def change_app_plan(subscription, new_plan, lang='vi'):
     is_free = frappe.db.get_value("Marketplace App Plan", new_plan, "is_free")
     if not is_free:
         team = get_current_team(get_doc=True)
         if not team.can_install_paid_apps():
             frappe.throw(
-                "You cannot upgrade to paid plan on Free Credits. Please buy credits before trying to upgrade plan."
+                _("You cannot upgrade to paid plan on Free Credits. Please buy credits before trying to upgrade plan.", lang)
             )
 
     subscription = frappe.get_doc("Marketplace App Subscription", subscription)
@@ -745,7 +749,7 @@ def get_subscriptions_list(marketplace_app: str) -> List:
 
 
 @frappe.whitelist()
-def create_app_plan(marketplace_app: str, plan_data: Dict):
+def create_app_plan(marketplace_app: str, plan_data: Dict, lang: str = 'vi'):
     plan = create_new_plan(marketplace_app, plan_data)
     app_plan_doc = frappe.get_doc(
         {"doctype": "Marketplace App Plan",
@@ -753,15 +757,15 @@ def create_app_plan(marketplace_app: str, plan_data: Dict):
     )
 
     feature_list = plan_data.get("features")
-    reset_features_for_plan(app_plan_doc, feature_list)
+    reset_features_for_plan(app_plan_doc, feature_list, lang=lang)
     return app_plan_doc.insert(ignore_permissions=True)
 
 
 @frappe.whitelist()
-def update_app_plan(app_plan_name: str, updated_plan_data: Dict):
+def update_app_plan(app_plan_name: str, updated_plan_data: Dict, lang: str = 'vi'):
 
     if not updated_plan_data.get("plan_title"):
-        frappe.throw("Tiêu đề không được để trống")
+        frappe.throw(_("The title must not be left blank", lang))
 
     app_plan_doc = frappe.get_doc("Marketplace App Plan", app_plan_name)
     plan_name = app_plan_doc.plan
@@ -791,19 +795,19 @@ def update_app_plan(app_plan_name: str, updated_plan_data: Dict):
         plan_doc.save(ignore_permissions=True)
 
     feature_list = updated_plan_data.get("features", [])
-    reset_features_for_plan(app_plan_doc, feature_list, save=False)
+    reset_features_for_plan(app_plan_doc, feature_list, save=False, lang=lang)
     app_plan_doc.enabled = updated_plan_data.get("enabled", True)
     app_plan_doc.save(ignore_permissions=True)
 
 
 def reset_features_for_plan(
-        app_plan_doc: MarketplaceAppPlan, feature_list: List[str], save=False
+        app_plan_doc: MarketplaceAppPlan, feature_list: List[str], save=False, lang='vi'
 ):
     # Clear the already existing features
     app_plan_doc.features = []
     for feature in feature_list:
         if not feature:
-            frappe.throw("Tính năng không được để trống")
+            frappe.throw(_("The feature must not be left blank", lang))
         app_plan_doc.append("features", {"description": feature})
 
     if save:

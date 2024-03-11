@@ -81,7 +81,12 @@
 										theme="red"
 										size="sm"
 										label="Button"
-										@click="$resources.cancelOrder.submit({ name: d.name })"
+										@click="
+											$resources.cancelOrder.submit({
+												name: d.name,
+												lang: this.$i18n.locale
+											})
+										"
 										:loading="$resources.cancelOrder.loading"
 									>
 										{{ $t('cancel') }}
@@ -177,7 +182,8 @@ export default {
 				return {
 					url: 'press.api.billing.payos_return_cancel_order',
 					params: {
-						order_code: query.orderCode
+						order_code: query.orderCode,
+						lang: this.$i18n.locale
 					},
 					auto: true,
 					onSuccess(data) {

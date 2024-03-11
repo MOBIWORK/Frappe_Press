@@ -76,13 +76,14 @@
 						<Button
 							v-else-if="release.status == 'Awaiting Approval'"
 							@click="confirmCancelRequest(release.name)"
-							>
+						>
 							{{ $t('Cancel') }}
 						</Button>
 						<Button
 							v-else-if="release.status == 'Rejected'"
 							@click="showFeedback(release)"
-							>{{ $t('View_Feedback') }}</Button>
+							>{{ $t('View_Feedback') }}</Button
+						>
 					</span>
 				</div>
 				<Dialog
@@ -142,6 +143,7 @@ export default {
 					app: this.app.app,
 					source: this.selectedSource
 				},
+				lang: this.$i18n.locale,
 				start: 0,
 				pageLength: 15,
 				auto: true
@@ -220,7 +222,8 @@ export default {
 			let { app } = this.app;
 			this.$resources.cancelApprovalRequest.submit({
 				marketplace_app: app,
-				app_release: appRelease
+				app_release: appRelease,
+				lang: this.$i18n.locale
 			});
 		},
 		resetReleaseListState() {
@@ -245,8 +248,11 @@ export default {
 		confirmCancelRequest(appRelease) {
 			this.$confirm({
 				title: this.$t('MarketplaceAppReleaseList_content_4'),
-				message:
-					`${this.$t('MarketplaceAppReleaseList_content_5')} <strong>${this.$t('cancel')}</strong> ${this.$t('MarketplaceAppReleaseList_content_6')}`,
+				message: `${this.$t(
+					'MarketplaceAppReleaseList_content_5'
+				)} <strong>${this.$t('cancel')}</strong> ${this.$t(
+					'MarketplaceAppReleaseList_content_6'
+				)}`,
 				actionLabel: this.$t('Proceed'),
 				actionColor: 'red',
 				action: closeDialog => {

@@ -75,7 +75,8 @@ export default {
 						branch: this.app?.branch,
 						github_installation_id: this.app?.github_installation_id,
 						version: this.version
-					}
+					},
+					lang: this.$i18n.locale
 				},
 				onSuccess() {
 					this.$router.push(`/marketplace/apps/${this.app.name}`);

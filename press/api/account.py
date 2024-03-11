@@ -29,7 +29,7 @@ from pypika.terms import ValueWrapper
 
 
 @frappe.whitelist(allow_guest=True)
-def signup(email, product=None, referrer=None):
+def signup(email, product=None, referrer=None, lang='vi'):
     frappe.utils.validate_email_address(email, True)
 
     current_user = frappe.session.user
@@ -41,9 +41,10 @@ def signup(email, product=None, referrer=None):
     ) or [0, 0]
 
     if exists and not enabled:
-        frappe.throw(_("Tài khoản {0} đã bị vô hiệu hóa").format(email))
+        frappe.throw(_("Account {0} has been deactivated", lang).format(email))
     elif exists and enabled:
-        frappe.throw(_("Tài khoản {0} đã được đăng ký trước đó").format(email))
+        frappe.throw(
+            _("Account {0} is already registered", lang).format(email))
     else:
         ar = frappe.get_doc(
             {
@@ -76,37 +77,38 @@ def setup_account(
         invited_by_parent_team=False,
         oauth_signup=False,
         signup_values=None,
+        lang='vi'
 ):
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw("Khóa không hợp lệ hoặc đã hết hạn")
+        frappe.throw(_("Invalid or Expired Key", lang))
 
     if not user_exists:
         if type(country) == dict:
             country = country.get('value')
 
         if not first_name:
-            frappe.throw("Tên không được để trống")
+            frappe.throw(_("The name must not be left blank", lang))
 
         if not phone:
-            frappe.throw("Số điện thoại không được để trống")
+            frappe.throw(_("The phone number must not be left blank", lang))
 
         if not password and not oauth_signup:
-            frappe.throw("Mật khẩu không được để trống")
+            frappe.throw(_("The password must not be left blank", lang))
 
         if not is_invitation and not country:
-            frappe.throw("Quốc gia không được để trống")
+            frappe.throw(_("The country must not be left blank", lang))
 
         if not is_invitation and country:
             all_countries = frappe.db.get_all("Country", pluck="name")
             country = find(all_countries, lambda x: x.lower()
                            == country.lower())
             if not country:
-                frappe.throw("Vui lòng chọn tên quốc gia hợp lệ")
+                frappe.throw(_("Please select a valid country name", lang))
 
     if not accepted_user_terms:
         frappe.throw(
-            "Vui lòng chấp nhận Điều khoản Dịch vụ và Chính sách Quyền riêng tư của chúng tôi để tiếp tục")
+            _("Please accept our Terms of Service and Privacy Policy to continue", lang))
 
     # if the request is authenticated, set the user to Administrator
     frappe.set_user("Administrator")
@@ -159,7 +161,7 @@ def setup_account(
 @rate_limit(limit=5, seconds=60 * 60)
 def send_login_link(email):
     if not frappe.db.exists("User", email):
-        frappe.throw("No registered account with this email address")
+        frappe.throw(_("No registered account with this email address"))
 
     key = frappe.generate_hash("Login Link", 20)
     minutes = 10
@@ -230,10 +232,10 @@ def approve_partner_request(key):
 
 
 @frappe.whitelist()
-def disable_account():
+def disable_account(lang='vi'):
     team = get_current_team(get_doc=True)
     if frappe.session.user != team.user:
-        frappe.throw("Only team owner can disable the account")
+        frappe.throw(_("Only team owner can disable the account", lang))
     if has_unsettled_invoices(team.name):
         return "Unpaid Invoices"
 
@@ -241,10 +243,10 @@ def disable_account():
 
 
 @frappe.whitelist()
-def enable_account():
+def enable_account(lang='vi'):
     team = get_current_team(get_doc=True)
     if frappe.session.user != team.user:
-        frappe.throw("Only team owner can enable the account")
+        frappe.throw(_("Only team owner can enable the account", lang))
     team.enable_account()
 
 
@@ -510,7 +512,7 @@ def guest_feature_flags():
 
 
 @frappe.whitelist()
-def create_child_team(title):
+def create_child_team(title, lang='vi'):
     team = title.strip()
 
     current_team = get_current_team(True)
@@ -518,9 +520,9 @@ def create_child_team(title):
             d.team_title
             for d in frappe.get_all("Team", {"parent_team": current_team.name}, ["team_title"])
     ]:
-        frappe.throw(f"Child Team {title} already exists.")
+        frappe.throw(_("Child Team {0} already exists.", lang).format(title))
     elif title == "Parent Team":
-        frappe.throw("Child team name cannot be same as parent team")
+        frappe.throw(_("Child team name cannot be same as parent team", lang))
 
     doc = frappe.get_doc(
         {
@@ -683,13 +685,13 @@ def remove_team_member(user_email):
 
 
 @frappe.whitelist()
-def remove_child_team(child_team):
+def remove_child_team(child_team, lang='vi'):
     team = frappe.get_doc("Team", child_team)
     sites = frappe.get_all(
         "Site", {"status": ("!=", "Archived"), "team": team.name}, pluck="name"
     )
     if sites:
-        frappe.throw("Child team has Active Sites")
+        frappe.throw(_("Child team has Active Sites", lang))
 
     team.enabled = 0
     team.parent_team = ""
@@ -712,12 +714,12 @@ def switch_team(team):
 
 
 @frappe.whitelist()
-def leave_team(team):
+def leave_team(team, lang='vi'):
     team_to_leave = frappe.get_doc("Team", team)
     cur_team = frappe.session.user
 
     if team_to_leave.user == cur_team:
-        frappe.throw("Cannot leave this team as you are the owner.")
+        frappe.throw(_("Cannot leave this team as you are the owner.", lang))
 
     team_to_leave.remove_team_member(cur_team)
 

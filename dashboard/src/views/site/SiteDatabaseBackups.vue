@@ -142,7 +142,8 @@ export default {
 				url: 'press.api.site.backup',
 				params: {
 					name: this.site?.name,
-					with_files: true
+					with_files: true,
+					lang: this.$i18n.locale
 				},
 				onSuccess: () => {
 					this.$resources.backups.reload();

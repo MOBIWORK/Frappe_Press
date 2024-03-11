@@ -59,7 +59,8 @@ export default {
 				url: 'press.api.bench.update_dependencies',
 				params: {
 					name: this.benchName,
-					dependencies: JSON.stringify(this.dependencies.active_dependencies)
+					dependencies: JSON.stringify(this.dependencies.active_dependencies),
+					lang: this.$i18n.locale
 				},
 				validate() {
 					if (!this.isDirty) return this.$t('BenchDependencies_content_3');

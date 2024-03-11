@@ -40,7 +40,10 @@
 						<Button
 							class="ml-2 p-4"
 							@click="
-								$resources.removeMember.submit({ child_team: member.name })
+								$resources.removeMember.submit({
+									child_team: member.name,
+									lang: this.$i18n.locale
+								})
 							"
 							:loading="$resources.removeMember.loading"
 						>
@@ -67,7 +70,7 @@
 							class="mt-2 w-full"
 							variant="solid"
 							:loading="$resources.addChildTeam.loading"
-							@click="$resources.addChildTeam.submit({ title: childTeamTitle })"
+							@click="$resources.addChildTeam.submit()"
 						>
 							Add Child Team
 						</Button>
@@ -135,6 +138,10 @@ export default {
 		addChildTeam() {
 			return {
 				url: 'press.api.account.create_child_team',
+				params: {
+					title: this.childTeamTitle,
+					lang: this.$i18n.locale
+				},
 				onSuccess(data) {
 					this.showManageTeamDialog = false;
 					this.childTeamTitle = null;
@@ -178,7 +185,10 @@ export default {
 				actionColor: 'red',
 				action: closeDialog => {
 					closeDialog();
-					this.$resources.leaveTeam.submit({ team: team_name });
+					this.$resources.leaveTeam.submit({
+						team: team_name,
+						lang: this.$i18n.locale
+					});
 				}
 			});
 		}

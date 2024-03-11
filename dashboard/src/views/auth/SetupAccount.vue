@@ -7,7 +7,9 @@
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div v-if="!isInvitation">{{ $t('set_up_your_account') }}</div>
-					<div v-else>{{ $t('SetupAccount_content_1') }}: {{ invitationToTeam }}</div>
+					<div v-else>
+						{{ $t('SetupAccount_content_1') }}: {{ invitationToTeam }}
+					</div>
 				</div>
 				<div class="mb-6">
 					<div class="text-base font-medium">
@@ -181,15 +183,13 @@
 				class="text-center"
 				v-else-if="!$resources.validateRequestKey.loading && !email"
 			>
-					{{ $t('SetupAccount_content_2') }}
-					<Link to="/signup"
-						><span class="font-[600] text-red-600 hover:text-red-700"
-							>{{
-							$t('sign_up')
-						}}</span
-						></Link
-					>
-					{{ $t('SetupAccount_content_3') }}
+				{{ $t('SetupAccount_content_2') }}
+				<Link to="/signup"
+					><span class="font-[600] text-red-600 hover:text-red-700">{{
+						$t('sign_up')
+					}}</span></Link
+				>
+				{{ $t('SetupAccount_content_3') }}
 			</div>
 			<div v-else></div>
 		</div>
@@ -200,7 +200,7 @@
 						<img src="../../assets/icon_tick.svg" alt="Key Icon" />
 					</div>
 					<div class="text-3xl">{{ $t('registration_successful') }}</div>
-					<div	class="mt-2 text-lg font-[400] text-gray-600">
+					<div class="mt-2 text-lg font-[400] text-gray-600">
 						{{ $t('SetupAccount_content_4') }}
 					</div>
 				</div>
@@ -298,7 +298,8 @@ export default {
 					invited_by_parent_team: this.invitedByParentTeam,
 					accepted_user_terms: this.termsAccepted,
 					oauth_signup: this.oauthSignup,
-					signup_values: this.signupValues
+					signup_values: this.signupValues,
+					lang: this.$i18n.locale
 				},
 				onSuccess(res) {
 					this.dashboardRoute = '/setup-account/billing';

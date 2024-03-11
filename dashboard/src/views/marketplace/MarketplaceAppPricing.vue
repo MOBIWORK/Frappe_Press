@@ -69,12 +69,14 @@ function savePlan() {
 	if (currentEditingPlan.name) {
 		updateAppPlan.submit({
 			app_plan_name: currentEditingPlan.name,
-			updated_plan_data: currentEditingPlan
+			updated_plan_data: currentEditingPlan,
+			lang: this.$i18n.locale
 		});
 	} else {
 		createAppPlan.submit({
 			plan_data: currentEditingPlan,
-			marketplace_app: props.app?.name
+			marketplace_app: props.app?.name,
+			lang: this.$i18n.locale
 		});
 	}
 }
@@ -102,7 +104,10 @@ function resetCurrentEditingPlan() {
 
 <template>
 	<div>
-		<Card :title="$t('Pricing_Plans')" :subtitle="$t('MarketplaceAppPricing_content_1')">
+		<Card
+			:title="$t('Pricing_Plans')"
+			:subtitle="$t('MarketplaceAppPricing_content_1')"
+		>
 			<div class="m-4">
 				<div class="flex justify-center" v-if="appPlans.loading">
 					<Button :loading="true">{{ $t('Loading') }}</Button>
@@ -131,7 +136,9 @@ function resetCurrentEditingPlan() {
 							<p class="mb-3.5 text-base text-gray-700">
 								{{ $t('MarketplaceAppPricing_content_2') }}
 							</p>
-							<Button variant="solid" @click="editPlan()">{{ $t('Create_plan') }}</Button>
+							<Button variant="solid" @click="editPlan()">{{
+								$t('Create_plan')
+							}}</Button>
 						</div>
 					</div>
 				</div>
@@ -164,7 +171,9 @@ function resetCurrentEditingPlan() {
 						></FormControl>
 					</div>
 					<div class="mb-8">
-						<h3 class="mb-4 text-lg font-semibold">{{ $t('Subscription_Price') }}</h3>
+						<h3 class="mb-4 text-lg font-semibold">
+							{{ $t('Subscription_Price') }}
+						</h3>
 						<div class="grid grid-cols-2 gap-2">
 							<FormControl
 								:label="`${$t('Price')} VND`"
@@ -209,7 +218,9 @@ function resetCurrentEditingPlan() {
 							</div>
 						</div>
 						<div>
-							<Button icon-left="plus" @click="addFeatureInput">{{ $t('Add') }}</Button>
+							<Button icon-left="plus" @click="addFeatureInput">{{
+								$t('Add')
+							}}</Button>
 						</div>
 
 						<div>

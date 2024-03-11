@@ -35,7 +35,9 @@
 					</div>
 				</div>
 				<div>
-					<label class="text-lg font-semibold"> {{ $t('Select_a_Frappe_version') }} </label>
+					<label class="text-lg font-semibold">
+						{{ $t('Select_a_Frappe_version') }}
+					</label>
 					<p class="text-base text-gray-700">
 						{{ $t('NewBench_content_3') }}
 					</p>
@@ -149,7 +151,8 @@ export default {
 							source: app.source.name
 						})),
 						server: this.server || null
-					}
+					},
+					lang: this.$i18n.locale
 				},
 				validate() {
 					if (!this.benchTitle) {

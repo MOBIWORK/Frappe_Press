@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 
 from typing import Dict, List
 from itertools import groupby
@@ -397,7 +398,7 @@ def generator_order_code(number=12):
 
 
 @frappe.whitelist()
-def create_order(amount):
+def create_order(amount, lang='vi'):
     try:
         team = get_current_team()
         amount_new = round(amount)
@@ -426,13 +427,13 @@ def create_order(amount):
                 if amount_free > item['maximum_amount']:
                     amount_free = item['maximum_amount']
                 amount_promotion_2 = round(amount_free)
-        print(amount_promotion_2)
+
         # kiem tra config payos
         payos_settings = check_payos_settings()
         if not payos_settings:
             return {
                 'code': '2',
-                'desc': 'Chưa thể nạp tiền ngay lúc này, vui lòng thử lại sau.'
+                'desc': _("Unable to deposit funds at the moment", lang) + ', ' + _("please try again later", lang)
             }
 
         # check exists pre payment
@@ -447,7 +448,7 @@ def create_order(amount):
         if check_pre_payment:
             return {
                 'code': '1',
-                'desc': 'Vui lòng thanh toán giao dịch nạp tiền trước đó.'
+                'desc': _("Please settle the payment for the previous deposit transaction", lang)
             }
 
         # check orderCode exsists
@@ -488,7 +489,7 @@ def create_order(amount):
 
 
 @frappe.whitelist()
-def payos_return_cancel_order(order_code):
+def payos_return_cancel_order(order_code, lang='vi'):
     try:
         name = frappe.db.get_value(
             'Balance Transaction', {'order_code': order_code}, ['name'])
@@ -496,7 +497,7 @@ def payos_return_cancel_order(order_code):
         if not name:
             return {
                 'code': '1',
-                'desc': 'Không tìm thấy giao dịch.'
+                'desc': _("Transaction not found", lang)
             }
 
         balance_transaction = frappe.get_doc(
@@ -504,7 +505,7 @@ def payos_return_cancel_order(order_code):
         if balance_transaction.docstatus != 0 or balance_transaction.payos_payment_status == "CANCELLED":
             return {
                 'code': '1',
-                'desc': "Giao dịch đã được hủy trước đó"
+                'desc': _("The transaction has been canceled previously", lang)
             }
 
         balance_transaction.payos_payment_status = 'CANCELLED'
@@ -528,7 +529,7 @@ def payos_return_cancel_order(order_code):
 
 
 @frappe.whitelist()
-def cancel_order(name):
+def cancel_order(name, lang='vi'):
     try:
         payos_settings = check_payos_settings()
         balance_transaction = frappe.get_doc(
@@ -537,7 +538,7 @@ def cancel_order(name):
         if not payos_settings or not balance_transaction:
             return {
                 'code': '1',
-                'desc': 'Chưa thể hủy giao dịch ngay lúc này, vui lòng thử lại sau.'
+                'desc': _("Unable to cancel the transaction at this time", lang) + ', ' + _("please try again later", lang)
             }
 
         payOS = PayOS(client_id=payos_settings.get('payos_client_id'), api_key=payos_settings.get(
@@ -562,7 +563,7 @@ def cancel_order(name):
         else:
             return {
                 'code': '1',
-                'desc': 'Hủy thất bại.'
+                'desc': _("Cancellation failed", lang)
             }
     except Exception as ex:
         return {
@@ -572,7 +573,7 @@ def cancel_order(name):
 
 
 @frappe.whitelist()
-def get_link_payment_payos(info_order):
+def get_link_payment_payos(info_order, lang='vi'):
     try:
         payos_settings = check_payos_settings()
         balance_transaction = frappe.get_doc(
@@ -581,7 +582,7 @@ def get_link_payment_payos(info_order):
         if not payos_settings or not balance_transaction:
             return {
                 'code': '1',
-                'desc': 'Chưa thể nạp tiền ngay lúc này, vui lòng thử lại sau.'
+                'desc': _("Unable to deposit funds at the moment", lang) + ', ' + _("please try again later", lang)
             }
 
         payOS = PayOS(client_id=payos_settings.get('payos_client_id'), api_key=payos_settings.get(

@@ -291,7 +291,8 @@ export default {
 						share_details_consent: this.shareDetailsConsent,
 						skip_failing_patches: this.skipFailingPatches,
 						selected_app_plans: this.selectedAppPlans
-					}
+					},
+					lang: this.$i18n.locale
 				},
 				onSuccess(data) {
 					let { site, job = '' } = data;

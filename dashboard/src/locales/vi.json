@@ -1,4 +1,5 @@
 {
+	"Not_logged_in": "Chưa đăng nhập",
 	"Failure": "Thât bại",
 	"Success": "Thành công",
 	"Running": "Đang chạy",
@@ -527,6 +528,7 @@
 	"registration_verification": "Xác thực đăng ký",
 	"return_to_login_page": "Trở về trang đăng nhập",
 	"read": "Đã đọc",
+	"Read": "Đã đọc",
 	"region": "Khu vực",
 	"reason_for_logging_in_as_administrator": "Lý do đăng nhập với tư cách Quản trị viên",
 	"reason_is_required": "Yêu cầu cung cấp lý do",
@@ -552,6 +554,7 @@
 	"deposit_money": "Nạp tiền",
 	"registration_successful": "Đăng ký thành công",
 	"unread": "Chưa đọc",
+	"Unread": "Chưa đọc",
 	"update_available": "Có bản cập nhật",
 	"updating": "Đang cập nhật",
 	"view": "Xem",

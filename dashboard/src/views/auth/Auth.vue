@@ -257,9 +257,7 @@
 						</h3>
 					</template>
 					<template #body-content>
-						<div
-							class="text-center text-base text-gray-600"
-						>
+						<div class="text-center text-base text-gray-600">
 							{{ $t('Auth_content_5') }}
 							<span class="text-gray-900">{{ email }}</span
 							>{{ $t('Auth_content_6') }}
@@ -300,7 +298,8 @@ export default {
 				params: {
 					email: this.email,
 					referrer: this.getReferrerIfAny(),
-					product: this.$route.query.product
+					product: this.$route.query.product,
+					lang: this.$i18n.locale
 				},
 				onSuccess() {
 					this.signupEmailSent = true;

@@ -1,8 +1,8 @@
 <template>
 	<Alert :title="alertTitle" v-if="show">
-		<span v-if="deployInformation.deploy_in_progress"
-			>{{ $t('AlertBenchUpdate_content_1') }}</span
-		>
+		<span v-if="deployInformation.deploy_in_progress">{{
+			$t('AlertBenchUpdate_content_1')
+		}}</span>
 		<span v-else-if="bench.status == 'Active'">
 			{{ $t('AlertBenchUpdate_content_2') }}
 		</span>
@@ -18,11 +18,7 @@
 			>
 			<Tooltip
 				v-else
-				:text="
-					!permissions.update
-						? $t('SiteOverviewPlan_content_3')
-						: ''
-				"
+				:text="!permissions.update ? $t('SiteOverviewPlan_content_3') : ''"
 			>
 				<Button
 					variant="solid"
@@ -101,7 +97,8 @@ export default {
 				url: 'press.api.bench.deploy',
 				params: {
 					name: this.bench?.name,
-					apps: this.selectedApps
+					apps: this.selectedApps,
+					lang: this.$i18n.locale
 				},
 				validate() {
 					if (

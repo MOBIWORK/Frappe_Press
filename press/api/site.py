@@ -7,6 +7,7 @@ from frappe.utils.user import is_system_user
 from press.press.doctype.marketplace_app.marketplace_app import get_plans_for_app
 import wrapt
 import frappe
+from frappe import _
 from dns.resolver import Resolver
 import dns.exception
 
@@ -168,7 +169,7 @@ def validate_balance_account(site):
             "Số dư tài khoản không đủ để tạo tổ chức")
 
 
-def _new(site, server: str = None, ignore_plan_validation: bool = False):
+def _new(site, server: str = None, ignore_plan_validation: bool = False, lang='vi'):
     team = get_current_team(get_doc=True)
 
     if site.get('plan') != 'Unlimited':
@@ -176,14 +177,14 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False):
 
     if not team.enabled:
         frappe.throw(
-            "Bạn không thể tạo một tổ chức mới vì tài khoản của bạn đã bị vô hiệu hóa")
+            _("You can't create a new organization because your account has been disabled", lang))
 
     files = site.get("files", {})
     share_details_consent = site.get("share_details_consent")
 
     domain = site.get("domain")
     if not (domain and frappe.db.exists("Root Domain", {"name": domain})):
-        frappe.throw("Không có tên miền gốc cho tổ chức")
+        frappe.throw(_("There is no root domain for the site", lang))
 
     cluster = site.get("cluster") or frappe.db.get_single_value(
         "Press Settings", "cluster"
@@ -230,7 +231,7 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False):
     plan = site["plan"]
     app_plans = site.get("selected_app_plans")
     if not ignore_plan_validation:
-        validate_plan(bench.server, plan)
+        validate_plan(bench.server, plan, lang)
 
     site = frappe.get_doc(
         {
@@ -292,7 +293,7 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False):
     }
 
 
-def validate_plan(server, plan):
+def validate_plan(server, plan, lang):
     if frappe.db.get_value("Plan", plan, "price_vnd") > 0:
         return
     if (
@@ -300,14 +301,14 @@ def validate_plan(server, plan):
             or frappe.db.get_value("Server", server, "team") == get_current_team()
     ):
         return
-    frappe.throw("Bạn không được phép sử dụng gói này.")
+    frappe.throw(_("You are not allowed to use this plan", lang))
 
 
 @frappe.whitelist()
-def new(site):
+def new(site, lang='vi'):
     site["domain"] = frappe.db.get_single_value("Press Settings", "domain")
 
-    return _new(site)
+    return _new(site, lang=lang)
 
 
 def get_app_subscriptions(app_plans, team: str):
@@ -1288,9 +1289,9 @@ def current_plan(name):
 
 @frappe.whitelist()
 @protected("Site")
-def change_plan(name, plan):
+def change_plan(name, plan, lang='vi'):
     site = frappe.get_doc("Site", name)
-    validate_plan(site.server, plan)
+    validate_plan(site.server, plan, lang)
     site.change_plan(plan)
 
 
@@ -1336,7 +1337,7 @@ def last_migrate_failed(name):
 
 @frappe.whitelist()
 @protected("Site")
-def backup(name, with_files=False):
+def backup(name, with_files=False, lang='vi'):
     site_doc = frappe.get_doc("Site", name)
     if site_doc.status == "Suspended":
         activity = frappe.db.get_all(
@@ -1356,7 +1357,7 @@ def backup(name, with_files=False):
                 > 3
         ):
             frappe.throw(
-                "You cannot take more than 3 backups after site suspension")
+                _("You cannot take more than 3 backups after site suspension", lang))
 
     frappe.get_doc("Site", name).backup(with_files)
 
@@ -1771,13 +1772,13 @@ def change_notify_email(name, email):
 
 @frappe.whitelist()
 @protected("Site")
-def change_team(team, name):
+def change_team(team, name, lang='vi'):
 
     if not (
             frappe.db.exists("Team", {"team_title": team})
             and frappe.db.get_value("Team", {"team_title": team}, "enabled", 1)
     ):
-        frappe.throw("No Active Team record found.")
+        frappe.throw(_("No Active Team record found.", lang))
 
     from press.press.doctype.team.team import get_child_team_members
 
@@ -1787,7 +1788,8 @@ def change_team(team, name):
     teams = [current_team.team_title] + child_teams
 
     if team not in teams:
-        frappe.throw(f"{team} is not part of your organization.")
+        frappe.throw(
+            _("{0} is not part of your organization.", lang).format(team))
 
     child_team = frappe.get_doc("Team", {"team_title": team})
     site_doc = frappe.get_doc("Site", name)
@@ -1842,10 +1844,11 @@ def change_group_options(name):
 
 @frappe.whitelist()
 @protected("Site")
-def change_group(name, group):
+def change_group(name, group, lang='vi'):
     team = frappe.db.get_value("Release Group", group, "team")
     if team != get_current_team():
-        frappe.throw(f"Bench {group} does not belong to your team")
+        frappe.throw(
+            _("Bench {0} does not belong to your team", lang).format(group))
 
     frappe.get_doc(
         {
@@ -1881,7 +1884,7 @@ def change_region_options(name):
 
 @frappe.whitelist()
 @protected("Site")
-def change_region(name, cluster, scheduled_datetime=None):
+def change_region(name, cluster, scheduled_datetime=None, lang='vi'):
     group = frappe.db.get_value("Site", name, "group")
     bench_vals = frappe.db.get_value(
         "Bench", {"group": group, "cluster": cluster}, ["name", "server"]
@@ -1889,7 +1892,7 @@ def change_region(name, cluster, scheduled_datetime=None):
 
     if bench_vals is None:
         frappe.throw(
-            f"Bench {group} does not have an existing deploy in {cluster}")
+            _("Bench {0} does not have an existing deploy in {1}", lang).format(group, cluster))
 
     bench, server = bench_vals
 
@@ -1939,7 +1942,7 @@ def get_private_groups_for_upgrade(name, version):
 
 @frappe.whitelist()
 @protected("Site")
-def version_upgrade(name, destination_group, scheduled_datetime=None):
+def version_upgrade(name, destination_group, scheduled_datetime=None, lang='vi'):
     site = frappe.get_doc("Site", name)
     current_version, shared_site = frappe.db.get_value(
         "Release Group", site.group, ["version", "public"]
@@ -1952,7 +1955,8 @@ def version_upgrade(name, destination_group, scheduled_datetime=None):
         )
 
         if not destination_group:
-            frappe.throw(f"There are no public benches with {next_version}.")
+            frappe.throw(
+                _("There are no public benches with {0}.", lang).format('next_version'))
 
     version_upgrade = frappe.get_doc(
         {
@@ -1981,7 +1985,7 @@ def change_server_options(name):
 
 @frappe.whitelist()
 @protected("Site")
-def change_server_bench_options(name, server):
+def change_server_bench_options(name, server, lang='vi'):
     site_group, site_bench = frappe.db.get_value(
         "Site", name, ["group", "bench"])
     site_candidate = frappe.db.get_value("Bench", site_bench, "candidate")
@@ -2005,7 +2009,8 @@ def change_server_bench_options(name, server):
 
     if not rg:
         frappe.throw(
-            f"There are no benches with <b>{site_version}</b> in server <b>{server}</b>."
+            _("There are no benches with <b>{0}</b> in server <b>{1}</b>.", lang).format(
+                site_version, server)
         )
 
     return rg

@@ -137,7 +137,8 @@ export default {
 			return {
 				url: 'press.api.spaces.code_server_password',
 				params: {
-					name: this.codeServer.name
+					name: this.codeServer.name,
+					lang: this.$i18n.locale
 				},
 				onSuccess(r) {
 					const clipboard = window.navigator.clipboard;

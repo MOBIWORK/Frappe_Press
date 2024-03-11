@@ -230,11 +230,14 @@ export default {
 				url: 'press.api.site.change_plan',
 				params: {
 					name: this.site,
-					plan: this.selectedPlan?.name
+					plan: this.selectedPlan?.name,
+					lang: this.$i18n.locale
 				},
 				onSuccess() {
 					notify({
-						title: `${this.$t('Plan_changed_to')} ${this.selectedPlan.plan_title}`,
+						title: `${this.$t('Plan_changed_to')} ${
+							this.selectedPlan.plan_title
+						}`,
 						icon: 'check',
 						color: 'green'
 					});

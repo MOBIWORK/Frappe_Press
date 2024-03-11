@@ -11,8 +11,8 @@
 				<template #actions>
 					<TabButtons
 						:buttons="[
-							{ label: $t('unread'), active: true },
-							{ label: $t('read') }
+							{ label: $t('Unread'), value: 'unread', active: true },
+							{ label: $t('Read'), value: 'read' }
 						]"
 						v-model="activeTab"
 					/>
@@ -62,12 +62,12 @@ export default {
 	},
 	data() {
 		return {
-			activeTab: this.$t('unread')
+			activeTab: 'unread'
 		};
 	},
 	resources: {
 		unreadNotifications() {
-			if (this.activeTab !== this.$t('unread')) return;
+			if (this.activeTab !== 'unread') return;
 			return {
 				url: 'press.api.notifications.get_notifications',
 				params: {
@@ -78,7 +78,7 @@ export default {
 			};
 		},
 		readNotifications() {
-			if (this.activeTab !== this.$t('read')) return;
+			if (this.activeTab !== 'read') return;
 			return {
 				url: 'press.api.notifications.get_notifications',
 				params: {
@@ -96,18 +96,6 @@ export default {
 		}
 	},
 	methods: {
-		getTran() {
-			let rs = this.activeTab;
-			let lang = ['Unread', 'Read'].includes(rs) ? 'en' : 'vi';
-			if (this.$i18n.locale != lang) {
-				let ops = { 'Đã đọc': 'Read', 'Chưa đọc': 'Unread' };
-				if (lang == 'en') {
-					ops = { Read: 'Đã đọc', Unread: 'Chưa đọc' };
-				}
-				rs = ops[rs];
-				this.activeTab = rs;
-			}
-		},
 		openNotification(notification) {
 			if (!notification.read) {
 				this.$resources.markNotificationAsRead.submit({
@@ -121,8 +109,7 @@ export default {
 	},
 	computed: {
 		notifications() {
-			this.getTran();
-			return this.activeTab === this.$t('unread')
+			return this.activeTab === 'unread'
 				? this.$resources.unreadNotifications.data
 				: this.$resources.readNotifications.data;
 		}

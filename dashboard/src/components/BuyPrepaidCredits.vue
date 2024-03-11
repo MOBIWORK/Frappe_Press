@@ -254,7 +254,8 @@ export default {
 			return {
 				url: 'press.api.billing.create_order',
 				params: {
-					amount: this.creditsToBuy
+					amount: this.creditsToBuy,
+					lang: this.$i18n.locale
 				},
 				validate() {
 					this.errorMessage = null;
@@ -297,7 +298,8 @@ export default {
 			return {
 				url: 'press.api.billing.get_link_payment_payos',
 				params: {
-					info_order: this.infoOrder
+					info_order: this.infoOrder,
+					lang: this.$i18n.locale
 				},
 				async onSuccess(data) {
 					if (data.code == '00') {

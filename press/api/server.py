@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 import requests
 from press.press.doctype.cluster.cluster import Cluster
 
@@ -178,11 +179,11 @@ def archive(name):
 
 
 @frappe.whitelist()
-def new(server):
+def new(server, lang='vi'):
     team = get_current_team(get_doc=True)
     if not team.enabled:
         frappe.throw(
-            "You cannot create a new server because your account is disabled")
+            _("You cannot create a new server because your account is disabled", lang))
 
     cluster: Cluster = frappe.get_doc("Cluster", server["cluster"])
 
@@ -388,9 +389,10 @@ def prometheus_query(query, function, timezone, timespan, timegrain):
 
 
 @frappe.whitelist()
-def options():
+def options(lang='vi'):
     if not get_current_team(get_doc=True).servers_enabled:
-        frappe.throw("Servers feature is not yet enabled on your account")
+        frappe.throw(
+            _("Servers feature is not yet enabled on your account", lang))
     regions = frappe.get_all(
         "Cluster", {"cloud_provider": "AWS EC2",
                     "public": True}, ["name", "title", "image"]

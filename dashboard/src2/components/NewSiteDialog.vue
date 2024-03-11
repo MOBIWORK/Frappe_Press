@@ -95,7 +95,8 @@ export default {
 				params: {
 					doctype: 'Site',
 					method: 'options_for_new',
-					selected_values: this.selectedValues
+					selected_values: this.selectedValues,
+					lang: this.$i18n.locale
 				},
 				auto: true
 			};

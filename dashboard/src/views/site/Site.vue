@@ -133,7 +133,8 @@
 						onClick: () =>
 							$resources.transferSite.submit({
 								team: emailOfChildTeam,
-								name: siteName
+								name: siteName,
+								lang: this.$i18n.locale
 							})
 					}
 				]

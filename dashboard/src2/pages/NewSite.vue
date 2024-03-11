@@ -236,7 +236,8 @@ export default {
 					selected_values: {
 						version: this.version,
 						apps: this.apps
-					}
+					},
+					lang: this.$i18n.locale
 				},
 				auto: true
 			};
@@ -268,7 +269,8 @@ export default {
 						apps: apps.map(app => ({ app })),
 						cluster: this.cluster,
 						bench: this.options.bench
-					}
+					},
+					lang: this.$i18n.locale
 				},
 				validate() {
 					// let canCreate =

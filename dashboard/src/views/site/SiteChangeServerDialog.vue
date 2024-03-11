@@ -122,7 +122,8 @@ export default {
 				url: 'press.api.site.change_server_bench_options',
 				params: {
 					name: this.site?.name,
-					server: this.targetServer
+					server: this.targetServer,
+					lang: this.$i18n.locale
 				},
 				initialData: [],
 				transform(d) {

@@ -151,7 +151,8 @@ export default {
 				params: {
 					name: this.site?.name,
 					destination_group: this.privateReleaseGroup,
-					scheduled_datetime: this.datetimeInVN
+					scheduled_datetime: this.datetimeInVN,
+					lang: this.$i18n.locale
 				},
 				onSuccess() {
 					notify({

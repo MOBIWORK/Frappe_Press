@@ -63,7 +63,8 @@
 					@click="
 						$resources.addMarketplaceApp.submit({
 							source: selectedApp.source.name,
-							app: selectedApp.app
+							app: selectedApp.app,
+							lang: this.$i18n.locale
 						})
 					"
 				>

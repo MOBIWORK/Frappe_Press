@@ -78,7 +78,8 @@ export default {
 				url: 'press.api.site.change_plan',
 				params: {
 					name: this.site?.name,
-					plan: this.selectedPlan?.name
+					plan: this.selectedPlan?.name,
+					lang: this.$i18n.locale
 				},
 				onSuccess() {
 					notify({

@@ -75,7 +75,8 @@ export default {
 			return {
 				url: 'press.api.site.change_group',
 				params: {
-					name: this.site?.name
+					name: this.site?.name,
+					lang: this.$i18n.locale
 				},
 				onSuccess() {
 					const destinationGroupTitle =
@@ -85,7 +86,9 @@ export default {
 
 					notify({
 						title: this.$t('scheduled_bench_change'),
-						message: `${this.$t('SiteChangeGroupDialog_content_2')} <b>${destinationGroupTitle}</b>`,
+						message: `${this.$t(
+							'SiteChangeGroupDialog_content_2'
+						)} <b>${destinationGroupTitle}</b>`,
 						color: 'green',
 						icon: 'check'
 					});

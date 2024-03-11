@@ -1,6 +1,7 @@
 import time
 
 import frappe
+from frappe import _
 from dns.resolver import Resolver
 
 from press.api.server import plans
@@ -10,14 +11,14 @@ from press.api.site import NAMESERVERS
 
 
 @frappe.whitelist()
-def new(server):
+def new(server, lang='vi'):
     team = get_current_team(get_doc=True)
     if not team.enabled:
         frappe.throw(
-            "You cannot create a new server because your account is disabled")
+            _("You cannot create a new server because your account is disabled", lang))
     if not team.self_hosted_servers_enabled:
         frappe.throw(
-            "You cannot create a new server because Hybrid Cloud is disabled for your account. Please contact support to enable it."
+            _("You cannot create a new server because Hybrid Cloud is disabled for your account. Please contact support to enable it.", lang)
         )
     cluster = "Hybrid"
     proxy_server = frappe.get_all(

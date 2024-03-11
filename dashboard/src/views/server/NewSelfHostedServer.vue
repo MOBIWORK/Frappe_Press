@@ -219,7 +219,8 @@ export default {
 						publicIP: this.publicIP,
 						plan: this.selectedPlan,
 						url: this.domain
-					}
+					},
+					lang: this.$i18n.locale
 				},
 				onSuccess(data) {
 					this.serverDoc = data;

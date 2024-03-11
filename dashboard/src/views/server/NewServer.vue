@@ -61,7 +61,9 @@
 					<ErrorMessage class="mb-4" :message="$resources.newServer.error" />
 
 					<div class="flex justify-between">
-						<Button v-if="hasPrevious" @click="previous"> {{ $t('Back') }} </Button>
+						<Button v-if="hasPrevious" @click="previous">
+							{{ $t('Back') }}
+						</Button>
 						<Button
 							v-if="hasNext"
 							class="ml-auto"
@@ -140,7 +142,9 @@ export default {
 		};
 	},
 	async mounted() {
-		this.options = await this.$call('press.api.server.options');
+		this.options = await this.$call('press.api.server.options', {
+			lang: this.$i18n.locale
+		});
 		this.options.app_plans = this.options.app_plans.map(plan => {
 			plan.disabled = !this.$account.hasBillingInfo;
 			return plan;
@@ -160,7 +164,8 @@ export default {
 						cluster: this.selectedRegion,
 						app_plan: this.selectedAppPlan?.name,
 						db_plan: this.selectedDBPlan?.name
-					}
+					},
+					lang: this.$i18n.locale
 				},
 				onSuccess(data) {
 					let { server } = data;

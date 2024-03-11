@@ -3,6 +3,7 @@
 
 from __future__ import unicode_literals
 import frappe
+from frappe import _
 import inspect
 from pypika.queries import QueryBuilder
 from frappe.model.base_document import get_controller
@@ -13,181 +14,183 @@ from frappe.handler import get_attr
 
 @frappe.whitelist()
 def get_list(
-	doctype,
-	fields=None,
-	filters=None,
-	order_by=None,
-	start=0,
-	limit=20,
-	parent=None,
-	debug=False,
+        doctype,
+        fields=None,
+        filters=None,
+        order_by=None,
+        start=0,
+        limit=20,
+        parent=None,
+        debug=False,
 ):
-	check_permissions(doctype)
-	valid_fields = validate_fields(doctype, fields)
-	valid_filters = validate_filters(doctype, filters)
-	query = frappe.qb.get_query(
-		doctype,
-		filters=valid_filters,
-		fields=valid_fields,
-		offset=start,
-		limit=limit,
-		order_by=order_by,
-	)
-	filters = frappe._dict(filters or {})
-	list_args = dict(
-		fields=fields,
-		filters=filters,
-		order_by=order_by,
-		start=start,
-		limit=limit,
-		parent=parent,
-		debug=debug,
-	)
-	query = apply_custom_filters(doctype, query, **list_args)
-	if isinstance(query, QueryBuilder):
-		return query.run(as_dict=1, debug=debug)
-	elif isinstance(query, list):
-		return query
-	elif query is None:
-		return []
+    check_permissions(doctype)
+    valid_fields = validate_fields(doctype, fields)
+    valid_filters = validate_filters(doctype, filters)
+    query = frappe.qb.get_query(
+        doctype,
+        filters=valid_filters,
+        fields=valid_fields,
+        offset=start,
+        limit=limit,
+        order_by=order_by,
+    )
+    filters = frappe._dict(filters or {})
+    list_args = dict(
+        fields=fields,
+        filters=filters,
+        order_by=order_by,
+        start=start,
+        limit=limit,
+        parent=parent,
+        debug=debug,
+    )
+    query = apply_custom_filters(doctype, query, **list_args)
+    if isinstance(query, QueryBuilder):
+        return query.run(as_dict=1, debug=debug)
+    elif isinstance(query, list):
+        return query
+    elif query is None:
+        return []
 
 
 @frappe.whitelist()
 def get(doctype, name):
-	check_permissions(doctype)
-	doc = frappe.get_doc(doctype, name)
+    check_permissions(doctype)
+    doc = frappe.get_doc(doctype, name)
 
-	fields = list(default_fields)
-	if hasattr(doc, "whitelisted_fields"):
-		fields += doc.whitelisted_fields
+    fields = list(default_fields)
+    if hasattr(doc, "whitelisted_fields"):
+        fields += doc.whitelisted_fields
 
-	_doc = frappe._dict()
-	for fieldname in fields:
-		_doc[fieldname] = doc.get(fieldname)
+    _doc = frappe._dict()
+    for fieldname in fields:
+        _doc[fieldname] = doc.get(fieldname)
 
-	if hasattr(doc, "get_doc"):
-		result = doc.get_doc(_doc)
-		if isinstance(result, dict):
-			_doc.update(result)
+    if hasattr(doc, "get_doc"):
+        result = doc.get_doc(_doc)
+        if isinstance(result, dict):
+            _doc.update(result)
 
-	return _doc
+    return _doc
 
 
 @frappe.whitelist(methods=["POST", "PUT"])
-def insert(doc=None):
-	if not doc or not doc.get("doctype"):
-		frappe.throw(frappe._("doc.doctype is required"))
-	check_permissions(doc.doctype)
+def insert(doc=None, lang='vi'):
+    if not doc or not doc.get("doctype"):
+        frappe.throw(frappe._("doc.doctype is required"))
+    check_permissions(doc.doctype)
 
-	doc = frappe._dict(doc)
-	if frappe.is_table(doc.doctype):
-		if not (doc.parenttype and doc.parent and doc.parentfield):
-			frappe.throw(
-				frappe._("Parenttype, Parent and Parentfield are required to insert a child record")
-			)
+    doc = frappe._dict(doc)
+    if frappe.is_table(doc.doctype):
+        if not (doc.parenttype and doc.parent and doc.parentfield):
+            frappe.throw(
+                _("Parenttype{0} Parent and Parentfield are required to insert a child record", lang).format(
+                    ',')
+            )
 
-		# inserting a child record
-		parent = frappe.get_doc(doc.parenttype, doc.parent)
-		parent.append(doc.parentfield, doc)
-		parent.save()
-		return parent
+        # inserting a child record
+        parent = frappe.get_doc(doc.parenttype, doc.parent)
+        parent.append(doc.parentfield, doc)
+        parent.save()
+        return parent
 
-	return frappe.get_doc(doc).insert()
+    return frappe.get_doc(doc).insert()
 
 
 @frappe.whitelist(methods=["POST", "PUT"])
 def set_value(doctype, name, fieldname, value=None):
-	pass
+    pass
 
 
 @frappe.whitelist(methods=["DELETE", "POST"])
 def delete(doctype, name):
-	pass
+    pass
 
 
 @frappe.whitelist()
-def run_doctype_method(doctype, method, **kwargs):
-	check_permissions(doctype)
+def run_doctype_method(doctype, method, lang='vi', **kwargs):
+    check_permissions(doctype)
 
-	from frappe.modules.utils import get_doctype_module, get_module_name
+    from frappe.modules.utils import get_doctype_module, get_module_name
 
-	module = get_doctype_module(doctype)
-	method_path = get_module_name(doctype, module, "", "." + method)
+    module = get_doctype_module(doctype)
+    method_path = get_module_name(doctype, module, "", "." + method)
 
-	try:
-		_function = get_attr(method_path)
-	except Exception as e:
-		frappe.throw(
-			frappe._("Failed to get method for command {0} with {1}").format(method_path, e)
-		)
+    try:
+        _function = get_attr(method_path)
+    except Exception as e:
+        frappe.throw(
+            _("Failed to get method for command {0} with {1}", lang).format(
+                method_path, e)
+        )
 
-	is_whitelisted(_function)
+    is_whitelisted(_function)
 
-	return frappe.call(_function, **kwargs)
+    return frappe.call(_function, **kwargs)
 
 
 def apply_custom_filters(doctype, query, **list_args):
-	"""Apply custom filters to query"""
-	controller = get_controller(doctype)
-	if hasattr(controller, "get_list_query"):
-		if inspect.getfullargspec(controller.get_list_query).varkw:
-			return controller.get_list_query(query, **list_args)
-		else:
-			return controller.get_list_query(query)
+    """Apply custom filters to query"""
+    controller = get_controller(doctype)
+    if hasattr(controller, "get_list_query"):
+        if inspect.getfullargspec(controller.get_list_query).varkw:
+            return controller.get_list_query(query, **list_args)
+        else:
+            return controller.get_list_query(query)
 
-	return query
+    return query
 
 
 def validate_filters(doctype, filters):
-	"""Filter filters based on permissions"""
-	if not filters:
-		return filters
+    """Filter filters based on permissions"""
+    if not filters:
+        return filters
 
-	out = {}
-	for fieldname, value in filters.items():
-		if is_valid_field(doctype, fieldname):
-			out[fieldname] = value
+    out = {}
+    for fieldname, value in filters.items():
+        if is_valid_field(doctype, fieldname):
+            out[fieldname] = value
 
-	return out
+    return out
 
 
 def validate_fields(doctype, fields):
-	"""Filter fields based on permissions"""
-	if not fields:
-		return fields
+    """Filter fields based on permissions"""
+    if not fields:
+        return fields
 
-	filtered_fields = []
-	for field in fields:
-		if is_valid_field(doctype, field):
-			filtered_fields.append(field)
+    filtered_fields = []
+    for field in fields:
+        if is_valid_field(doctype, field):
+            filtered_fields.append(field)
 
-	return filtered_fields
+    return filtered_fields
 
 
 def is_valid_field(doctype, field):
-	"""Check if field is valid"""
-	if not field:
-		return False
+    """Check if field is valid"""
+    if not field:
+        return False
 
-	if field == "*" or "." in field:
-		return True
-	elif isinstance(field, dict) or field in default_fields:
-		return True
-	elif df := frappe.get_meta(doctype).get_field(field):
-		if df.fieldtype not in frappe.model.table_fields:
-			return True
+    if field == "*" or "." in field:
+        return True
+    elif isinstance(field, dict) or field in default_fields:
+        return True
+    elif df := frappe.get_meta(doctype).get_field(field):
+        if df.fieldtype not in frappe.model.table_fields:
+            return True
 
-	return False
+    return False
 
 
-def check_permissions(doctype):
-	# TODO: remove this when we have proper permission checking
-	if not (frappe.conf.developer_mode or frappe.local.dev_server):
-		frappe.only_for("System Manager")
+def check_permissions(doctype, lang='vi'):
+    # TODO: remove this when we have proper permission checking
+    if not (frappe.conf.developer_mode or frappe.local.dev_server):
+        frappe.only_for("System Manager")
 
-	if not frappe.local.team:
-		frappe.throw(
-			"current_team is not set. Use X-PRESS-TEAM header in the request to set it."
-		)
+    if not frappe.local.team:
+        frappe.throw(
+            _("current_team is not set. Use X-PRESS-TEAM header in the request to set it.", lang)
+        )
 
-	return True
+    return True
