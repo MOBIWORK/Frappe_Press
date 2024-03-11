@@ -135,17 +135,13 @@ export default {
 				this.$resources.pastInvoices.loading ||
 				this.filteredInvoices.length > 0
 			) {
-				if (this.$i18n.locale == 'vi') {
-					return `Lịch sử thanh toán hóa đơn của bạn với trạng thái hóa đơn là ${this.invoiceStatus}`;
-				} else {
-					return `History of your ${this.invoiceStatus} invoice payments`;
-				}
+				return `${this.$t('AccountBillingPayments_1')} ${
+					this.invoiceStatus
+				} ${this.$t('AccountBillingPayments_2')}`;
 			}
-			if (this.$i18n.locale == 'vi') {
-				return `Chưa có hóa đơn ${this.invoiceStatus} nào được tạo.`;
-			} else {
-				return `No ${this.invoiceStatus} invoices have been generated yet`;
-			}
+			return `${this.$t('AccountBillingPayments_3')} ${
+				this.invoiceStatus
+			} ${this.$t('AccountBillingPayments_4')}`;
 		}
 	},
 	methods: {

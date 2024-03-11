@@ -1171,5 +1171,10 @@
 	"BenchDependencies_content_3": "No changes made",
 	"===91===": "page-BenchRegions.vue",
 	"BenchRegions_content_1": "Regions available for your bench",
-	"BenchRegions_content_2": "Select secondary region for your bench"
+	"BenchRegions_content_2": "Select secondary region for your bench",
+	"===92===": "page-AccountBillingPayments.vue",
+	"AccountBillingPayments_1": "History of your",
+	"AccountBillingPayments_2": "invoice payments",
+	"AccountBillingPayments_3": "No",
+	"AccountBillingPayments_4": "invoices have been generated yet"
 }

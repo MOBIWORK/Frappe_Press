@@ -206,42 +206,46 @@ export default {
 				}
 			};
 		},
-		disableAccount: {
-			url: 'press.api.account.disable_account',
-			params: {
-				lang: this.$i18n.locale
-			},
-			onSuccess(data) {
-				this.showDisableAccountDialog = false;
+		disableAccount() {
+			return {
+				url: 'press.api.account.disable_account',
+				params: {
+					lang: this?.$i18n.locale
+				},
+				onSuccess(data) {
+					this.showDisableAccountDialog = false;
 
-				if (data === 'Unpaid Invoices') {
-					this.showFinalizeInvoicesDialog = true;
-				} else {
+					if (data === 'Unpaid Invoices') {
+						this.showFinalizeInvoicesDialog = true;
+					} else {
+						notify({
+							title: this.$t('account_disabled'),
+							message: this.$t('accountprofile_content_15'),
+							icon: 'check',
+							color: 'green'
+						});
+						this.$account.fetchAccount();
+					}
+				}
+			};
+		},
+		enableAccount() {
+			return {
+				url: 'press.api.account.enable_account',
+				params: {
+					lang: this.$i18n.locale
+				},
+				onSuccess() {
 					notify({
-						title: this.$t('account_disabled'),
-						message: this.$t('accountprofile_content_15'),
+						title: this.$t('account_enabled'),
+						message: this.$t('accountprofile_content_16'),
 						icon: 'check',
 						color: 'green'
 					});
 					this.$account.fetchAccount();
+					this.showEnableAccountDialog = false;
 				}
-			}
-		},
-		enableAccount: {
-			url: 'press.api.account.enable_account',
-			params: {
-				lang: this.$i18n.locale
-			},
-			onSuccess() {
-				notify({
-					title: this.$t('account_enabled'),
-					message: this.$t('accountprofile_content_16'),
-					icon: 'check',
-					color: 'green'
-				});
-				this.$account.fetchAccount();
-				this.showEnableAccountDialog = false;
-			}
+			};
 		},
 		isDeveloperAccountAllowed() {
 			return {

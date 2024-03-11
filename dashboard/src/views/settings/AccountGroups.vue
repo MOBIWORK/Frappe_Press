@@ -125,7 +125,7 @@ export default {
 				this.$resources.groups.fetch();
 				notify({
 					title: this.$t('group_removed'),
-					message: 'Quyền đã được loại bỏ khỏi tất cả các thành viên trong đội',
+					message: this.$t('accountgroups_content_3'),
 					color: 'green',
 					icon: 'check'
 				});

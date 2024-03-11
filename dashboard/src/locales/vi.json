@@ -752,9 +752,9 @@
 	"accountmembers_content_3": "Họ sẽ nhận được một email trong thời gian ngắn để tham gia vào nhóm của bạn.",
 	"accountmembers_content_4": "Bạn có chắc chắn muốn loại bỏ",
 	"===11===": "page-AccountGroups.vue",
-	"accountgroups_content_1": "Tạo một nhóm hoặc quyền và gán nó cho các thành viên trong đội của bạn",
+	"accountgroups_content_1": "Tạo một nhóm hoặc quyền và gán nó cho các thành viên trong nhóm của bạn",
 	"accountgroups_content_2": "Bây giờ bạn có thể chỉ định nhóm này cho các thành viên trong nhóm của mình",
-	"accountgroups_content_3": "Quyền đã được loại bỏ khỏi tất cả các thành viên trong đội",
+	"accountgroups_content_3": "Quyền đã được loại bỏ khỏi tất cả các thành viên trong nhóm",
 	"===12===": "page-AccountAPI.vue",
 	"accountapi_content_1": "Khóa API được liên kết với tài khoản của bạn",
 	"accountapi_content_2": "Các cặp khóa và mã bí mật API có thể được sử dụng để truy cập vào",
@@ -1170,5 +1170,10 @@
 	"BenchDependencies_content_3": "Không có sự thay đổi nào được thực hiện",
 	"===91===": "page-BenchRegions.vue",
 	"BenchRegions_content_1": "Các khu vực có sẵn cho bench của bạn",
-	"BenchRegions_content_2": "Chọn khu vực phụ cho bench của bạn"
+	"BenchRegions_content_2": "Chọn khu vực phụ cho bench của bạn",
+	"===92===": "page-AccountBillingPayments.vue",
+	"AccountBillingPayments_1": "Lịch sử thanh toán hóa đơn của bạn với trạng thái hóa đơn là",
+	"AccountBillingPayments_2": "",
+	"AccountBillingPayments_3": "Chưa có hóa đơn",
+	"AccountBillingPayments_4": "nào được tạo"
 }
