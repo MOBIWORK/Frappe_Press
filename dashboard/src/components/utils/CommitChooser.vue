@@ -3,12 +3,17 @@
 		:options="options"
 		:value="modelValue"
 		@change="
-			e =>
-				$emit('update:modelValue', {
-					// get only the commit hash if release not tagged
-					label: isVersion(e.label) ? e.label : e.label.match(/\((\w+)\)$/)[1],
-					value: e.value
-				})
+			e => {
+				if (e) {
+					$emit('update:modelValue', {
+						// get only the commit hash if release not tagged
+						label: isVersion(e.label)
+							? e.label
+							: e.label.match(/\((\w+)\)$/)[1],
+						value: e.value
+					});
+				}
+			}
 		"
 	>
 		<template v-slot:target="{ togglePopover }">
