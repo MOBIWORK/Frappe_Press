@@ -31,7 +31,7 @@
 				<div class="mt-4">
 					<FormControl
 						v-show="!site.archive_failed"
-						id="auto-update-checkbox"
+						id="auto-drop-checkbox"
 						v-model="forceDrop"
 						type="checkbox"
 						label="Force"

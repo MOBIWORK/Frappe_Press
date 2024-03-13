@@ -35,7 +35,7 @@ export default {
 				'Update Available': 'blue',
 				Enabled: 'blue',
 				'Awaiting Approval': 'orange',
-				'Awaiting Deploy': 'orange',
+				[this.$t('Awaiting_Deploy')]: 'orange',
 				Success: 'green',
 				Deployed: 'green',
 				Expired: 'red',

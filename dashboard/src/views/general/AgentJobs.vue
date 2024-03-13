@@ -75,7 +75,7 @@ export default {
 					setTimeout(() => {
 						// calling reload immediately does not fetch the latest status
 						// so adding 1 sec delay
-						this.$resources.jobs.reset();
+						// this.$resources.jobs.reset();
 						this.$resources.jobs.reload();
 					}, 1000);
 				}

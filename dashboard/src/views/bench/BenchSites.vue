@@ -34,7 +34,7 @@
 						"
 					>
 						{{ group.name }}
-						<Badge :label="group.status" class="ml-2" />
+						<Badge :label="$jobStatus(group.status)" class="ml-2" />
 					</span>
 					<div class="flex items-center space-x-2">
 						<Button

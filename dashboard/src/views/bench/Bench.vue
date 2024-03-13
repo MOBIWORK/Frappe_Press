@@ -42,7 +42,7 @@
 			>
 				<div class="flex items-center">
 					<h1 class="text-2xl font-bold">{{ bench.title }}</h1>
-					<Badge class="ml-4" :label="bench.status" />
+					<Badge class="ml-4" :label="this.$jobStatus(bench.status)" />
 				</div>
 			</div>
 			<div class="mb-2 mt-4">

@@ -11,11 +11,24 @@
 			/>
 			<div v-if="$resources.upcomingInvoice.data" class="flex flex-wrap">
 				<div class="mr-5">
-					<strong>{{ $t('account_balance') }}: </strong>{{ soDu() }} VND
+					<strong>{{ $t('account_balance') }}: </strong
+					>{{
+						this.$formatMoney(
+							$resources.upcomingInvoice.data?.available_credits?.amount_all,
+							0
+						)
+					}}
+					VND
 				</div>
 				<div>
 					<strong>{{ $t('available_balance') }}: </strong
-					>{{ soDuKhaDung() }} VND
+					>{{
+						this.$formatMoney(
+							$resources.upcomingInvoice.data?.available_balances,
+							0
+						)
+					}}
+					VND
 				</div>
 			</div>
 			<Button
@@ -233,6 +246,13 @@ export default {
 		};
 	},
 	async mounted() {
+		this.$socket.on('balance_updated', () => {
+			setTimeout(() => {
+				this.$resources.upcomingInvoice.reset();
+				this.$resources.upcomingInvoice.reload();
+			}, 1000);
+		});
+
 		if (this.$route.query.domain) {
 			let domain = this.$route.query.domain.split('.');
 			if (domain) {
@@ -362,15 +382,6 @@ export default {
 		}
 	},
 	methods: {
-		soDu() {
-			let amount =
-				this.$resources.upcomingInvoice.data?.available_credits?.amount_all;
-			return this.$formatMoney(amount, 0);
-		},
-		soDuKhaDung() {
-			let amount = this.$resources.upcomingInvoice.data?.available_balances;
-			return this.$formatMoney(amount, 0);
-		},
 		handleCreateSite() {
 			// Xoa goi khi loai bo app
 			let appPlans = this.selectedAppPlans;

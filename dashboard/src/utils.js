@@ -170,11 +170,13 @@ let utils = {
 		},
 		$jobStatus(status) {
 			let objStatus = {
+				Active: this.$t('active'),
 				Undelivered: this.$t('Undelivered'),
 				Pending: this.$t('Pending'),
 				Running: this.$t('Running'),
 				Success: this.$t('Success'),
-				Failure: this.$t('Failure')
+				Failure: this.$t('Failure'),
+				'Awaiting Deploy': this.$t('Awaiting_Deploy')
 			};
 			return objStatus[status] || status;
 		},

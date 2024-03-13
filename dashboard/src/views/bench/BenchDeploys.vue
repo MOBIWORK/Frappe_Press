@@ -31,7 +31,7 @@
 						<template #actions>
 							<Badge
 								v-if="candidate.status != 'Success'"
-								:label="candidate.status"
+								:label="this.$jobStatus(candidate.status)"
 							>
 							</Badge>
 						</template>

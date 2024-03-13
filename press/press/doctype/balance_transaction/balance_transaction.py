@@ -109,7 +109,8 @@ class BalanceTransaction(Document):
         self.unallocated_amount_2 = self.amount_promotion_2 - total_allocated_2
 
     def on_submit(self):
-        frappe.publish_realtime("balance_updated", user=self.team)
+        user_team = frappe.db.get_value("Team", self.team, "user")
+        frappe.publish_realtime("balance_updated", user=user_team)
 
     def consume_unallocated_amount(self):
         self.validate_total_unallocated_amount()

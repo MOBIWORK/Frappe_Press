@@ -57,7 +57,10 @@
 					class="rounded"
 				>
 					<TableCell v-for="column in columns">
-						<Badge v-if="column.name === 'status'" :label="row.status" />
+						<Badge
+							v-if="column.name === 'status'"
+							:label="this.$jobStatus(row.status)"
+						/>
 						<div
 							v-else-if="column.name === 'tags'"
 							class="hidden space-x-1 lg:flex"

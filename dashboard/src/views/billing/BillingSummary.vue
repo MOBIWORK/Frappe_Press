@@ -224,9 +224,12 @@ export default {
 		};
 	},
 	mounted() {
-		this.$socket.on('balance_updated', () =>
-			this.$resources.upcomingInvoice.reload()
-		);
+		this.$socket.on('balance_updated', () => {
+			setTimeout(() => {
+				this.$resources.upcomingInvoice.reset();
+				this.$resources.upcomingInvoice.reload();
+			}, 1000);
+		});
 
 		if (this.$account.team.payment_mode === 'Partner Credits') {
 			this.$resources.availablePartnerCredits.submit();
