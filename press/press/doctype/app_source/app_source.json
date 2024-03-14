@@ -138,8 +138,7 @@
    "default": "0",
    "fieldname": "last_github_poll_failed",
    "fieldtype": "Check",
-   "label": "Last GitHub Poll Failed",
-   "read_only": 1
+   "label": "Last GitHub Poll Failed"
   },
   {
    "fieldname": "last_github_response",
@@ -162,7 +161,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-18 16:35:36.969355",
+ "modified": "2024-03-14 09:53:51.659952",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "App Source",
