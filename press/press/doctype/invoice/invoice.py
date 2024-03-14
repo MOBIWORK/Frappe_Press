@@ -86,8 +86,7 @@ class Invoice(Document):
             frappe.db.commit()
 
             frappe.throw(
-                "Not enough credits for this invoice. Change payment mode to Card to"
-                " pay using Stripe."
+                "Not enough credits for this invoice."
             )
 
         # try:
