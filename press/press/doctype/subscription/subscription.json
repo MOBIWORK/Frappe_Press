@@ -73,13 +73,13 @@
    "default": "0",
    "fieldname": "number_days_used",
    "fieldtype": "Int",
-   "label": "S\u1ed1 ng\u00e0y d\u00f9ng tr\u01b0\u1edbc kh\u00f3a site"
+   "label": "S\u1ed1 ng\u00e0y \u0111\u00e3 d\u00f9ng tr\u01b0\u1edbc kh\u00f3a site"
   },
   {
    "default": "0",
    "fieldname": "estimated_number_of_notifications",
    "fieldtype": "Int",
-   "label": "S\u1ed1 l\u1ea7n c\u1ea3nh b\u00e1o tr\u01b0\u1edbc cho site"
+   "label": "S\u1ed1 l\u1ea7n \u0111\u00e3 c\u1ea3nh b\u00e1o tr\u01b0\u1edbc cho site"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -89,7 +89,7 @@
    "link_fieldname": "subscription"
   }
  ],
- "modified": "2024-03-04 15:43:13.145025",
+ "modified": "2024-03-15 08:13:05.265785",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Subscription",

@@ -461,7 +461,7 @@
    "allow_on_submit": 1,
    "fieldname": "link_to_electronic_invoice",
    "fieldtype": "Data",
-   "label": "Link to electronic invoice"
+   "label": "Link t\u1edbi h\u00f3a \u0111\u01a1n"
   },
   {
    "fieldname": "total_after_vat",
@@ -506,7 +506,7 @@
    "link_fieldname": "invoice"
   }
  ],
- "modified": "2024-01-30 14:35:26.823173",
+ "modified": "2024-03-15 08:25:49.968571",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice",
