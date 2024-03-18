@@ -893,7 +893,7 @@
 	"===40===": "page-CreateCodeServerDialog.vue",
 	"CreateCodeServerDialog_content_1": "Give your code server a unique name. It can only contain alphanumeric characters and dashes.",
 	"===41===": "page-utils.vue",
-	"utils_content_1": "Subdomain too short. Use 5 or more characters",
+	"utils_content_1": "Subdomain too short. Use 2 or more characters",
 	"utils_content_2": "Subdomain too long. Use 32 or less characters",
 	"utils_content_3": "Subdomain contains invalid characters. Use lowercase characters, numbers and hyphens",
 	"utils_content_4": "New Site",

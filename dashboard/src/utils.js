@@ -7,7 +7,7 @@ let utils = {
 			if (!subdomain) {
 				return this.$t('Subdomain_cannot_be_empty');
 			}
-			if (subdomain.length < 5) {
+			if (subdomain.length < 2) {
 				return this.$t('utils_content_1');
 			}
 			if (subdomain.length > 32) {

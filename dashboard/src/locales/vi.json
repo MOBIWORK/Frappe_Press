@@ -893,7 +893,7 @@
 	"===40===": "page-CreateCodeServerDialog.vue",
 	"CreateCodeServerDialog_content_1": "Hãy đặt tên duy nhất cho máy chủ mã của bạn. Nó chỉ có thể chứa các ký tự chữ và số cùng dấu gạch ngang.",
 	"===41===": "page-utils.vue",
-	"utils_content_1": "Tên miền quá ngắn. Hãy sử dụng 5 ký tự trở lên",
+	"utils_content_1": "Tên miền quá ngắn. Hãy sử dụng 2 ký tự trở lên",
 	"utils_content_2": "Tên miền quá dài. Sử dụng 32 ký tự trở xuống",
 	"utils_content_3": "Tên miền chứa các ký tự không hợp lệ. Sử dụng ký tự chữ thường, số và dấu gạch nối",
 	"utils_content_4": "Tạo tổ chức",
