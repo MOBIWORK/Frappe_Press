@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 
 import dateutil.parser
 import frappe
+from frappe import _
 import requests
 from frappe.core.utils import find
 from frappe.frappeclient import FrappeClient
@@ -91,17 +92,19 @@ class Site(Document):
             self.notify_email = frappe.db.get_value(
                 "Team", self.team, "notify_email")
 
-    def validate_site_name(self):
+    def validate_site_name(self, lang='vi'):
         site_regex = r"^[a-z0-9][a-z0-9-]*[a-z0-9]$"
         if not re.match(site_regex, self.subdomain):
-            frappe.throw(
-                "Tên miền chứa các ký tự không hợp lệ. Sử dụng chữ thường, số và dấu gạch ngang"
-            )
+            msg = _("Subdomain contains invalid characters. Use lowercase characters", lang) + \
+                ' ' + _("numbers and hyphens", lang)
+            frappe.throw(msg)
         if len(self.subdomain) > 32:
-            frappe.throw("Subdomain too long. Use 32 or less characters")
+            frappe.throw(
+                _("Subdomain too long. Use 32 or less characters"), lang)
 
-        if len(self.subdomain) < 5:
-            frappe.throw("Tên miền quá ngắn. Hãy sử dụng 5 ký tự trở lên.")
+        if len(self.subdomain) < 2:
+            frappe.throw(
+                _("Subdomain too short. Use 2 or more characters"), lang)
 
     def set_site_admin_password(self):
         # set site.admin_password if doesn't exist

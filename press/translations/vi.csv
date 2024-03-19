@@ -57,4 +57,8 @@ Bench {0} does not belong to your team, Bench {0} không thuộc về nhóm củ
 Bench {0} does not have an existing deploy in {1}, Bench {0} không có một quá trình triển khai tồn tại trong {1},
 There are no public benches with {0}., Không có bất kỳ benches công cộng nào với {0}.,
 There are no benches with <b>{0}</b> in server <b>{1}</b>., Không có bất kỳ benches nào có <b>{0}</b> trong máy chủ <b>{1}</b>.,
-Not allowed, Không được phép
+Not allowed, Không được phép,
+Subdomain too short. Use 2 or more characters, Tên miền quá ngắn. Hãy sử dụng 2 ký tự trở lên,
+Subdomain too long. Use 32 or less characters, Tên miền quá dài. Sử dụng 32 ký tự trở xuống,
+Subdomain contains invalid characters. Use lowercase characters, Tên miền chứa các ký tự không hợp lệ. Sử dụng ký tự chữ thường,
+numbers and hyphens, số và dấu gạch nối,
