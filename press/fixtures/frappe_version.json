@@ -7,14 +7,14 @@
     "parent": "Version 15",
     "parentfield": "dependencies",
     "parenttype": "Frappe Version",
-    "version": "0.36.0"
+    "version": "0.39.5"
    },
    {
     "dependency": "NODE_VERSION",
     "parent": "Version 15",
     "parentfield": "dependencies",
     "parenttype": "Frappe Version",
-    "version": "18.16.0"
+    "version": "18.19.0"
    },
    {
     "dependency": "PYTHON_VERSION",
@@ -28,14 +28,14 @@
     "parent": "Version 15",
     "parentfield": "dependencies",
     "parenttype": "Frappe Version",
-    "version": "0.12.5"
+    "version": "0.12.6"
    },
    {
     "dependency": "BENCH_VERSION",
     "parent": "Version 15",
     "parentfield": "dependencies",
     "parenttype": "Frappe Version",
-    "version": "5.16.0"
+    "version": "5.22.3"
    }
   ],
   "docstatus": 0,
