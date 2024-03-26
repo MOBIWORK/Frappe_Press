@@ -77,11 +77,16 @@
 							size="lg"
 							variant="outline"
 							label=""
-							type="email"
 							placeholder="abc@mail.com"
 							autocomplete="email"
 							v-model="email"
-							required
+						/>
+						<ErrorMessage
+							class="mt-2"
+							:message="
+								this.$translateMessage(inputError.email) ||
+								this.$translateMessage(ressetPassError)
+							"
 						/>
 						<Button
 							:class="
@@ -125,7 +130,10 @@
 							placeholder="abc@mail.com"
 							autocomplete="email"
 							v-model="email"
-							required
+						/>
+						<ErrorMessage
+							class="mt-2"
+							:message="this.$translateMessage(inputError.email)"
 						/>
 						<div class="relative mt-4">
 							<div class="mb-2">
@@ -143,7 +151,6 @@
 								v-model="password"
 								name="password"
 								autocomplete="current-password"
-								required
 							/>
 							<span
 								class="absolute right-4 top-[60%]"
@@ -161,6 +168,10 @@
 								/>
 							</span>
 						</div>
+						<ErrorMessage
+							class="mt-2"
+							:message="this.$translateMessage(inputError.password)"
+						/>
 						<div class="mt-2" v-if="isLogin">
 							<router-link
 								class="text-base"
@@ -180,7 +191,10 @@
 						>
 							{{ $t('login') }}
 						</Button>
-						<ErrorMessage class="mt-2" :message="loginError" />
+						<ErrorMessage
+							class="mt-2"
+							:message="this.$translateMessage(loginError)"
+						/>
 					</template>
 					<template v-else>
 						<label class="mb-2 text-base" for="email">Email</label>
@@ -189,11 +203,13 @@
 							size="lg"
 							variant="outline"
 							label=""
-							type="email"
 							placeholder="abc@mail.com"
 							autocomplete="email"
 							v-model="email"
-							required
+						/>
+						<ErrorMessage
+							class="mt-2"
+							:message="this.$translateMessage(inputError.email)"
 						/>
 						<Button
 							class="mt-4 h-9 bg-red-600 text-base font-[700] hover:bg-red-700"
@@ -288,7 +304,13 @@ export default {
 			password: null,
 			signupEmailSent: false,
 			resetPasswordEmailSent: false,
-			loginError: null
+			loginError: null,
+			ressetPassError: null,
+			signupError: null,
+			inputError: {
+				email: null,
+				password: null
+			}
 		};
 	},
 	resources: {
@@ -322,6 +344,18 @@ export default {
 				},
 				onSuccess() {
 					this.resetPasswordEmailSent = true;
+				},
+				async onError(err) {
+					let errMsg = err.messages[0] || '';
+					if (errMsg.includes('does not exist')) {
+						this.ressetPassError = 'Auth_content_8';
+					} else if (
+						errMsg.includes(
+							'You hit the rate limit because of too many requests. Please try after sometime.'
+						)
+					) {
+						this.ressetPassError = 'Auth_content_9';
+					}
 				}
 			};
 		},
@@ -341,26 +375,46 @@ export default {
 		},
 
 		async submitForm() {
+			let numErr = 0;
+			// email
+			let rs = this.$validdateInput(this.email, 'email');
+			numErr += rs[0];
+			this.inputError.email = rs[1];
+
 			if (this.isLogin) {
+				// password
+				rs = this.$validdateInput(this.password, 'password');
+				numErr += rs[0];
+				this.inputError.password = rs[1];
+
+				if (numErr) {
+					return;
+				}
 				if (this.email && this.password) {
 					try {
 						await this.$auth.login(this.email, this.password);
 					} catch (error) {
 						let arr_err = error.messages;
 						let dic_err = {
-							'Invalid login credentials': this.$t(
-								'incorrect_account_or_password'
-							)
+							'Invalid login credentials': 'incorrect_account_or_password',
+							'Your account has been locked and will resume after 60 seconds':
+								'Auth_content_7'
 						};
 
 						this.loginError = arr_err.length
 							? dic_err[arr_err[0]]
-							: this.$t('an_error_occurred');
+							: 'an_error_occurred';
 					}
 				}
 			} else if (this.hasForgotPassword) {
+				if (numErr) {
+					return;
+				}
 				this.$resources.resetPassword.submit();
 			} else {
+				if (numErr) {
+					return;
+				}
 				this.$resources.signup.submit();
 			}
 		},

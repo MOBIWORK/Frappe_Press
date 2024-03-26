@@ -3,6 +3,45 @@ import theme from '../tailwind.theme.json';
 
 let utils = {
 	methods: {
+		$translateMessage(key) {
+			if (key) {
+				if (Array.isArray(key)) {
+					let msg = '';
+					key.map(el => {
+						msg += this.$t(el);
+					});
+				} else {
+					return this.$t(key);
+				}
+			}
+
+			return '';
+		},
+		$validdateInput(val, type) {
+			let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+			let msgError = '';
+			switch (type) {
+				case 'email':
+					// code block
+					if (!val) {
+						msgError = 'utils_content_11';
+						break;
+					}
+					if (!emailRegex.test(val)) {
+						msgError = 'utils_content_13';
+					}
+					break;
+				case 'password':
+					if (!val) {
+						msgError = 'utils_content_12';
+					}
+					// code block
+					break;
+				default:
+				// code block
+			}
+			return [msgError ? 1 : 0, msgError];
+		},
 		$validateSubdomain(subdomain) {
 			if (!subdomain) {
 				return this.$t('Subdomain_cannot_be_empty');

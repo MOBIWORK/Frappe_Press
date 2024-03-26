@@ -61,7 +61,6 @@
 									type="text"
 									v-model="firstName"
 									name="firstName"
-									required
 								/>
 							</div>
 							<div>
@@ -76,7 +75,6 @@
 									label=""
 									type="text"
 									name="phone"
-									required
 									v-model="phone"
 									@keyup="validPhone"
 								/>
@@ -97,7 +95,6 @@
 									v-model="password"
 									name="password"
 									autocomplete="new-password"
-									required
 								/>
 								<span
 									class="absolute right-4 top-[60%]"
@@ -133,7 +130,6 @@
 								:options="countries"
 								v-if="!isInvitation"
 								v-model="country"
-								required
 							/>
 						</div>
 						<Form
@@ -151,7 +147,7 @@
 								{{ $t('NewServer_content_1') }}
 								<Link
 									class="border-none"
-									href="/thoa-thuan-su-dung-dich-vu"
+									href="http://mbwcloud.com/terms"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700"
 										>{{ $t('NewServer_content_2') }}
@@ -160,7 +156,7 @@
 								{{ $t('and') }}
 								<Link
 									class="border-none"
-									href="/chinh-sach-bao-mat-thong-tin"
+									href="https://mbwcloud.com/privacy"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700">
 										{{ $t('Privacy_Policy') }}
