@@ -88,16 +88,16 @@ def setup_account(
             country = country.get('value')
 
         if not first_name:
-            frappe.throw(_("The name must not be left blank", lang))
+            frappe.throw(_("The name must not be left empty", lang))
 
         if not phone:
-            frappe.throw(_("The phone number must not be left blank", lang))
+            frappe.throw(_("The phone number must not be left empty", lang))
 
         if not password and not oauth_signup:
-            frappe.throw(_("The password must not be left blank", lang))
+            frappe.throw(_("The password must not be left empty", lang))
 
         if not is_invitation and not country:
-            frappe.throw(_("The country must not be left blank", lang))
+            frappe.throw(_("The country must not be left empty", lang))
 
         if not is_invitation and country:
             all_countries = frappe.db.get_all("Country", pluck="name")

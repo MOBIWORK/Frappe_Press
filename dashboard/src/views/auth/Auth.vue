@@ -84,7 +84,7 @@
 						<ErrorMessage
 							class="mt-2"
 							:message="
-								this.$translateMessage(inputError.email) ||
+								this.$translateMessage(inputError.email1) ||
 								this.$translateMessage(ressetPassError)
 							"
 						/>
@@ -209,7 +209,7 @@
 						/>
 						<ErrorMessage
 							class="mt-2"
-							:message="this.$translateMessage(inputError.email)"
+							:message="this.$translateMessage(inputError.email1)"
 						/>
 						<Button
 							class="mt-4 h-9 bg-red-600 text-base font-[700] hover:bg-red-700"
@@ -309,6 +309,7 @@ export default {
 			signupError: null,
 			inputError: {
 				email: null,
+				email1: null,
 				password: null
 			}
 		};
@@ -376,12 +377,11 @@ export default {
 
 		async submitForm() {
 			let numErr = 0;
-			// email
-			let rs = this.$validdateInput(this.email, 'email');
-			numErr += rs[0];
-			this.inputError.email = rs[1];
-
 			if (this.isLogin) {
+				// email
+				let rs = this.$validdateInput(this.email, 'email1');
+				numErr += rs[0];
+				this.inputError.email = rs[1];
 				// password
 				rs = this.$validdateInput(this.password, 'password');
 				numErr += rs[0];
@@ -407,11 +407,21 @@ export default {
 					}
 				}
 			} else if (this.hasForgotPassword) {
+				// email
+				let rs = this.$validdateInput(this.email, 'email');
+				numErr += rs[0];
+				this.inputError.email1 = rs[1];
+
 				if (numErr) {
 					return;
 				}
 				this.$resources.resetPassword.submit();
 			} else {
+				// email
+				let rs = this.$validdateInput(this.email, 'email');
+				numErr += rs[0];
+				this.inputError.email1 = rs[1];
+
 				if (numErr) {
 					return;
 				}

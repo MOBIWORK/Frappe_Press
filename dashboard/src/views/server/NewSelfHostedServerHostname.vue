@@ -48,7 +48,7 @@ export default {
 		},
 		validateTitle(title) {
 			if (!title) {
-				return 'Server name cannot be left blank';
+				return 'Server name cannot be left empty';
 			}
 			return null;
 		}

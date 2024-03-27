@@ -25,10 +25,7 @@
 						</router-link>
 					</div>
 				</div>
-				<form
-					class="flex flex-col"
-					@submit.prevent="$resources.setupAccount.submit()"
-				>
+				<form class="flex flex-col" @submit.prevent="submitForm">
 					<div>
 						<div>
 							<div class="mb-2 mt-4">
@@ -62,6 +59,10 @@
 									v-model="firstName"
 									name="firstName"
 								/>
+								<ErrorMessage
+									class="mt-4"
+									:message="this.$translateMessage(inputError.firstName)"
+								/>
 							</div>
 							<div>
 								<div class="mb-2 mt-4">
@@ -77,6 +78,10 @@
 									name="phone"
 									v-model="phone"
 									@keyup="validPhone"
+								/>
+								<ErrorMessage
+									class="mt-4"
+									:message="this.$translateMessage(inputError.phone)"
 								/>
 							</div>
 							<div class="relative">
@@ -112,6 +117,10 @@
 									/>
 								</span>
 							</div>
+							<ErrorMessage
+								class="mt-4"
+								:message="this.$translateMessage(inputError.password)"
+							/>
 						</template>
 						<div>
 							<div class="mb-2 mt-4">
@@ -164,6 +173,10 @@
 								>
 							</label>
 						</div>
+						<ErrorMessage
+							class="mt-4"
+							:message="this.$translateMessage(inputError.termsAccepted)"
+						/>
 					</div>
 					<ErrorMessage class="mt-4" :message="$resources.setupAccount.error" />
 					<Button
@@ -246,7 +259,14 @@ export default {
 			invitedByParentTeam: false,
 			countries: [],
 			saasProduct: null,
-			signupValues: {}
+			signupValues: {},
+			inputError: {
+				firstName: null,
+				phone: null,
+				password: null,
+				country: null,
+				termsAccepted: null
+			}
 		};
 	},
 	resources: {
@@ -305,6 +325,31 @@ export default {
 		}
 	},
 	methods: {
+		async submitForm() {
+			let numErr = 0;
+			// firstName
+			let rs = this.$validdateInput(this.firstName, 'full_name');
+			numErr += rs[0];
+			this.inputError.firstName = rs[1];
+			// phone
+			rs = this.$validdateInput(this.phone, 'phone');
+			numErr += rs[0];
+			this.inputError.phone = rs[1];
+			// password
+			rs = this.$validdateInput(this.password, 'password1');
+			numErr += rs[0];
+			this.inputError.password = rs[1];
+			console.log(this.inputError.password);
+			// termsAccepted
+			rs = this.$validdateInput(this.termsAccepted, 'term');
+			numErr += rs[0];
+			this.inputError.termsAccepted = rs[1];
+
+			if (numErr) {
+				return;
+			}
+			this.$resources.setupAccount.submit();
+		},
 		validPhone(e) {
 			let value = e.target.value.replace(/[^0-9]/gm, '');
 			this.phone = value;

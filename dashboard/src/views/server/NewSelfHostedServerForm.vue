@@ -49,7 +49,7 @@ export default {
 				const ver = ipAddressRegex.test(stripped_ip);
 				return ver ? null : `${type} IP is invalid`;
 			} catch {
-				return `${type} IP cannot be blank`;
+				return `${type} IP cannot be empty`;
 			}
 		}
 	}

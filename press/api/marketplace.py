@@ -765,7 +765,7 @@ def create_app_plan(marketplace_app: str, plan_data: Dict, lang: str = 'vi'):
 def update_app_plan(app_plan_name: str, updated_plan_data: Dict, lang: str = 'vi'):
 
     if not updated_plan_data.get("plan_title"):
-        frappe.throw(_("The title must not be left blank", lang))
+        frappe.throw(_("The title must not be left empty", lang))
 
     app_plan_doc = frappe.get_doc("Marketplace App Plan", app_plan_name)
     plan_name = app_plan_doc.plan
@@ -807,7 +807,7 @@ def reset_features_for_plan(
     app_plan_doc.features = []
     for feature in feature_list:
         if not feature:
-            frappe.throw(_("The feature must not be left blank", lang))
+            frappe.throw(_("The feature must not be left empty", lang))
         app_plan_doc.append("features", {"description": feature})
 
     if save:
