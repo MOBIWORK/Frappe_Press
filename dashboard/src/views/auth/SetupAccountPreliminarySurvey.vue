@@ -147,6 +147,8 @@
 					>
 						{{ $t('Submit_information') }}
 					</Button>
+				</div>
+				<div class="flex justify-center">
 					<router-link
 						class="mb-2 text-base"
 						:to="{
@@ -195,6 +197,11 @@ export default {
 			currenBilling: {},
 			bonuses: {}
 		};
+	},
+	watch: {
+		'$i18n.locale'() {
+			this.optionsAreasOfConcern = this.getOptionsAreasOfConcern();
+		}
 	},
 	resources: {
 		currentBillingInformation: {
@@ -250,55 +257,55 @@ export default {
 		getOptionsAreasOfConcern() {
 			return [
 				{
-					name: 'Bất động sản',
+					name: this.$t('SetupAccountPS_content_1'),
 					value: 'Bất động sản'
 				},
 				{
-					name: 'Giáo dục',
+					name: this.$t('SetupAccountPS_content_2'),
 					value: 'Giáo dục'
 				},
 				{
-					name: 'Bia - Rượu - Nước giải khát',
+					name: this.$t('SetupAccountPS_content_3'),
 					value: 'Bia - Rượu - Nước giải khát'
 				},
 				{
-					name: 'Dược phẩm - Y tế',
+					name: this.$t('SetupAccountPS_content_4'),
 					value: 'Dược phẩm - Y tế'
 				},
 				{
-					name: 'Thiết bị vệ sinh',
+					name: this.$t('SetupAccountPS_content_5'),
 					value: 'Thiết bị vệ sinh'
 				},
 				{
-					name: 'Vật liệu xây dựng',
+					name: this.$t('SetupAccountPS_content_6'),
 					value: 'Vật liệu xây dựng'
 				},
 				{
-					name: 'Hóa mỹ phẩm',
+					name: this.$t('SetupAccountPS_content_7'),
 					value: 'Hóa mỹ phẩm'
 				},
 				{
-					name: 'Vật tư Nông nghiệp - Nông Dược',
+					name: this.$t('SetupAccountPS_content_8'),
 					value: 'Vật tư Nông nghiệp - Nông Dược'
 				},
 				{
-					name: 'Hàng tiêu dùng',
+					name: this.$t('SetupAccountPS_content_9'),
 					value: 'Hàng tiêu dùng'
 				},
 				{
-					name: 'Thiết bị điện - Điện tử - Điện lạnh',
+					name: this.$t('SetupAccountPS_content_10'),
 					value: 'Thiết bị điện - Điện tử - Điện lạnh'
 				},
 				{
-					name: 'Thực phẩm',
+					name: this.$t('SetupAccountPS_content_11'),
 					value: 'Thực phẩm'
 				},
 				{
-					name: 'Xây dựng',
+					name: this.$t('SetupAccountPS_content_12'),
 					value: 'Xây dựng'
 				},
 				{
-					name: 'Khác',
+					name: this.$t('SetupAccountPS_content_3'),
 					value: 'Khác'
 				}
 			];
