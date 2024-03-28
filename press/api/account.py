@@ -1100,3 +1100,10 @@ def remove_permission_group_user(name, user):
             doc.remove(group_user)
             doc.save(ignore_permissions=True)
             break
+
+
+@frappe.whitelist()
+def get_information_about_registration_bonuses():
+    press_setting = frappe.db.get_value(
+        'Press Settings', 'Press Settings', ['number_days_promotion', 'free_credits_vnd'], as_dict=True)
+    return press_setting

@@ -17,7 +17,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('enterprise')"
-				:message="`${$t('object')} ${$t('is_required')}`"
+				:message="`${$t('object')} ${$t('cannot_be_left_empty')}`"
 			/>
 		</div>
 		<div>
@@ -42,7 +42,7 @@
 				:message="
 					modelValue['enterprise'] == 'Công ty'
 						? $t('company_name')
-						: $t('full_name') + ` ${$t('is_required')}`
+						: $t('full_name') + ` ${$t('cannot_be_left_empty')}`
 				"
 			/>
 		</div>
@@ -63,7 +63,10 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes(field.fieldname)"
-				:message="field.label + ` ${$t('is_required')}`"
+				:message="
+					field.label +
+					` ${this.$translateMessage(inputMsgError[field.fieldname])}`
+				"
 			/>
 		</div>
 		<div>
@@ -82,7 +85,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('tax_code')"
-				:message="`${$t('tax_code')} ${$t('is_required')}`"
+				:message="`${$t('tax_code')} ${$t('cannot_be_left_empty')}`"
 			/>
 		</div>
 		<div>
@@ -100,7 +103,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('address')"
-				:message="`${$t('address')} ${$t('is_required')}`"
+				:message="`${$t('address')} ${$t('cannot_be_left_empty')}`"
 			/>
 		</div>
 		<div>
@@ -120,7 +123,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('state')"
-				:message="`${$t('province')} ${$t('is_required')}`"
+				:message="`${$t('province')} ${$t('cannot_be_left_empty')}`"
 			/>
 		</div>
 		<div>
@@ -128,7 +131,7 @@
 				variant="outline"
 				:size="size"
 				:class="this.size ? 'custom-form-btn' : ''"
-				:label="$t('county')"
+				:label="$t('District')"
 				:type="modelValue['country'] == 'Vietnam' ? 'autocomplete' : 'text'"
 				:options="optionsCounty"
 				name="county"
@@ -140,7 +143,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('county')"
-				:message="`${$t('county')} ${$t('is_required')}`"
+				:message="`${$t('District')} ${$t('cannot_be_left_empty')}`"
 			/>
 		</div>
 	</div>
@@ -154,23 +157,19 @@ export default {
 	emits: ['update:modelValue'],
 	data() {
 		return {
-			optionsEnterprise: [
-				{
-					label: this.$t('Company'),
-					value: 'Công ty'
-				},
-				{
-					label: this.$t('Individual'),
-					value: 'Cá nhân'
-				}
-			],
+			optionsEnterprise: this.getOpstionObject(),
 			optionsCounty: [],
 			optionsState: [],
 			optionsCountyAll: [],
-			requiredFieldNotSet: []
+			requiredFieldNotSet: [],
+			user_detail: {},
+			inputMsgError: {}
 		};
 	},
 	watch: {
+		'$i18n.locale'() {
+			this.optionsEnterprise = this.getOpstionObject();
+		},
 		modelValue(values) {
 			if (this.optionsState.length == 0) {
 				this.stateList();
@@ -180,7 +179,44 @@ export default {
 			this.requiredFieldNotSet = newFieldNotSet;
 		}
 	},
+	resources: {
+		currentBillingInformation: {
+			url: 'press.api.account.get_billing_information',
+			auto: true,
+			onSuccess(data) {
+				this.user_detail = data.user_detail;
+				this.setAutoField(data.user_detail, this.modelValue['enterprise']);
+			}
+		}
+	},
 	methods: {
+		getOpstionObject() {
+			return [
+				{
+					label: this.$t('Company'),
+					value: 'Công ty'
+				},
+				{
+					label: this.$t('Individual'),
+					value: 'Cá nhân'
+				}
+			];
+		},
+		setAutoField(user_detail, enterprise) {
+			if (enterprise == 'Cá nhân') {
+				Object.assign(this.modelValue, {
+					billing_name: this.modelValue.billing_name || user_detail.first_name,
+					phone: this.modelValue.phone || user_detail.phone,
+					email_id: this.modelValue.email_id || user_detail.email
+				});
+			} else {
+				Object.assign(this.modelValue, {
+					billing_name: '',
+					phone: '',
+					email_id: ''
+				});
+			}
+		},
 		async stateList() {
 			try {
 				let countys = [];
@@ -221,6 +257,15 @@ export default {
 			this.updateValue(field.fieldname, value);
 		},
 		onChangeIn(value, field) {
+			if (field == 'enterprise') {
+				if (value == 'Cá nhân') {
+					this.requiredFieldNotSet = this.requiredFieldNotSet.filter(
+						f => f !== 'tax_code'
+					);
+				}
+				this.setAutoField(this.user_detail, value);
+			}
+
 			this.checkRequiredIn(field, value);
 			this.updateValue(field, value);
 		},
@@ -259,11 +304,23 @@ export default {
 			if (field.required) {
 				if (value == undefined || value == null || value == '') {
 					this.requiredFieldNotSet.push(field.fieldname);
+					this.inputMsgError[field.fieldname] = 'cannot_be_left_empty';
 					return false;
 				} else {
 					this.requiredFieldNotSet = this.requiredFieldNotSet.filter(
 						f => f !== field.fieldname
 					);
+					this.inputMsgError[field.fieldname] = '';
+
+					if (field.fieldname == 'phone') {
+						// phone
+						let rs = this.$validdateInput(value, 'phone');
+						if (rs[0]) {
+							this.requiredFieldNotSet.push(field.fieldname);
+							this.inputMsgError[field.fieldname] = 'utils_content_17';
+							return false;
+						}
+					}
 				}
 			}
 			return true;

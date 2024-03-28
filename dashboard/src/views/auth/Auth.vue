@@ -109,11 +109,7 @@
 							}"
 						>
 							<div class="flex justify-center">
-								<img
-									v-if="iconCheck"
-									src="../../assets/icon_left.svg"
-									alt="Eye Icon"
-								/>
+								<img src="../../assets/icon_left.svg" />
 								<span class="font-[600]">
 									{{ $t('return_to_login_page') }}</span
 								>

@@ -91,7 +91,6 @@ export default {
 				.flat()
 				.filter(df => df.fieldname != 'gstin' || is_india);
 			let values = valueExists.map(df => this.address[df.fieldname]);
-
 			let fieldNotSetNew = valueExists
 				.filter(
 					df =>
@@ -101,7 +100,14 @@ export default {
 				)
 				.map(df => df.fieldname);
 
-			let fieldEx = ['state', 'county', 'enterprise', 'billing_name'];
+			let fieldEx = [
+				'state',
+				'county',
+				'enterprise',
+				'billing_name',
+				'address',
+				'phone'
+			];
 			if (this.address['enterprise'] == 'Công ty') {
 				fieldEx.push('tax_code');
 			}
@@ -114,11 +120,19 @@ export default {
 					values.push(this.address[el]);
 					fieldNotSetNew.push(el);
 				}
+				if (el == 'phone') {
+					// phone
+					let rs = this.$validdateInput(this.address[el], 'phone');
+					if (rs[0]) {
+						values.push(null);
+						fieldNotSetNew.push(el);
+					}
+				}
 			});
 			this.fieldNotSet = fieldNotSetNew;
 
 			if (!values.every(Boolean)) {
-				return this.$t('please_fill_required_values');
+				return 'please_fill_required_values';
 			}
 
 			try {
@@ -155,7 +169,7 @@ export default {
 				// },
 				{
 					fieldtype: 'Email',
-					label: 'Email',
+					label: this.$t('Invoice_email'),
 					fieldname: 'email_id',
 					required: 1,
 					size: this.size

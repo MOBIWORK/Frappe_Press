@@ -1,12 +1,24 @@
 <template>
 	<LoginBox>
+		<div
+			class="absolute left-0 top-0 z-10 p-5 pt-20 text-2xl font-bold text-red-600 sm:pt-5"
+		>
+			{{ $t('Step') }} 2/2
+		</div>
 		<div>
 			<div>
 				<div class="mb-4 w-36">
 					<SelectLanguage></SelectLanguage>
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
-					<div>{{ $t('Preliminary_survey') }}</div>
+					<div>{{ $t('Welcome') }} {{ currenBilling.billing_name }}!</div>
+				</div>
+				<div class="text-sm text-gray-700">
+					{{ $t('SetupAccountPreliminarySurvey_content_8') }}
+					{{ $formatMoney(bonuses.free_credits_vnd, 0) }} VND
+					{{ $t('SetupAccountPreliminarySurvey_content_9') }}
+					{{ bonuses.number_days_promotion }}
+					{{ $t('SetupAccountPreliminarySurvey_content_10') }}
 				</div>
 				<div ref="address-form">
 					<p class="text-base" v-if="message">
@@ -14,9 +26,9 @@
 					</p>
 					<div class="mt-3">
 						<div class="mb-1">
-							<label class="typo__label text-lg text-gray-600"
-								>{{ $t('Business_sector') }}</label
-							>
+							<label class="typo__label text-lg text-gray-600">{{
+								$t('Operational_domain')
+							}}</label>
 						</div>
 						<multiselect
 							v-model="valueAreasOfConcern"
@@ -42,6 +54,11 @@
 								<span>{{ $t('no_data') }}</span>
 							</template>
 						</multiselect>
+						<ErrorMessage
+							class="mt-2"
+							v-if="requiredFieldNotSet.includes('areas_of_concern')"
+							:message="$t('SetupAccountPreliminarySurvey_content_3')"
+						/>
 					</div>
 					<div class="mt-3">
 						<FormControl
@@ -57,17 +74,36 @@
 							"
 							:onblur="e => checkRequiredIn('number_of_employees', e)"
 						/>
+						<!-- <div>
+							<div class="mb-2 mt-4">
+								<label class="text-base" for="country">{{
+									$t('SetupAccountPreliminarySurvey_content_2')
+								}}</label>
+							</div>
+							<FormControl
+								name="number_of_employees"
+								class="custom-form-btn"
+								type="select"
+								id="country"
+								size="lg"
+								variant="outline"
+								placeholder="---"
+								label=""
+								:options="opsInterested"
+								v-model="billingInformation['number_of_employees']"
+							/>
+						</div> -->
 						<ErrorMessage
 							class="mt-1"
 							v-if="requiredFieldNotSet.includes('number_of_employees')"
 							:message="$t('SetupAccountPreliminarySurvey_content_3')"
 						/>
 					</div>
-					<div class="mt-3">
+					<div class="mb-4 mt-3">
 						<div class="mb-1">
-							<label class="typo__label text-lg text-gray-600"
-								>{{ $t('SetupAccountPreliminarySurvey_content_4') }}</label
-							>
+							<label class="typo__label text-lg text-gray-600">{{
+								$t('SetupAccountPreliminarySurvey_content_7')
+							}}</label>
 						</div>
 						<multiselect
 							v-model="valueConcernsFeature"
@@ -91,10 +127,15 @@
 								<span>{{ $t('no_data') }}</span>
 							</template>
 						</multiselect>
+						<ErrorMessage
+							class="mt-2"
+							v-if="requiredFieldNotSet.includes('concerns_feature')"
+							:message="$t('SetupAccountPreliminarySurvey_content_3')"
+						/>
 					</div>
 					<ErrorMessage
 						class="mt-2"
-						:message="$resources.updateBillingInformation.error"
+						:message="this.$translateMessage(msgError)"
 					/>
 				</div>
 				<div class="text-center">
@@ -106,6 +147,17 @@
 					>
 						{{ $t('Submit_information') }}
 					</Button>
+					<router-link
+						class="mb-2 text-base"
+						:to="{
+							name: 'Setup Account Billing'
+						}"
+					>
+						<div class="flex justify-center">
+							<img src="../../assets/icon_left.svg" />
+							<span class="font-[600]"> {{ $t('Back') }}</span>
+						</div>
+					</router-link>
 				</div>
 			</div>
 		</div>
@@ -128,6 +180,7 @@ export default {
 	},
 	data() {
 		return {
+			msgError: null,
 			requiredFieldNotSet: [],
 			billingInformation: {
 				number_of_employees: '',
@@ -135,7 +188,67 @@ export default {
 				areas_of_concern: ''
 			},
 			valueAreasOfConcern: null,
-			optionsAreasOfConcern: [
+			optionsAreasOfConcern: this.getOptionsAreasOfConcern(),
+			valueConcernsFeature: null,
+			optionsConcernsFeature: [],
+			opsInterested: [],
+			currenBilling: {},
+			bonuses: {}
+		};
+	},
+	resources: {
+		currentBillingInformation: {
+			url: 'press.api.account.get_billing_information',
+			auto: true,
+			onSuccess(data) {
+				this.currenBilling = data.billing_details;
+			}
+		},
+		bonuses: {
+			url: 'press.api.account.get_information_about_registration_bonuses',
+			auto: true,
+			onSuccess(data) {
+				this.bonuses = data;
+			}
+		},
+		getAllCategory: {
+			url: 'press.api.billing.get_all_category',
+			auto: true,
+			onSuccess(data) {
+				this.optionsConcernsFeature = data.map(el => ({
+					name: el.name,
+					value: el.name
+				}));
+			}
+		},
+		updateBillingInformation() {
+			return {
+				url: 'press.api.account.update_information_survey',
+				params: {
+					billing_details: this.billingInformation
+				},
+				onSuccess() {
+					notify({
+						icon: 'check',
+						color: 'green',
+						title: this.$t('SetupAccountPreliminarySurvey_content_6')
+					});
+					// this.$router.push('/sites/new');
+					window.location.href = '/dashboard/sites/new';
+				},
+				async validate() {
+					let a = await this.validateValues();
+					this.msgError = a;
+					if (a) {
+						return this.$t(a);
+					}
+				}
+			};
+		}
+	},
+	methods: {
+		getOptionsAreasOfConcern() {
+			return [
 				{
 					name: 'Bất động sản',
 					value: 'Bất động sản'
@@ -183,45 +296,13 @@ export default {
 				{
 					name: 'Xây dựng',
 					value: 'Xây dựng'
+				},
+				{
+					name: 'Khác',
+					value: 'Khác'
 				}
-			],
-			valueConcernsFeature: null,
-			optionsConcernsFeature: []
-		};
-	},
-	resources: {
-		getAllCategory: {
-			url: 'press.api.billing.get_all_category',
-			auto: true,
-			onSuccess(data) {
-				this.optionsConcernsFeature = data.map(el => ({
-					name: el.name,
-					value: el.name
-				}));
-			}
+			];
 		},
-		updateBillingInformation() {
-			return {
-				url: 'press.api.account.update_information_survey',
-				params: {
-					billing_details: this.billingInformation
-				},
-				onSuccess() {
-					notify({
-						icon: 'check',
-						color: 'green',
-						title: this.$t('SetupAccountPreliminarySurvey_content_6')
-					});
-					// this.$router.push('/sites/new');
-					window.location.href = '/dashboard/sites/new';
-				},
-				validate() {
-					return this.validateValues();
-				}
-			};
-		}
-	},
-	methods: {
 		addTag(newTag) {
 			const tag = {
 				name: newTag,
@@ -248,7 +329,11 @@ export default {
 		async validateValues() {
 			let fieldNotSetNew = [];
 			let values = [this.billingInformation.number_of_employees];
-			let fieldEx = ['number_of_employees'];
+			let fieldEx = [
+				'number_of_employees',
+				'concerns_feature',
+				'areas_of_concern'
+			];
 
 			fieldEx.forEach(el => {
 				if (
@@ -264,12 +349,8 @@ export default {
 			this.requiredFieldNotSet = fieldNotSetNew;
 
 			if (!values.every(Boolean)) {
-				return this.$t('please_fill_required_values');
+				return 'please_fill_required_values';
 			}
-		},
-		validPhone(e) {
-			let value = e.target.value.replace(/[^0-9]/gm, '');
-			this.phone = value;
 		},
 		onChangeIn(value, field) {
 			this.checkRequiredIn(field, value);

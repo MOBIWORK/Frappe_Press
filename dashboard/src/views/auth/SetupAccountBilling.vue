@@ -1,5 +1,10 @@
 <template>
 	<LoginBox top="mt-6" py="py-0">
+		<div
+			class="absolute left-0 top-0 z-10 p-5 pt-20 text-2xl font-bold text-red-600 sm:pt-5"
+		>
+			{{ $t('Step') }} 1/2
+		</div>
 		<div>
 			<div>
 				<div class="mb-4 w-36">
@@ -7,6 +12,9 @@
 				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('SetupAccountBilling_content_1') }}</div>
+				</div>
+				<div class="text-sm text-gray-700">
+					{{ $t('SetupAccountBilling_content_3') }}
 				</div>
 				<div>
 					<p class="text-base" v-if="message">
@@ -20,7 +28,7 @@
 					/>
 					<ErrorMessage
 						class="mt-2"
-						:message="$resources.updateBillingInformation.error"
+						:message="this.$translateMessage(msgError)"
 					/>
 				</div>
 				<div class="text-center">
@@ -30,7 +38,7 @@
 						:loading="$resources.updateBillingInformation.loading"
 						:onClick="() => $resources.updateBillingInformation.submit()"
 					>
-						{{ $t('confirm_information') }}
+						{{ $t('Continue') }}
 					</Button>
 				</div>
 			</div>
@@ -44,7 +52,6 @@ import AddressForm from '@/components/AddressForm.vue';
 import { notify } from '@/utils/toast';
 import SelectLanguage from '../../components/global/SelectLanguage.vue';
 
-
 export default {
 	name: 'SetupAccountBilling',
 	props: ['message'],
@@ -55,6 +62,7 @@ export default {
 	},
 	data() {
 		return {
+			msgError: null,
 			billingInformation: {
 				address: '',
 				state: '',
@@ -78,8 +86,6 @@ export default {
 			auto: true,
 			onSuccess(data) {
 				let billingInformation = data.billing_details;
-				let user_detail = data.user_detail;
-
 				if ('country' in (billingInformation || {})) {
 					Object.assign(this.billingInformation, {
 						address: billingInformation.address_line1,
@@ -94,15 +100,15 @@ export default {
 								? ''
 								: billingInformation.gstin,
 						number_of_employees: billingInformation.number_of_employees,
-						areas_of_concern: billingInformation.areas_of_concern
+						areas_of_concern: billingInformation.areas_of_concern,
+						billing_name: billingInformation.billing_name,
+						phone: billingInformation.phone,
+						email_id: billingInformation.email_id
 					});
 				}
 
 				Object.assign(this.billingInformation, {
-					email_id: billingInformation.email_id || user_detail.email,
-					phone: billingInformation.phone || user_detail.phone,
-					billing_name:
-						billingInformation.billing_name || user_detail.first_name
+					enterprise: billingInformation.enterprise || 'Cá nhân'
 				});
 			}
 		},
@@ -113,11 +119,11 @@ export default {
 					billing_details: this.billingInformation
 				},
 				async onSuccess() {
-					notify({
-						icon: 'check',
-						color: 'green',
-						title: this.$t('SetupAccountBilling_content_2')
-					});
+					// notify({
+					// 	icon: 'check',
+					// 	color: 'green',
+					// 	title: this.$t('SetupAccountBilling_content_2')
+					// });
 
 					await this.$call('press.api.billing.setup_intent_success', {
 						setup_intent: {}
@@ -125,8 +131,12 @@ export default {
 
 					this.$router.push('/setup-account/preliminary_survey');
 				},
-				validate() {
-					return this.$refs['address-form'].validateValues();
+				async validate() {
+					let a = await this.$refs['address-form'].validateValues();
+					this.msgError = a;
+					if (a) {
+						return this.$t(a);
+					}
 				}
 			};
 		}
