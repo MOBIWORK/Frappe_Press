@@ -107,7 +107,8 @@ def all(server=None, bench_filter=None):
         frappe.qb.from_(group)
         .left_join(site)
         .on((site.group == group.name) & (site.status != "Archived"))
-        .where((group.enabled == 1) & (group.public == 0))
+        .where((group.enabled == 1))
+        # .where((group.enabled == 1) & (group.public == 0))
         .where((group.team).isin(teams))
         .groupby(group.name)
         .select(
