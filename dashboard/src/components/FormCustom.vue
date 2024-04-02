@@ -211,9 +211,9 @@ export default {
 				});
 			} else {
 				Object.assign(this.modelValue, {
-					billing_name: '',
-					phone: '',
-					email_id: ''
+					billing_name: this.modelValue.billing_name || '',
+					phone: this.modelValue.phone || '',
+					email_id: this.modelValue.email_id || ''
 				});
 			}
 		},
