@@ -163,7 +163,8 @@ export default {
 			optionsCountyAll: [],
 			requiredFieldNotSet: [],
 			user_detail: {},
-			inputMsgError: {}
+			inputMsgError: {},
+			checkExsist: true
 		};
 	},
 	watch: {
@@ -184,8 +185,15 @@ export default {
 			url: 'press.api.account.get_billing_information',
 			auto: true,
 			onSuccess(data) {
+				if (data.billing_details == {} || !data.billing_details.billing_name) {
+					this.checkExsist = false;
+				}
+
 				this.user_detail = data.user_detail;
-				this.setAutoField(data.user_detail, this.modelValue['enterprise']);
+				this.setAutoField(
+					data.user_detail,
+					data.billing_details['enterprise'] || 'Cá nhân'
+				);
 			}
 		}
 	},
@@ -203,17 +211,20 @@ export default {
 			];
 		},
 		setAutoField(user_detail, enterprise) {
+			let billing_name = this.checkExsist ? this.modelValue.billing_name : '';
+			let phone = this.checkExsist ? this.modelValue.phone : '';
+			let email_id = this.checkExsist ? this.modelValue.email_id : '';
 			if (enterprise == 'Cá nhân') {
 				Object.assign(this.modelValue, {
-					billing_name: this.modelValue.billing_name || user_detail.first_name,
-					phone: this.modelValue.phone || user_detail.phone,
-					email_id: this.modelValue.email_id || user_detail.email
+					billing_name: billing_name || user_detail.first_name,
+					phone: phone || user_detail.phone,
+					email_id: email_id || user_detail.email
 				});
 			} else {
 				Object.assign(this.modelValue, {
-					billing_name: this.modelValue.billing_name || '',
-					phone: this.modelValue.phone || '',
-					email_id: this.modelValue.email_id || ''
+					billing_name: billing_name,
+					phone: phone,
+					email_id: email_id
 				});
 			}
 		},
