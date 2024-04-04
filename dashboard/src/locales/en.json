@@ -1,4 +1,7 @@
 {
+	"Unable_to_log_in_as_Administrator": "Unable to log in as Administrator",
+	"Logging_in_as_Administrator": "Logging in as Administrator",
+	"Please_wait": "Please wait",
 	"Welcome": "Welcome",
 	"Not_logged_in": "Not logged in",
 	"Failure": "Failure",

@@ -302,7 +302,7 @@ export default {
 
 			if (!this.reasonForAdminLogin.trim()) {
 				// The input is empty
-				this.errorMessage = 'Reason is required';
+				this.errorMessage = this.$t('reason_is_required');
 				return;
 			}
 

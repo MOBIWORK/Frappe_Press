@@ -1,4 +1,7 @@
 {
+	"Unable_to_log_in_as_Administrator": "Không thể đăng nhập với tư cách Quản trị viên",
+	"Logging_in_as_Administrator": "Đang đăng nhập với tư cách Quản trị viên",
+	"Please_wait": "Vui lòng đợi",
 	"Welcome": "Chào mừng",
 	"Not_logged_in": "Chưa đăng nhập",
 	"Failure": "Thât bại",
