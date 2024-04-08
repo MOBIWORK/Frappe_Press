@@ -147,12 +147,14 @@
 							v-model="signupValues"
 						/>
 						<div class="mt-4 flex items-start">
-							<label class="text-base text-gray-900">
-								<FormControl
-									size="lg"
-									type="checkbox"
-									v-model="termsAccepted"
-								/>
+							<FormControl
+								id="term_policy"
+								name="term_policy"
+								size="lg"
+								type="checkbox"
+								v-model="termsAccepted"
+							/>
+							<label class="ml-2 text-base text-gray-900" for="term_policy">
 								{{ $t('NewServer_content_1') }}
 								<Link
 									class="border-none"
@@ -171,6 +173,7 @@
 										{{ $t('Privacy_Policy') }}
 									</span></Link
 								>
+								{{ $t('of_MBW_Cloud') }}
 							</label>
 						</div>
 						<ErrorMessage

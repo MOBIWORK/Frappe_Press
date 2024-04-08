@@ -61,7 +61,7 @@
 						/>
 					</div>
 					<div class="mt-3">
-						<FormControl
+						<!-- <FormControl
 							size="lg"
 							:label="$t('SetupAccountPreliminarySurvey_content_2')"
 							type="text"
@@ -73,10 +73,10 @@
 								value => onChangeIn(value, 'number_of_employees')
 							"
 							:onblur="e => checkRequiredIn('number_of_employees', e)"
-						/>
-						<!-- <div>
+						/> -->
+						<div>
 							<div class="mb-2 mt-4">
-								<label class="text-base" for="country">{{
+								<label class="text-base" for="employee">{{
 									$t('SetupAccountPreliminarySurvey_content_2')
 								}}</label>
 							</div>
@@ -84,15 +84,19 @@
 								name="number_of_employees"
 								class="custom-form-btn"
 								type="select"
-								id="country"
+								id="employee"
 								size="lg"
 								variant="outline"
 								placeholder="---"
 								label=""
-								:options="opsInterested"
+								:options="opsEmployees"
 								v-model="billingInformation['number_of_employees']"
+								:onUpdate:modelValue="
+									value => onChangeIn(value, 'number_of_employees')
+								"
+								:onblur="e => checkRequiredIn('number_of_employees', e)"
 							/>
-						</div> -->
+						</div>
 						<ErrorMessage
 							class="mt-1"
 							v-if="requiredFieldNotSet.includes('number_of_employees')"
@@ -193,7 +197,7 @@ export default {
 			optionsAreasOfConcern: this.getOptionsAreasOfConcern(),
 			valueConcernsFeature: null,
 			optionsConcernsFeature: [],
-			opsInterested: [],
+			opsEmployees: this.getOpsEmployees(),
 			currenBilling: {},
 			bonuses: {}
 		};
@@ -201,6 +205,7 @@ export default {
 	watch: {
 		'$i18n.locale'() {
 			this.optionsAreasOfConcern = this.getOptionsAreasOfConcern();
+			this.opsEmployees = this.getOpsEmployees();
 		}
 	},
 	resources: {
@@ -254,6 +259,34 @@ export default {
 		}
 	},
 	methods: {
+		getOpsEmployees() {
+			return [
+				{
+					label: this.$t('SetupAccountPS_content_14'),
+					value: 4
+				},
+				{
+					label: this.$t('SetupAccountPS_content_15'),
+					value: 9
+				},
+				{
+					label: this.$t('SetupAccountPS_content_16'),
+					value: 50
+				},
+				{
+					label: this.$t('SetupAccountPS_content_17'),
+					value: 200
+				},
+				{
+					label: this.$t('SetupAccountPS_content_18'),
+					value: 500
+				},
+				{
+					label: this.$t('SetupAccountPS_content_19'),
+					value: 9999
+				}
+			];
+		},
 		getOptionsAreasOfConcern() {
 			return [
 				{

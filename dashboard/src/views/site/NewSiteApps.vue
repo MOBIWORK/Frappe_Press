@@ -174,14 +174,28 @@
 					</div>
 				</div>
 			</div>
-			<div v-if="selectedApps.includes('erpnext')">
+			<div class="flex" v-if="selectedApps.includes('erpnext')">
 				<FormControl
+					id="term"
+					name="term"
 					type="checkbox"
-					:label="$t('NewSiteApps_content_5')"
+					label=""
 					@change="
 						val => $emit('update:shareDetailsConsent', val.target.checked)
 					"
 				/>
+				<label class="ml-2 text-base" for="term">
+					{{ $t('NewServer_content_1') }}
+					<Link
+						class="border-none"
+						href="http://mbwcloud.com/terms"
+						target="_blank"
+						><span class="text-blue-500 hover:text-blue-700"
+							>{{ $t('NewServer_content_2') }}
+						</span></Link
+					>
+					{{ $t('of_MBW_Cloud') }}
+				</label>
 			</div>
 		</div>
 	</div>

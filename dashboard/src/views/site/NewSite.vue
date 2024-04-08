@@ -108,12 +108,26 @@
 					<ErrorMessage class="mt-2" :message="validationMessage" />
 					<div class="mt-4">
 						<!-- Region consent checkbox -->
-						<div class="my-6 w-full" v-if="!hasNext">
+						<div class="my-6 flex w-full" v-if="!hasNext">
 							<FormControl
+								id="policy"
+								name="policy"
 								type="checkbox"
 								v-model="agreedToRegionConsent"
-								:label="$t('NewSite_content_1')"
+								label=""
 							/>
+							<label class="ml-2 text-base" for="policy">
+								{{ $t('NewServer_content_1') }}
+								<Link
+									class="border-none"
+									href="https://mbwcloud.com/privacy"
+									target="_blank"
+									><span class="text-blue-500 hover:text-blue-700">
+										{{ $t('Privacy_Policy') }}
+									</span></Link
+								>
+								{{ $t('of_MBW_Cloud') }}
+							</label>
 						</div>
 
 						<ErrorMessage class="mb-4" :message="$resources.newSite.error" />
