@@ -22,9 +22,8 @@
 					:to="`/benches/${benchName}/deploys/${candidate.name}`"
 				>
 					<ListItem
-						:title="`${$t('Deploy_on')} ${formatDate(
-							candidate.creation,
-							'DATETIME_SHORT'
+						:title="`${$t('Deploy_on')} ${$formatDateDetail(
+							candidate.creation
 						)}`"
 						:subtitle="itemSubtitle(candidate)"
 					>
@@ -190,25 +189,16 @@ export default {
 				this.selectedCandidate &&
 				this.selectedCandidate.status == 'Success'
 			) {
-				let when = this.formatDate(
-					this.selectedCandidate.build_end,
-					'relative'
-				);
+				let when = this.$formatDateDetail(this.selectedCandidate.build_end);
 				let duration = this.$formatDuration(
 					this.selectedCandidate.build_duration
 				);
 				return `${this.$t('Completed')} ${when} ${this.$t('in')} ${duration}`;
 			} else if (this.selectedCandidate?.status === 'Running') {
-				const when = this.formatDate(
-					this.selectedCandidate.build_start,
-					'relative'
-				);
+				const when = this.$formatDateDetail(this.selectedCandidate.build_start);
 				return `${this.$t('Started')} ${when}`;
 			} else if (this.selectedCandidate?.status === 'Failure') {
-				const when = this.formatDate(
-					this.selectedCandidate.build_end,
-					'relative'
-				);
+				const when = this.$formatDateDetail(this.selectedCandidate.build_end);
 				return `${this.$t('Failed')} ${when}`;
 			}
 		},

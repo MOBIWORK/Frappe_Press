@@ -41,12 +41,12 @@ export default {
 			if (this.job.status == 'Success') {
 				// let when = this.formatDate(this.job.creation, 'relative');
 				let when = this.$formatDateDetail(this.job.creation);
-				return `Hoàn thành lúc ${when} trong ${this.$formatDuration(
-					this.job.duration
-				)}`;
+				return `${this.$t('Completed')} ${when} ${this.$t(
+					'in'
+				)} ${this.$formatDuration(this.job.duration)}`;
 			}
 			if (this.job.status == 'Undelivered') {
-				return 'Job failed to start';
+				return this.$t('Job_failed_to_start');
 			}
 		},
 		steps() {
