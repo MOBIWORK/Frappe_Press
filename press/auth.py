@@ -39,7 +39,7 @@ ALLOWED_PATHS = [
 
 ALLOWED_WILDCARD_PATHS = [
     "/api/method/press.api.",
-    "/api/method/wiki.",
+    "/api/method/mbw_ess_registration.",
 ]
 
 DENIED_WILDCARD_PATHS = [
