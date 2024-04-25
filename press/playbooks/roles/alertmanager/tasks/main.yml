@@ -40,8 +40,8 @@
     mode: 0644
 
 - name: Configure Alertmanager
-  become: yes
-  become_user: frappe
+#  become: yes
+#  become_user: frappe
   template:
     src: alertmanager.yml
     dest: /home/frappe/alertmanager/alertmanager.yml

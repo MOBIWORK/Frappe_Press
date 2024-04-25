@@ -35,8 +35,8 @@
   loop: "{{ log_servers }}"
 
 - name: Configure Prometheus
-  become: yes
-  become_user: frappe
+#  become: yes
+#  become_user: frappe
   template:
     src: ../../prometheus/templates/prometheus.yml
     dest: /home/frappe/prometheus/prometheus.yml
