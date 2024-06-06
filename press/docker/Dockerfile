@@ -182,7 +182,7 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/webshop/.
 RUN git config --global --add safe.directory /home/frappe/context/apps/erpnext/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/hrms/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_localization/.git
-
+RUN git config --global --add safe.directory /home/frappe/context/apps/woocommerceconnector/.git
 
 ENV PYTHONUNBUFFERED 1
 
