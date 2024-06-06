@@ -159,6 +159,30 @@ RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 python${PYTH
 RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 python${PYTHON_VERSION} -m pip install --upgrade setuptools
 
 RUN git config --global advice.detachedHead false
+RUN git config --global --add safe.directory /home/frappe/context/apps/frappe/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/helpdesk/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/lms/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/wiki/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/print_designer/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_rtg/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/raven/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/payments/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/drive/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_dms/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_sfc_hr/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_service_v2/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_account_service/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_audit/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/go1_cms/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/gameplan/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/builder/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/crm/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_sfc_integrations/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/webshop/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/erpnext/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/hrms/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_localization/.git
+
 
 ENV PYTHONUNBUFFERED 1
 
