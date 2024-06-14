@@ -48,6 +48,7 @@ RUN --mount=type=cache,target=/var/cache/apt apt-get update \
   xfonts-base \
   # pycups dependencies
   gcc \
+  file \
   libcups2-dev \
   # s3-attachment dependencies
   libmagic1 \
@@ -158,6 +159,7 @@ RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 python${PYTH
 RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 python${PYTHON_VERSION} -m pip install Jinja2~=3.0.3
 RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 python${PYTHON_VERSION} -m pip install --upgrade setuptools
 
+#RUN git config --global init.defaultBranch main
 RUN git config --global advice.detachedHead false
 RUN git config --global --add safe.directory /home/frappe/context/apps/frappe/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/helpdesk/.git
@@ -167,7 +169,7 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/print_des
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_rtg/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/raven/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/payments/.git
-RUN git config --global --add safe.directory /home/frappe/context/apps/drive/.git
+RUN git config --global --add safe.diremainctory /home/frappe/context/apps/drive/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_dms/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_sfc_hr/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_service_v2/.git
