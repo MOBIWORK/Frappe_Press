@@ -169,7 +169,7 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/print_des
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_rtg/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/raven/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/payments/.git
-RUN git config --global --add safe.diremainctory /home/frappe/context/apps/drive/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/drive/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_dms/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_sfc_hr/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_service_v2/.git
