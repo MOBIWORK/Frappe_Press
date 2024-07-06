@@ -190,7 +190,7 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/woocommer
 RUN git config --global --add safe.directory /home/frappe/context/apps/fastwork_integrations/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/insights/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/email_delivery_service/.git
-
+RUN git config --global --add safe.directory /home/frappe/context/apps/fastwork_accounting/.git
 
 ENV PYTHONUNBUFFERED 1
 
