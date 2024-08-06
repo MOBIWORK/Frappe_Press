@@ -107,4 +107,4 @@ class PressJob(Document):
         frappe.publish_realtime("press_job_update", self.detail())
 
     def on_trash(self):
-		frappe.db.delete("Press Job Step", {"job": self.name})
+        frappe.db.delete("Press Job Step", {"job": self.name})
