@@ -223,6 +223,11 @@ RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 --mount=type
 {% endif %}
 {% endfor %}
 
+# Kiểm tra nếu file __init__.py tồn tại thì mới chèn đoạn mã
+RUN if [ -f /env/lib/python3.11/site-packages/chromadb/__init__.py ]; then \
+    echo -e "__import__('pysqlite3')\nimport sys\nsys.modules['sqlite3'] = sys.modules.pop('pysqlite3')\n$(cat /env/lib/python3.11/site-packages/chromadb/__init__.py)" > /env/lib/python3.11/site-packages/chromadb/__init__.py; \
+    fi
+
 COPY --chown=frappe:frappe config /home/frappe/frappe-bench/config
 COPY --chown=frappe:frappe apps.txt /home/frappe/frappe-bench/sites/apps.txt
 
