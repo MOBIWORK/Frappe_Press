@@ -192,7 +192,7 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/insights/
 RUN git config --global --add safe.directory /home/frappe/context/apps/email_delivery_service/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/fastwork_accounting/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/lending/.git
-
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_ess_registration/.git
 
 ENV PYTHONUNBUFFERED 1
 
