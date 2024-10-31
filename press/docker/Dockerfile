@@ -195,6 +195,16 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/lending/.
 RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_ess_registration/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/posawesome/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/getpos/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/clefincode_chat/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/nl_attendance_timesheet/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/doctype_permission/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/tldraw_whiteboard/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/meeting_management/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/frappe_better_list_view/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/desk_navbar_extended/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/satellite_demo/.git
+
+
 
 ENV PYTHONUNBUFFERED 1
 
