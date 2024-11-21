@@ -7,6 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV OPENBLAS_NUM_THREADS 1
 ENV MKL_NUM_THREADS 1
 
+ENV TZ=Asia/Ho_Chi_Minh
 # Install essential packages
 RUN --mount=type=cache,target=/var/cache/apt apt-get update \
   && apt-get install --yes --no-install-suggests --no-install-recommends \
@@ -59,6 +60,8 @@ RUN --mount=type=cache,target=/var/cache/apt apt-get update \
 
 COPY --chown=root:root supervisord.conf /etc/supervisor/supervisord.conf
 
+#set-timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # Install Redis from PPA
 RUN --mount=type=cache,target=/var/cache/apt curl -fsSL https://packages.redis.io/gpg | gpg --dearmor -o /usr/share/keyrings/redis-archive-keyring.gpg \
   && echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb focal main" | tee /etc/apt/sources.list.d/redis.list \
@@ -203,8 +206,9 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/meeting_m
 RUN git config --global --add safe.directory /home/frappe/context/apps/frappe_better_list_view/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/desk_navbar_extended/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/satellite_demo/.git
-
-
+RUN git config --global --add safe.directory /home/frappe/context/apps/ecommerce_integrations/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/dht_co/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/project_control/.git
 
 ENV PYTHONUNBUFFERED 1
 
