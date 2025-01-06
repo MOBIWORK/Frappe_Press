@@ -2033,3 +2033,20 @@ def change_server(name, group, scheduled_datetime=None):
 
     if not scheduled_datetime:
         site_migration.start()
+
+@frappe.whitelist(allow_guest=True)
+def autocomplete_sites(keyword=None):
+    if keyword is not None and keyword != "":
+        site_docs = frappe.db.get_list('Site',
+            filters={
+                'name': ['like', f'%{keyword}%']
+            },
+            fields=['name']
+        )
+        return [site_doc.name for site_doc in site_docs]
+    else:
+        site_docs = frappe.db.get_list('Site',
+            fields=['name']
+        )
+        return [site_doc.name for site_doc in site_docs]
+

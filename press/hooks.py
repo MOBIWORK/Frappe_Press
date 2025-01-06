@@ -164,7 +164,11 @@ doc_events = {
     "Address": {"validate": "press.api.billing.validate_gst"},
     "Site": {"before_insert": "press.press.doctype.team.team.validate_site_creation"},
     "Marketplace App Subscription": {
-        "on_update": "press.press.doctype.storage_integration_subscription.storage_integration_subscription.create_after_insert",
+        "on_update": [
+            "press.press.doctype.storage_integration_subscription.storage_integration_subscription.create_after_insert",
+            "press.press.crud_events.after_insert_and_update_market_app"
+        ],
+        "after_insert": ["press.press.crud_events.after_insert_and_update_market_app"]
     },
 }
 
