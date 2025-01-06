@@ -2322,3 +2322,19 @@ def get_site_config_standard_keys():
 		["name", "key", "title", "description", "type"],
 		order_by="title asc",
 	)
+
+@frappe.whitelist(allow_guest=True)
+def autocomplete_sites(keyword=None):
+    if keyword is not None and keyword != "":
+        site_docs = frappe.db.get_list('Site',
+            filters={
+                'name': ['like', f'%{keyword}%']
+            },
+            fields=['name']
+        )
+        return [site_doc.name for site_doc in site_docs]
+    else:
+        site_docs = frappe.db.get_list('Site',
+            fields=['name']
+        )
+        return [site_doc.name for site_doc in site_docs]
