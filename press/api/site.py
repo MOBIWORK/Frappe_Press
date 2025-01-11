@@ -576,7 +576,7 @@ def options_for_new():
     }
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_domain():
     return frappe.db.get_value("Press Settings", "Press Settings", ["domain"])
 
