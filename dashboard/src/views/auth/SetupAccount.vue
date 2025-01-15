@@ -321,8 +321,10 @@ export default {
 					lang: this.$i18n.locale
 				},
 				onSuccess(res) {
-					this.dashboardRoute = '/setup-account/billing';
-					window.location.href = '/dashboard/setup-account/billing';
+					//this.dashboardRoute = '/setup-account/billing';
+					//window.location.href = '/dashboard/setup-account/billing';
+					this.dashboardRoute = '/';
+					window.location.href = '/dashboard';
 				}
 			};
 		}
