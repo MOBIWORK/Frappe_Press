@@ -1,6 +1,6 @@
 {
 	"Job_failed_to_start": "Job failed to start",
-	"of_MBW_Cloud": "of MBW Cloud",
+	"of_EOV_Cloud": "of EOV Cloud",
 	"Unable_to_log_in_as_Administrator": "Unable to log in as Administrator",
 	"Logging_in_as_Administrator": "Logging in as Administrator",
 	"Please_wait": "Please wait",
@@ -1223,5 +1223,8 @@
 	"AccountBillingPayments_1": "History of your",
 	"AccountBillingPayments_2": "invoice payments",
 	"AccountBillingPayments_3": "No",
-	"AccountBillingPayments_4": "invoices have been generated yet"
+	"AccountBillingPayments_4": "invoices have been generated yet",
+	"SIGN_UP": "SIGN UP",
+	"Sign_Up_Account": "Sign up an account",
+	"LOGIN": "LOGIN"
 }

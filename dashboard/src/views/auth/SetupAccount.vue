@@ -2,27 +2,10 @@
 	<LoginBox>
 		<div v-if="!dashboardRoute">
 			<div v-if="!$resources.validateRequestKey.loading && email">
-				<div class="mb-4 w-36">
-					<SelectLanguage></SelectLanguage>
-				</div>
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
-					<div v-if="!isInvitation">{{ $t('set_up_your_account') }}</div>
-					<div v-else>
+					<div class="flex justify-center" v-if="!isInvitation">{{ $t('set_up_your_account') }}</div>
+					<div class="flex justify-center" v-else>
 						{{ $t('SetupAccount_content_1') }}: {{ invitationToTeam }}
-					</div>
-				</div>
-				<div class="mb-6">
-					<div class="text-base font-medium">
-						<span>{{ $t('already_have_an_account') }}? </span>
-						<router-link
-							class="text-base font-medium"
-							:to="{
-								name: $route.name == 'Login' ? 'Signup' : 'Login',
-								query: { ...$route.query, forgot: undefined }
-							}"
-						>
-							<span class="font-[600] text-red-600">{{ $t('login') }}.</span>
-						</router-link>
 					</div>
 				</div>
 				<form class="flex flex-col" @submit.prevent="submitForm">
@@ -173,7 +156,7 @@
 										{{ $t('Privacy_Policy') }}
 									</span></Link
 								>
-								{{ $t('of_MBW_Cloud') }}
+								{{ $t('of_EOV_Cloud') }}
 							</label>
 						</div>
 						<ErrorMessage
@@ -183,7 +166,7 @@
 					</div>
 					<ErrorMessage class="mt-4" :message="$resources.setupAccount.error" />
 					<Button
-						class="my-6 h-9 bg-red-600 text-base font-[700] text-white hover:bg-red-700"
+						class="my-6 h-9 text-base font-[700] text-white"
 						variant="solid"
 						:loading="$resources.setupAccount.loading"
 					>
@@ -203,7 +186,6 @@
 				>
 				{{ $t('SetupAccount_content_3') }}
 			</div>
-			<div v-else></div>
 		</div>
 		<div v-else>
 			<div class="text-center">

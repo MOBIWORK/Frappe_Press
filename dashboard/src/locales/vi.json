@@ -1,6 +1,6 @@
 {
 	"Job_failed_to_start": "Công việc không thể bắt đầu",
-	"of_MBW_Cloud": "của MBW Cloud",
+	"of_EOV_Cloud": "của EOV Cloud",
 	"Unable_to_log_in_as_Administrator": "Không thể đăng nhập với tư cách Quản trị viên",
 	"Logging_in_as_Administrator": "Đang đăng nhập với tư cách Quản trị viên",
 	"Please_wait": "Vui lòng đợi",
@@ -1222,5 +1222,8 @@
 	"AccountBillingPayments_1": "Lịch sử thanh toán hóa đơn của bạn với trạng thái hóa đơn là",
 	"AccountBillingPayments_2": "",
 	"AccountBillingPayments_3": "Chưa có hóa đơn",
-	"AccountBillingPayments_4": "nào được tạo"
+	"AccountBillingPayments_4": "nào được tạo",
+	"SIGN_UP": "ĐĂNG KÝ",
+	"Sign_Up_Account": "Đăng ký tài khoản",
+	"LOGIN": "ĐĂNG NHẬP"
 }
