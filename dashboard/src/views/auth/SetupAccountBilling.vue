@@ -7,9 +7,9 @@
 		</div>
 		<div>
 			<div>
-				<div class="mb-4 w-36">
+				<!-- <div class="mb-4 w-36">
 					<SelectLanguage></SelectLanguage>
-				</div>
+				</div> -->
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('SetupAccountBilling_content_1') }}</div>
 				</div>
@@ -33,7 +33,7 @@
 				</div>
 				<div class="text-center">
 					<Button
-						class="my-6 h-9 bg-red-600 px-8 text-base font-[700] text-white hover:bg-red-700"
+						class="my-6 h-9 px-8 text-base font-[700] text-white"
 						variant="solid"
 						:loading="$resources.updateBillingInformation.loading"
 						:onClick="() => $resources.updateBillingInformation.submit()"
