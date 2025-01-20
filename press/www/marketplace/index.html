@@ -3,18 +3,23 @@
 <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
 {% for slide in slides %}
 <style>
-	{{ slide.style }}
+	{
+			{
+			slide.style
+		}
+	}
 </style>
 {% endfor %}
 
 <style>
-	.splide .splide__arrow{
+	.splide .splide__arrow {
 		padding: 14px;
 		font-size: 24px;
 		background: inherit;
 		color: black
 	}
-	.splide .splide__arrow:hover{
+
+	.splide .splide__arrow:hover {
 		background: rgb(230, 230, 230, 0.7);
 	}
 </style>
@@ -30,16 +35,16 @@ empty_app -%} {%- block body -%}
 		{% if slides %}
 		<section class="splide" aria-label="Splide Basic HTML Example">
 			<div class="splide__track rounded-2xl">
-				  <ul class="splide__list">
+				<ul class="splide__list">
 					{% for slide in slides %}
-					  <li class="splide__slide rounded-2xl">
-							{{ slide.content }}
-					  </li>
-					  {% endfor %}
-				  </ul>
+					<li class="splide__slide rounded-2xl">
+						{{ slide.content }}
+					</li>
+					{% endfor %}
+				</ul>
 			</div>
-		  </section>
-		  {% endif %}
+		</section>
+		{% endif %}
 		{%- else -%}
 		<div class="mt-5">
 			{{ breadcrumbs([ { 'label': 'Chợ ứng dụng', 'url': '/marketplace' }, {
@@ -50,34 +55,19 @@ empty_app -%} {%- block body -%}
 			{%- if not type_overview -%}
 			<div class="w-80 mt-5 mr-5 section-slide-category">
 				<div style="max-height: calc(100vh - 40px);" class="flex flex-col sticky top-5 mt-4 overflow-y-auto">
-					<div
-						class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
-					>
-						<button
-							class="category-button w-full text-left rounded py-3 pl-5"
-							value=""
-						>
+					<div class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl">
+						<button class="category-button w-full text-left rounded py-3 pl-5" value="">
 							Tổng quan
 						</button>
 					</div>
-					<div
-						class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
-					>
-						<button
-							class="category-button w-full text-left rounded py-3 pl-5"
-							value="all_category"
-						>
+					<div class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl">
+						<button class="category-button w-full text-left rounded py-3 pl-5" value="all_category">
 							Tất cả
 						</button>
 					</div>
 					{%- for category in categories -%}
-					<div
-						class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl"
-					>
-						<button
-							class="category-button w-full text-left rounded py-3 pl-5"
-							value="{{ category }}"
-						>
+					<div class="-left-2 text-base transition hover:bg-gray-100 text-gray-700 rounded-2xl">
+						<button class="category-button w-full text-left rounded py-3 pl-5" value="{{ category }}">
 							{{ category }}
 						</button>
 					</div>
@@ -96,7 +86,8 @@ empty_app -%} {%- block body -%}
 						</div>
 						{%- if app_show.data -%}
 						<div class="min-w-max">
-							<a class="text-base cursor-pointer text-blue-600 hover:bg-gray-100 p-3 rounded-2xl" href="/marketplace/?type_overview=detail&category={{ app_show.name_category }}">
+							<a class="text-base cursor-pointer text-blue-600 hover:bg-gray-100 p-3 rounded-2xl"
+								href="/marketplace/?type_overview=detail&category={{ app_show.name_category }}">
 								Xem thêm
 							</a>
 						</div>
@@ -105,17 +96,11 @@ empty_app -%} {%- block body -%}
 
 					{%- if app_show.data -%}
 					<div
-					class="all-apps-list grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-2"
-					>
-					{%- for app in app_show.data -%}
-						<a
-							href="/{{ app.route }}"
-							id="{{app.name}}"
-							data-title="{{ app.title }}"
-							data-description="{{ app.description }}"
-							data-categories="{{ app.categories }}"
-							class="app-card flex flex-col hover:border-red-200 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-red-500 focus:shadow-outline"
-						>
+						class="all-apps-list grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:grid-cols-2">
+						{%- for app in app_show.data -%}
+						<a href="/{{ app.route }}" id="{{app.name}}" data-title="{{ app.title }}"
+							data-description="{{ app.description }}" data-categories="{{ app.categories }}"
+							class="app-card flex flex-col border hover:border-blue-300 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-blue-500 focus:shadow-outline">
 							<div>
 								<div class="mb-2">
 									{%- if app.subscription_type == 'Freemium'-%} {{
@@ -125,15 +110,10 @@ empty_app -%} {%- block body -%}
 								</div>
 								<div class="flex">
 									{%- if app.image -%}
-									<img
-										alt="{{app.title}} Logo"
-										src="{{ app.image }}"
-										class="image-app rounded-lg"
-									/>
+									<img alt="{{app.title}} Logo" src="{{ app.image }}" class="image-app rounded-lg" />
 									{%- else -%}
 									<div
-										class="flex items-center justify-center text-gray-600 font-bold image-app border border-gray-200 rounded-lg text-title"
-									>
+										class="flex items-center justify-center text-gray-600 font-bold image-app border border-gray-200 rounded-lg text-title">
 										{{app.title[0]}}
 									</div>
 									{%- endif -%}
@@ -144,17 +124,11 @@ empty_app -%} {%- block body -%}
 							</div>
 							<div class="flex items-center text-base text-gray-700 my-2">
 								<div class="flex items-center">
-									<img
-										class="h-4 opacity-80"
-										src="/assets/press/images/icon_star.svg"
-									/>
+									<img class="h-4 opacity-80" src="/assets/press/images/icon_star.svg" />
 									<span class="ml-1">{{ app.ratings_summary.avg_rating }}</span>
 								</div>
 								<div class="flex items-center">
-									<img
-										class="h-4 opacity-80"
-										src="/assets/press/images/tally.svg"
-									/>
+									<img class="h-4 opacity-80" src="/assets/press/images/tally.svg" />
 								</div>
 								<div class="ml-2 flex items-center">
 									{{ app.ratings_summary.total_num_reviews }} {{ 'review' if
@@ -186,29 +160,18 @@ empty_app -%} {%- block body -%}
 					<div class="flex flex-col sm:flex-row sm:justify-between mb-8">
 						<div class="mr-2 mb-2">{{ info_category.content if type_overview else 'Ứng dụng' }}</div>
 						<div class="flex flex-row">
-							<input
-								type="text"
+							<input type="text"
 								class="placeholder-gray-500 rounded-md border-0 bg-gray-100 py-1 px-2 text-base leading-5 focus:bg-gray-200 focus:shadow-none focus:ring-0 block w-full sm:mt-0 sm:w-60 h-8"
-								id="app-search-input"
-								placeholder="Tìm kiếm ứng dụng"
-								value="{{ text_search }}"
-							/>
+								id="app-search-input" placeholder="Tìm kiếm ứng dụng" value="{{ text_search }}" />
 						</div>
 					</div>
 					{%- if pagination.total_page -%}
-					<div
-						id="all-apps-list"
-						class="all-apps-list grid grid-cols-1 gap-6 lg:grid-cols-3 {{ 'xl:grid-cols-4 md:grid-cols-2' if not type_overview else 'xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3' }} sm:grid-cols-2"
-					>
+					<div id="all-apps-list"
+						class="all-apps-list grid grid-cols-1 gap-6 lg:grid-cols-3 {{ 'xl:grid-cols-4 md:grid-cols-2' if not type_overview else 'xl:grid-cols-5 lg:grid-cols-4 md:grid-cols-3' }} sm:grid-cols-2">
 						{%- for app in apps -%}
-						<a
-							href="/{{ app.route }}"
-							id="{{app.name}}"
-							data-title="{{ app.title }}"
-							data-description="{{ app.description }}"
-							data-categories="{{ app.categories }}"
-							class="app-card flex flex-col hover:border-red-200 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-red-500 focus:shadow-outline"
-						>
+						<a href="/{{ app.route }}" id="{{app.name}}" data-title="{{ app.title }}"
+							data-description="{{ app.description }}" data-categories="{{ app.categories }}"
+							class="app-card flex flex-col border hover:border-blue-300 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-blue-500 focus:shadow-outline">
 							<div>
 								<div class="mb-2">
 									{%- if app.subscription_type == 'Freemium'-%} {{
@@ -218,15 +181,10 @@ empty_app -%} {%- block body -%}
 								</div>
 								<div class="flex">
 									{%- if app.image -%}
-									<img
-										alt="{{app.title}} Logo"
-										src="{{ app.image }}"
-										class="image-app rounded-lg"
-									/>
+									<img alt="{{app.title}} Logo" src="{{ app.image }}" class="image-app rounded-lg" />
 									{%- else -%}
 									<div
-										class="flex items-center justify-center text-gray-600 font-bold image-app border border-gray-200 rounded-lg text-title"
-									>
+										class="flex items-center justify-center text-gray-600 font-bold image-app border border-gray-200 rounded-lg text-title">
 										{{app.title[0]}}
 									</div>
 									{%- endif -%}
@@ -237,17 +195,11 @@ empty_app -%} {%- block body -%}
 							</div>
 							<div class="flex items-center text-base text-gray-700 my-2">
 								<div class="flex items-center">
-									<img
-										class="h-4 opacity-80"
-										src="/assets/press/images/icon_star.svg"
-									/>
+									<img class="h-4 opacity-80" src="/assets/press/images/icon_star.svg" />
 									<span class="ml-1">{{ app.ratings_summary.avg_rating }}</span>
 								</div>
 								<div class="flex items-center">
-									<img
-										class="h-4 opacity-80"
-										src="/assets/press/images/tally.svg"
-									/>
+									<img class="h-4 opacity-80" src="/assets/press/images/tally.svg" />
 								</div>
 								<div class="ml-2 flex items-center">
 									{{ app.ratings_summary.total_num_reviews }} {{ 'review' if
@@ -264,90 +216,80 @@ empty_app -%} {%- block body -%}
 						<ul class="page flex flex-wrap list-none justify-end overflow-x-auto">
 							{%- if pagination.page_curren == 1 -%}
 							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipprevious.svg"
-								/></a>
+								<a class="opacity p-2 text-gray-700"><img
+										src="/assets/press/images/icon_skipprevious.svg" /></a>
 							</li>
 							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowleft.svg"
-								/></a>
+								<a class="opacity p-2 text-gray-700"><img
+										src="/assets/press/images/icon_arrowleft.svg" /></a>
 							</li>
 							{%- else -%}
 							<li class="mr-2">
-								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipprevious.svg"
-								/></a>
+								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}"
+									class="p-2 text-gray-700"><img
+										src="/assets/press/images/icon_skipprevious.svg" /></a>
 							</li>
 							<li class="mr-2">
-								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren - 1 }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowleft.svg"
-								/></a>
+								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren - 1 }}&page_size={{ pagination.page_size }}"
+									class="p-2 text-gray-700"><img src="/assets/press/images/icon_arrowleft.svg" /></a>
 							</li>
 							{%- endif -%}
 
 							{%- if pagination.total_page > 5 -%}
-								{%- for x in pagination.pagination_list -%}
-								{%- if x == "..." -%}
-								<li class="mr-2">
-									<a class="{{ "active" if x == pagination.page_curren }} p-2 text-gray-900"
-										>{{ x }}</a
-									>
-								</li>
-								{%- else -%}
-								<li class="mr-2">
-									<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ x }}&page_size={{ pagination.page_size }}" class="{{ "active" if x == pagination.page_curren }} p-2 text-gray-900"
-										>{{ x }}</a
-									>
-								</li>
-								{%- endif -%}
-								{%- endfor -%}
+							{%- for x in pagination.pagination_list -%}
+							{%- if x == "..." -%}
+							<li class="mr-2">
+								<a class="{{ " active" if x==pagination.page_curren }} p-2 text-gray-900">{{ x }}</a>
+							</li>
+							{%- else -%}
+							<li class="mr-2">
+								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ x }}&page_size={{ pagination.page_size }}"
+									class="{{ " active" if x==pagination.page_curren }} p-2 text-gray-900">{{ x }}</a>
+							</li>
+							{%- endif -%}
+							{%- endfor -%}
 							{%- else -%}
 							{%- for i in range(1,pagination.total_page + 1) -%}
 							<li class="mr-2">
-								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ i }}&page_size={{ pagination.page_size }}" class="{{ "active" if i == pagination.page_curren }} p-2 text-gray-900"
-									>{{ i }}</a
-								>
+								<a href="/marketplace/?type_overview={{ type_overview }}&category={{ category }}&text_search={{ text_search }}&page={{ i }}&page_size={{ pagination.page_size }}"
+									class="{{ " active" if i==pagination.page_curren }} p-2 text-gray-900">{{ i }}</a>
 							</li>
 							{%- endfor -%}
 							{%- endif -%}
 
 							{%- if pagination.page_curren == pagination.total_page -%}
 							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowright.svg"
-								/></a>
+								<a class="opacity p-2 text-gray-700"><img
+										src="/assets/press/images/icon_arrowright.svg" /></a>
 							</li>
 							<li class="mr-2">
-								<a class="opacity p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipnext.svg"
-								/></a>
+								<a class="opacity p-2 text-gray-700"><img
+										src="/assets/press/images/icon_skipnext.svg" /></a>
 							</li>
 							{%- else -%}
 							<li class="mr-2">
-								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren + 1 }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_arrowright.svg"
-								/></a>
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.page_curren + 1 }}&page_size={{ pagination.page_size }}"
+									class="p-2 text-gray-700"><img src="/assets/press/images/icon_arrowright.svg" /></a>
 							</li>
 							<li class="mr-2">
-								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.total_page }}&page_size={{ pagination.page_size }}" class="p-2 text-gray-700"
-									><img src="/assets/press/images/icon_skipnext.svg"
-								/></a>
+								<a href="/marketplace/?category={{ category }}&text_search={{ text_search }}&page={{ pagination.total_page }}&page_size={{ pagination.page_size }}"
+									class="p-2 text-gray-700"><img src="/assets/press/images/icon_skipnext.svg" /></a>
 							</li>
 							{%- endif -%}
 							<!-- Thêm các liên kết khác tương ứng với số trang -->
 						</ul>
 					</div>
 					{%- else -%}
-						{%- if text_search -%}
-						<div id="no-results-message" class="h-80">
-							<p class="text-gray-700">Không tìm thấy ứng dụng nào.</p>
-						</div>
-						{%- else -%}
-						<div id="empty-card">
-							{{ empty_app('Ứng dụng đang phát triển', "Sau khi phát triển, các ứng dụng sẽ hiển thị tại đây") }}
-						</div>
-						{%- endif -%}
+					{%- if text_search -%}
+					<div id="no-results-message" class="h-80">
+						<p class="text-gray-700">Không tìm thấy ứng dụng nào.</p>
+					</div>
+					{%- else -%}
+					<div id="empty-card">
+						{{ empty_app('Ứng dụng đang phát triển', "Sau khi phát triển, các ứng dụng sẽ hiển thị tại đây")
+						}}
+					</div>
+					{%- endif -%}
 					{%- endif -%}
 				</div>
 				<div id="breakpoint-load"></div>
@@ -363,15 +305,15 @@ empty_app -%} {%- block body -%}
 {%- block script -%}
 <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
 <script>
-	document.addEventListener( 'DOMContentLoaded', function() {
-	  var splide = new Splide( '.splide', {
-		type: 'loop',
-  		perPage: 1,
-		autoplay: true,
-		pagination: false,
-		drag:false
-	  } );
-	  splide.mount();
-	} );
-  </script>
+	document.addEventListener('DOMContentLoaded', function () {
+		var splide = new Splide('.splide', {
+			type: 'loop',
+			perPage: 1,
+			autoplay: true,
+			pagination: false,
+			drag: false
+		});
+		splide.mount();
+	});
+</script>
 {%- endblock -%}

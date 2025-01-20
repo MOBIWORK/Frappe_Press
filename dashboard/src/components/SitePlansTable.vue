@@ -51,7 +51,7 @@
 			</div>
 			<a
 				v-if="plan.support_included"
-				href="https://mbwcloud.com/lien-he/"
+				href="https://eov.mbwcloud.com/lien-he/"
 				target="_blank"
 				class="w-1/4"
 			>

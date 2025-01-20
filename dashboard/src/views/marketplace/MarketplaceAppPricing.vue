@@ -70,13 +70,13 @@ function savePlan() {
 		updateAppPlan.submit({
 			app_plan_name: currentEditingPlan.name,
 			updated_plan_data: currentEditingPlan,
-			lang: this.$i18n.locale
+			lang: "vi"
 		});
 	} else {
 		createAppPlan.submit({
 			plan_data: currentEditingPlan,
 			marketplace_app: props.app?.name,
-			lang: this.$i18n.locale
+			lang: "vi"
 		});
 	}
 }

@@ -241,7 +241,7 @@ function getApps() {
 						data-title="${app.title}"
 						data-description="${app.description}"
 						data-categories="${app.categories}"
-						class="app-card flex flex-col hover:border-red-200 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-red-500 focus:shadow-outline"
+						class="app-card flex flex-col border hover:border-blue-300 justify-between p-6 box-shadow-custom cursor-pointer transition focus:outline-none focus:border-blue-500 focus:shadow-outline"
 					>
 						<div>
 							<div class="mb-2">

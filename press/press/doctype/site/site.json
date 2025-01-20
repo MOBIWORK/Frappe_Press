@@ -81,9 +81,7 @@
   "backups_section",
   "skip_scheduled_backups",
   "tags_section",
-  "tags",
-  "monitor_section",
-  "hide_monitor_tab"
+  "tags"
  ],
  "fields": [
   {
@@ -521,7 +519,7 @@
    "read_only": 1
   },
   {
-   "default": "0",
+   "default": "1",
    "description": "Hide site config tab from dashboard",
    "fieldname": "hide_config",
    "fieldtype": "Check",
@@ -639,16 +637,11 @@
   },
   {
    "group": "Related Documents",
-   "link_doctype": "Central Site Migration",
-   "link_fieldname": "site"
-  },
-  {
-   "group": "Related Documents",
    "link_doctype": "Marketplace App Subscription",
    "link_fieldname": "site"
   }
  ],
- "modified": "2023-08-07 17:47:21.855550",
+ "modified": "2025-01-20 16:49:44.078189",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Site",

@@ -1,35 +1,37 @@
 <!DOCTYPE html>
 <html class="h-full overflow-hidden" lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width,initial-scale=1.0" />
-		<title>MBW Cloud</title>
-		<link rel="icon" href="/favicon.png" type="image/x-icon" />
-	</head>
 
-	<body class="h-full">
-		<noscript>
-			<strong>
-				MBW Cloud Dashboard doesn't work properly without JavaScript enabled.
-				Please enable it to continue.
-			</strong>
-		</noscript>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+	<title>MBW Cloud</title>
+	<link rel="icon" href="/favicon.svg" type="image/x-icon" />
+</head>
 
-		<!-- Main Vue App -->
-		<div id="app" class="h-full"></div>
+<body class="h-full">
+	<noscript>
+		<strong>
+			MBW Cloud Dashboard doesn't work properly without JavaScript enabled.
+			Please enable it to continue.
+		</strong>
+	</noscript>
 
-		<!-- For Teleports -->
-		<div id="modals"></div>
-		<div id="popovers"></div>
+	<!-- Main Vue App -->
+	<div id="app" class="h-full"></div>
 
-		<script type="text/jinja">
+	<!-- For Teleports -->
+	<div id="modals"></div>
+	<div id="popovers"></div>
+
+	<script type="text/jinja">
 			{% for key in boot %}
 			window['{{ key }}'] = '{{ boot[key] | tojson }}';
 			{% endfor %}
 		</script>
 
-		<script type="module" src="/src/main.js"></script>
-		<!-- <script type="module" src="/src2/main.js"></script> -->
-	</body>
+	<script type="module" src="/src/main.js"></script>
+	<!-- <script type="module" src="/src2/main.js"></script> -->
+</body>
+
 </html>

@@ -40,7 +40,7 @@ def account_request(
     frappe.utils.validate_email_address(email, True)
 
     exists, enabled = frappe.db.get_value("Team", {"user": email}, ["name", "enabled"]
-	) or [0, 0]
+    ) or [0, 0]
 
     if exists and not enabled:
         frappe.throw(f"Account with email {email} has been deactivated")
@@ -71,11 +71,11 @@ def account_request(
                 "email": email,
                 "password": password,
                 "role": "Press Admin",
-                        "first_name": first_name,
-                        "last_name": last_name,
-                        "country": country,
-                        "url_args": url_args or json.dumps({}),
-                        "send_email": True,
+                "first_name": first_name,
+                "last_name": last_name,
+                "country": country,
+                "url_args": url_args or json.dumps({}),
+                "send_email": True,
             }
         )
         site_name = account_request.get_site_name()
@@ -378,7 +378,7 @@ def create_team(account_request, get_stripe_id=False):
         team_doc = Team.create_new(
             account_request,
             account_request.first_name,
-            account_request.last_name,
+            account_request.phone_number,
             password=get_decrypted_password(
                 "Account Request", account_request.name, "password"),
             country=account_request.country,

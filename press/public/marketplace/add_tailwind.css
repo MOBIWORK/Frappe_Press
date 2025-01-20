@@ -299,6 +299,11 @@
 	background-color: rgb(235 144 145 / var(--tw-bg-opacity));
 }
 
+.text-blue-500 {
+    --tw-text-opacity: 1;
+    color: rgb(2 137 247 / var(--tw-text-opacity, 1)) /* #0289f7 */;
+}
+
 .ml-1 {
 	margin-left: 0.25rem /* 4px */;
 }
@@ -552,6 +557,11 @@
 	border-color: rgb(162 162 162 / var(--tw-border-opacity));
 }
 
+.border-blue-500 {
+    --tw-border-opacity: 1;
+    border-color: rgb(2 137 247 / var(--tw-border-opacity, 1)) /* #0289f7 */;
+}
+
 .border-red-700 {
 	--tw-border-opacity: 1;
 	border-color: rgb(181 42 42 / var(--tw-border-opacity));
@@ -663,6 +673,18 @@
 
 .max-h-\[800px\] {
 	max-height: 800px;
+}
+.hover\:border:hover {
+    border-width: 1px;
+}
+
+.hover\:bg-blue-600:hover {
+    --tw-bg-opacity: 1;
+    background-color: rgb(0 123 224 / var(--tw-bg-opacity, 1)) /* #007be0 */;
+}
+.hover\:border-blue-300:hover {
+    --tw-border-opacity: 1;
+    border-color: rgb(167 215 253 / var(--tw-border-opacity, 1)) /* #a7d7fd */;
 }
 
 .hover\:border-red-300:hover {

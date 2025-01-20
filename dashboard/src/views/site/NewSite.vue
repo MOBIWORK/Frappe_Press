@@ -120,7 +120,7 @@
 								{{ $t('NewServer_content_1') }}
 								<Link
 									class="border-none"
-									href="https://mbwcloud.com/privacy"
+									href="https://eov.mbwcloud.com/privacy"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700">
 										{{ $t('Privacy_Policy') }}

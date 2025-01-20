@@ -195,6 +195,11 @@ class MarketplaceApp(WebsiteGenerator):
     def get_context(self, context):
         context.no_cache = True
         context.app = self
+        
+        is_login = False
+        if frappe.session.user != "Guest":
+            is_login = True
+        context.is_login = is_login
 
         supported_versions = []
         public_rgs = frappe.get_all(

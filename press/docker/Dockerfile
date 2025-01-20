@@ -209,6 +209,8 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/satellite
 RUN git config --global --add safe.directory /home/frappe/context/apps/ecommerce_integrations/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/dht_co/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/project_control/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/roadai/.git
+
 
 ENV PYTHONUNBUFFERED 1
 

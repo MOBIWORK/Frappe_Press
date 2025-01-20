@@ -76,7 +76,7 @@
 			</div>
 
 			<div class="flex justify-between">
-				GST ({{$t('if_applicable')}})
+				GST ({{ $t('if_applicable') }})
 				<p class="text-lg text-red-500">{{ gstApplicable() ? '18%' : '-' }}</p>
 			</div>
 
@@ -157,7 +157,9 @@
 	</div>
 
 	<!--Add Card Details, Stripe Step-->
-	<div v-if="step == 'Add Card Details'" class="text-sm">{{ $t('Card_Details') }}</div>
+	<div v-if="step == 'Add Card Details'" class="text-sm">
+		{{ $t('Card_Details') }}
+	</div>
 	<div
 		v-if="step == 'Add Card Details'"
 		class="form-input my-2 block w-full py-2 pl-3"
@@ -199,8 +201,11 @@
 	>
 		<p>
 			{{ $t('MarketplacePrepaidCredits_content_3') }}
-			<span id="card-brand">{{ this.card.brand }}</span> {{ $t('MarketplacePrepaidCredits_content_4') }}
-			<span class="font-semibold">** {{ this.card.last4 }}</span> {{ $t('MarketplacePrepaidCredits_content_5') }} {{ creditsToBuy }} {{ $t('MarketplacePrepaidCredits_content_6') }}
+			<span id="card-brand">{{ this.card.brand }}</span>
+			{{ $t('MarketplacePrepaidCredits_content_4') }}
+			<span class="font-semibold">** {{ this.card.last4 }}</span>
+			{{ $t('MarketplacePrepaidCredits_content_5') }} {{ creditsToBuy }}
+			{{ $t('MarketplacePrepaidCredits_content_6') }}
 		</p>
 		<Button
 			variant="solid"
