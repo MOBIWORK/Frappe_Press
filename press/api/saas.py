@@ -90,8 +90,6 @@ def account_request(
         log_error("Account Request Creation Failed", data=e)
         raise
 
-    create_or_rename_saas_site(app, account_request)
-
 
 def create_or_rename_saas_site(app, account_request):
     """
@@ -245,6 +243,10 @@ def check_subdomain_availability(subdomain, app):
 def validate_account_request(key):
     if not key:
         frappe.throw("Request Key not provided")
+    
+    account_request = get_account_request_from_key(key)
+    if not account_request:
+        frappe.throw("Invalid or Expired Key")
 
     app = frappe.db.get_value(
         "Account Request", {"request_key": key}, "saas_app")
@@ -258,6 +260,8 @@ def validate_account_request(key):
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = f"/{route}?key={key}"
 
+    create_or_rename_saas_site(app, account_request)
+    
 
 @frappe.whitelist(allow_guest=True)
 def setup_account(key, business_data=None):
