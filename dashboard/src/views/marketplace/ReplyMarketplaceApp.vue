@@ -1,6 +1,7 @@
 <script setup>
 import { reactive } from 'vue';
 import { createResource } from 'frappe-ui';
+import { translate } from '@/utils/index';
 
 const props = defineProps({
 	marketplaceApp: String,
@@ -21,10 +22,10 @@ const submitReply = createResource({
 	url: 'press.api.marketplace.submit_developer_reply',
 	validate() {
 		if (!reply.reply) {
-			return this.$t('ReplyMarketplaceApp_content_1');
+			return translate('ReplyMarketplaceApp_content_1');
 		}
 		if (!$account.team.is_developer) {
-			return this.$t('ReplyMarketplaceApp_content_2');
+			return translate('ReplyMarketplaceApp_content_2');
 		}
 	},
 	onSuccess() {

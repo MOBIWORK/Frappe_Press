@@ -4,6 +4,7 @@ import { utils } from '@/utils';
 import { createResource } from 'frappe-ui';
 import AlertSiteUpdate from '@/components/AlertSiteUpdate.vue';
 import AlertSiteActivation from '@/components/AlertSiteActivation.vue';
+import { translate } from '@/utils/index';
 
 const SitePlansDialog = defineAsyncComponent(() =>
 	import('./SitePlansDialog.vue')
@@ -45,11 +46,11 @@ const siteMigrationText = computed(() => {
 	const status = props.site?.site_migration.status;
 
 	if (status === 'Running') {
-		return this.$t('SiteAlerts_content_1');
+		return translate('SiteAlerts_content_1');
 	} else if (status === 'Pending') {
-		return this.$t('SiteAlerts_content_2');
+		return translate('SiteAlerts_content_2');
 	} else if (status === 'Scheduled') {
-		return `${this.$t('SiteAlerts_content_3')} ${utils.methods.formatDate(
+		return `${translate('SiteAlerts_content_3')} ${utils.methods.formatDate(
 			props.site?.site_migration.scheduled_time,
 			'relative'
 		)}.`;
@@ -60,11 +61,11 @@ const siteVersionUpgradeText = computed(() => {
 	const status = props.site?.version_upgrade.status;
 
 	if (status === 'Running') {
-		return this.$t('SiteAlerts_content_4');
+		return translate('SiteAlerts_content_4');
 	} else if (status === 'Pending') {
-		return this.$t('SiteAlerts_content_5');
+		return translate('SiteAlerts_content_5');
 	} else if (status === 'Scheduled') {
-		return `${this.$t('SiteAlerts_content_6')} ${utils.methods.formatDate(
+		return `${translate('SiteAlerts_content_6')} ${utils.methods.formatDate(
 			props.site?.version_upgrade.scheduled_time,
 			'relative'
 		)}.`;
@@ -112,7 +113,8 @@ const marketplacePromotionalBanners = createResource({
 			</Alert>
 		</div>
 		<Alert :title="$t('Trial')" v-if="isInTrial && $account.hasBillingInfo">
-			{{ $t('SiteAlerts_content_7') }} {{ trialEndsText }}{{ $t('SiteAlerts_content_8') }}
+			{{ $t('SiteAlerts_content_7') }} {{ trialEndsText
+			}}{{ $t('SiteAlerts_content_8') }}
 
 			<template #actions>
 				<Button
@@ -125,7 +127,8 @@ const marketplacePromotionalBanners = createResource({
 			</template>
 		</Alert>
 		<Alert :title="$t('Trial')" v-if="isInTrial && $account.hasBillingInfo">
-			{{ $t('SiteAlerts_content_9') }} {{ trialEndsText }}{{ $t('SiteAlerts_content_10') }}
+			{{ $t('SiteAlerts_content_9') }} {{ trialEndsText
+			}}{{ $t('SiteAlerts_content_10') }}
 
 			<template #actions>
 				<Button

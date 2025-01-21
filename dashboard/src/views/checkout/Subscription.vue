@@ -56,7 +56,9 @@
 									<span class="text-base font-medium text-gray-900">
 										{{ plan.plan_title }}
 									</span>
-									<span class="text-base text-gray-600">/{{ $t('month') }}</span>
+									<span class="text-base text-gray-600"
+										>/{{ $t('month') }}</span
+									>
 								</div>
 								<Badge
 									v-if="$resources.subscription.data.current_plan == plan.name"
@@ -70,8 +72,9 @@
 							</div>
 							<div class="mt-1 text-sm text-gray-600">
 								<span>
-									CPU {{ plan.cpu_time_per_day }}
-									{{ $t('hour') }}/{{ $t('day') }}
+									CPU {{ plan.cpu_time_per_day }} {{ $t('hour') }}/{{
+										$t('day')
+									}}
 								</span>
 								<span class="mx-1"> &middot; </span>
 								<span>

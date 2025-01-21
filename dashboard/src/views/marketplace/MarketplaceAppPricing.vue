@@ -3,6 +3,7 @@ import { ref, reactive } from 'vue';
 import { createResource } from 'frappe-ui';
 import AppPlanCard from '@/components/AppPlanCard.vue';
 import PrinterIcon from '@/components/PrinterIcon.vue';
+import { translate } from '@/utils/index';
 
 const showEditPlanDialog = ref(false);
 const currentEditingPlan = reactive({
@@ -38,7 +39,7 @@ const createAppPlan = createResource({
 	url: 'press.api.marketplace.create_app_plan',
 	validate() {
 		if (!currentEditingPlan.plan_title) {
-			return this.$t('Plan_name_is_required');
+			return translate('Plan_name_is_required');
 		}
 	},
 	onSuccess() {
@@ -70,13 +71,13 @@ function savePlan() {
 		updateAppPlan.submit({
 			app_plan_name: currentEditingPlan.name,
 			updated_plan_data: currentEditingPlan,
-			lang: "vi"
+			lang: 'vi'
 		});
 	} else {
 		createAppPlan.submit({
 			plan_data: currentEditingPlan,
 			marketplace_app: props.app?.name,
-			lang: "vi"
+			lang: 'vi'
 		});
 	}
 }

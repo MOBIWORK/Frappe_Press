@@ -2,6 +2,7 @@
 import { reactive } from 'vue';
 import { createResource } from 'frappe-ui';
 import StarRatingInput from '@/components/StarRatingInput.vue';
+import { translate } from '@/utils/index';
 
 const props = defineProps({
 	marketplaceApp: String
@@ -23,11 +24,11 @@ const submitReview = createResource({
 	url: 'press.api.marketplace.submit_user_review',
 	validate() {
 		if (!review.title) {
-			return this.$t('ReviewMarketplaceApp_content_1');
+			return translate('ReviewMarketplaceApp_content_1');
 		}
 
 		if (!review.review) {
-			return this.$t('ReviewMarketplaceApp_content_2');
+			return translate('ReviewMarketplaceApp_content_2');
 		}
 	},
 	onSuccess() {

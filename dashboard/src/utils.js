@@ -1,5 +1,6 @@
 import { DateTime, Duration } from 'luxon';
 import theme from '../tailwind.theme.json';
+import i18n from './i18n';
 
 let utils = {
 	methods: {
@@ -8,10 +9,10 @@ let utils = {
 				if (Array.isArray(key)) {
 					let msg = '';
 					key.map(el => {
-						msg += this.$t(el);
+						msg += i18n.global.t(el);
 					});
 				} else {
-					return this.$t(key);
+					return i18n.global.t(key);
 				}
 			}
 
@@ -81,16 +82,16 @@ let utils = {
 		},
 		$validateSubdomain(subdomain) {
 			if (!subdomain) {
-				return this.$t('Subdomain_cannot_be_empty');
+				return i18n.global.t('Subdomain_cannot_be_empty');
 			}
 			if (subdomain.length < 2) {
-				return this.$t('utils_content_1');
+				return i18n.global.t('utils_content_1');
 			}
 			if (subdomain.length > 32) {
-				return this.$t('utils_content_2');
+				return i18n.global.t('utils_content_2');
 			}
 			if (!subdomain.match(/^[a-z0-9][a-z0-9-]*[a-z0-9]$/)) {
-				return this.$t('utils_content_3');
+				return i18n.global.t('utils_content_3');
 			}
 			return null;
 		},
@@ -137,12 +138,12 @@ let utils = {
 		},
 		$formatTitleJob(value) {
 			let nameTitle = {
-				'New Site': this.$t('utils_content_4'),
-				'Install Apps': this.$t('utils_content_5'),
-				'Update Site Configuration': this.$t('utils_content_6'),
-				'Enable Scheduler': this.$t('utils_content_7'),
-				'Bench Setup NGINX': this.$t('utils_content_8'),
-				'Reload NGINX': this.$t('utils_content_9')
+				'New Site': i18n.global.t('utils_content_4'),
+				'Install Apps': i18n.global.t('utils_content_5'),
+				'Update Site Configuration': i18n.global.t('utils_content_6'),
+				'Enable Scheduler': i18n.global.t('utils_content_7'),
+				'Bench Setup NGINX': i18n.global.t('utils_content_8'),
+				'Reload NGINX': i18n.global.t('utils_content_9')
 			};
 			return nameTitle[value] || value;
 		},
@@ -159,12 +160,12 @@ let utils = {
 
 			const dateTime = Duration.fromISOTime(formattedDuration).toObject();
 			const hourString = dateTime.hours
-				? `${dateTime.hours} ${this.$t('hour')}`
+				? `${dateTime.hours} ${i18n.global.t('hour')}`
 				: '';
 			const minuteString = dateTime.minutes
-				? `${dateTime.minutes} ${this.$t('minute')}`
+				? `${dateTime.minutes} ${i18n.global.t('minute')}`
 				: '';
-			const secondString = `${dateTime.seconds} ${this.$t('second')}`;
+			const secondString = `${dateTime.seconds} ${i18n.global.t('second')}`;
 
 			return `${hourString} ${minuteString} ${secondString}`;
 		},
@@ -203,9 +204,11 @@ let utils = {
 
 			let days = diff.days;
 			if (days > 1) {
-				return `${this.$t('in')} ${Math.floor(days)} ${this.$t('days')}`;
+				return `${i18n.global.t('in')} ${Math.floor(days)} ${i18n.global.t(
+					'days'
+				)}`;
 			}
-			return this.$t('utils_content_10');
+			return i18n.global.t('utils_content_10');
 		},
 		$routeTo404PageIfNotFound(errorMessage) {
 			if (errorMessage.indexOf('not found') >= 0) {
@@ -221,56 +224,56 @@ let utils = {
 		},
 		$getStatusDocTrans(t) {
 			let statusDoc = {
-				0: this.$t('unpaid'),
-				1: this.$t('paid'),
-				2: this.$t('cancelled'),
-				3: this.$t('processing')
+				0: i18n.global.t('unpaid'),
+				1: i18n.global.t('paid'),
+				2: i18n.global.t('cancelled'),
+				3: i18n.global.t('processing')
 			};
 			return statusDoc[t] || t;
 		},
 		$getTypeSource(t) {
 			let typeSource = {
-				'Prepaid Credits': this.$t('deposit_amount'),
-				'Transferred Credits': this.$t('transferred_amount'),
-				'Free Credits': this.$t('promotional_amount')
+				'Prepaid Credits': i18n.global.t('deposit_amount'),
+				'Transferred Credits': i18n.global.t('transferred_amount'),
+				'Free Credits': i18n.global.t('promotional_amount')
 			};
 			return typeSource[t] || t;
 		},
 		$invoiceStatus(status) {
 			let objStatus = {
-				Paid: this.$t('paid'),
-				Unpaid: this.$t('unpaid'),
-				'Invoice Created': this.$t('invoice_created')
+				Paid: i18n.global.t('paid'),
+				Unpaid: i18n.global.t('unpaid'),
+				'Invoice Created': i18n.global.t('invoice_created')
 			};
 			return objStatus[status] || status;
 		},
 		$jobStatus(status) {
 			let objStatus = {
-				Active: this.$t('active'),
-				Undelivered: this.$t('Undelivered'),
-				Pending: this.$t('Pending'),
-				Running: this.$t('Running'),
-				Success: this.$t('Success'),
-				Failure: this.$t('Failure'),
-				'Awaiting Deploy': this.$t('Awaiting_Deploy')
+				Active: i18n.global.t('active'),
+				Undelivered: i18n.global.t('Undelivered'),
+				Pending: i18n.global.t('Pending'),
+				Running: i18n.global.t('Running'),
+				Success: i18n.global.t('Success'),
+				Failure: i18n.global.t('Failure'),
+				'Awaiting Deploy': i18n.global.t('Awaiting_Deploy')
 			};
 			return objStatus[status] || status;
 		},
 		$siteStatus(site) {
 			let statusSite = {
-				Active: this.$t('active'),
-				Pending: this.$t('pending'),
-				Installing: this.$t('installing'),
-				Updating: this.$t('updating'),
-				Inactive: this.$t('inactive'),
-				Broken: this.$t('broken'),
-				Archived: this.$t('archived'),
-				Suspended: this.$t('suspended')
+				Active: i18n.global.t('active'),
+				Pending: i18n.global.t('pending'),
+				Installing: i18n.global.t('installing'),
+				Updating: i18n.global.t('updating'),
+				Inactive: i18n.global.t('inactive'),
+				Broken: i18n.global.t('broken'),
+				Archived: i18n.global.t('archived'),
+				Suspended: i18n.global.t('suspended')
 			};
 			let status = statusSite[site.status] || site.status;
 
 			if (site.update_available && site.status == 'Active') {
-				status = this.$t('Updates_available');
+				status = i18n.global.t('Updates_available');
 			}
 
 			let usage = Math.max(
@@ -279,10 +282,10 @@ let utils = {
 				site.current_disk_usage
 			);
 			if (usage && usage >= 80 && status == 'Active') {
-				status = this.$t('Note');
+				status = i18n.global.t('Note');
 			}
 			if (site.trial_end_date) {
-				status = this.$t('Trial');
+				status = i18n.global.t('Trial');
 			}
 			return status;
 		}
