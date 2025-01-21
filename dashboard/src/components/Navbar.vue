@@ -5,7 +5,7 @@
 				<div class="flex items-center">
 					<div class="shrink-0">
 						<router-link to="/">
-							<FrappeCloudLogo class="h-6" />
+							<FrappeCloudLogo class="h-8" />
 						</router-link>
 					</div>
 				</div>
