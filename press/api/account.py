@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import TYPE_CHECKING
 
 import frappe
@@ -13,7 +14,7 @@ from frappe.core.utils import find
 from frappe.exceptions import DoesNotExistError
 from frappe.query_builder.custom import GROUP_CONCAT
 from frappe.rate_limiter import rate_limit
-from frappe.utils import get_url
+from frappe.utils import cint, get_url
 from frappe.utils.data import sha256_hash
 from frappe.utils.oauth import get_oauth2_authorize_url, get_oauth_keys
 from frappe.utils.password import get_decrypted_password
@@ -36,7 +37,7 @@ if TYPE_CHECKING:
 
 
 @frappe.whitelist(allow_guest=True)
-def signup(email, referrer=None):
+def signup(email, product=None, referrer=None):
 	frappe.utils.validate_email_address(email, True)
 
 	current_user = frappe.session.user
@@ -58,6 +59,7 @@ def signup(email, referrer=None):
 				"role": "Press Admin",
 				"referrer_id": referrer,
 				"send_email": True,
+				"product_trial": product,
 			}
 		).insert()
 
@@ -70,6 +72,7 @@ def signup(email, referrer=None):
 
 
 @frappe.whitelist(allow_guest=True)
+@rate_limit(limit=5, seconds=60)
 def verify_otp(account_request: str, otp: str):
 	account_request: "AccountRequest" = frappe.get_doc("Account Request", account_request)
 	# ensure no team has been created with this email
@@ -82,8 +85,17 @@ def verify_otp(account_request: str, otp: str):
 
 
 @frappe.whitelist(allow_guest=True)
+@rate_limit(limit=5, seconds=60)
 def resend_otp(account_request: str):
 	account_request: "AccountRequest" = frappe.get_doc("Account Request", account_request)
+
+	# if last OTP was sent less than 30 seconds ago, throw an error
+	if (
+		account_request.otp_generated_at
+		and (frappe.utils.now_datetime() - account_request.otp_generated_at).seconds < 30
+	):
+		frappe.throw("Please wait for 30 seconds before requesting a new OTP")
+
 	# ensure no team has been created with this email
 	if frappe.db.exists("Team", {"user": account_request.email}) and not account_request.product_trial:
 		frappe.throw("Invalid Email")
@@ -159,6 +171,8 @@ def setup_account(  # noqa: C901
 	# Telemetry: Created account
 	capture("completed_signup", "fc_signup", account_request.email)
 	frappe.local.login_manager.login_as(email)
+
+	return account_request.name
 
 
 @frappe.whitelist(allow_guest=True)
@@ -263,7 +277,7 @@ def delete_team(team):
 		"confirmed": [
 			(
 				"Confirmed",
-				f"The process for deletion of your team {team} has been initiated." " Sorry to see you go :(",
+				f"The process for deletion of your team {team} has been initiated. Sorry to see you go :(",
 			),
 			{"indicator_color": "green"},
 		],
@@ -320,6 +334,9 @@ def validate_request_key(key, timezone=None):
 			"oauth_signup": account_request.oauth_signup,
 			"oauth_domain": frappe.db.exists(
 				"OAuth Domain Mapping", {"email_domain": account_request.email.split("@")[1]}
+			),
+			"product_trial": frappe.db.get_value(
+				"Product Trial", account_request.product_trial, ["logo", "title", "name"], as_dict=1
 			),
 		}
 	return None
@@ -739,6 +756,7 @@ def get_billing_information(timezone=None):
 def update_billing_information(billing_details):
 	billing_details = frappe._dict(billing_details)
 	team = get_current_team(get_doc=True)
+	validate_pincode(billing_details)
 	if (team.country != billing_details.country) and (
 		team.country == "India" or billing_details.country == "India"
 	):
@@ -746,14 +764,49 @@ def update_billing_information(billing_details):
 	team.update_billing_details(billing_details)
 
 
+def validate_pincode(billing_details):
+	# Taken from https://github.com/resilient-tech/india-compliance
+	if billing_details.country != "India" or not billing_details.postal_code:
+		return
+	PINCODE_FORMAT = re.compile(r"^[1-9][0-9]{5}$")
+	if not PINCODE_FORMAT.match(billing_details.postal_code):
+		frappe.throw("Invalid Postal Code")
+
+	if billing_details.state not in STATE_PINCODE_MAPPING:
+		return
+
+	first_three_digits = cint(billing_details.postal_code[:3])
+	postal_code_range = STATE_PINCODE_MAPPING[billing_details.state]
+
+	if isinstance(postal_code_range[0], int):
+		postal_code_range = (postal_code_range,)
+
+	for lower_limit, upper_limit in postal_code_range:
+		if lower_limit <= int(first_three_digits) <= upper_limit:
+			return
+
+	frappe.throw(f"Postal Code {billing_details.postal_code} is not associated with {billing_details.state}")
+
+
 @frappe.whitelist(allow_guest=True)
 def feedback(team, message, note, rating, route=None):
 	feedback = frappe.new_doc("Press Feedback")
+	team_doc = frappe.get_doc("Team", team)
 	feedback.team = team
 	feedback.message = message
 	feedback.note = note
 	feedback.route = route
 	feedback.rating = rating / 5
+	feedback.team_created_on = frappe.utils.getdate(team_doc.creation)
+	feedback.currency = team_doc.currency
+	invs = frappe.get_all(
+		"Invoice",
+		{"team": team, "status": "Paid", "type": "Subscription"},
+		pluck="total",
+		order_by="creation desc",
+		limit=1,
+	)
+	feedback.last_paid_invoice = 0 if not invs else invs[0]
 	feedback.insert(ignore_permissions=True)
 
 
@@ -1084,7 +1137,7 @@ def get_user_ssh_keys():
 
 
 @frappe.whitelist(allow_guest=True)
-@rate_limit(limit=5, seconds=60 * 60)
+# @rate_limit(limit=5, seconds=60 * 60)
 def is_2fa_enabled(user):
 	return frappe.db.get_value("User 2FA", user, "enabled")
 
@@ -1150,3 +1203,42 @@ def disable_2fa(totp_code):
 		frappe.db.set_value("User 2FA", frappe.session.user, "enabled", 0)
 	else:
 		frappe.throw("Invalid TOTP code")
+
+
+# Not available for Telangana, Ladakh, and Other Territory
+STATE_PINCODE_MAPPING = {
+	"Jammu and Kashmir": (180, 194),
+	"Himachal Pradesh": (171, 177),
+	"Punjab": (140, 160),
+	"Chandigarh": ((140, 140), (160, 160)),
+	"Uttarakhand": (244, 263),
+	"Haryana": (121, 136),
+	"Delhi": (110, 110),
+	"Rajasthan": (301, 345),
+	"Uttar Pradesh": (201, 285),
+	"Bihar": (800, 855),
+	"Sikkim": (737, 737),
+	"Arunachal Pradesh": (790, 792),
+	"Nagaland": (797, 798),
+	"Manipur": (795, 795),
+	"Mizoram": (796, 796),
+	"Tripura": (799, 799),
+	"Meghalaya": (793, 794),
+	"Assam": (781, 788),
+	"West Bengal": (700, 743),
+	"Jharkhand": (813, 835),
+	"Odisha": (751, 770),
+	"Chhattisgarh": (490, 497),
+	"Madhya Pradesh": (450, 488),
+	"Gujarat": (360, 396),
+	"Dadra and Nagar Haveli and Daman and Diu": ((362, 362), (396, 396)),
+	"Maharashtra": (400, 445),
+	"Karnataka": (560, 591),
+	"Goa": (403, 403),
+	"Lakshadweep Islands": (682, 682),
+	"Kerala": (670, 695),
+	"Tamil Nadu": (600, 643),
+	"Puducherry": ((533, 533), (605, 605), (607, 607), (609, 609), (673, 673)),
+	"Andaman and Nicobar Islands": (744, 744),
+	"Andhra Pradesh": (500, 535),
+}

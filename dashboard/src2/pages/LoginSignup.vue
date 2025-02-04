@@ -27,7 +27,7 @@
 									@click="
 										$resources.verify2FA.submit({
 											user: email,
-											totp_code: twoFactorCode
+											totp_code: twoFactorCode,
 										})
 									"
 								>
@@ -54,7 +54,7 @@
 									v-if="hasForgotPassword"
 									:to="{
 										name: 'Login',
-										query: { ...$route.query, forgot: undefined }
+										query: { ...$route.query, forgot: undefined },
 									}"
 								>
 									I remember my password
@@ -93,7 +93,7 @@
 										class="text-sm"
 										:to="{
 											name: 'Login',
-											query: { ...$route.query, forgot: 1 }
+											query: { ...$route.query, forgot: 1 },
 										}"
 									>
 										Forgot Password?
@@ -164,7 +164,7 @@
 									class="text-center text-base font-medium text-gray-900 hover:text-gray-700"
 									:to="{
 										name: $route.name == 'Login' ? 'Signup' : 'Login',
-										query: { ...$route.query, forgot: undefined }
+										query: { ...$route.query, forgot: undefined },
 									}"
 								>
 									{{
@@ -187,7 +187,7 @@
 								required
 							/>
 							<FormControl
-								label="Verification Code"
+								label="Verification code"
 								type="text"
 								class="mt-4"
 								placeholder="5 digit verification code"
@@ -213,7 +213,7 @@
 								:loading="$resources.resendOTP.loading"
 								@click="$resources.resendOTP.submit()"
 							>
-								Didn't receive OTP? Resend
+								Didn't receive verification code? Resend
 							</Button>
 						</form>
 						<div class="mt-6 text-center">
@@ -221,7 +221,7 @@
 								class="text-center text-base font-medium text-gray-900 hover:text-gray-700"
 								:to="{
 									name: $route.name == 'Login' ? 'Signup' : 'Login',
-									query: { ...$route.query, forgot: undefined }
+									query: { ...$route.query, forgot: undefined },
 								}"
 							>
 								{{
@@ -256,6 +256,13 @@
 						</span>
 					</div>
 				</template>
+				<template v-slot:footer v-if="saasProduct">
+					<div
+						class="mt-2 flex w-full items-center justify-center text-sm text-gray-600"
+					>
+						Powered by Frappe Cloud
+					</div>
+				</template>
 			</LoginBox>
 		</div>
 	</div>
@@ -265,12 +272,13 @@
 import LoginBox from '../components/auth/LoginBox.vue';
 import GoogleIconSolid from '@/components/icons/GoogleIconSolid.vue';
 import { toast } from 'vue-sonner';
+import { getToastErrorMessage } from '../utils/toast';
 
 export default {
 	name: 'Signup',
 	components: {
 		LoginBox,
-		GoogleIconSolid
+		GoogleIconSolid,
 	},
 	data() {
 		return {
@@ -280,28 +288,16 @@ export default {
 			otp: '',
 			twoFactorCode: '',
 			password: null,
-			resetPasswordEmailSent: false
+			resetPasswordEmailSent: false,
 		};
 	},
 	mounted() {
 		this.email = localStorage.getItem('login_email');
-		if (window.posthog?.__loaded) {
-			window.posthog.identify(this.email || window.posthog.get_distinct_id(), {
-				app: 'frappe_cloud',
-				action: 'login_signup'
-			});
-			window.posthog.startSessionRecording();
-		}
-	},
-	unmounted() {
-		if (window.posthog?.__loaded && window.posthog.sessionRecordingStarted()) {
-			window.posthog.stopSessionRecording();
-		}
 	},
 	watch: {
 		email() {
 			this.resetSignupState();
-		}
+		},
 	},
 	resources: {
 		signup() {
@@ -310,14 +306,13 @@ export default {
 				params: {
 					email: this.email,
 					referrer: this.getReferrerIfAny(),
-					product: this.$route.query.product
+					product: this.$route.query.product,
 				},
 				onSuccess(account_request) {
 					this.account_request = account_request;
 					this.accountRequestCreated = true;
-					toast.success('OTP sent to your email');
+					toast.success('Verification code sent to your email');
 				},
-				onError: this.onSignupError.bind(this)
 			};
 		},
 		verifyOTP() {
@@ -325,23 +320,28 @@ export default {
 				url: 'press.api.account.verify_otp',
 				params: {
 					account_request: this.account_request,
-					otp: this.otp
+					otp: this.otp,
 				},
 				onSuccess(key) {
 					window.open(`/dashboard/setup-account/${key}`, '_self');
-				}
+				},
 			};
 		},
 		resendOTP() {
 			return {
 				url: 'press.api.account.resend_otp',
 				params: {
-					account_request: this.account_request
+					account_request: this.account_request,
 				},
 				onSuccess() {
 					this.otp = '';
-					toast.success('Resent OTP to your email');
-				}
+					toast.success('Verification code sent to your email');
+				},
+				onError(err) {
+					toast.error(
+						getToastErrorMessage(err, 'Failed to resend verification code'),
+					);
+				},
 			};
 		},
 		oauthLogin() {
@@ -350,7 +350,7 @@ export default {
 				onSuccess(url) {
 					localStorage.setItem('login_email', this.email);
 					window.location.href = url;
-				}
+				},
 			};
 		},
 		googleLogin() {
@@ -358,12 +358,12 @@ export default {
 				url: 'press.api.google.login',
 				makeParams() {
 					return {
-						product: this.$route.query.product
+						product: this.$route.query.product,
 					};
 				},
 				onSuccess(url) {
 					window.location.href = url;
-				}
+				},
 			};
 		},
 		resetPassword() {
@@ -371,21 +371,21 @@ export default {
 				url: 'press.api.account.send_reset_password_email',
 				onSuccess() {
 					this.resetPasswordEmailSent = true;
-				}
+				},
 			};
 		},
 		signupSettings() {
 			return {
 				url: 'press.api.account.signup_settings',
 				params: {
-					product: this.$route.query.product
+					product: this.$route.query.product,
 				},
-				auto: true
+				auto: true,
 			};
 		},
 		is2FAEnabled() {
 			return {
-				url: 'press.api.account.is_2fa_enabled'
+				url: 'press.api.account.is_2fa_enabled',
 			};
 		},
 		verify2FA() {
@@ -396,12 +396,12 @@ export default {
 						await this.login();
 					} else if (this.hasForgotPassword) {
 						await this.$resources.resetPassword.submit({
-							email: this.email
+							email: this.email,
 						});
 					}
-				}
+				},
 			};
-		}
+		},
 	},
 	methods: {
 		resetSignupState() {
@@ -419,47 +419,47 @@ export default {
 			if (this.isLogin) {
 				if (this.isOauthLogin) {
 					this.$resources.oauthLogin.submit({
-						provider: this.socialLoginKey
+						provider: this.socialLoginKey,
 					});
 				} else if (this.email && this.password) {
 					await this.$resources.is2FAEnabled.submit(
 						{ user: this.email },
 						{
-							onSuccess: async two_factor_enabled => {
+							onSuccess: async (two_factor_enabled) => {
 								if (two_factor_enabled) {
 									this.$router.push({
 										name: 'Login',
 										query: {
-											two_factor: 1
-										}
+											two_factor: 1,
+										},
 									});
 								} else {
 									await this.login();
 								}
-							}
-						}
+							},
+						},
 					);
 				}
 			} else if (this.hasForgotPassword) {
 				await this.$resources.is2FAEnabled.submit(
 					{ user: this.email },
 					{
-						onSuccess: async two_factor_enabled => {
+						onSuccess: async (two_factor_enabled) => {
 							if (two_factor_enabled) {
 								this.$router.push({
 									name: 'Login',
 									query: {
 										two_factor: 1,
-										forgot: 1
-									}
+										forgot: 1,
+									},
 								});
 							} else {
 								await this.$resources.resetPassword.submit({
-									email: this.email
+									email: this.email,
 								});
 							}
-						}
-					}
+						},
+					},
 				);
 			} else {
 				this.$resources.signup.submit();
@@ -474,47 +474,28 @@ export default {
 			await this.$session.login.submit(
 				{
 					email: this.email,
-					password: this.password
+					password: this.password,
 				},
 				{
-					onSuccess: res => {
+					onSuccess: (res) => {
 						let loginRoute = `/dashboard${res.dashboard_route || '/'}`;
-						if (this.$route.query.product) {
-							loginRoute = `/dashboard/app-trial/setup/${this.$route.query.product}`;
-						}
 						localStorage.setItem('login_email', this.email);
 						window.location.href = loginRoute;
 					},
-					onError: err => {
+					onError: (err) => {
 						if (this.$route.name === 'Login' && this.$route.query.two_factor) {
 							this.$router.push({
 								name: 'Login',
 								query: {
-									two_factor: undefined
-								}
+									two_factor: undefined,
+								},
 							});
 							this.twoFactorCode = '';
 						}
-					}
-				}
+					},
+				},
 			);
 		},
-		onSignupError(error) {
-			if (error?.exc_type !== 'ValidationError') {
-				return;
-			}
-			let errorMessage = '';
-			if ((error?.messages ?? []).length) {
-				errorMessage = error?.messages?.[0];
-			}
-			// check if error message has `is already registered` substring
-			if (errorMessage.includes('is already registered')) {
-				localStorage.setItem('login_email', this.email);
-				this.$router.push({
-					name: 'Login'
-				});
-			}
-		}
 	},
 	computed: {
 		error() {
@@ -553,11 +534,11 @@ export default {
 
 			if (domains) {
 				domains.map(
-					d =>
+					(d) =>
 						(providers[d.email_domain] = {
 							social_login_key: d.social_login_key,
-							provider_name: d.provider_name
-						})
+							provider_name: d.provider_name,
+						}),
 				);
 			}
 
@@ -582,11 +563,11 @@ export default {
 				return 'Sign in to your account';
 			} else {
 				if (this.saasProduct) {
-					return `Sign up to create ${this.saasProduct.title} site`;
+					return `Sign up to create a ${this.saasProduct.title} site`;
 				}
 				return 'Create a new account';
 			}
-		}
-	}
+		},
+	},
 };
 </script>

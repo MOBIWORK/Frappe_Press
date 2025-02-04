@@ -532,6 +532,8 @@ class DeployCandidate(Document):
 		step = self.get_step("package", "context") or frappe._dict()
 		step.status = "Running"
 		start_time = now()
+		self.save(ignore_permissions=True, ignore_version=True)
+		frappe.db.commit()
 
 		# make sure to set ownership of build_directory and its contents to 1000:1000
 		def fix_content_permission(tarinfo):
@@ -540,17 +542,24 @@ class DeployCandidate(Document):
 			return tarinfo
 
 		tmp_file_path = tempfile.mkstemp(suffix=".tar.gz")[1]
-		with tarfile.open(tmp_file_path, "w:gz") as tar:
-			tar.add(self.build_directory, arcname=".", filter=fix_content_permission)
+		with tarfile.open(tmp_file_path, "w:gz", compresslevel=5) as tar:
+			if frappe.conf.developer_mode:
+				tar.add(self.build_directory, arcname=".", filter=fix_content_permission)
+			else:
+				tar.add(self.build_directory, arcname=".")
 
 		step.status = "Success"
 		step.duration = get_duration(start_time)
+		self.save(ignore_permissions=True, ignore_version=True)
+		frappe.db.commit()
 		return tmp_file_path
 
 	def _upload_build_context(self, context_filepath: str, build_server: str):
 		step = self.get_step("upload", "context") or frappe._dict()
 		step.status = "Running"
 		start_time = now()
+		self.save(ignore_permissions=True, ignore_version=True)
+		frappe.db.commit()
 
 		try:
 			upload_filename = self.upload_build_context_for_docker_build(
@@ -905,6 +914,7 @@ class DeployCandidate(Document):
 
 		self._copy_config_files()
 		self._generate_redis_cache_config()
+		self._generate_redis_queue_config()
 		self._generate_supervisor_config()
 		self._generate_apps_txt()
 		self.generate_ssh_keys()
@@ -947,6 +957,8 @@ class DeployCandidate(Document):
 		step.duration = get_duration(start_time)
 		step.output = "Pre-build validations passed"
 		step.status = "Success"
+		self.save(ignore_permissions=True, ignore_version=True)
+		frappe.db.commit()
 
 	def _clone_app_repo(self, app: "DeployCandidateApp") -> str:
 		"""
@@ -1180,6 +1192,13 @@ class DeployCandidate(Document):
 		with open(redis_cache_conf, "w") as f:
 			redis_cache_conf_template = "press/docker/config/redis-cache.conf"
 			content = frappe.render_template(redis_cache_conf_template, {"doc": self}, is_path=True)
+			f.write(content)
+
+	def _generate_redis_queue_config(self):
+		redis_queue_conf = os.path.join(self.build_directory, "config", "redis-queue.conf")
+		with open(redis_queue_conf, "w") as f:
+			redis_queue_conf_template = "press/docker/config/redis-queue.conf"
+			content = frappe.render_template(redis_queue_conf_template, {"doc": self}, is_path=True)
 			f.write(content)
 
 	def _generate_supervisor_config(self):

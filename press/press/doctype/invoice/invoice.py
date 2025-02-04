@@ -12,7 +12,12 @@ from frappe.utils.data import fmt_money
 from press.api.billing import get_stripe
 from press.api.client import dashboard_whitelist
 from press.utils import log_error
-from press.utils.billing import convert_stripe_money, get_frappe_io_connection
+from press.utils.billing import (
+	convert_stripe_money,
+	get_frappe_io_connection,
+	get_gateway_details,
+	get_partner_external_connection,
+)
 
 
 class Invoice(Document):
@@ -54,6 +59,12 @@ class Invoice(Document):
 		invoice_pdf: DF.Attach | None
 		items: DF.Table[InvoiceItem]
 		marketplace: DF.Check
+		mpesa_invoice: DF.Data | None
+		mpesa_invoice_pdf: DF.Attach | None
+		mpesa_merchant_id: DF.Data | None
+		mpesa_payment_record: DF.Data | None
+		mpesa_receipt_number: DF.Data | None
+		mpesa_request_id: DF.Data | None
 		next_payment_attempt_date: DF.Date | None
 		partner_email: DF.Data | None
 		payment_attempt_count: DF.Int
@@ -109,6 +120,8 @@ class Invoice(Document):
 		"invoice_pdf",
 		"stripe_invoice_url",
 		"amount_due_with_tax",
+		"mpesa_invoice",
+		"mpesa_invoice_pdf",
 	)
 
 	@staticmethod
@@ -256,12 +269,22 @@ class Invoice(Document):
 			self.status = "Paid"
 
 		if self.status == "Paid" and self.stripe_invoice_id and self.amount_paid == 0:
-			self.change_stripe_invoice_status("Void")
-			self.add_comment(
-				text=(
-					f"Stripe Invoice {self.stripe_invoice_id} voided because" " payment is done via credits."
+			stripe = get_stripe()
+			invoice = stripe.Invoice.retrieve(self.stripe_invoice_id)
+			payment_intent = stripe.PaymentIntent.retrieve(invoice.payment_intent)
+			if payment_intent.status == "processing":
+				# mark the fc invoice as Paid
+				# if the payment intent is processing, it means the invoice cannot be voided yet
+				# wait for invoice to be updated and then mark it as void if payment failed
+				# or issue a refund if succeeded
+				self.save()  # status is already Paid, so no need to set again
+			else:
+				self.change_stripe_invoice_status("Void")
+				self.add_comment(
+					text=(
+						f"Stripe Invoice {self.stripe_invoice_id} voided because payment is done via credits."
+					)
 				)
-			)
 
 		self.save()
 
@@ -327,9 +350,11 @@ class Invoice(Document):
 
 	def on_submit(self):
 		self.create_invoice_on_frappeio()
+		self.fetch_mpesa_invoice_pdf()
 
 	def on_update_after_submit(self):
 		self.create_invoice_on_frappeio()
+		self.fetch_mpesa_invoice_pdf()
 
 	def after_insert(self):
 		if self.get("amended_from"):
@@ -612,19 +637,6 @@ class Invoice(Document):
 	def compute_free_credits(self):
 		self.free_credits = sum([d.amount for d in self.credit_allocations if d.source == "Free Credits"])
 
-	def apply_partner_discount(self):
-		if self.flags.on_partner_conversion:
-			return
-
-		team = frappe.get_cached_doc("Team", self.team)
-		partner_level, legacy_contract = team.get_partner_level()
-		PartnerDiscounts = {"Entry": 0, "Bronze": 0.05, "Silver": 0.1, "Gold": 0.15}
-		discount_percent = 0.1 if legacy_contract == 1 else PartnerDiscounts.get(partner_level)
-		self.discount_note = "New Partner Discount"
-		for item in self.items:
-			if item.document_type in ("Site", "Server", "Database Server"):
-				item.discount_percentage = discount_percent
-
 	def calculate_discounts(self):
 		for item in self.items:
 			if item.discount_percentage:
@@ -743,7 +755,7 @@ class Invoice(Document):
 			return None
 		if self.amount_paid == 0:
 			return None
-		if self.frappe_invoice or self.frappe_partner_order:
+		if self.frappe_invoice or self.frappe_partner_order or self.mpesa_receipt_number:
 			return None
 
 		try:
@@ -887,6 +899,46 @@ class Invoice(Document):
 			)
 
 		self.save()
+
+	def fetch_mpesa_invoice_pdf(self):
+		if not (self.mpesa_payment_record and self.mpesa_invoice):
+			return
+		gateway_info = get_gateway_details(self.mpesa_payment_record)
+		client = get_partner_external_connection(gateway_info[0])
+		try:
+			print_format = gateway_info[1]
+			from urllib.parse import urlencode
+
+			params = urlencode(
+				{
+					"doctype": "Sales Invoice",
+					"name": self.mpesa_invoice,
+					"format": print_format,
+					"no_letterhead": 0,
+				}
+			)
+			url = f"{client.url}/api/method/frappe.utils.print_format.download_pdf?{params}"
+
+			with client.session.get(url, headers=client.headers, stream=True) as r:
+				r.raise_for_status()
+				file_doc = frappe.get_doc(
+					{
+						"doctype": "File",
+						"attached_to_doctype": "Invoice",
+						"attached_to_name": self.name,
+						"attached_to_field": "mpesa_invoice_pdf",
+						"folder": "Home/Attachments",
+						"file_name": self.mpesa_invoice + ".pdf",
+						"is_private": 1,
+						"content": r.content,
+					}
+				)
+				file_doc.save(ignore_permissions=True)
+				self.mpesa_invoice_pdf = file_doc.file_url
+				self.save(ignore_permissions=True)
+
+		except Exception as e:
+			frappe.log_error(str(e), "Error fetching Sales Invoice PDF on external site")
 
 	@frappe.whitelist()
 	def refund(self, reason):
@@ -1061,3 +1113,43 @@ def has_permission(doc, ptype, user):
 	if doc.team == team.name or team.user in team_members:
 		return True
 	return False
+
+
+# M-pesa external site for webhook
+def create_sales_invoice_on_external_site(transaction_response):
+	client = get_partner_external_connection()
+	try:
+		# Define the necessary data for the Sales Invoice creation
+		data = {
+			"customer": transaction_response.get("team"),
+			"posting_date": frappe.utils.nowdate(),
+			"due_date": frappe.utils.add_days(frappe.utils.nowdate(), 30),
+			"items": [
+				{
+					"item_code": "Frappe Cloud Payment",
+					"qty": 1,
+					"rate": transaction_response.get("Amount"),
+					"description": "Payment for Mpesa transaction",
+				}
+			],
+			"paid_amount": transaction_response.get("Amount"),
+			"status": "Paid",
+		}
+
+		# Post to the external site's sales invoice creation API
+		response = client.session.post(
+			f"{client.url}/api/method/frappe.client.insert",
+			headers=client.headers,
+			json={"doc": data},
+		)
+
+		if response.ok:
+			res = response.json()
+			sales_invoice = res.get("message")
+			if sales_invoice:
+				frappe.msgprint(_("Sales Invoice created successfully on external site."))
+				return sales_invoice
+		else:
+			frappe.throw(_("Failed to create Sales Invoice on external site."))
+	except Exception as e:
+		frappe.log_error(str(e), "Error creating Sales Invoice on external site")
