@@ -1247,7 +1247,7 @@ class Site(Document):
                 "from_plan": "",
                 "to_plan": plan,
                 "type": "Initial Plan",
-                        "timestamp": self.creation,
+                "timestamp": self.creation,
             }
         ).insert(ignore_permissions=True)
 

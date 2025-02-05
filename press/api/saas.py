@@ -60,7 +60,9 @@ def account_request(
     if not country:
         frappe.throw("Country field should be a valid country name")
 
+    current_user = frappe.session.user
     try:
+        frappe.set_user("Administrator")
         account_request = frappe.get_doc(
             {
                 "doctype": "Account Request",
@@ -89,7 +91,10 @@ def account_request(
     except Exception as e:
         log_error("Account Request Creation Failed", data=e)
         raise
-
+    finally:
+        frappe.set_user(current_user)
+  
+    create_or_rename_saas_site(app, account_request)
 
 def create_or_rename_saas_site(app, account_request):
     """
@@ -260,7 +265,6 @@ def validate_account_request(key):
         frappe.local.response["type"] = "redirect"
         frappe.local.response["location"] = f"/{route}?key={key}"
 
-    create_or_rename_saas_site(app, account_request)
     
 
 @frappe.whitelist(allow_guest=True)
