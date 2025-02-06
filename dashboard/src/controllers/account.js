@@ -100,7 +100,7 @@ export default class Account {
 			);
 		}
 		if (this.team.payment_mode == 'Prepaid Credits') {
-			return this.balance > 0;
+			return this.balance >= 0;
 		}
 
 		return false;
