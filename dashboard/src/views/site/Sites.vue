@@ -263,7 +263,7 @@ export default {
 	name: 'Sites',
 	pageMeta() {
 		return {
-			title: `${this.$t('sites')} - MBW Cloud`
+			title: `${this.$t('sites')} - EOV Cloud`
 		};
 	},
 	props: ['bench'],

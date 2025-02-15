@@ -1,5 +1,5 @@
 <template>
-	<div class="flex w-full flex-col rounded-lg border bg-white px-6 py-5">
+	<div class="flex flex-col rounded-lg border bg-white px-6 py-5">
 		<div class="flex flex-wrap items-baseline justify-between">
 			<div class="mb-2 flex items-baseline space-x-2">
 				<div class="flex items-center space-x-2" v-if="$slots['actions-left']">
@@ -26,10 +26,8 @@
 			<LoadingText />
 		</div>
 		<div
-			class="mt-4 flex-auto overflow-auto"
-			:class="{
-				'max-h-96': !activeHeight
-			}"
+			class="mt-4 flex-auto"
+			:class="{ 'overflow-auto': !stopOverflow }"
 			v-else-if="$slots['default']"
 		>
 			<slot></slot>
@@ -40,7 +38,7 @@
 import { LoadingText } from 'frappe-ui';
 export default {
 	name: 'Card',
-	props: ['title', 'subtitle', 'loading', 'stopOverflow', 'activeHeight'],
+	props: ['title', 'subtitle', 'loading', 'stopOverflow'],
 	components: {
 		LoadingText
 	}

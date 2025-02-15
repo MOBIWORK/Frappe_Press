@@ -34,7 +34,7 @@
 				</div>
 				<span class="hidden md:inline">
 					<Link
-						v-if="invoice.type == 'Subscription'"
+						v-if="['Subscription', 'Service AI'].includes(invoice.type)"
 						:to="'/billing/' + invoice.name + '/invoices'"
 					>
 						{{ $t('invoice_for') }}

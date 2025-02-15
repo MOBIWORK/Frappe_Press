@@ -191,7 +191,7 @@ const marketplacePromotionalBanners = createResource({
 			v-model="showPromotionalDialog"
 			@close="e => (clickedPromotion = null)"
 			:options="{
-				title: 'MBW Cloud Marketplace',
+				title: 'EOV Cloud Marketplace',
 				actions: [
 					{
 						variant: 'solid',

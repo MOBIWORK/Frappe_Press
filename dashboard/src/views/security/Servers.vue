@@ -95,7 +95,7 @@ export default {
 	},
 	pageMeta() {
 		return {
-			title: 'Security - MBW Cloud'
+			title: 'Security - EOV Cloud'
 		};
 	},
 	data() {

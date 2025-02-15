@@ -170,7 +170,7 @@ export default {
 	},
 	pageMeta() {
 		return {
-			title: 'Benches - MBW Cloud'
+			title: 'Benches - EOV Cloud'
 		};
 	},
 	components: {

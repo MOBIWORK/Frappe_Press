@@ -185,7 +185,7 @@ export default {
 	},
 	pageMeta() {
 		return {
-			title: 'Servers - MBW Cloud'
+			title: 'Servers - EOV Cloud'
 		};
 	},
 	data() {
@@ -196,7 +196,7 @@ export default {
 			server_tag: '',
 			dropDownOptions: [
 				{
-					label: 'MBW Cloud Server',
+					label: 'EOV Cloud Server',
 					onClick: () => this.$router.replace('/servers/new')
 				},
 				{

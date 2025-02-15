@@ -3,89 +3,96 @@
 		<Card :title="$t('balance')" :activeHeight="true">
 			<div v-if="!$resources.upcomingInvoice.loading">
 				<div class="mb-4 grid grid-cols-2 gap-4">
-					<div class="rounded-md border p-4">
-						<div class="mb-2 flex justify-between text-base">
-							<div>{{ $t('deposit_balance') }}</div>
-						</div>
-						<div class="text-2xl font-medium">
-							{{ availableCredits }}
-						</div>
-					</div>
-
-					<div class="rounded-md border p-4">
-						<div class="mb-2 text-base">
-							{{ $t('this_month_provisional_invoice') }}
-						</div>
-						<div class="text-2xl font-medium">
-							{{
-								upcomingInvoice
-									? this.$formatMoney(upcomingInvoice.total, 0) + ' VND'
-									: '0 VND'
-							}}
-						</div>
-					</div>
-
-					<div class="rounded-md border p-4">
-						<div class="mb-2 flex justify-between text-base">
-							<div class="flex">
-								<div class="mr-1">{{ $t('promotional_balance_1') }}</div>
-								<Tooltip
-									:text="
-										$resources.upcomingInvoice.data?.val_check_promotion
-											? `${$t('billingsummary_content_1')} ` +
-											  this.$formatDate(
-													$resources.upcomingInvoice.data?.date_promotion_1
-											  )
-											: $t('billingsummary_content_2')
-									"
-								>
-									<FeatherIcon
-										name="help-circle"
-										class="ml-auto h-4 w-4 text-gray-700"
-									/>
-								</Tooltip>
+					<div class="flex flex-col gap-4">
+						<div class="rounded-md border p-4">
+							<div class="mb-2 flex justify-between text-base">
+								<div>{{ $t('deposit_balance') }}</div>
+							</div>
+							<div class="text-2xl font-medium">
+								{{ availableCredits }}
 							</div>
 						</div>
-						<div class="text-2xl font-medium">
-							{{ khuyenMai1 }}
-						</div>
-					</div>
-
-					<div class="rounded-md border p-4">
-						<div class="mb-2 flex justify-between text-base">
-							<div>{{ $t('unpaid_invoice') }}</div>
-						</div>
-						<div class="text-2xl font-medium">
-							{{ unpaidAmountDue }}
-						</div>
-					</div>
-
-					<div class="rounded-md border p-4">
-						<div class="mb-2 flex justify-between text-base">
-							<div class="flex">
-								<div class="mr-1">{{ $t('promotional_balance_2') }}</div>
-								<Tooltip :text="$t('billingsummary_content_3')">
-									<FeatherIcon
-										name="help-circle"
-										class="ml-auto h-4 w-4 text-gray-700"
-									/>
-								</Tooltip>
+						<div class="rounded-md border p-4">
+							<div class="mb-2 flex justify-between text-base">
+								<div class="flex">
+									<div class="mr-1">{{ $t('promotional_balance_1') }}</div>
+									<Tooltip
+										:text="
+											$resources.upcomingInvoice.data?.val_check_promotion
+												? `${$t('billingsummary_content_1')} ` +
+												  this.$formatDate(
+														$resources.upcomingInvoice.data?.date_promotion_1
+												  )
+												: $t('billingsummary_content_2')
+										"
+									>
+										<FeatherIcon
+											name="help-circle"
+											class="ml-auto h-4 w-4 text-gray-700"
+										/>
+									</Tooltip>
+								</div>
+							</div>
+							<div class="text-2xl font-medium">
+								{{ khuyenMai1 }}
 							</div>
 						</div>
-						<div class="text-2xl font-medium">
-							{{ khuyenMai2 }}
+						<div class="rounded-md border p-4">
+							<div class="mb-2 flex justify-between text-base">
+								<div class="flex">
+									<div class="mr-1">{{ $t('promotional_balance_2') }}</div>
+									<Tooltip :text="$t('billingsummary_content_3')">
+										<FeatherIcon
+											name="help-circle"
+											class="ml-auto h-4 w-4 text-gray-700"
+										/>
+									</Tooltip>
+								</div>
+							</div>
+							<div class="text-2xl font-medium">
+								{{ khuyenMai2 }}
+							</div>
 						</div>
 					</div>
-
-					<div class="rounded-md border p-4">
-						<div class="mb-2 text-base">{{ $t('available_balance') }}</div>
-						<div class="text-2xl font-medium">
-							{{ availableBalances }}
+					<div class="flex flex-col gap-4">
+						<div class="rounded-md border p-4">
+							<div class="mb-2 text-base">
+								{{ $t('this_month_provisional_invoice') }}
+							</div>
+							<div class="text-2xl font-medium">
+								{{
+									upcomingInvoice
+										? this.$formatMoney(upcomingInvoice.total, 0) + ' VND'
+										: '0 VND'
+								}}
+							</div>
+						</div>
+						<div class="rounded-md border p-4">
+							<div class="mb-2 flex justify-between text-base">
+								<div class="flex">
+									<div class="mr-1">{{ $t('billingsummary_content_5') }}</div>
+									<Tooltip :text="$t('billingsummary_content_6')">
+										<FeatherIcon
+											name="help-circle"
+											class="ml-auto h-4 w-4 text-gray-700"
+										/>
+									</Tooltip>
+								</div>
+							</div>
+							<div class="text-2xl font-medium">
+								{{ soTienAI }}
+							</div>
+						</div>
+						<div class="rounded-md border p-4">
+							<div class="mb-2 flex justify-between text-base">
+								<div>{{ $t('unpaid_invoice') }}</div>
+							</div>
+							<div class="text-2xl font-medium">{{ unpaidAmountDue }}</div>
 						</div>
 					</div>
 
 					<div class="col-span-2 rounded-md border p-4">
-						<div class="mb-5">
+						<div class="mb-5 border-b border-dashed pb-2">
 							<div class="mb-2 flex justify-between text-base">
 								<div>{{ $t('account_balance') }}</div>
 							</div>
@@ -97,6 +104,12 @@
 									)
 								}}
 								VND
+							</div>
+						</div>
+						<div class="mb-5 border-b border-dashed pb-2">
+							<div class="mb-2 text-base">{{ $t('available_balance') }}</div>
+							<div class="text-2xl font-medium">
+								{{ availableBalances }}
 							</div>
 						</div>
 						<div
@@ -304,6 +317,11 @@ export default {
 			let amount =
 				this.$resources.upcomingInvoice.data?.available_credits
 					?.promotion_balance_2;
+			return this.$formatMoney(amount, 0) + ' VND';
+		},
+		soTienAI() {
+			let amount =
+				this.$resources.upcomingInvoice.data?.so_tien_dich_vu_ai_tam_tinh;
 			return this.$formatMoney(amount, 0) + ' VND';
 		},
 		paymentDate() {

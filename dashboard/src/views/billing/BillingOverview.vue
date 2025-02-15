@@ -16,7 +16,7 @@ export default {
 	name: 'BillingOverview',
 	pageMeta() {
 		return {
-			title: 'Billing - MBW Cloud'
+			title: 'Billing - EOV Cloud'
 		};
 	},
 	data() {

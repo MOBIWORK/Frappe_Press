@@ -4,9 +4,9 @@
 			<Breadcrumbs
 				:items="[{ label: $t('billing'), route: { name: 'BillingScreen' } }]"
 			/>
-			<Tabs :tabs="tabs" class="-mb-px pb-5 pl-0.5" />
+			<Tabs :tabs="tabs" class="-mb-px pl-0.5" />
 		</header>
-		<div class="mx-auto w-full overflow-auto px-5 py-5">
+		<div class="mx-auto max-w-5xl overflow-auto px-5 py-5">
 			<router-view />
 		</div>
 	</div>
@@ -19,7 +19,7 @@ export default {
 	name: 'BillingScreen',
 	pageMeta() {
 		return {
-			title: `${this.$t('billing')} - MBW Cloud`
+			title: `${this.$t('billing')} - EOV Cloud`
 		};
 	},
 	props: ['invoiceName'],
@@ -33,7 +33,11 @@ export default {
 				{ label: this.$t('overview'), route: 'overview' },
 				{ label: this.$t('invoices'), route: 'invoices' },
 				{ label: this.$t('invoice_information'), route: 'payment' },
-				{ label: this.$t('transaction_history'), route: 'transaction-history' }
+				{ label: this.$t('transaction_history'), route: 'transaction-history' },
+				{
+					label: this.$t('ai_service_usage_history'),
+					route: 'ai-service-usage-history'
+				}
 			];
 
 			return tabs.map(tab => {

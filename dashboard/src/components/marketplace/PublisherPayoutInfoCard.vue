@@ -31,9 +31,9 @@
 			</div>
 
 			<template #actions>
-				<Button icon-left="edit" @click="showEditProfileDialog = true"
-					>{{ $t('Edit') }}</Button
-				>
+				<Button icon-left="edit" @click="showEditProfileDialog = true">{{
+					$t('Edit')
+				}}</Button>
 			</template>
 		</Card>
 
@@ -57,7 +57,7 @@
 						:label="$t('Preferred_Payment_Method')"
 						type="select"
 						:options="[
-							'MBW Cloud Credits',
+							'EOV Cloud Credits',
 							'Frappe Cloud Credits',
 							'Bank Transfer',
 							'PayPal'
@@ -74,7 +74,7 @@
 					<FormControl
 						label="GSTIN (if applicable)"
 						v-if="
-							payoutMethod != 'MBW Cloud Credits' &&
+							payoutMethod != 'EOV Cloud Credits' &&
 							payoutMethod != 'Frappe Cloud Credits'
 						"
 						v-model="gstin"

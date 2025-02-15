@@ -8,7 +8,7 @@
 						$route.meta.isLoginPage && $route.fullPath.indexOf('/checkout') < 0
 				}"
 			>
-				<div class="flex-1">
+				<div class="w-full">
 					<Navbar class="md:hidden" v-if="!$route.meta.isLoginPage" />
 					<div class="mx-auto flex min-h-full flex-row justify-start">
 						<Sidebar

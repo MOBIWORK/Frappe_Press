@@ -101,6 +101,14 @@ let utils = {
 			}
 			return plural;
 		},
+		$startTimeOfMonth() {
+			const now = DateTime.now();
+			return now.startOf('month').toFormat('yyyy-MM-dd');
+		},
+		$endTimeOfMonth() {
+			const now = DateTime.now();
+			return now.endOf('month').toFormat('yyyy-MM-dd');
+		},
 		$date(date, serverDatesTimezone = 'Asia/Ho_Chi_Minh') {
 			// assuming all dates on the server are stored in our timezone
 
@@ -134,7 +142,7 @@ let utils = {
 			return new Date(year, month, 0).getDate();
 		},
 		$formatDateDetail(d) {
-			return this.$date(d).toFormat('dd-MM-yyyy hh:mm:ss');
+			return this.$date(d).toFormat('dd-MM-yyyy HH:mm:ss');
 		},
 		$formatTitleJob(value) {
 			let nameTitle = {
