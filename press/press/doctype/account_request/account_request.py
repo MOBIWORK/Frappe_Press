@@ -73,7 +73,7 @@ class AccountRequest(Document):
             template = "verify_account"
 
             if self.invited_by and self.role != "Press Admin":
-                subject = """[MBWCloud] - Bạn được {{ invited_by }} mời tham gia MBW Cloud"""
+                subject = """[MBWCloud] - Bạn được {{ invited_by }} mời tham gia EOV Cloud"""
                 template = "invite_team_member"
 
         template_subject = Template(subject)

@@ -59,7 +59,7 @@ def send_email_confirm_money_into_account(balance_transaction):
 
                 if check_billing_address:
                     # Thay thế giá trị của biến trong mẫu
-                    transaction_type = "Nạp tiền vào TK trên MBW Cloud"
+                    transaction_type = "Nạp tiền vào TK trên EOV Cloud"
                     trading_code = balance_transaction.order_code
                     formattor_amount = fmt_money(
                         balance_transaction.amount, 0)
@@ -71,7 +71,7 @@ def send_email_confirm_money_into_account(balance_transaction):
                         '%H:%M:%S')
                     transaction_date = balance_transaction.modified.strftime(
                         '%d/%m/%Y')
-                    transaction_information = 'Nap tien TK MBW Cloud tu PayOs'
+                    transaction_information = 'Nap tien TK EOV Cloud tu PayOs'
                     rendered_email = template.render(
                         customer_name=billing_details.address_title,
                         transaction_type=transaction_type,

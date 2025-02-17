@@ -24,7 +24,7 @@ from press.utils.billing import (
     process_micro_debit_test_charge,
 )
 from press.utils.telemetry import capture
-
+from datetime import datetime, timedelta
 
 class Team(Document):
     whitelisted_methods = [
@@ -406,7 +406,7 @@ class Team(Document):
                 "doctype": "Invoice",
                 "team": self.name,
                 "type": "Subscription",
-                        "period_start": today,
+                "period_start": today,
             }
         )
         invoice.insert()
@@ -716,7 +716,6 @@ class Team(Document):
         return doc
 
     def allocate_free_credit_amount(self, amount, source, remark=None):
-        from datetime import datetime
         date_promotion_1 = frappe.utils.now_datetime().strftime('%Y-%m-%d')
         date_promotion_1 = datetime.strptime(date_promotion_1, '%Y-%m-%d')
         doc = frappe.get_doc(
@@ -801,15 +800,15 @@ class Team(Document):
         res = frappe.db.get_all(
             "Balance Transaction",
             fields=['ending_balance', 'promotion_balance_1',
-                    'promotion_balance_2', 'date_promotion_1'],
+                    'promotion_balance_2'],
             filters={"team": self.name, "docstatus": 1},
             order_by="creation desc",
             limit=1,
         )
         return res[0] if len(res) else {'ending_balance': 0, 'promotion_balance_1': 0, "promotion_balance_2": 0}
 
-    @frappe.whitelist()
-    def get_total_unpaid_amount(self):
+    def amount_owed(self):
+        # số tiền còn nợ từ đăng ký gói site theo tháng
         return (
             frappe.get_all(
                 "Invoice",
@@ -820,6 +819,29 @@ class Team(Document):
             )[0]
             or 0
         )
+
+    def AI_amount(self):
+        today = frappe.utils.today()
+        start_time = frappe.utils.get_first_day(today).strftime('%Y-%m-%d')
+        end_time = frappe.utils.get_last_day(today) + timedelta(days=1)
+        end_time = end_time.strftime('%Y-%m-%d')
+
+        return (
+            frappe.get_all(
+                "Request Service AI",
+                filters = [
+                    ['team', '=', self.name],
+                    ['start_time', '>=', start_time],
+                    ['start_time', '<', end_time]
+                ],
+                fields = ["sum(amount) as amount"],
+                pluck="amount",
+            )[0]
+            or 0
+        )
+
+    def get_total_unpaid_amount(self):
+        return self.amount_owed()
 
     @frappe.whitelist()
     def get_available_partner_credits(self):
@@ -1033,7 +1055,23 @@ class Team(Document):
         for site in suspended_sites:
             frappe.get_doc("Site", site).unsuspend(reason)
         return suspended_sites
-
+    
+    def available_balance(self):
+        # hóa đơn chưa thanh toán của tháng
+        invoice = self.get_upcoming_invoice()
+        # tat cả số tiền còn nợ
+        total_unpaid_amount = self.get_total_unpaid_amount()
+        # tat ca so tien hien co
+        amount_all = self.get_balance_all()
+        
+        amount_upcoming_invoice = invoice.total if invoice else 0
+        # so tien còn nợ
+        so_tien_con_no = amount_upcoming_invoice + total_unpaid_amount
+        # so tien con lai sau khi trừ nợ
+        balance = amount_all - so_tien_con_no
+        
+        return balance
+    
     def get_upcoming_invoice(self):
         # get the current period's invoice
         today = frappe.utils.today()
@@ -1052,6 +1090,7 @@ class Team(Document):
         )
         if result:
             return frappe.get_doc("Invoice", result[0])
+        return None
 
     def create_upcoming_invoice(self):
         today = frappe.utils.today()
@@ -1091,7 +1130,7 @@ class Team(Document):
         # last_4 = frappe.db.get_value(
         #     "Stripe Payment Method", payment_method, "last_4")
         account_update_link = frappe.utils.get_url("/dashboard")
-        subject = "[MBWCloud] - Thanh toán hóa đơn không thành công khi đăng ký MBW Cloud"
+        subject = "[MBWCloud] - Thanh toán hóa đơn không thành công khi đăng ký EOV Cloud"
 
         frappe.sendmail(
             recipients=email,
@@ -1172,8 +1211,6 @@ def get_default_team(user):
 
 
 def process_payos_webhook(doc, method):
-    from datetime import datetime
-
     if doc.code != "00":
         return
 
@@ -1226,8 +1263,6 @@ def process_payos_webhook(doc, method):
 
 def process_stripe_webhook(doc, method):
     """This method runs after a Stripe Webhook Log is created"""
-    from datetime import datetime
-
     if doc.event_type not in ["payment_intent.succeeded"]:
         return
 

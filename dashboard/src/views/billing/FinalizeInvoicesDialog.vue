@@ -1,12 +1,11 @@
 <template>
 	<Dialog
-		:options="{ title: `Hoàn tất hóa đơn chưa thanh toán` }"
+		:options="{ title: $t('FinalizeInvoicesDialog_1') }"
 		modelValue="show"
 	>
 		<template #body-content>
 			<div class="prose text-base">
-				Bạn có hóa đơn chưa thanh toán trong tài khoản của mình cho các kỳ sau
-				đây:
+				{{ $t('FinalizeInvoicesDialog_2') }}
 				<ul class="pt-2">
 					<li
 						class="font-semibold"
@@ -22,11 +21,9 @@
 						{{ invoice.amount_due + ' VND' }}
 					</li>
 				</ul>
-				Vui lòng hoàn tất và thanh toán các hóa đơn trước khi xóa tất cả các
-				phương thức thanh toán hoặc tắt tài khoản. Bạn có thể kiểm tra chi tiết
-				hóa đơn và thực hiện thanh toán từ
-				<Link to="/billing/invoices/">tại đây</Link>. Có thể mất đến 2 giờ để
-				thanh toán được cập nhật trong các hóa đơn của bạn.
+				{{ $t('FinalizeInvoicesDialog_3') }}
+				<Link to="/billing/invoices/">{{ $t('here') }}</Link
+				>. {{ $t('FinalizeInvoicesDialog_4') }}
 			</div>
 		</template>
 		<template #actions>
@@ -35,7 +32,7 @@
 				class="w-full"
 				@click="$resources.finalizeInvoices.submit()"
 			>
-				Hoàn tất hóa đơn
+				{{ $t('FinalizeInvoicesDialog_5') }}
 			</Button>
 		</template>
 	</Dialog>

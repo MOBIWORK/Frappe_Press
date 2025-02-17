@@ -5,21 +5,18 @@
 	>
 		<div class="mb-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
 			<FormControl
-				size="md"
 				class="w-full"
 				:label="$t('start_time')"
 				v-model="filters.start_time"
 				type="date"
 			></FormControl>
 			<FormControl
-				size="md"
 				class="w-full"
 				:label="$t('end_time')"
 				v-model="filters.end_time"
 				type="date"
 			></FormControl>
 			<FormControl
-				size="md"
 				class="w-full"
 				:label="$t('service')"
 				v-model="filters.service_name"
@@ -27,7 +24,7 @@
 			></FormControl>
 			<div class="flex items-end">
 				<Tooltip :text="$t('clear_filter')">
-					<Button theme="gray" variant="subtle" size="md" @click="clearFilter">
+					<Button theme="gray" variant="subtle" @click="clearFilter">
 						<ClearFilterIcon class="h-4 w-4" />
 					</Button>
 				</Tooltip>
@@ -109,7 +106,7 @@
 					</tbody>
 					<tbody class="text-center text-base text-gray-600" v-else>
 						<tr>
-							<td class="border-b px-2 py-4" colspan="7">
+							<td class="px-2 py-4" colspan="7">
 								{{ $t('no_results') }}
 							</td>
 						</tr>

@@ -140,7 +140,7 @@ class Site(Document):
         elif self.has_value_changed("host_name"):
             self._validate_host_name()
 
-    def validate_site_config(self):
+    def validate_site_config(self):        
         # update site._keys_removed_in_last_update value
         old_keys = json.loads(self.config)
         new_keys = [x.key for x in self.configuration]
@@ -153,7 +153,7 @@ class Site(Document):
 
         # create an agent request if config has been updated
         # if not self.is_new() and self.has_value_changed("config"):
-        # 	Agent(self.server).update_site_config(self)
+        #     Agent(self.server).update_site_config(self)
 
     def validate_auto_update_fields(self):
         # Validate day of month
@@ -948,6 +948,15 @@ class Site(Document):
         """
         if config is None:
             config = {}
+            
+        # update configuration
+        keys = {x.key: i for i, x in enumerate(self.configuration)}
+        if 'api_key' not in keys or 'api_secret' not in keys:
+            user = frappe.get_value('Team', self.team, 'user')
+            api_key, api_secret = generate_keys(user)
+            config['api_key'] = api_key
+            config['api_secret'] = api_secret
+        
         if isinstance(config, list):
             self._set_configuration(config)
         else:
@@ -1978,3 +1987,23 @@ def options_for_new(group: str = None, selected_values=None) -> Dict:
         "apps": apps,
         "clusters": clusters,
     }
+
+
+def generate_keys(user):
+    current_user = frappe.session.user
+    # frappe.set_user("Administrator")
+
+    user_details = frappe.get_doc('User', user)
+    api_secret = frappe.generate_hash(length=15)
+
+    api_key = user_details.api_key
+    if not api_key:
+        api_key = frappe.generate_hash(length=15)
+        user_details.api_key = api_key
+
+    user_details.api_secret = api_secret
+    user_details.save(ignore_permissions=True)
+
+    # frappe.set_user(current_user)
+
+    return api_key, api_secret

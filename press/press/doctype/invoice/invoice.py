@@ -135,6 +135,20 @@ class Invoice(Document):
                 team.unsuspend_sites(
                     f"Invoice {self.name} Payment Successful.")
 
+            # update service ai
+            if self.type == "Service AI":
+                item_ids = tuple(frappe.db.get_all('Invoice Item',filters={'parent': self.name, 'document_type': 'Request Service AI'}, pluck='document_name'))
+                if item_ids:
+                    frappe.db.sql(
+                        f"""
+                        UPDATE
+                            `tabRequest Service AI` r
+                        SET
+                            status = 'Settled'
+                        WHERE
+                            r.name in {item_ids}
+                    """
+                    )
     def on_submit(self):
         pass
         # self.create_invoice_on_frappeio()

@@ -85,6 +85,13 @@
 								:options="siteStatusFilterOptions"
 								v-model="site_status"
 							/>
+							<div class="flex items-end">
+								<Tooltip :text="$t('Refresh')">
+									<Button theme="gray" variant="subtle" @click="onReloadSites">
+										<FeatherIcon name="refresh-cw" class="w-4 text-gray-700" />
+									</Button>
+								</Tooltip>
+							</div>
 							<!-- <FormControl
 								v-if="$resources.siteTags.data.length > 0"
 								label="Thẻ"
@@ -211,6 +218,7 @@
 						<div class="mt-8 flex items-center justify-center">
 							<LoadingText
 								v-if="$resources.allSites.loading && !$resources.allSites.data"
+								:text="$t('Loading') + '...'"
 							/>
 							<div
 								v-else-if="$resources.allSites.fetched && rows.length === 0"
@@ -258,6 +266,7 @@ import TableCell from '@/components/Table/TableCell.vue';
 import { loginAsAdmin } from '@/controllers/loginAsAdmin';
 import AlertBillingInformation from '@/components/AlertBillingInformation.vue';
 import { notify } from '@/utils/toast';
+import { debounce } from 'lodash';
 
 export default {
 	name: 'Sites',
@@ -327,6 +336,9 @@ export default {
 		this.$socket.off('list_update', this.onSiteUpdate);
 	},
 	methods: {
+		onReloadSites: debounce(function (e) {
+			this.$resources.allSites.reload();
+		}, 300),
 		getHeaderTable() {
 			return [
 				{ label: this.$t('site_name'), name: 'name', width: 2 },

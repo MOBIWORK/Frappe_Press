@@ -23,6 +23,7 @@ from press.utils.billing import (
     GSTIN_FORMAT,
 )
 import math
+from datetime import datetime, timedelta
 
 from payos import PayOS, PaymentData
 
@@ -93,34 +94,30 @@ def upcoming_invoice():
     amount_available_credits = detail_balance_all.get('ending_balance') or 0
     promotion_balance_1 = detail_balance_all.get('promotion_balance_1') or 0
     promotion_balance_2 = detail_balance_all.get('promotion_balance_2') or 0
+    so_tien_dich_vu_ai_tam_tinh = team.AI_amount()
 
     # lay so ngay het han km1
     val_check_promotion = check_promotion(team.name)
     date_promotion_1 = get_date_expire_promotion(team.name)
 
     # lay so tien no chua tra
-    total_unpaid_amount = team.get_total_unpaid_amount()
+    total_unpaid_amount = team.amount_owed()
 
-    amount_upcoming_invoice = 0
     so_tien_goi_y_thanh_toan = 0
+    upcoming_invoice = None
     if invoice:
         vat = invoice.vat or 0
-        amount_upcoming_invoice = invoice.total
         for item in invoice.items:
             so_tien_goi_y_thanh_toan += round(item.rate * day_left)
         so_tien_goi_y_thanh_toan = round(
             so_tien_goi_y_thanh_toan + round(vat*so_tien_goi_y_thanh_toan/100, 2))
         upcoming_invoice = invoice.as_dict()
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
-    else:
-        upcoming_invoice = None
 
     # tat ca so tien hien co
-    amount_all = amount_available_credits + \
-        promotion_balance_1 + promotion_balance_2
-    # tinh so tien sau khi tru no
-    so_tien_no_phai_thanh_toan = amount_upcoming_invoice + total_unpaid_amount
-    available_balances = amount_all - so_tien_no_phai_thanh_toan
+    amount_all = team.get_balance_all()
+    # so tien con lai sau khi trừ nợ
+    available_balances = team.available_balance()
 
     if available_balances < 0:
         so_tien_goi_y_thanh_toan = so_tien_goi_y_thanh_toan + \
@@ -137,6 +134,7 @@ def upcoming_invoice():
         },
         "available_balances": available_balances,
         "total_unpaid_amount": total_unpaid_amount,
+        "so_tien_dich_vu_ai_tam_tinh": so_tien_dich_vu_ai_tam_tinh,
         "so_tien_goi_y_thanh_toan": so_tien_goi_y_thanh_toan,
         "date_promotion_1": date_promotion_1,
         "val_check_promotion": val_check_promotion
@@ -149,10 +147,80 @@ def past_invoices():
 
 
 @frappe.whitelist()
-def invoices_and_payments():
-    team = get_current_team(True)
-    invoices = team.get_past_invoices()
-    return invoices
+def invoices_and_payments(**kwargs):
+    team = get_current_team()
+    filters = [['team', '=', team], ['status', 'not in', ("Draft", "Refunded")], ['docstatus', '!=', 2]]
+    
+    # validate params
+    page = int(kwargs.get('page', 1)) - 1
+    page_length = 20
+    start = page*page_length
+    
+    status = kwargs.get('status')
+    if status:
+        filters.append(['status', '=', status])
+    
+    start_time = kwargs.get('start_time')
+    if not start_time:
+        start_time = frappe.utils.get_first_day(today).strftime('%Y-%m-%d')
+    filters.append(['period_start', '>=', start_time])
+
+    end_time = kwargs.get('end_time')
+    if not end_time:
+        end_time = frappe.utils.get_last_day(today).strftime('%Y-%m-%d')
+    date_obj = datetime.strptime(end_time, "%Y-%m-%d")
+    new_date = date_obj + timedelta(days=1)
+    end_time = new_date.strftime("%Y-%m-%d")
+    filters.append(['period_start', '<', end_time])
+    
+    invoices = frappe.db.get_all(
+        "Invoice",
+        filters=filters,
+        fields=[
+            "name",
+            "total",
+            "amount_due",
+            "status",
+            "type",
+            "stripe_invoice_url",
+            "period_start",
+            "period_end",
+            "due_date",
+            "payment_date",
+            "currency",
+            "invoice_pdf",
+            "due_date as date",
+            "link_to_electronic_invoice"
+        ],
+        start=start,
+        page_length=page_length,
+        order_by="due_date desc",
+    )
+    total = frappe.db.count(
+        "Invoice",
+        filters = filters
+    )
+    total_page = math.ceil(total/page_length)
+
+    for invoice in invoices:
+        invoice.formatted_total = frappe.utils.fmt_money(
+            invoice.total, 2, invoice.currency)
+        invoice.stripe_link_expired = False
+        if invoice.status == "Unpaid":
+            days_diff = frappe.utils.date_diff(
+                frappe.utils.now(), invoice.due_date)
+            if days_diff > 30:
+                invoice.stripe_link_expired = True
+
+    return {
+        "result": invoices,
+        "pagination": {
+            "page": page + 1,
+            "page_length": page_length,
+            "total": total,
+            "total_page": total_page
+        }
+    }
 
 
 @frappe.whitelist()
@@ -160,13 +228,98 @@ def refresh_invoice_link(invoice):
     doc = frappe.get_doc("Invoice", invoice)
     return doc.refresh_stripe_payment_link()
 
+@frappe.whitelist()
+def get_ai_service_transaction_history(**kwargs):
+    team = get_current_team()
+    filters = [['team', '=', team]]
+    today = frappe.utils.today()
+    
+    # validate params
+    page = int(kwargs.get('page', 1)) - 1
+    page_length = 20
+    start = page*page_length
+    
+    start_time = kwargs.get('start_time')
+    if not start_time:
+        start_time = frappe.utils.get_first_day(today).strftime('%Y-%m-%d')
+    filters.append(['start_time', '>=', start_time])
+
+    end_time = kwargs.get('end_time')
+    if not end_time:
+        end_time = frappe.utils.get_last_day(today).strftime('%Y-%m-%d')
+    date_obj = datetime.strptime(end_time, "%Y-%m-%d")
+    new_date = date_obj + timedelta(days=1)
+    end_time = new_date.strftime("%Y-%m-%d")
+    filters.append(['start_time', '<', end_time])
+    
+    service_name = kwargs.get('service_name', '')
+    if service_name:
+        filters.append(['service_name', 'like', f'%{service_name}%'])
+    
+    data = frappe.db.get_all(
+        "Request Service AI",
+        fields=['*'],
+        filters = filters,
+        start=start,
+        page_length=page_length,
+        order_by='start_time desc'
+    )
+    total = frappe.db.count(
+        "Request Service AI",
+        filters = filters
+    )
+
+    total_page = math.ceil(total/page_length)
+    for d in data:
+        d.formatted = dict(
+            processing_unit=fmt_money(d.processing_unit, 0),
+            unit_price=fmt_money(d.unit_price, 0, "VND"),
+            vat=fmt_money(d.vat, 0),
+            amount=fmt_money(d.amount, 0, "VND"),
+        )
+    
+    return {
+        "result": data,
+        "pagination": {
+            "page": page + 1,
+            "page_length": page_length,
+            "total": total,
+            "total_page": total_page
+        }
+    }
 
 @frappe.whitelist()
-def balances():
+def balances(**kwargs):
     team = get_current_team()
-
     bt = frappe.qb.DocType("Balance Transaction")
     inv = frappe.qb.DocType("Invoice")
+    conditions = (bt.team == team)
+    
+    # validate params
+    page = int(kwargs.get('page', 1)) - 1
+    page_length = 20
+    start = page*page_length
+    
+    status = kwargs.get('status')
+    if status in ['1', '2']:
+        conditions = conditions & (bt.docstatus == int(status))
+    elif status == '3':
+        conditions = conditions & (bt.docstatus == 0)
+    elif status == '0':
+        conditions = conditions & (bt.docstatus == 0) & (bt.payos_payment_status == 'PENDING')
+    
+    start_time = kwargs.get('start_time')
+    if not start_time:
+        start_time = frappe.utils.get_first_day(today).strftime('%Y-%m-%d')
+    conditions = conditions & (bt.creation >= start_time)
+
+    end_time = kwargs.get('end_time')
+    if not end_time:
+        end_time = frappe.utils.get_last_day(today).strftime('%Y-%m-%d')
+    date_obj = datetime.strptime(end_time, "%Y-%m-%d")
+    new_date = date_obj + timedelta(days=1)
+    end_time = new_date.strftime("%Y-%m-%d")
+    conditions = conditions & (bt.creation < end_time)
 
     # delete payment is spam
     query = (
@@ -186,7 +339,15 @@ def balances():
         limit=1,
     )
     if not has_bought_credits:
-        return []
+        return {
+            "result": [],
+            "pagination": {
+                "page": page + 1,
+                "page_length": page_length,
+                "total": 0,
+                "total_page": 0
+            }
+        }
 
     query = (
         frappe.qb.from_(bt)
@@ -209,11 +370,17 @@ def balances():
             bt.amount_promotion_2,
             inv.period_start,
         )
-        .where((bt.team == team))
+        .where(conditions)
         .orderby(bt.creation, order=frappe.qb.desc)
+        .offset(start)
+        .limit(page_length)
     )
+    query_count = frappe.qb.from_(bt).select(frappe.query_builder.functions.Count("*").as_("total")).where(conditions)
 
     data = query.run(as_dict=True)
+    total = query_count.run(as_dict=True)[0]['total']
+    total_page = math.ceil(total/page_length)
+    
     for d in data:
         d.formatted = dict(
             amount=fmt_money(d.amount, 0, d.currency),
@@ -275,7 +442,16 @@ def balances():
 
         if d.period_start:
             d.formatted["invoice_for"] = d.period_start.strftime("%m-%Y")
-    return data
+    
+    return {
+        "result": data,
+        "pagination": {
+            "page": page + 1,
+            "page_length": page_length,
+            "total": total,
+            "total_page": total_page
+        }
+    }
 
 
 def get_processed_balance_transactions(transactions: List[Dict]):
@@ -402,7 +578,7 @@ def create_order(amount, lang='vi'):
     try:
         team = get_current_team()
         amount_new = round(amount)
-        remark = "Nap tien TK MBW Cloud"
+        remark = "Nap tien TK EOV Cloud"
 
         # tinh toan so du khuyen mai 2
         amount_promotion_2 = 0
@@ -967,8 +1143,8 @@ def create_razorpay_order(amount):
         "amount": int(amount * 100),
         "currency": team.currency,
         "notes": {
-            "Description": "Order for MBW Cloud Prepaid Credits",
-            "Team (MBW Cloud ID)": team.name,
+            "Description": "Order for EOV Cloud Prepaid Credits",
+            "Team (EOV Cloud ID)": team.name,
             "gst": gst_amount if team.currency == "INR" else 0,
         },
     }

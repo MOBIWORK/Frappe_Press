@@ -36,7 +36,11 @@ class Plan(Document):
 
 
 def get_plan_config(name):
-    cpu_time = frappe.db.get_value("Plan", name, "cpu_time_per_day")
+    config = {}
+    cpu_time, max_storage_usage = frappe.db.get_value("Plan", name, ['cpu_time_per_day', 'max_storage_usage'])
+
+    if max_storage_usage:
+        config['max_storage_usage'] = round(max_storage_usage / 1024)
     if cpu_time and cpu_time > 0:
-        return {"rate_limit": {"limit": cpu_time * 3600, "window": 86400}}
-    return {}
+        config["rate_limit"] =  {"limit": cpu_time * 3600, "window": 86400}
+    return config

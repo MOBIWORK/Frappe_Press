@@ -187,7 +187,6 @@ def send_email_handle_site(type_email, site_name, team):
 
 
 def suspend_site_when_account_balance_is_insufficient():
-    print('=========================')
     # from press.press.doctype.subscription.subscription import sites_with_free_hosting, paid_plans, created_usage_records
 
     free_sites = sites_with_free_hosting()
@@ -270,8 +269,7 @@ def suspend_site_when_account_balance_is_insufficient():
                 try:
                     send_email_handle_site('prior', site_name, team)
                 except Exception as e:
-                    print('=================', str(e))
-                    pass
+                    log_error(title="suspend_site_when_account 0")
         # cap nhat subscription
         subscription.save()
         frappe.db.commit()
@@ -303,8 +301,7 @@ def suspend_site_when_account_balance_is_insufficient():
                     try:
                         send_email_handle_site('lock', site_name, team)
                     except Exception as e:
-                        print('=================', str(e))
-                        pass
+                        log_error(title="suspend_site_when_account 1")
                 else:
                     # tang so lan su dung
                     subscription.number_days_used = number_days_used
@@ -314,17 +311,14 @@ def suspend_site_when_account_balance_is_insufficient():
                     try:
                         send_email_handle_site('warning', site_name, team)
                     except Exception as e:
-                        print('=================', str(e))
-                        pass
-
-    print('=========================')
+                        log_error(title="suspend_site_when_account 2")
 
 
 def create_usage_records():
     """
     Creates daily usage records for paid Subscriptions
     """
-    # truoc khi tao ho so du dung hang ngay kiem tra va khoa site
+    # truoc khi tao ho so su dung hang ngay kiem tra va khoa site
     suspend_site_when_account_balance_is_insufficient()
 
     free_sites = sites_with_free_hosting()

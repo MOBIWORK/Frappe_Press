@@ -305,7 +305,7 @@ def get_context(context):
     # )
 
     context.metatags = {
-        "title": "MBW Cloud Marketplace",
+        "title": "EOV Cloud Marketplace",
         "description": "One Click Apps for your MBW Sites",
         "og:type": "website",
     }
