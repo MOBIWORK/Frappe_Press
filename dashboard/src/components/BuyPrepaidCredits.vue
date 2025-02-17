@@ -205,6 +205,7 @@ export default {
 			clientSecret: null,
 			creditsToBuy: this.minimumAmount || null,
 			total: this.minimumAmount,
+			minimumDefault: 10000,
 			cardErrorMessage: null,
 			errorMessage: null,
 			paymentInProgress: false,
@@ -259,10 +260,10 @@ export default {
 				},
 				validate() {
 					this.errorMessage = null;
-					if (this.creditsToBuy < this.minimumAmount) {
+					if (this.creditsToBuy < this.minimumDefault) {
 						let text = `${this.$t(
 							'buyprepaidcredit_content_1'
-						)} ${this.$formatMoney(this.minimumAmount)} VND`;
+						)} ${this.$formatMoney(this.minimumDefault)} VND`;
 						this.errorMessage = text;
 						return text;
 					} else if (this.creditsToBuy > 100000000) {
