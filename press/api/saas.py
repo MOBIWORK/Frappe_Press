@@ -373,6 +373,18 @@ def create_marketplace_subscription(account_request):
     frappe.set_user(team_doc.user)
     frappe.local.login_manager.login_as(team_doc.user)
 
+    # config api_key
+    if site_name:
+        site = frappe.get_doc('Site', site_name)
+        site.update_site_config()
+    
+    # allocate free credit amount
+    if team_doc:
+        team = frappe.get_doc('Team', team_doc.name)
+        team.create_payment_method(
+            '', set_default=True
+        )
+        
     return site_name
 
 

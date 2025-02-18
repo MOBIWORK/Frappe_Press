@@ -36,37 +36,37 @@
 					<thead>
 						<tr class="text-base text-gray-600">
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('Time') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('service_name') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-56 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('description') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('processing_unit') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('unit_price') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('Vat') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('Amount') }}
 							</th>
@@ -93,7 +93,7 @@
 							<td class="border-b px-2 py-4 text-gray-700">
 								{{ d.service_name }}
 							</td>
-							<td class="whitespace-nowrap border-b px-2 py-4">
+							<td class="border-b px-2 py-4">
 								{{ d.description }}
 							</td>
 							<td class="border-b px-2 py-4">

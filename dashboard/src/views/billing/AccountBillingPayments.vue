@@ -37,32 +37,32 @@
 					<thead>
 						<tr class="text-base text-gray-600">
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('date') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('description') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('amount_of_money') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-32 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('status') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('payment_date') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-16 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							></th>
 						</tr>
 					</thead>
@@ -99,10 +99,10 @@
 									{{ $t('Transferred Credits') }}
 								</span>
 							</td>
-							<td class="whitespace-nowrap border-b px-2 py-4">
+							<td class="border-b px-2 py-4">
 								{{ invoice.formatted_total }}
 							</td>
-							<td class="border-b px-2 py-4">
+							<td class="whitespace-nowrap border-b px-2 py-4">
 								<Badge :label="this.$invoiceStatus(invoice.status)" />
 							</td>
 							<td class="border-b px-2 py-4">

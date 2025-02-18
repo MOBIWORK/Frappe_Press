@@ -954,8 +954,9 @@ class Site(Document):
         if 'api_key' not in keys or 'api_secret' not in keys:
             user = frappe.get_value('Team', self.team, 'user')
             api_key, api_secret = generate_keys(user)
-            config['api_key'] = api_key
-            config['api_secret'] = api_secret
+            if api_key and api_secret:
+                config['api_key'] = api_key
+                config['api_secret'] = api_secret
         
         if isinstance(config, list):
             self._set_configuration(config)
@@ -1990,20 +1991,23 @@ def options_for_new(group: str = None, selected_values=None) -> Dict:
 
 
 def generate_keys(user):
-    current_user = frappe.session.user
-    # frappe.set_user("Administrator")
+    try:
+        current_user = frappe.session.user
+        # frappe.set_user("Administrator")
 
-    user_details = frappe.get_doc('User', user)
-    api_secret = frappe.generate_hash(length=15)
+        user_details = frappe.get_doc('User', user)
+        api_secret = frappe.generate_hash(length=15)
 
-    api_key = user_details.api_key
-    if not api_key:
-        api_key = frappe.generate_hash(length=15)
-        user_details.api_key = api_key
+        api_key = user_details.api_key
+        if not api_key:
+            api_key = frappe.generate_hash(length=15)
+            user_details.api_key = api_key
 
-    user_details.api_secret = api_secret
-    user_details.save(ignore_permissions=True)
+        user_details.api_secret = api_secret
+        user_details.save(ignore_permissions=True)
 
-    # frappe.set_user(current_user)
+        # frappe.set_user(current_user)
 
-    return api_key, api_secret
+        return api_key, api_secret
+    except:
+        return None, None

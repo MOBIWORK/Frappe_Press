@@ -716,15 +716,16 @@ class Team(Document):
         return doc
 
     def allocate_free_credit_amount(self, amount, source, remark=None):
-        date_promotion_1 = frappe.utils.now_datetime().strftime('%Y-%m-%d')
-        date_promotion_1 = datetime.strptime(date_promotion_1, '%Y-%m-%d')
+        # date_promotion_1 = frappe.utils.now_datetime().strftime('%Y-%m-%d')
+        # date_promotion_1 = datetime.strptime(date_promotion_1, '%Y-%m-%d')
         doc = frappe.get_doc(
             doctype="Balance Transaction",
             team=self.name,
             type="Adjustment",
             source=source,
-            amount_promotion_1=amount,
-            date_promotion_1=date_promotion_1,
+            amount_promotion_2=amount,
+            # amount_promotion_1=amount,
+            # date_promotion_1=date_promotion_1,
             description=remark,
         )
         doc.insert(ignore_permissions=True)

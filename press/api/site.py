@@ -10,6 +10,7 @@ import frappe
 from frappe import _
 from dns.resolver import Resolver
 import dns.exception
+import requests
 
 from typing import Dict
 from boto3 import client
@@ -1261,6 +1262,15 @@ def current_plan(name):
         total_database_usage = 0
         total_storage_usage = 0
 
+    try:
+        usage_storage_url = f"https://{name}/api/method/roadai.api.storage.storage_used_by_site"
+        res = requests.get(usage_storage_url).json()
+        usage_storage = res.get('message')
+        if isinstance(usage_storage, (int, float)):
+            total_storage_usage += (usage_storage / (1024 * 1024))
+    except:
+        pass
+  
     # number of hours until cpu usage resets
     now = frappe.utils.now_datetime()
     today_end = now.replace(hour=23, minute=59, second=59)

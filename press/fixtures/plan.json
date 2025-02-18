@@ -1,44 +1,5 @@
 [
  {
-  "cluster": "Default",
-  "cpu_time_per_day": 2,
-  "database_access": 0,
-  "dedicated_server_plan": 0,
-  "disk": 50,
-  "docstatus": 0,
-  "doctype": "Plan",
-  "document_type": "Site",
-  "enabled": 1,
-  "instance_type": "c6.large",
-  "interval": "Daily",
-  "is_frappe_plan": 0,
-  "is_trial_plan": 0,
-  "max_database_usage": 4096,
-  "max_storage_usage": 4096,
-  "memory": 4096,
-  "modified": "2024-01-16 14:01:09.806495",
-  "monitor_access": 0,
-  "name": "plan_site_1",
-  "num_of_empl_from": 0,
-  "num_of_empl_to": 0,
-  "offsite_backups": 0,
-  "plan_title": null,
-  "price_inr": 0.0,
-  "price_usd": 0.0,
-  "price_vnd": 200000.0,
-  "private_benches": 0,
-  "roles": [
-   {
-    "parent": "plan_site_1",
-    "parentfield": "roles",
-    "parenttype": "Plan",
-    "role": "Press Admin"
-   }
-  ],
-  "support_included": 0,
-  "vcpu": 2
- },
- {
   "cluster": null,
   "cpu_time_per_day": 0,
   "database_access": 0,
