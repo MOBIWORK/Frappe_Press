@@ -131,7 +131,7 @@ class DeveloperApiHandler:
         try:
             login_url = self.get_login_url()
             users = frappe.get_doc("Team", self.app_subscription_doc.team).user
-            subject = f"[MBWCloud] - Email xác minh đăng nhập"
+            subject = f"[EOVCloud] - Email xác minh đăng nhập"
             frappe.sendmail(
                 subject=subject,
                 recipients=[users],

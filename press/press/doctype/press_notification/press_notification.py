@@ -15,7 +15,7 @@ class PressNotification(Document):
 
             frappe.sendmail(
                 recipients=[frappe.db.get_value("Team", self.team, "user")],
-                subject=f"[MBWCloud] - Triển khai Bench thất bại - {rg_title}",
+                subject=f"[EOVCloud] - Triển khai Bench thất bại - {rg_title}",
                 template="bench_deploy_failure",
                 args={
                     "message": self.message,

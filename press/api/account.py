@@ -176,7 +176,7 @@ def send_login_link(email):
         print(f"One time login link for {email}")
         print(link)
         print()
-    subject = f"[MBWCloud] - Đăng nhập vào EOV Cloud bằng email {email} của bạn"
+    subject = f"[EOVCloud] - Đăng nhập vào EOV Cloud bằng email {email} của bạn"
     frappe.sendmail(
         subject=subject,
         recipients=email,

@@ -119,7 +119,7 @@ class AppReleaseApprovalRequest(Document):
 
         frappe.sendmail(
             [publisher_email],
-            subject=f"[MBWCloud] - EOV Cloud Marketplace: {marketplace_app.title}",
+            subject=f"[EOVCloud] - EOV Cloud Marketplace: {marketplace_app.title}",
             args={
                 "subject": "Cập nhật về yêu cầu xuất bản bản phát hành ứng dụng của bạn",
                 "status": self.status,

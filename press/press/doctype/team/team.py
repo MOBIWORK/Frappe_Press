@@ -1131,7 +1131,7 @@ class Team(Document):
         # last_4 = frappe.db.get_value(
         #     "Stripe Payment Method", payment_method, "last_4")
         account_update_link = frappe.utils.get_url("/dashboard")
-        subject = "[MBWCloud] - Thanh toán hóa đơn không thành công khi đăng ký EOV Cloud"
+        subject = "[EOVCloud] - Thanh toán hóa đơn không thành công khi đăng ký EOV Cloud"
 
         frappe.sendmail(
             recipients=email,

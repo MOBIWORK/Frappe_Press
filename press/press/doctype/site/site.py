@@ -87,7 +87,9 @@ class Site(Document):
         if not self.bench and self.group:
             self._set_latest_bench()
         # initialize site.config based on plan
-        self._update_configuration(self.get_plan_config(), save=False)
+        config = self.get_plan_config()
+        self.set_api_key(config)
+        self._update_configuration(config, save=False)
         if not self.notify_email and self.team != "Administrator":
             self.notify_email = frappe.db.get_value(
                 "Team", self.team, "notify_email")
@@ -936,6 +938,16 @@ class Site(Document):
         if save:
             self.save()
 
+    def set_api_key(self, config):
+        # update configuration
+        keys = {x.key: i for i, x in enumerate(self.configuration)}
+        if 'api_key' not in keys or 'api_secret' not in keys:
+            user = frappe.get_value('Team', self.team, 'user')
+            api_key, api_secret = generate_keys(user)
+            if api_key and api_secret:
+                config['api_key'] = api_key
+                config['api_secret'] = api_secret
+    
     @frappe.whitelist()
     def update_site_config(self, config=None):
         """Updates site.configuration, site.config and runs site.save which initiates an Agent Request
@@ -948,15 +960,8 @@ class Site(Document):
         """
         if config is None:
             config = {}
-            
-        # update configuration
-        keys = {x.key: i for i, x in enumerate(self.configuration)}
-        if 'api_key' not in keys or 'api_secret' not in keys:
-            user = frappe.get_value('Team', self.team, 'user')
-            api_key, api_secret = generate_keys(user)
-            if api_key and api_secret:
-                config['api_key'] = api_key
-                config['api_secret'] = api_secret
+
+        self.set_api_key(config)
         
         if isinstance(config, list):
             self._set_configuration(config)
@@ -2009,5 +2014,6 @@ def generate_keys(user):
         # frappe.set_user(current_user)
 
         return api_key, api_secret
-    except:
+    except Exception as ex:
+        frappe.log_error(f"{str(ex)}", "Generate keys")
         return None, None

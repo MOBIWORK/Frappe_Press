@@ -139,12 +139,13 @@ def validate_balance_account(site):
             total_amount += round(price_vnd/period) * site_num_days_required
 
         # tinh tien goi app
-        selected_app_plans = site['selected_app_plans']
+        selected_app_plans = site.get("selected_app_plans")
         name_app_plans = []
         name_plans = []
         price_plans = []
-        for x in selected_app_plans.values():
-            name_app_plans.append(x)
+        if selected_app_plans:
+            for x in selected_app_plans.values():
+                name_app_plans.append(x)
 
         if name_app_plans:
             name_plans = frappe.get_all(

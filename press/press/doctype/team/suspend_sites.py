@@ -48,7 +48,7 @@ def suspend_sites_and_send_email(team):
         email = team.user
         frappe.sendmail(
             recipients=email,
-            subject="[MBWCloud] - Các tổ chức của bạn đã bị tạm dừng trên EOV Cloud",
+            subject="[EOVCloud] - Các tổ chức của bạn đã bị tạm dừng trên EOV Cloud",
             template="unpaid_invoices",
             args={
                 "subject": "Các tổ chức của bạn đã bị tạm dừng trên Frappe Cloud",

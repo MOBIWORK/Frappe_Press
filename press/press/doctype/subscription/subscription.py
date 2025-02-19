@@ -162,15 +162,15 @@ class Subscription(Document):
 def send_email_handle_site(type_email, site_name, team):
     args = {'site_name': site_name}
     if type_email == 'lock':
-        subject = """[MBWCloud] - Khóa truy cập vào tổ chức {{ site_name }} của bạn"""
+        subject = """[EOVCloud] - Khóa truy cập vào tổ chức {{ site_name }} của bạn"""
         template = 'site_lock_email'
     elif type_email == 'warning':
-        subject = """[MBWCloud] - Sắp khóa truy cập vào tổ chức {{ site_name }} của bạn"""
+        subject = """[EOVCloud] - Sắp khóa truy cập vào tổ chức {{ site_name }} của bạn"""
         template = 'site_lock_warning_email'
     elif type_email == 'prior':
         args['number_day'] = (frappe.db.get_single_value(
             "Press Settings", "site_num_days_advance_warning") or 0)
-        subject = """[MBWCloud] - Số dư tài khoản của bạn không đủ để duy trì tổ chức {{ site_name }}"""
+        subject = """[EOVCloud] - Số dư tài khoản của bạn không đủ để duy trì tổ chức {{ site_name }}"""
         template = 'insufficient_funds_warning_prior_date'
 
     if type_email in ['lock', 'warning', 'prior']:

@@ -21,7 +21,7 @@ class PartnerApprovalRequest(Document):
         link = get_url(
             f"/api/method/press.api.account.approve_partner_request?key={self.key}"
         )
-        subject = f"[MBWCloud] - Yêu cầu phê duyệt đối tác {customer}"
+        subject = f"[EOVCloud] - Yêu cầu phê duyệt đối tác {customer}"
 
         frappe.sendmail(
             subject=subject,

@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 import json
 from frappe.core.utils import find
 from frappe.core.doctype.user.user import test_password_strength
@@ -12,7 +13,13 @@ from press.press.doctype.site.saas_site import (
     get_default_team_for_app,
     get_saas_domain,
     get_saas_site_plan,
+    get_saas_group,
+    get_saas_cluster,
+    get_saas_apps,
     set_site_in_subscription_docs,
+)
+from press.api.site import (
+    _new
 )
 from press.press.doctype.site.saas_pool import get as get_pooled_saas_site
 from press.press.doctype.site.erpnext_site import get_erpnext_domain
@@ -58,7 +65,7 @@ def account_request(
     all_countries = frappe.db.get_all("Country", pluck="name")
     country = find(all_countries, lambda x: x.lower() == country.lower())
     if not country:
-        frappe.throw("Country field should be a valid country name")
+        frappe.throw(_("Country field should be a valid country name"))
 
     current_user = frappe.session.user
     try:
@@ -93,45 +100,68 @@ def account_request(
         raise
     finally:
         frappe.set_user(current_user)
-  
-    create_or_rename_saas_site(app, account_request)
 
+    # create_or_rename_saas_site(app, account_request)
+
+# === saas old
+# def create_or_rename_saas_site(app, account_request):
+#     """
+#     Creates site for Saas App. These are differentiated by `standby_for` field in site doc
+#     """
+#     current_user = frappe.session.user
+#     current_session_data = frappe.session.data
+#     frappe.set_user("Administrator")
+
+#     try:
+#         enable_hybrid_pools = frappe.db.get_value(
+#             "Saas Settings", app, "enable_hybrid_pools")
+#         hybrid_saas_pool = (
+#             get_hybrid_saas_pool(
+#                 account_request) if enable_hybrid_pools else ""
+#         )
+
+#         pooled_site = get_pooled_saas_site(app, hybrid_saas_pool)
+#         if pooled_site:
+#             SaasSite(site=pooled_site, app=app).rename_pooled_site(
+#                 account_request)
+#         else:
+#             saas_site = SaasSite(
+#                 account_request=account_request, app=app, hybrid_saas_pool=hybrid_saas_pool
+#             ).insert(ignore_permissions=True)
+#             set_site_in_subscription_docs(
+#                 saas_site.subscription_docs, saas_site.name)
+#             saas_site.create_subscription(get_saas_site_plan(app))
+
+#         capture("completed_server_site_created",
+#                 "fc_saas", account_request.get_site_name())
+#     except Exception as e:
+#         log_error("Saas Site Creation or Rename failed", data=e)
+
+#     finally:
+#         frappe.set_user(current_user)
+#         frappe.session.data = current_session_data
+
+
+# === saas mbw
 def create_or_rename_saas_site(app, account_request):
     """
-    Creates site for Saas App. These are differentiated by `standby_for` field in site doc
+    Creates site for Saas App
     """
-    current_user = frappe.session.user
-    current_session_data = frappe.session.data
-    frappe.set_user("Administrator")
-
     try:
-        enable_hybrid_pools = frappe.db.get_value(
-            "Saas Settings", app, "enable_hybrid_pools")
-        hybrid_saas_pool = (
-            get_hybrid_saas_pool(
-                account_request) if enable_hybrid_pools else ""
-        )
-
-        pooled_site = get_pooled_saas_site(app, hybrid_saas_pool)
-        if pooled_site:
-            SaasSite(site=pooled_site, app=app).rename_pooled_site(
-                account_request)
-        else:
-            saas_site = SaasSite(
-                account_request=account_request, app=app, hybrid_saas_pool=hybrid_saas_pool
-            ).insert(ignore_permissions=True)
-            set_site_in_subscription_docs(
-                saas_site.subscription_docs, saas_site.name)
-            saas_site.create_subscription(get_saas_site_plan(app))
-
+        site = {
+            "domain": get_saas_domain(app),
+            "name": account_request.subdomain,
+            "apps": get_saas_apps(app),
+            "group": get_saas_group(app),
+            "cluster": get_saas_cluster(app),
+            "plan": get_saas_site_plan(app)
+        }
+        _new(site)
+        
         capture("completed_server_site_created",
                 "fc_saas", account_request.get_site_name())
     except Exception as e:
         log_error("Saas Site Creation or Rename failed", data=e)
-
-    finally:
-        frappe.set_user(current_user)
-        frappe.session.data = current_session_data
 
 
 @frappe.whitelist()
@@ -342,50 +372,74 @@ def headless_setup_account(key):
     ] = f"/prepare-site?key={key}&app={account_request.saas_app}"
 
 
-def create_marketplace_subscription(account_request):
-    """
-    Create team, subscription for site and Saas Subscription
-    """
-    team_doc = create_team(account_request)
-    site_name = frappe.db.get_value(
-        "Site", {"account_request": account_request.name})
-    if site_name:
-        frappe.db.set_value("Site", site_name, "team", team_doc.name)
+# === saas old
+# def create_marketplace_subscription(account_request):
+#     """
+#     Create team, subscription for site and Saas Subscription
+#     """
+#     team_doc = create_team(account_request)
+#     site_name = frappe.db.get_value(
+#         "Site", {"account_request": account_request.name})
+#     if site_name:
+#         frappe.db.set_value("Site", site_name, "team", team_doc.name)
 
-    subscription = frappe.db.exists(
-        "Subscription", {"document_name": site_name})
-    if subscription:
-        frappe.db.set_value("Subscription", subscription,
-                            "team", team_doc.name)
+#     subscription = frappe.db.exists(
+#         "Subscription", {"document_name": site_name})
+#     if subscription:
+#         frappe.db.set_value("Subscription", subscription,
+#                             "team", team_doc.name)
 
-    marketplace_subscriptions = frappe.get_all(
-        "Marketplace App Subscription",
-        {"site": site_name, "status": "Disabled"},
-        pluck="name",
-    )
-    for subscription in marketplace_subscriptions:
-        frappe.db.set_value(
-            "Marketplace App Subscription",
-            subscription,
-            {"status": "Active", "team": team_doc.name},
-        )
+#     marketplace_subscriptions = frappe.get_all(
+#         "Marketplace App Subscription",
+#         {"site": site_name, "status": "Disabled"},
+#         pluck="name",
+#     )
+#     for subscription in marketplace_subscriptions:
+#         frappe.db.set_value(
+#             "Marketplace App Subscription",
+#             subscription,
+#             {"status": "Active", "team": team_doc.name},
+#         )
 
-    frappe.set_user(team_doc.user)
-    frappe.local.login_manager.login_as(team_doc.user)
+#     frappe.set_user(team_doc.user)
+#     frappe.local.login_manager.login_as(team_doc.user)
 
-    # config api_key
-    if site_name:
-        site = frappe.get_doc('Site', site_name)
-        site.update_site_config()
+#     # # config api_key
+#     # if site_name:
+#     #     site = frappe.get_doc('Site', site_name)
+#     #     site.update_site_config()
     
-    # allocate free credit amount
-    if team_doc:
-        team = frappe.get_doc('Team', team_doc.name)
-        team.create_payment_method(
-            '', set_default=True
-        )
+#     # # allocate free credit amount
+#     # if team_doc:
+#     #     team = frappe.get_doc('Team', team_doc.name)
+#     #     team.create_payment_method(
+#     #         '', set_default=True
+#     #     )
+    
+#     return site_name
+
+def create_marketplace_subscription(account_request):
+    try:
+        """
+        Create team, subscription for site and Saas Subscription
+        """
+        team_doc = create_team(account_request)
         
-    return site_name
+        # allocate free credit amount
+        team_doc.reload()
+        team_doc.allocate_free_credits()
+        team_doc.reload()
+        
+        # login user
+        frappe.set_user(team_doc.user)
+        frappe.local.login_manager.login_as(team_doc.user)
+        
+        # create site
+        create_or_rename_saas_site(account_request.saas_app, account_request)
+            
+        return ''
+    except Exception as ex:
+        log_error("Create marketplace subscription", data=ex)
 
 
 def create_team(account_request, get_stripe_id=False):
@@ -396,14 +450,14 @@ def create_team(account_request, get_stripe_id=False):
 
     if not frappe.db.exists("Team", {"user": email}):
         team_doc = Team.create_new(
-            account_request,
-            account_request.first_name,
-            account_request.phone_number,
+            account_request=account_request,
+            first_name=account_request.first_name,
+            phone=account_request.phone_number,
             password=get_decrypted_password(
                 "Account Request", account_request.name, "password"),
             country=account_request.country,
-            is_us_eu=account_request.is_us_eu,
-            via_erpnext=True,
+            # is_us_eu=account_request.is_us_eu,
+            # via_erpnext=True,
             user_exists=frappe.db.exists("User", email),
         )
     else:

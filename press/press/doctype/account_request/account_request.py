@@ -64,7 +64,7 @@ class AccountRequest(Document):
             print()
             return
 
-        subject = """[MBWCloud] - Xác minh email đăng ký {{ email_customer }} của bạn"""
+        subject = """[EOVCloud] - Xác minh email đăng ký {{ email_customer }} của bạn"""
         args = {}
 
         if self.saas_product:
@@ -73,7 +73,7 @@ class AccountRequest(Document):
             template = "verify_account"
 
             if self.invited_by and self.role != "Press Admin":
-                subject = """[MBWCloud] - Bạn được {{ invited_by }} mời tham gia EOV Cloud"""
+                subject = """[EOVCloud] - Bạn được {{ invited_by }} mời tham gia EOV Cloud"""
                 template = "invite_team_member"
 
         template_subject = Template(subject)
@@ -87,7 +87,7 @@ class AccountRequest(Document):
                 "invited_by": self.invited_by,
                 "link": url,
                 # "image_path": "/assets/press/images/frappe-logo-black.png",
-                "image_path": "https://admin.mbwcloud.com/assets/press/images/cropped-mbw.cloud_.10.png",
+                "image_path": "https://eov.mbwcloud.com/assets/press/images/EOV.png",
                 "read_pixel_path": get_url(
                     f"/api/method/press.utils.telemetry.capture_read_event?name={self.name}"
                 ),

@@ -51,7 +51,7 @@ class DripEmail(Document):
 
         # add to queue
         frappe.sendmail(
-            subject='[MBWCloud] - ' + self.subject,
+            subject='[EOVCloud] - ' + self.subject,
             recipients=[recipient],
             sender=f"{self.sender_name} <{self.sender}>",
             reply_to=self.reply_to,

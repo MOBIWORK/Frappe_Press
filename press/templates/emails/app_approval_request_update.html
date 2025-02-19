@@ -3,7 +3,7 @@
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p><strong class="text-lg">Chào mừng bạn đến với MBWCloud!</strong></p>
+		<p><strong class="text-lg">Chào mừng bạn đến với EOVCloud!</strong></p>
 
 		<p>
 			{%- if subject -%} {{ subject }}{% else %} Cập nhật về yêu cầu xuất bản
@@ -13,15 +13,11 @@
 		<p>
 			{%- if status == 'Rejected' -%} Rất tiếc, yêu cầu phê duyệt của bạn cho
 			bản phát hành ứng dụng
-			<a class="text-blue-500" href="{{ releases_link }}"
-				>'{{ commit_message }}'</a
-			>
+			<a class="text-blue-500" href="{{ releases_link }}">'{{ commit_message }}'</a>
 			đã bị từ chối. Lý do từ chối: {{ rejection_reason }} {%- endif -%} {%- if
 			status == 'Approved' -%} Yêu cầu phê duyệt của bạn cho bản phát hành ứng
 			dụng
-			<a class="text-blue-500" href="{{ releases_link }}"
-				>'{{ commit_message }}'</a
-			>
+			<a class="text-blue-500" href="{{ releases_link }}">'{{ commit_message }}'</a>
 			đã được chấp nhận và bản phát hành này sẽ được xuất bản trên Marketplace.
 			{%- endif -%}
 		</p>

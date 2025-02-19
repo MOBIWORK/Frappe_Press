@@ -156,7 +156,7 @@ def update_from_site_update():
 
                 frappe.sendmail(
                     recipients=[recipient],
-                    subject=f"[MBWCloud] - Nâng cấp phiên bản tự động không thành công cho {version_upgrade.site}",
+                    subject=f"[EOVCloud] - Nâng cấp phiên bản tự động không thành công cho {version_upgrade.site}",
                     reference_doctype="Version Upgrade",
                     reference_name=version_upgrade.name,
                     template="version_upgrade_failed",
