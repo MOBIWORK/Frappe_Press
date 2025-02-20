@@ -9,7 +9,7 @@ from frappe.model.document import Document
 from frappe.utils import random_string, get_url
 from press.utils import get_country_info
 from jinja2 import Template
-
+from frappe.utils import fmt_money
 
 class AccountRequest(Document):
     def before_insert(self):
@@ -64,8 +64,17 @@ class AccountRequest(Document):
             print()
             return
 
+        settings = frappe.db.get_value(
+        'Press Settings', 'Press Settings', ['free_credits_vnd'], as_dict=True)
+        free_credits_vnd = settings.free_credits_vnd if settings else 0
+        money = fmt_money(free_credits_vnd, 0,"VND")
         subject = """[EOVCloud] - Xác minh email đăng ký {{ email_customer }} của bạn"""
-        args = {}
+        args = {
+            'user_name': (self.first_name + '') + (self.last_name or ''),
+            'app': self.saas_app or '',
+            'site_name': self.get_site_name(),
+            'money': money,
+        }
 
         if self.saas_product:
             template = "saas_verify_account"

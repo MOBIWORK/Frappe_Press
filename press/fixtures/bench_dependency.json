@@ -49,7 +49,7 @@
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Version 15",
-    "version": "18.19.0"
+    "version": "18.20.5"
    },
    {
     "parent": "NODE_VERSION",
@@ -146,7 +146,7 @@
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Version 15",
-    "version": "5.22.3"
+    "version": "5.23.0"
    }
   ],
   "title": "Bench Version"
@@ -191,7 +191,7 @@
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Version 15",
-    "version": "0.39.5"
+    "version": "0.40.1"
    }
   ],
   "title": "NVM Version"

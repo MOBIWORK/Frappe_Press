@@ -3,12 +3,28 @@
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p><strong class="text-lg">Chào mừng bạn đến với EOVCloud!</strong></p>
 		<p>
-			Vui lòng xác nhận địa chỉ email để hoàn tất thiết lập tài khoản của bạn.
+			<strong class="text-lg">Chào {{user_name}}</strong>,
 		</p>
-		{{ utils.button('Kích hoạt tài khoản', link, true) }} {{ utils.separator()
-		}} {{ utils.footer() }}
+		<p>
+			Chào mừng bạn đến với <strong>EOVCloud</strong>!
+		</p>
+		<p>Chúng tôi rất vui khi bạn tham gia cùng cộng đồng của chúng tôi.</p>
+		<p>
+			Bạn đã đăng ký ứng dụng {{app}} với trang web là {{site_name}}. Để hoàn tất quá trình đăng ký và kích hoạt
+			tài khoản
+			của bạn, vui lòng xác nhận email bằng cách nhấp vào nút bên dưới:
+		</p>
+		{{ utils.button('Kích hoạt tài khoản', link, true) }}
+		<p>
+			<strong>Quà tặng đặc biệt dành cho bạn:</strong> Nhận ngay {{money}} <strong>vào tài khoản sau khi hoàn
+				tất xác thực đăng ký!</strong>
+		</p>
+		<p>Nếu bạn không thực hiện đăng ký, vui lòng bỏ qua email này.</p>
+		<p><strong>Cần hỗ trợ?</strong> Liên hệ với chúng tôi qua email <strong><a
+					href="mailto:info@mbw.vn">info@mbw.vn</a></strong>.</p>
+		<!-- {{ utils.separator()}}
+		{{ utils.footer() }} -->
 	</div>
 </td>
 

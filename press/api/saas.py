@@ -35,9 +35,10 @@ def account_request(
         email,
         password,
         first_name,
-        last_name,
         country,
         app,
+        phone_number='',
+        last_name='',
         url_args=None,
 ):
     """
@@ -82,6 +83,7 @@ def account_request(
                 "role": "Press Admin",
                 "first_name": first_name,
                 "last_name": last_name,
+                "phone_number": phone_number,
                 "country": country,
                 "url_args": url_args or json.dumps({}),
                 "send_email": True,

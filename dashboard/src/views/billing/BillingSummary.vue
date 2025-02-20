@@ -124,8 +124,9 @@
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"
 								iconLeft="credit-card"
-								>{{ $t('payment') }}</Button
 							>
+								{{ $t('deposit_money') }}
+							</Button>
 						</div>
 						<div v-else class="mb-3 flex flex-wrap justify-between text-base">
 							<div class="mb-2">{{ $t('deposit_money_into_account') }}</div>
@@ -133,8 +134,9 @@
 								@click="showPrepaidCreditsDialog = true"
 								theme="gray"
 								iconLeft="plus"
-								>{{ $t('deposit_money') }}</Button
 							>
+								{{ $t('deposit_money') }}
+							</Button>
 						</div>
 					</div>
 					<!-- <div class="rounded-md border p-4">

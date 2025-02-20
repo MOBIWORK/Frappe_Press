@@ -91,6 +91,8 @@ def app_service_payment(**kwargs):
                 frappe.db.set_value('Invoice Item', item_name.name, {
                     'quantity': item_name.quantity + processing_unit
                 })
+                invoice.reload()
+                invoice.save(ignore_permissions=True)
 
             return {'code': 200, 'msg': 'Successfully'}
     
@@ -109,3 +111,31 @@ def get_user_balance():
         'balance': amount_all,
         'available_balances': available_balances
     }
+
+@frappe.whitelist()
+def sendmail_storage_capacity_overflows(**kwargs):
+    try:
+        site_name = kwargs.get('site_name')
+        if not frappe.db.exists("Site", site_name):
+            return {'code': 0,'msg': 'site_name not found'}
+
+        date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        subject = f"""[EOVCloud] - Dung lượng lưu trữ website {site_name} của bạn đã đầy! - {date_time}"""
+        args = {
+            'user_name': '',
+            'site_name': site_name
+        }
+        email_recipients = ''
+        template = "storage_capacity_overflows"
+        
+        frappe.sendmail(
+            recipients=email_recipients,
+            subject=subject,
+            template=template,
+            args=args
+        )
+        
+        return {'code': 200,'msg': 'Successfully'}
+    except Exception as ex:
+        frappe.log_error(f"{str(ex)}", "Sendmail storage capacity overflows")
+        return {'code': 500,'msg': str(ex)}
