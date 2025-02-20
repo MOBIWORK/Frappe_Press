@@ -9,8 +9,11 @@
 					variant: 'solid',
 					loading: $resources.changePlan.loading,
 					onClick: () => {
+						if (!selectedPlan) {
+							msgErr = $t('Please_select_a_plan_to_continue') + '.';
+							return;
+						}
 						$resources.changePlan.submit();
-						showChangePlanDialog = false;
 					}
 				}
 			]
@@ -26,7 +29,12 @@
 				:plans="plans"
 				v-model:selectedPlan="selectedPlan"
 			/>
-			<ErrorMessage class="mt-4" :message="$resources.changePlan.error" />
+			<ErrorMessage v-if="msgErr" class="mt-4" :message="msgErr" />
+			<ErrorMessage
+				v-else
+				class="mt-4"
+				:message="$resources.changePlan.error"
+			/>
 		</template>
 	</Dialog>
 </template>
@@ -44,12 +52,14 @@ export default {
 	data() {
 		return {
 			selectedPlan: null,
-			validationMessage: null
+			validationMessage: null,
+			msgErr: ''
 		};
 	},
 	watch: {
 		async selectedPlan(value) {
 			if (!value) return;
+			this.msgErr = '';
 
 			try {
 				// custom plan validation for frappe support
@@ -98,12 +108,12 @@ export default {
 					this.$emit('plan-change');
 				},
 				onError(error) {
-					this.showChangePlanDialog = false;
-					notify({
-						title: error,
-						icon: 'x',
-						color: 'red'
-					});
+					// this.showChangePlanDialog = false;
+					// notify({
+					// 	title: error,
+					// 	icon: 'x',
+					// 	color: 'red'
+					// });
 				}
 			};
 		}

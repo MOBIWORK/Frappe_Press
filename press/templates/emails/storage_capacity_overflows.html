@@ -4,8 +4,25 @@ image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
     <div class="p-8 bg-white from-markdown">
-
-        {{ utils.separator() }} {{ utils.footer() }}
+        <p>
+            <strong class="text-lg">Chào {{user_name}}</strong>,
+        </p>
+        <p><strong>Cảnh báo quan trọng:</strong> Dung lượng lưu trữ của website <strong>{{site_name}}</strong> đã đầy
+            hoặc vượt quá mức cho phép!</p>
+        <p><strong>Chi tiết dung lượng:</strong></p>
+        <p>- Website của bạn đã sử dụng vượt quá giới hạn {{max_storage_usage}} GB.</p>
+        <p><strong>Ảnh hưởng:</strong></p>
+        <p>- Không thể tải lên thêm dữ liệu, hình ảnh hoặc tệp tin.</p>
+        <p>- Một số tính năng có thể không hoạt động.</p>
+        <p>- Website có nguy cơ bị gián đoạn.</p>
+        <p><strong>Cách khắc phục ngay:</strong></p>
+        <p>- Xóa bớt dữ liệu không cần thiết.</p>
+        <p>- <strong>Nâng cấp dung lượng ngay</strong> để tránh gián đoạn:</p>
+        {{ utils.button('Nâng cấp ngay', link, true) }}
+        <p><strong>Cần hỗ trợ?</strong> Liên hệ với chúng tôi qua email <strong><a
+                    href="mailto:info@mbw.vn">info@mbw.vn</a></strong>.</p>
+        <p><strong>Vui lòng thực hiện sớm để tránh gián đoạn dịch vụ.</strong></p>
+        <!-- {{ utils.separator() }} {{ utils.footer() }} -->
     </div>
 </td>
 
