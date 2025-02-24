@@ -5,7 +5,7 @@
 import json
 import re
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
 import dateutil.parser
@@ -663,7 +663,20 @@ class Site(Document):
         )
         self.disable_subscription()
         self.disable_marketplace_subscriptions()
-
+        self.add_schedule_delete_bucket()
+        
+    def add_schedule_delete_bucket(self):
+        config = frappe.db.get_value('Site Config', {'parent': self.name, 'parentfield': 'configuration', 'parenttype': 'Site', 'key': 'bucket_name'}, ['key','value'], as_dict=1)
+        
+        if config:
+            time_hold = frappe.db.get_single_value("Press Settings", "time_hold") or 0
+            expiration_time = datetime.now() + timedelta(days=time_hold)
+            doc = frappe.new_doc("Schedule Delete Bucket")
+            doc.bucket_name = config.value
+            doc.deletion_type = 'Bucket'
+            doc.expiration_time = expiration_time
+            doc.insert(ignore_permissions=True)
+    
     @frappe.whitelist()
     def cleanup_after_archive(self):
         site_cleanup_after_archive(self.name)

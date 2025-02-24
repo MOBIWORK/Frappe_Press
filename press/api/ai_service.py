@@ -1,10 +1,12 @@
 import frappe
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 import redis
 from contextlib import contextmanager
-
+from press.api.ai_s3_client import run_handle_schedule_delete_bucket,get_all_buckets,create_bucket
 from press.utils import get_current_team
+import json
+
 
 # Kết nối Redis từ Frappe config
 REDIS_CLIENT = redis.StrictRedis.from_url(frappe.conf.redis_cache)
@@ -77,9 +79,9 @@ def app_service_payment(**kwargs):
                 invoice = team.create_upcoming_invoice()
             
             # add item
-            item_name = frappe.db.get_value('Invoice Item', {'parent': invoice.name,'document_type': 'Marketplace App', 'document_name': service_name, 'rate': price}, ['name', 'quantity'], as_dict=1)
+            item = frappe.db.get_value('Invoice Item', {'parent': invoice.name,'document_type': 'Marketplace App', 'document_name': service_name, 'rate': price}, ['name', 'quantity'], as_dict=1)
 
-            if not item_name:
+            if not item:
                 invoice.append('items', {
                     'document_type': 'Marketplace App',
                     'document_name': service_name,
@@ -88,8 +90,8 @@ def app_service_payment(**kwargs):
                 })
                 invoice.save(ignore_permissions=True)
             else:
-                frappe.db.set_value('Invoice Item', item_name.name, {
-                    'quantity': item_name.quantity + processing_unit
+                frappe.db.set_value('Invoice Item', item.name, {
+                    'quantity': item.quantity + processing_unit
                 })
                 invoice.reload()
                 invoice.save(ignore_permissions=True)
@@ -98,7 +100,7 @@ def app_service_payment(**kwargs):
     
     except Exception as ex:
         frappe.db.rollback()
-        frappe.log_error(f"Payment failed: {str(ex)}", "Service AI Payment Error")
+        frappe.log_error(message=str(ex), title="Service AI Payment Error")
         return {'code': 500,'msg': str(ex)}
 
 @frappe.whitelist()
@@ -144,5 +146,38 @@ def sendmail_storage_capacity_overflows(**kwargs):
         
         return {'code': 200,'msg': 'Successfully'}
     except Exception as ex:
-        frappe.log_error(f"{str(ex)}", "Sendmail storage capacity overflows")
+        frappe.log_error(message=str(ex), title="Sendmail storage capacity overflows")
+        return {'code': 500,'msg': str(ex)}
+
+@frappe.whitelist(methods=['POST'])
+def add_schedule_delete_objects_in_bucket(**kwargs):
+    try:
+        team = get_current_team(True)
+        
+        site_name = kwargs.get('site_name')
+        objects = kwargs.get('objects')
+        
+        if not frappe.db.exists("Site",{"name": site_name, 'team': team.name}):
+            return {'code': 0,'msg': 'site_name not found'}
+        if type(objects) != list:
+            return {'code': 0,'msg': 'objects must be a list'}
+        
+        config = frappe.db.get_value('Site Config', {'parent': site_name, 'parentfield': 'configuration', 'parenttype': 'Site', 'key': 'bucket_name'}, ['key','value'], as_dict=1)
+        if not config:
+            return {'code': 0,'msg': 'bucket_name not found'}
+        
+        if len(objects):
+            objects = json.dumps(objects, indent=4)
+            time_hold = frappe.db.get_single_value("Press Settings", "time_hold") or 0
+            expiration_time = datetime.now() + timedelta(days=time_hold)
+            doc = frappe.new_doc("Schedule Delete Bucket")
+            doc.bucket_name = config.value
+            doc.deletion_type = 'Object'
+            doc.expiration_time = expiration_time
+            doc.objects = objects
+            doc.insert(ignore_permissions=True)
+        
+        return {'code': 200,'msg': 'Successfully'}
+    except Exception as ex:
+        frappe.log_error(message=str(ex), title="Delete object in bucket")
         return {'code': 500,'msg': str(ex)}

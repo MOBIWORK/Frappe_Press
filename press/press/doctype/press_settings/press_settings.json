@@ -188,6 +188,12 @@
   "log_server",
   "telegram_alert_chat_id",
   "telegram_alerts_chat_group",
+  "ai_s3_bucket_section",
+  "aws_access_key",
+  "aws_end_point",
+  "column_break_101",
+  "aws_secret_key",
+  "time_hold",
   "feature_flags_tab",
   "verify_cards_with_micro_charge",
   "enable_google_oauth",
@@ -1225,11 +1231,41 @@
    "fieldname": "num_advance_warning",
    "fieldtype": "Int",
    "label": "S\u1ed1 l\u1ea7n c\u1ea3nh b\u00e1o tr\u01b0\u1edbc cho site"
+  },
+  {
+   "fieldname": "ai_s3_bucket_section",
+   "fieldtype": "Section Break",
+   "label": "AI S3 Bucket"
+  },
+  {
+   "fieldname": "aws_access_key",
+   "fieldtype": "Data",
+   "label": "AWS Access Key"
+  },
+  {
+   "fieldname": "aws_end_point",
+   "fieldtype": "Data",
+   "label": "AWS End Point"
+  },
+  {
+   "fieldname": "column_break_101",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "aws_secret_key",
+   "fieldtype": "Data",
+   "label": "AWS Secret Key"
+  },
+  {
+   "default": "0",
+   "fieldname": "time_hold",
+   "fieldtype": "Int",
+   "label": "Time Hold (day)"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2024-03-04 15:23:54.133924",
+ "modified": "2025-02-21 15:13:18.510823",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",
