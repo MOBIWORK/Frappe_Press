@@ -216,7 +216,7 @@ scheduler_events = {
     "cron": {
         "0 0 * * *": [
             "press.press.doctype.balance_transaction.balance_transaction.handle_for_expired_promotions",
-            # "press.api.ai_s3_client.run_handle_schedule_delete_bucket",
+            "press.api.ai_s3_client.run_handle_schedule_delete_bucket",
         ],
         "0 4 * * *": [
             "press.press.doctype.site.backups.cleanup_offsite",
@@ -246,7 +246,7 @@ scheduler_events = {
             "press.press.doctype.version_upgrade.version_upgrade.update_from_site_update",
             "press.press.doctype.site_replication.site_replication.update_from_site",
             "press.press.doctype.virtual_disk_snapshot.virtual_disk_snapshot.sync_snapshots",
-            "press.api.ai_s3_client.run_handle_schedule_delete_bucket",
+            # "press.api.ai_s3_client.run_handle_schedule_delete_bucket",
         ],
         "* * * * *": [
             "press.press.doctype.deploy_candidate.deploy_candidate.run_scheduled_builds",
