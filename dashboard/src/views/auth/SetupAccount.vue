@@ -1,9 +1,11 @@
 <template>
 	<LoginBox>
 		<div v-if="!dashboardRoute">
-			<div v-if="!$resources.validateRequestKey.loading && email">
+			<div v-if="!$resources.validateRequestKey.loading">
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
-					<div class="flex justify-center" v-if="!isInvitation">{{ $t('set_up_your_account') }}</div>
+					<div class="flex justify-center" v-if="!isInvitation">
+						{{ $t('set_up_your_account') }}
+					</div>
 					<div class="flex justify-center" v-else>
 						{{ $t('SetupAccount_content_1') }}: {{ invitationToTeam }}
 					</div>
@@ -180,7 +182,7 @@
 			>
 				{{ $t('SetupAccount_content_2') }}
 				<Link to="/signup"
-					><span class="font-[600] text-red-600 hover:text-red-700">{{
+					><span class="font-[600] text-blue-600 hover:text-blue-700">{{
 						$t('sign_up')
 					}}</span></Link
 				>
@@ -200,7 +202,7 @@
 				</div>
 				<router-link :to="dashboardRoute">
 					<Button
-						class="my-6 h-9 w-full bg-red-600 text-base font-[700] text-white hover:bg-red-700"
+						class="my-6 h-9 w-full text-base font-[700] text-white"
 						variant="solid"
 					>
 						{{ $t('return_to_login_page') }}

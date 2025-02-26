@@ -132,7 +132,7 @@ export default {
 			this.fieldNotSet = fieldNotSetNew;
 
 			if (!values.every(Boolean)) {
-				return 'please_fill_required_values';
+				return this.$t('please_fill_required_values');
 			}
 
 			try {

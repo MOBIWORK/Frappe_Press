@@ -1,22 +1,25 @@
 <template>
 	<div class="h-full">
-		<div
-			class="grid min-h-screen grid-cols-1 md:grid-cols-2"
-		>
-			<div
-				class="col-span-1 hidden md:flex h-screen"
-			>
-				<img class="inline-block w-full h-full object-cover" src="../../assets/left_content.svg" />
+		<div class="grid min-h-screen grid-cols-1 md:grid-cols-2">
+			<div class="col-span-1 hidden h-screen md:flex">
+				<img
+					class="inline-block h-full w-full object-cover"
+					src="../../assets/left_content.svg"
+				/>
 			</div>
 			<div
-				class="relative col-span-1 flex justify-center md:bg-white"
+				class="relative col-span-1 flex justify-center md:overflow-auto md:bg-white"
 			>
-				<div class="absolute" :class="hasSetupAccount? 'top-[15%]' : 'top-1/4'">
-					<div class="flex justify-center" v-if="!hasForgotPassword && !hasResetPassword">
+				<div
+					class="absolute left-1/2 top-1/2 h-full -translate-x-1/2 -translate-y-1/2"
+					:class="hasSetupAccount ? 'py-[8%]' : 'py-[20%]'"
+				>
+					<div
+						class="flex justify-center"
+						v-if="!hasForgotPassword && !hasResetPassword"
+					>
 						<slot name="logo">
-							<img
-								src="../../assets/logo_eov.png"
-							/>
+							<img src="../../assets/logo_eov.png" />
 						</slot>
 					</div>
 					<div
@@ -69,8 +72,10 @@ export default {
 		hasResetPassword() {
 			return this.$route.name == 'Reset Password';
 		},
-		hasSetupAccount(){
-			return this.$route.name == "Setup Account"
+		hasSetupAccount() {
+			return ['Setup Account', 'Setup Account Billing'].includes(
+				this.$route.name
+			);
 		}
 	}
 };

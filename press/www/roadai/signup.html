@@ -48,7 +48,7 @@
 					<label for="email">Địa chỉ Email</label>
 					<input type="email" id="email" class="form-control" name="email" autocomplete="email" />
 				</div>
-				<div class="form-group">
+				<!-- <div class="form-group">
 					<label for="country">Quốc Gia</label>
 					<select id="country" class="custom-select" name="country">
 						{%- if country_name -%}
@@ -62,7 +62,7 @@
 						</option>
 						{%- endfor -%}
 					</select>
-				</div>
+				</div> -->
 				<div class="form-group">
 					<label for="password">Mật khẩu</label>
 					<input type="password" id="password" class="form-control" name="password"
@@ -122,18 +122,18 @@
 			let MIN_LENGTH = 4;
 			let MAX_LENGTH = 20;
 			if (value.length < MIN_LENGTH) {
-				return `Tên trang web không thể có ít hơn ${MIN_LENGTH} kí tự`;
+				return `Tên trang web không thể có ít hơn ${MIN_LENGTH} kí tự.`;
 			}
 			if (value.length > MAX_LENGTH) {
-				return `Tên trang web không thể có nhiều hơn ${MAX_LENGTH} kí tự`;
+				return `Tên trang web không thể có nhiều hơn ${MAX_LENGTH} kí tự.`;
 			}
 			if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(value)) {
-				return 'Tên trang web phải chứa chữ cái viết thường, số và dấu gạch nối';
+				return 'Tên trang web phải chứa chữ cái viết thường, số và dấu gạch nối.';
 			}
 		},
 		first_name: (value) => {
 			if (!value) {
-				return 'Trường bắt buộc';
+				return 'Trường bắt buộc.';
 			}
 		},
 		// last_name: (value) => {
@@ -143,36 +143,36 @@
 		// },
 		phone_number: (value) => {
 			if (!value) {
-				return 'Trường Số điện thoại là bắt buộc';
+				return 'Trường Số điện thoại là bắt buộc.';
 			}
 
 			let regExp = /[a-zA-Z]/g;
 			if (regExp.test(value)) {
-				return 'Số điện thoại không thể chứa bảng chữ cái';
+				return 'Số điện thoại không thể chứa bảng chữ cái.';
 			}
 		},
 		email: (value) => {
 			if (!valid_email(value)) {
-				return 'Email không hợp lệ';
+				return 'Email không hợp lệ.';
 			}
 		},
 		password: (value) => {
 			if (!value) {
-				return 'Vui lòng điền mật khẩu';
+				return 'Vui lòng điền mật khẩu.';
 			} else {
 				if (validate_password(value, true)) {
-					return 'Vui lòng sử dụng mật khẩu mạnh hơn';
+					return 'Vui lòng sử dụng mật khẩu mạnh hơn.';
 				}
 			}
 		},
-		country: (value) => {
-			if (!value) {
-				return 'Vui lòng điền tên Quốc Gia của bạn';
-			}
-		},
+		// country: (value) => {
+		// 	if (!value) {
+		// 		return 'Vui lòng điền tên Quốc Gia của bạn.';
+		// 	}
+		// },
 		user_accept_terms: (value) => {
 			if (!value) {
-				return 'Bạn cần chấp nhận chính sách của chúng tôi';
+				return 'Bạn cần chấp nhận chính sách của chúng tôi.';
 			}
 		},
 	};
@@ -227,8 +227,8 @@
 				controller.show_input_feedback(
 					'subdomain',
 					!available
-						? `${subdomain}.${domain} đã được sử dụng`
-						: `${subdomain}.${domain} không hợp lệ`,
+						? `${subdomain}.${domain} đã được sử dụng.`
+						: `${subdomain}.${domain} không hợp lệ.`,
 					!available
 				);
 			});

@@ -955,8 +955,19 @@ class Site(Document):
         # update configuration
         keys = {x.key: i for i, x in enumerate(self.configuration)}
         if 'api_key' not in keys or 'api_secret' not in keys:
-            user = frappe.get_value('Team', self.team, 'user')
-            api_key, api_secret = generate_keys(user)
+            team = frappe.get_value('Team', self.team,
+                                    ["user", "api_key", "api_secret"], as_dict=True)
+            
+            api_key = team.api_key
+            api_secret = team.api_secret
+            if not api_key or not api_secret:
+                api_key, api_secret = generate_keys(team.user)
+                # update key
+                frappe.db.set_value('Team', self.team, {
+                    'api_key': api_key,
+                    'api_secret': api_secret
+                })
+                
             if api_key and api_secret:
                 config['api_key'] = api_key
                 config['api_secret'] = api_secret

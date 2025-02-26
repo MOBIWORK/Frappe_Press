@@ -21,6 +21,9 @@ from press.press.doctype.site.saas_site import (
 from press.api.site import (
     _new
 )
+from press.api.account import (
+    update_billing_information
+)
 from press.press.doctype.site.saas_pool import get as get_pooled_saas_site
 from press.press.doctype.site.erpnext_site import get_erpnext_domain
 from press.utils.telemetry import capture, identify
@@ -35,8 +38,8 @@ def account_request(
         email,
         password,
         first_name,
-        country,
         app,
+        country="Vietnam",
         phone_number='',
         last_name='',
         url_args=None,
@@ -248,7 +251,7 @@ def check_subdomain_availability(subdomain, app):
     """
     # Only for ERPNext domains
 
-    if len(subdomain) <= 4:
+    if len(subdomain) < 4:
         return False
 
     banned_domains = frappe.get_all(
@@ -283,7 +286,7 @@ def validate_account_request(key):
     
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw("Invalid or Expired Key")
+        frappe.throw(_("Invalid or Expired Key", 'vi'))
 
     app = frappe.db.get_value(
         "Account Request", {"request_key": key}, "saas_app")
@@ -306,7 +309,7 @@ def setup_account(key, business_data=None):
     """
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw("Invalid or Expired Key")
+        frappe.throw(_("Invalid or Expired Key", 'vi'))
 
     capture(
         "init_server_setup_account",
@@ -336,7 +339,7 @@ def setup_account(key, business_data=None):
     account_request.update(business_data)
     account_request.save(ignore_permissions=True)
 
-    create_marketplace_subscription(account_request)
+    create_marketplace_subscription(account_request, business_data)
     capture(
         "completed_server_setup_account",
         "fc_saas",
@@ -351,7 +354,7 @@ def headless_setup_account(key):
     """
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw("Invalid or Expired Key")
+        frappe.throw(_("Invalid or Expired Key", 'vi'))
 
     capture(
         "init_server_setup_account",
@@ -420,13 +423,31 @@ def headless_setup_account(key):
     
 #     return site_name
 
-def create_marketplace_subscription(account_request):
+def create_marketplace_subscription(account_request, business_data=None):
     try:
         """
         Create team, subscription for site and Saas Subscription
         """
         team_doc = create_team(account_request)
         
+        if isinstance(business_data, dict):
+            billing_info = {
+                "billing_name": business_data.get('billing_name', ""),
+                "address": business_data.get('address', ""),
+                "state": business_data.get('province', ""),
+                "county": business_data.get('district', ""),
+                "tax_code": business_data.get('tax_code', ""),
+                "email_id": business_data.get('email_id', ""),
+                "phone": business_data.get('phone', ""),
+                "enterprise": business_data.get('enterprise', ""),
+                "postal_code": "",
+                "gstin": "",
+                "number_of_employees": 0,
+                "areas_of_concern": "",
+                "country": "Vietnam"
+            }
+            team_doc.update_billing_details(billing_info)
+
         # allocate free credit amount
         team_doc.reload()
         team_doc.allocate_free_credits()
@@ -478,7 +499,7 @@ def get_site_status(key, app=None):
     """
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw("Invalid or Expired Key")
+        frappe.throw(_("Invalid or Expired Key", 'vi'))
 
     domain = get_saas_domain(app) if app else get_erpnext_domain()
 
@@ -503,7 +524,7 @@ def get_site_url_and_sid(key, app=None):
     """
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw("Invalid or Expired Key")
+        frappe.throw(_("Invalid or Expired Key", 'vi'))
 
     domain = get_saas_domain(app) if app else get_erpnext_domain()
 

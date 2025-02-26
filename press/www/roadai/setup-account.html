@@ -1,6 +1,6 @@
 {%- extends "templates/eov_signup_layout.html" -%} {%- block content -%}
 
-<h1>Bổ sung thông tin Doanh Nghiệp</h1>
+<h1>Bổ sung thông tin</h1>
 
 <div class="mx-auto form-container col-xl-5 col-lg-6 col-md-7 col-sm-9" id="user-signup-verify"
 	data-validators="field_validators">
@@ -12,80 +12,58 @@
 			<!-- Business Settings -->
 			<form class="form-step" data-step="1" data-action="business_settings">
 				<div class="form-group">
-					<label for="company_name">Tên doanh nghiệp</label>
-					<input type="text" class="form-control" id="company_name" name="company" />
-				</div>
-				<div class="form-row">
-					<div class="form-group col">
-						<label for="no_of_users">Số lượng người dùng</label>
-						<input type="number" id="no_of_users" name="no_of_users" class="form-control" min="1"
-							max="100000" required />
-					</div>
-					<div class="form-group col">
-						<label for="industry">Ngành SXKD chính</label>
-						<select id="industry" name="industry" class="custom-select">
-							<option selected disabled></option>
-							<option value="Nông Nghiệp">Nông Nghiệp</option>
-							<option value="Công Nghiệp">Công Nghiệp</option>
-							<option value="Bán Lẻ">Bán Lẻ</option>
-							<option value="Giáo Dục">Giáo Dục</option>
-							<option value="Dịch Vụ">Dịch Vụ</option>
-							<option value="Xây Dựng">Xây Dựng</option>
-							<option value="Công Nghệ Thông Tin">Công Nghệ Thông Tin</option>
-							<option value="vận tải">vận tải</option>
-							<option value="Y Tế">Y Tế</option>
-						</select>
-					</div>
-				</div>
-				<div class="form-row">
-					<div class="form-group col">
-						<label for="no_of_employees">Số lượng nhân viên</label>
-						<select id="no_of_employees" name="no_of_employees" class="custom-select">
-							<option selected disabled></option>
-							<option value="1-10">1 - 10</option>
-							<option value="11-50">11 - 50</option>
-							<option value="51-200">51 - 200</option>
-							<option value="201-500">201 - 500</option>
-							<option value="501-1000">501 - 1000</option>
-							<option value="1000+">1000+</option>
-						</select>
-					</div>
-					<div class="form-group col">
-						<label for="designation">Chức vụ của bạn</label>
-						<select id="designation" name="designation" class="custom-select">
-							<option value=""></option>
-							<option value="Giám Đốc Điều Hành">Giám Đốc Điều Hành</option>
-							<option value="Giám Đốc Tài Chính">Giám Đốc Tài Chính</option>
-							<option value="Giám đốc kỹ thuật">Giám đốc kỹ thuật</option>
-							<option value="Giám đốc Kinh Doanh">
-								Giám đốc Kinh Doanh
-							</option>
-							<option value="IT">IT</option>
-							<option value="Người làm nghề tự do/ Sinh viên">
-								Người làm nghề tự do/ Sinh viên
-							</option>
-							<option value="Khác">Khác</option>
-						</select>
-					</div>
-				</div>
-				<div class="form-group">
-					<label for="source">Bạn đã nghe về RoadAI từ đâu?</label>
-					<select id="source" class="custom-select" name="referral_source">
-						<option></option>
-						<option value="Phương tiện truyền thông xã hội">Phương tiện truyền thông</option>
-						<option value="Công cụ tìm kiếm">Công cụ tìm kiếm</option>
-						<option value="Bạn bè/đồng nghiệp giới thiệu">
-							Bạn bè/đồng nghiệp giới thiệu
-						</option>
-						<option value="RoadAI Blog">RoadAI Blog</option>
-						<option value="Đánh giá trực tuyến">
-							Đánh giá trực tuyến
-						</option>
+					<label for="enterprise">Công ty/Cá nhân</label>
+					<select id="enterprise" name="enterprise" class="custom-select"
+						onchange="handleChangeEnterprise(this)">
+						<option selected value="Công ty">Công ty</option>
+						<option value="Cá nhân">Cá nhân</option>
 					</select>
 				</div>
 				<div class="form-group">
+					<label for="billing_name">Tên công ty</label>
+					<input type="text" class="form-control" id="billing_name" name="billing_name"
+						value="{{billing_info.get('billing_name')}}" />
+				</div>
+				<div class="form-group">
+					<label for="tax_code">Mã số thuế</label>
+					<input type="text" class="form-control" id="tax_code" name="tax_code" />
+				</div>
+				<div class="form-group">
+					<label for="email_id">Email xuất hóa đơn</label>
+					<input type="email" class="form-control" id="email_id" value="{{billing_info.get('email_id')}}"
+						name="email_id" />
+				</div>
+				<div class="form-group">
+					<label for="phone">Số điện thoại</label>
+					<input type="tel" id="phone" class="form-control" value="{{billing_info.get('phone')}}" name="phone"
+						autocomplete="tel" />
+				</div>
+				<div class="form-group">
+					<label for="address">Địa chỉ</label>
+					<input type="text" class="form-control" id="address" name="address" />
+				</div>
+				<div class="form-row">
+					<div class="form-group col">
+						<label for="province">Tỉnh thành</label>
+						<select id="province" name="province" class="custom-select" onchange="filterDistrict(this)"
+							placeholder="test">
+							<option value="" selected disabled>Chọn Tỉnh thành</option>
+							{%- for province in provinces -%}
+							<option value="{{province.value}}">{{province.name}}</option>
+							{%- endfor -%}
+						</select>
+					</div>
+					<div class="form-group col">
+						<label for="district">Quận huyện</label>
+						<select id="district" name="district" class="custom-select">
+							<option value="" selected disabled>Chọn Quận/Huyện</option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
 					<input type="checkbox" name="agreed_to_partner_consent" id="agreed_to_partner_consent" />
-					<label class="d-inline" for="agreed_to_partner_consent">Tôi đồng ý chia sẻ thông tin của tôi với EOVCloud</label>
+					<label class="d-inline" for="agreed_to_partner_consent">Tôi đồng ý chia sẻ thông tin của tôi với
+						EOVCloud</label>
 				</div>
 				<div class="mt-8 d-flex justify-content-between">
 					<div></div>
@@ -96,7 +74,7 @@
 			</form>
 			{%- else -%}
 			<div class="m-0 alert alert-danger small" role="alert">
-				Invalid or expired key
+				Link không hợp lệ hoặc đã hết hạn.
 			</div>
 			{%- endif -%}
 		</div>
@@ -155,6 +133,46 @@
 			}
 		},
 	};
+
+	const districtSelect = document.getElementById("district");
+	const districts = {{ districts | tojson }};
+
+	function filterDistrict(event) {
+		const newOptions = districts.filter(el => el.parent == event.value);
+		updateDistrictOptions(newOptions);
+	}
+	function handleChangeEnterprise(event) {
+		var taxCodeInput = document.getElementById("tax_code");
+		var billingLabel = document.querySelector("label[for='billing_name']");
+
+		if (event.value === "Công ty") {
+			taxCodeInput.parentElement.style.display = "block";
+			billingLabel.textContent = "Tên công ty";
+		} else {
+			taxCodeInput.parentElement.style.display = "none";
+			billingLabel.textContent = "Họ tên";
+		}
+	}
+
+	function updateDistrictOptions(options) {
+		// Clear existing options
+		districtSelect.innerHTML = "";
+
+		// Add an empty default option
+		const defaultOption = document.createElement("option");
+		defaultOption.value = "";
+		defaultOption.selected = true;
+		defaultOption.textContent = "Chọn Quận/Huyện";
+		districtSelect.appendChild(defaultOption);
+
+		// Add new options
+		options.forEach(option => {
+			const newOption = document.createElement("option");
+			newOption.value = option.value;
+			newOption.textContent = option.name;
+			districtSelect.appendChild(newOption);
+		});
+	}
 
 	function regional_settings($form, values) {
 		Object.assign(form_values, values);

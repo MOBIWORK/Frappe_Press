@@ -20,6 +20,8 @@
   "partner_email",
   "billing_team",
   "parent_team",
+  "api_key",
+  "api_secret",
   "section_break_6",
   "team_members",
   "section_break_tdm9",
@@ -399,6 +401,16 @@
    "fieldtype": "Date",
    "label": "Frappe Partnership Date",
    "read_only": 1
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "Api Key"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Data",
+   "label": "Api Secret"
   }
  ],
  "links": [
@@ -453,7 +465,7 @@
    "link_fieldname": "team"
   }
  ],
- "modified": "2023-11-14 17:28:46.504627",
+ "modified": "2025-02-25 10:03:54.671274",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Team",

@@ -1,46 +1,41 @@
 <template>
 	<LoginBox top="mt-6" py="py-0">
-		<div
-			class="absolute left-0 top-0 z-10 p-5 pt-20 text-2xl font-bold text-red-600 sm:pt-5"
-		>
-			{{ $t('Step') }} 1/2
-		</div>
-		<div>
-			<div>
-				<!-- <div class="mb-4 w-36">
-					<SelectLanguage></SelectLanguage>
-				</div> -->
+		<div class="mt-6">
+			<!-- <div class="mb-4 w-36">
+				<SelectLanguage></SelectLanguage>
+			</div> -->
+			<div class="text-center">
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('SetupAccountBilling_content_1') }}</div>
 				</div>
 				<div class="text-sm text-gray-700">
 					{{ $t('SetupAccountBilling_content_3') }}
 				</div>
-				<div>
-					<p class="text-base" v-if="message">
-						{{ message }}
-					</p>
-					<AddressForm
-						size="lg"
-						ref="address-form"
-						class="mt-4"
-						v-model:address="billingInformation"
-					/>
-					<ErrorMessage
-						class="mt-2"
-						:message="this.$translateMessage(msgError)"
-					/>
-				</div>
-				<div class="text-center">
-					<Button
-						class="my-6 h-9 px-8 text-base font-[700] text-white"
-						variant="solid"
-						:loading="$resources.updateBillingInformation.loading"
-						:onClick="() => $resources.updateBillingInformation.submit()"
-					>
-						{{ $t('Continue') }}
-					</Button>
-				</div>
+			</div>
+			<div>
+				<p class="text-base" v-if="message">
+					{{ message }}
+				</p>
+				<AddressForm
+					size="lg"
+					ref="address-form"
+					class="mt-4"
+					v-model:address="billingInformation"
+				/>
+				<ErrorMessage
+					class="mt-2"
+					:message="this.$translateMessage(msgError)"
+				/>
+			</div>
+			<div class="text-center">
+				<Button
+					class="my-6 h-9 px-8 text-base font-[700] text-white"
+					variant="solid"
+					:loading="$resources.updateBillingInformation.loading"
+					:onClick="() => $resources.updateBillingInformation.submit()"
+				>
+					{{ $t('Continue') }}
+				</Button>
 			</div>
 		</div>
 	</LoginBox>

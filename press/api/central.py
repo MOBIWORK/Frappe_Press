@@ -2,6 +2,7 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.geo.country_info import get_country_timezone_info
 from frappe.core.utils import find
 
@@ -68,7 +69,7 @@ def account_request(
 def setup_account(key, business_data=None):
 	account_request = get_account_request_from_key(key)
 	if not account_request:
-		frappe.throw("Invalid or Expired Key")
+		frappe.throw(_("Invalid or Expired Key", 'vi'))
 
 	frappe.set_user("Administrator")
 
@@ -143,7 +144,7 @@ def check_subdomain_availability(subdomain):
 def options_for_regional_data(key):
 	account_request = get_account_request_from_key(key)
 	if not account_request:
-		frappe.throw("Invalid or Expired Key")
+		frappe.throw(_("Invalid or Expired Key", 'vi'))
 
 	data = {
 		"languages": frappe.db.get_all("Language", ["language_name", "language_code"]),

@@ -490,7 +490,7 @@ class Team(Document):
             "address_line1": billing_details.address,
             "areas_of_concern": billing_details.areas_of_concern,
             "state": billing_details.state,
-            'city': billing_details.state,
+            "city": billing_details.state,
             "county": billing_details.county,
             "enterprise": billing_details.enterprise,
             "email_id": billing_details.email_id,

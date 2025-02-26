@@ -48,7 +48,9 @@
 						</div>
 						<div class="relative">
 							<div class="mb-2 mt-5">
-								<label class="text-base" for="password">{{ $t('Password') }}</label>
+								<label class="text-base" for="password">{{
+									$t('Password')
+								}}</label>
 							</div>
 							<FormControl
 								id="password"
@@ -86,7 +88,7 @@
 					<Button
 						:class="
 							password
-								? 'my-6 h-9 bg-red-600 text-base font-[700] text-white hover:bg-red-700'
+								? 'my-6 h-9  text-base font-[700] text-white '
 								: 'my-6 h-9 bg-[#DFE3E8] text-base font-[700] text-white'
 						"
 						variant="solid"
@@ -101,9 +103,10 @@
 				class="text-center"
 				v-else-if="!$resources.validateResetKey.loading && !email"
 			>
-				{{ $t('ResetPassword_content_3') }} <strong>{{ requestKey }}</strong> {{ $t('ResetPassword_content_4') }}
+				{{ $t('ResetPassword_content_3') }} <strong>{{ requestKey }}</strong>
+				{{ $t('ResetPassword_content_4') }}
 				<router-link class="underline" to="/login"
-					><span class="font-[600] text-red-600 hover:text-red-700">{{
+					><span class="font-[600] text-blue-600 hover:text-blue-700">{{
 						$t('login')
 					}}</span></router-link
 				>.

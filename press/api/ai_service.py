@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timedelta
 import redis
 from contextlib import contextmanager
-from press.api.ai_s3_client import run_handle_schedule_delete_bucket,get_all_buckets,create_bucket
+from press.api.ai_s3_client import get_all_buckets
 from press.utils import get_current_team
 import json
 
@@ -165,6 +165,10 @@ def add_schedule_delete_objects_in_bucket(**kwargs):
         config = frappe.db.get_value('Site Config', {'parent': site_name, 'parentfield': 'configuration', 'parenttype': 'Site', 'key': 'bucket_name'}, ['key','value'], as_dict=1)
         if not config:
             return {'code': 0,'msg': 'bucket_name not found'}
+        
+        # print("================")
+        # print(get_all_buckets())
+        # return {}
         
         if len(objects):
             objects = json.dumps(objects, indent=4)

@@ -1,15 +1,10 @@
 <template>
 	<LoginBox>
-		<div
-			class="absolute left-0 top-0 z-10 p-5 pt-20 text-2xl font-bold text-red-600 sm:pt-5"
-		>
-			{{ $t('Step') }} 2/2
-		</div>
 		<div>
-			<div>
-				<!-- <div class="mb-4 w-36">
-					<SelectLanguage></SelectLanguage>
-				</div> -->
+			<!-- <div class="mb-4 w-36">
+				<SelectLanguage></SelectLanguage>
+			</div> -->
+			<div class="text-center">
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('Welcome') }} {{ currenBilling.billing_name }}!</div>
 				</div>
@@ -20,151 +15,143 @@
 					{{ bonuses.number_days_promotion }}
 					{{ $t('SetupAccountPreliminarySurvey_content_10') }}
 				</div>
-				<div ref="address-form">
-					<p class="text-base" v-if="message">
-						{{ message }}
-					</p>
-					<div class="mt-3">
-						<div class="mb-1">
-							<label class="typo__label text-lg text-gray-600">{{
-								$t('Operational_domain')
+			</div>
+			<div ref="address-form">
+				<p class="text-base" v-if="message">
+					{{ message }}
+				</p>
+				<div class="mt-3">
+					<div class="mb-1">
+						<label class="typo__label text-lg text-gray-600">{{
+							$t('Operational_domain')
+						}}</label>
+					</div>
+					<multiselect
+						v-model="valueAreasOfConcern"
+						:placeholder="$t('Search')"
+						label="name"
+						track-by="name"
+						:options="optionsAreasOfConcern"
+						:multiple="true"
+						:show-labels="false"
+						@select="value => onChangeAreasOfConcern(value, 'areas_of_concern')"
+						@remove="value => onChangeAreasOfConcern(value, 'areas_of_concern')"
+						:taggable="true"
+						@tag="addTag"
+					>
+						<template v-slot:noResult>
+							<span>{{ $t('SetupAccountPreliminarySurvey_content_1') }}</span>
+						</template>
+						<template v-slot:noOptions>
+							<span>{{ $t('no_data') }}</span>
+						</template>
+					</multiselect>
+					<ErrorMessage
+						class="mt-2"
+						v-if="requiredFieldNotSet.includes('areas_of_concern')"
+						:message="$t('SetupAccountPreliminarySurvey_content_3')"
+					/>
+				</div>
+				<div class="mt-3">
+					<!-- <FormControl
+						size="lg"
+						:label="$t('SetupAccountPreliminarySurvey_content_2')"
+						type="text"
+						variant="outline"
+						name="number_of_employees"
+						:modelValue="billingInformation['number_of_employees']"
+						required="true"
+						:onUpdate:modelValue="
+							value => onChangeIn(value, 'number_of_employees')
+						"
+						:onblur="e => checkRequiredIn('number_of_employees', e)"
+					/> -->
+					<div>
+						<div class="mb-2 mt-4">
+							<label class="text-base" for="employee">{{
+								$t('SetupAccountPreliminarySurvey_content_2')
 							}}</label>
 						</div>
-						<multiselect
-							v-model="valueAreasOfConcern"
-							:placeholder="$t('Search')"
-							label="name"
-							track-by="name"
-							:options="optionsAreasOfConcern"
-							:multiple="true"
-							:show-labels="false"
-							@select="
-								value => onChangeAreasOfConcern(value, 'areas_of_concern')
-							"
-							@remove="
-								value => onChangeAreasOfConcern(value, 'areas_of_concern')
-							"
-							:taggable="true"
-							@tag="addTag"
-						>
-							<template v-slot:noResult>
-								<span>{{ $t('SetupAccountPreliminarySurvey_content_1') }}</span>
-							</template>
-							<template v-slot:noOptions>
-								<span>{{ $t('no_data') }}</span>
-							</template>
-						</multiselect>
-						<ErrorMessage
-							class="mt-2"
-							v-if="requiredFieldNotSet.includes('areas_of_concern')"
-							:message="$t('SetupAccountPreliminarySurvey_content_3')"
-						/>
-					</div>
-					<div class="mt-3">
-						<!-- <FormControl
-							size="lg"
-							:label="$t('SetupAccountPreliminarySurvey_content_2')"
-							type="text"
-							variant="outline"
+						<FormControl
 							name="number_of_employees"
-							:modelValue="billingInformation['number_of_employees']"
-							required="true"
+							class="custom-form-btn"
+							type="select"
+							id="employee"
+							size="lg"
+							variant="outline"
+							placeholder="---"
+							label=""
+							:options="opsEmployees"
+							v-model="billingInformation['number_of_employees']"
 							:onUpdate:modelValue="
 								value => onChangeIn(value, 'number_of_employees')
 							"
 							:onblur="e => checkRequiredIn('number_of_employees', e)"
-						/> -->
-						<div>
-							<div class="mb-2 mt-4">
-								<label class="text-base" for="employee">{{
-									$t('SetupAccountPreliminarySurvey_content_2')
-								}}</label>
-							</div>
-							<FormControl
-								name="number_of_employees"
-								class="custom-form-btn"
-								type="select"
-								id="employee"
-								size="lg"
-								variant="outline"
-								placeholder="---"
-								label=""
-								:options="opsEmployees"
-								v-model="billingInformation['number_of_employees']"
-								:onUpdate:modelValue="
-									value => onChangeIn(value, 'number_of_employees')
-								"
-								:onblur="e => checkRequiredIn('number_of_employees', e)"
-							/>
-						</div>
-						<ErrorMessage
-							class="mt-1"
-							v-if="requiredFieldNotSet.includes('number_of_employees')"
-							:message="$t('SetupAccountPreliminarySurvey_content_3')"
-						/>
-					</div>
-					<div class="mb-4 mt-3">
-						<div class="mb-1">
-							<label class="typo__label text-lg text-gray-600">{{
-								$t('SetupAccountPreliminarySurvey_content_7')
-							}}</label>
-						</div>
-						<multiselect
-							v-model="valueConcernsFeature"
-							:placeholder="$t('Search')"
-							label="name"
-							track-by="name"
-							:options="optionsConcernsFeature"
-							:multiple="true"
-							:show-labels="false"
-							@select="
-								value => onChangeAreasOfConcern(value, 'concerns_feature')
-							"
-							@remove="
-								value => onChangeAreasOfConcern(value, 'concerns_feature')
-							"
-						>
-							<template v-slot:noResult>
-								<span>{{ $t('SetupAccountPreliminarySurvey_content_5') }}</span>
-							</template>
-							<template v-slot:noOptions>
-								<span>{{ $t('no_data') }}</span>
-							</template>
-						</multiselect>
-						<ErrorMessage
-							class="mt-2"
-							v-if="requiredFieldNotSet.includes('concerns_feature')"
-							:message="$t('SetupAccountPreliminarySurvey_content_3')"
 						/>
 					</div>
 					<ErrorMessage
-						class="mt-2"
-						:message="this.$translateMessage(msgError)"
+						class="mt-1"
+						v-if="requiredFieldNotSet.includes('number_of_employees')"
+						:message="$t('SetupAccountPreliminarySurvey_content_3')"
 					/>
 				</div>
-				<div class="text-center">
-					<Button
-						class="my-6 h-9 px-8 text-base font-[700] text-white"
-						variant="solid"
-						:loading="$resources.updateBillingInformation.loading"
-						:onClick="() => $resources.updateBillingInformation.submit()"
+				<div class="mb-4 mt-3">
+					<div class="mb-1">
+						<label class="typo__label text-lg text-gray-600">{{
+							$t('SetupAccountPreliminarySurvey_content_7')
+						}}</label>
+					</div>
+					<multiselect
+						v-model="valueConcernsFeature"
+						:placeholder="$t('Search')"
+						label="name"
+						track-by="name"
+						:options="optionsConcernsFeature"
+						:multiple="true"
+						:show-labels="false"
+						@select="value => onChangeAreasOfConcern(value, 'concerns_feature')"
+						@remove="value => onChangeAreasOfConcern(value, 'concerns_feature')"
 					>
-						{{ $t('Submit_information') }}
-					</Button>
+						<template v-slot:noResult>
+							<span>{{ $t('SetupAccountPreliminarySurvey_content_5') }}</span>
+						</template>
+						<template v-slot:noOptions>
+							<span>{{ $t('no_data') }}</span>
+						</template>
+					</multiselect>
+					<ErrorMessage
+						class="mt-2"
+						v-if="requiredFieldNotSet.includes('concerns_feature')"
+						:message="$t('SetupAccountPreliminarySurvey_content_3')"
+					/>
 				</div>
-				<div class="flex justify-center">
-					<router-link
-						class="mb-2 text-base"
-						:to="{
-							name: 'Setup Account Billing'
-						}"
-					>
-						<div class="flex justify-center">
-							<img src="../../assets/icon_left.svg" />
-							<span class="font-[600]"> {{ $t('Back') }}</span>
-						</div>
-					</router-link>
-				</div>
+				<ErrorMessage
+					class="mt-2"
+					:message="this.$translateMessage(msgError)"
+				/>
+			</div>
+			<div class="text-center">
+				<Button
+					class="my-6 h-9 px-8 text-base font-[700] text-white"
+					variant="solid"
+					:loading="$resources.updateBillingInformation.loading"
+					:onClick="() => $resources.updateBillingInformation.submit()"
+				>
+					{{ $t('Submit_information') }}
+				</Button>
+			</div>
+			<div class="flex justify-center">
+				<router-link
+					class="mb-2 text-base"
+					:to="{
+						name: 'Setup Account Billing'
+					}"
+				>
+					<div class="flex justify-center">
+						<img src="../../assets/icon_left.svg" />
+						<span class="font-[600]"> {{ $t('Back') }}</span>
+					</div>
+				</router-link>
 			</div>
 		</div>
 	</LoginBox>

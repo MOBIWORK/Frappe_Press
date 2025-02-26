@@ -47,6 +47,7 @@
    "default": "Pending",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "Success\nFailed\nPending"
   },
@@ -71,7 +72,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-21 15:19:13.041195",
+ "modified": "2025-02-25 10:10:20.359783",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Schedule Delete Bucket",
