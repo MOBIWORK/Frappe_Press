@@ -834,15 +834,6 @@ class Invoice(Document):
 
         return self.frappeio_connection
 
-    def update_transaction_details_by_payos(self, payment_data=None):
-        if not payment_data:
-            return
-        self.exchange_rate = 1
-        self.transaction_amount = payment_data['amount']
-        self.transaction_net = payment_data['amount']
-        self.save(ignore_permissions=True)
-        return True
-
     def update_transaction_details(self, stripe_charge=None):
         if not stripe_charge:
             return

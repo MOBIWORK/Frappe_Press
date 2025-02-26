@@ -7,12 +7,14 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "webhook_body",
-  "code",
-  "message",
-  "invoice_id",
+  "team",
   "balance_transaction",
-  "team"
+  "col_br_1",
+  "invoice_id",
+  "code",
+  "sec_br_1",
+  "webhook_body",
+  "message"
  ],
  "fields": [
   {
@@ -42,19 +44,31 @@
   {
    "fieldname": "team",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Team",
-   "options": "Team"
+   "options": "Team",
+   "reqd": 1
   },
   {
    "fieldname": "balance_transaction",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Balance Transaction",
-   "options": "Balance Transaction"
+   "options": "Balance Transaction",
+   "reqd": 1
+  },
+  {
+   "fieldname": "col_br_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sec_br_1",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-28 14:09:09.351186",
+ "modified": "2025-02-26 14:40:11.072477",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "PayOs Webhook Log",

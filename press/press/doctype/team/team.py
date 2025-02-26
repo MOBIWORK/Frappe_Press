@@ -1215,51 +1215,9 @@ def process_payos_webhook(doc, method):
     if doc.code != "00":
         return
 
-    webhook_body = frappe.parse_json(doc.webhook_body)
-    if not webhook_body:
-        return
-
-    payment_data = webhook_body.get('data')
-    amount = payment_data['amount']
-
-    if frappe.db.exists(
-            "Invoice", {
-                "payos_invoice_id": doc.invoice_id, "status": "Paid"}
-    ):
-        # ignore creating if already allocated
-        return
-
     # Give them free credits too (only first time)
     team: Team = frappe.get_doc("Team", doc.team)
-    if team:
-        team.allocate_free_credits()
-
-    invoice = frappe.get_doc(
-        doctype="Invoice",
-        team=doc.team,
-        type="Prepaid Credits",
-        status="Paid",
-        due_date=payment_data["transactionDateTime"],
-        amount_paid=amount,
-        total_before_tax=amount,
-        amount_due=amount,
-        payos_invoice_id=payment_data['reference'],
-    )
-    invoice.append(
-        "items",
-        {
-            "description": "Prepaid Credits",
-            "document_type": "Balance Transaction",
-            "document_name": doc.balance_transaction,
-            "quantity": 1,
-            "rate": amount,
-        },
-    )
-    invoice.insert(ignore_permissions=True)
-    invoice.reload()
-
-    invoice.update_transaction_details_by_payos(payment_data)
-    invoice.submit()
+    team.allocate_free_credits()
 
 
 def process_stripe_webhook(doc, method):
