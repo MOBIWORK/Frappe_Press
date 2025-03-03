@@ -4,42 +4,73 @@
 			<table class="text w-full text-sm">
 				<thead>
 					<tr class="text-gray-600">
-						<th class="border-b py-3 pr-2 text-left font-normal">
-							{{ $t('description') }}
-						</th>
-						<th class="border-b py-3 pr-2 text-left font-normal">
-							{{ $t('sites') }}
+						<th class="border-b py-3 pr-2 text-left font-bold">
+							{{ $t('service') }}
 						</th>
 						<th
-							class="whitespace-nowrap border-b py-3 pr-2 text-right font-normal"
+							class="whitespace-nowrap border-b py-3 pr-2 text-left font-bold"
 						>
-							{{ $t('rate') }}
+							{{ $t('plan') }}
 						</th>
-						<th class="border-b py-3 pr-2 text-right font-normal">
-							{{ $t('amount_of_money') }}
+						<th
+							class="whitespace-nowrap border-b py-3 pr-2 text-right font-bold"
+						>
+							{{ $t('qty') }}
+						</th>
+						<th
+							class="whitespace-nowrap border-b py-3 pr-2 text-right font-bold"
+						>
+							{{ $t('unit_price') }} (VND)
+						</th>
+
+						<th
+							class="whitespace-nowrap border-b py-3 pr-2 text-right font-bold"
+						>
+							{{ $t('amount_of_money') }} (VND)
 						</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr v-for="(row, i) in doc.items" :key="row.idx">
-						<td class="border-b py-3 pr-2">
-							{{ row.description || row.document_name }}
+						<td class="border-b py-3 pr-2 font-bold">
+							{{ row.document_name }}
+							<span v-if="row.site">{{ $t('of') }} {{ row.site }}</span>
 						</td>
 						<td class="border-b py-3 pr-2">
-							{{ row.site || '-' }}
+							{{ row.plan_title || '-' }}
 						</td>
-						<td class="border-b py-3 pr-2 text-right">
-							{{ this.$formatMoney(row.rate) }} x {{ row.quantity }}
+						<td class="whitespace-nowrap border-b py-3 pr-2 text-right">
+							{{ row.quantity }}
 						</td>
-						<td class="border-b py-3 pr-2 text-right font-semibold">
-							{{ this.$formatMoney(doc.items[i].amount, 0) }} VND
+						<td class="whitespace-nowrap border-b py-3 pr-2 text-right">
+							{{ this.$formatMoney(row.rate) }}
+						</td>
+						<td
+							class="whitespace-nowrap border-b py-3 pr-2 text-right font-semibold"
+						>
+							{{ this.$formatMoney(doc.items[i].amount, 0) }}
 						</td>
 					</tr>
 				</tbody>
+			</table>
+			<table class="text mt-5 w-full text-sm">
+				<thead>
+					<tr class="text-gray-600">
+						<th></th>
+						<th></th>
+						<th></th>
+						<th></th>
+						<th class="w-36"></th>
+					</tr>
+				</thead>
 				<tfoot>
 					<tr v-if="doc.total_discount_amount > 0">
 						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+						<td></td>
+						<td></td>
+						<td
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+						>
 							{{ $t('total_amount_before_discount') }}
 						</td>
 						<td
@@ -50,7 +81,11 @@
 					</tr>
 					<tr v-if="doc.total_discount_amount > 0">
 						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+						<td></td>
+						<td></td>
+						<td
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+						>
 							{{ $t('total_discounted_amount') }}
 						</td>
 						<td
@@ -63,33 +98,14 @@
 							}}
 						</td>
 					</tr>
-					<!-- gst -->
-					<tr v-if="doc.gst > 0">
-						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							{{ $t('invoiceusagetable_content_1') }}
-						</td>
-						<td
-							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
-						>
-							{{ doc.formatted.total_before_tax }}
-						</td>
-					</tr>
-					<tr v-if="doc.gst > 0">
-						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
-							IGST @ {{ Number($account.billing_info.gst_percentage * 100) }}%
-						</td>
-						<td
-							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
-						>
-							{{ doc.formatted.gst }}
-						</td>
-					</tr>
 					<!-- vat -->
 					<tr v-if="doc.vat > 0">
 						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+						<td></td>
+						<td></td>
+						<td
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+						>
 							{{ $t('invoiceusagetable_content_2') }}
 						</td>
 						<td
@@ -100,7 +116,11 @@
 					</tr>
 					<tr v-if="doc.vat > 0">
 						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+						<td></td>
+						<td></td>
+						<td
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+						>
 							{{ $t('vat_tax') }} {{ Number(doc.vat) }}%
 						</td>
 						<td
@@ -111,7 +131,11 @@
 					</tr>
 					<tr>
 						<td></td>
-						<td class="pb-2 pr-2 pt-4 text-right font-semibold">
+						<td></td>
+						<td></td>
+						<td
+							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
+						>
 							{{ $t('total_payment_amount') }}
 						</td>
 						<td
@@ -123,14 +147,24 @@
 					<template v-if="doc.total !== doc.amount_due && doc.docstatus == 1">
 						<tr>
 							<td></td>
-							<td class="pr-2 text-right">{{ $t('applied_balance') }}:</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="whitespace-nowrap pr-2 text-right">
+								{{ $t('applied_balance') }}:
+							</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
 								- {{ doc.formatted.applied_credits }}
 							</td>
 						</tr>
 						<tr>
 							<td></td>
-							<td class="pr-2 text-right">{{ $t('amount_due') }}:</td>
+							<td></td>
+							<td></td>
+							<td></td>
+							<td class="whitespace-nowrap pr-2 text-right">
+								{{ $t('amount_due') }}:
+							</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
 								{{ doc.formatted.amount_due }}
 							</td>

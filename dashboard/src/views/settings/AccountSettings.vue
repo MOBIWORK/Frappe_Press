@@ -36,8 +36,8 @@ export default {
 					condition: () =>
 						$account.user.name === $account.team.user ||
 						$account.user.user_type === 'System User'
-				},
-				{ label: this.$t('developer'), route: 'developer' }
+				}
+				// { label: this.$t('developer'), route: 'developer' }
 				// { label: 'Đối tác', route: 'partner' }
 			].filter(tab => (tab.condition ? tab.condition() : true));
 

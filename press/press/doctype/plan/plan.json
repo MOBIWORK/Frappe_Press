@@ -9,6 +9,7 @@
  "field_order": [
   "enabled",
   "section_break_2",
+  "service_id",
   "document_type",
   "plan_title",
   "interval",
@@ -233,11 +234,16 @@
    "fieldname": "num_of_empl_to",
    "fieldtype": "Int",
    "label": "S\u1ed1 l\u01b0\u1ee3ng nh\u00e2n vi\u00ean \u0111\u1ebfn"
+  },
+  {
+   "fieldname": "service_id",
+   "fieldtype": "Data",
+   "label": "Service ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-19 15:17:13.227351",
+ "modified": "2025-02-28 08:34:27.935568",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Plan",

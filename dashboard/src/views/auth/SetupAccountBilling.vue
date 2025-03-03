@@ -1,9 +1,9 @@
 <template>
 	<LoginBox top="mt-6" py="py-0">
 		<div class="mt-6">
-			<!-- <div class="mb-4 w-36">
+			<div class="mb-4 w-36">
 				<SelectLanguage></SelectLanguage>
-			</div> -->
+			</div>
 			<div class="text-center">
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('SetupAccountBilling_content_1') }}</div>
@@ -109,21 +109,11 @@ export default {
 		},
 		updateBillingInformation() {
 			return {
-				url: 'press.api.account.update_billing_information',
+				url: 'press.api.billing.setup_billing_info',
 				params: {
-					billing_details: this.billingInformation
+					address: this.billingInformation
 				},
 				async onSuccess() {
-					// notify({
-					// 	icon: 'check',
-					// 	color: 'green',
-					// 	title: this.$t('SetupAccountBilling_content_2')
-					// });
-
-					await this.$call('press.api.billing.setup_intent_success', {
-						setup_intent: {}
-					});
-
 					this.$router.push('/setup-account/preliminary_survey');
 				},
 				async validate() {

@@ -4,46 +4,16 @@
 			<FormControl
 				variant="outline"
 				:size="size"
-				:class="this.size ? 'custom-form-btn' : ''"
-				:label="$t('object')"
-				type="select"
-				:options="optionsEnterprise"
-				name="enterprise"
-				:modelValue="modelValue['enterprise']"
-				required="true"
-				:onUpdate:modelValue="value => onChangeIn(value, 'enterprise')"
-				:onblur="e => checkRequiredIn('enterprise', e)"
-			/>
-			<ErrorMessage
-				class="mt-1"
-				v-if="requiredFieldNotSet.includes('enterprise')"
-				:message="`${$t('object')} ${$t('cannot_be_left_empty')}`"
-			/>
-		</div>
-		<div>
-			<FormControl
-				variant="outline"
-				:size="size"
-				:label="
-					modelValue['enterprise'] == 'Công ty'
-						? $t('company_name')
-						: $t('full_name')
-				"
+				:label="$t('full_name')"
 				type="text"
 				name="billing_name"
 				:modelValue="modelValue['billing_name']"
-				required="true"
 				:onUpdate:modelValue="value => onChangeIn(value, 'billing_name')"
-				:onblur="e => checkRequiredIn('billing_name', e)"
 			/>
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('billing_name')"
-				:message="
-					modelValue['enterprise'] == 'Công ty'
-						? $t('company_name')
-						: $t('full_name') + ` ${$t('cannot_be_left_empty')}`
-				"
+				:message="$t('full_name') + ` ${$t('cannot_be_left_empty')}`"
 			/>
 		</div>
 		<div
@@ -72,15 +42,12 @@
 		<div>
 			<FormControl
 				variant="outline"
-				v-if="modelValue['enterprise'] == 'Công ty'"
 				:size="size"
 				:label="$t('tax_code')"
 				type="text"
 				name="tax_code"
 				:modelValue="modelValue['tax_code']"
-				required="true"
 				:onUpdate:modelValue="value => onChangeIn(value, 'tax_code')"
-				:onblur="e => checkRequiredIn('tax_code', e)"
 			/>
 			<ErrorMessage
 				class="mt-1"
@@ -96,9 +63,7 @@
 				type="text"
 				name="address"
 				:modelValue="modelValue['address']"
-				required="true"
 				:onUpdate:modelValue="value => onChangeIn(value, 'address')"
-				:onblur="e => checkRequiredIn('address', e)"
 			/>
 			<ErrorMessage
 				class="mt-1"
@@ -116,9 +81,7 @@
 				:options="optionsState"
 				name="state"
 				:modelValue="modelValue['state']"
-				required="true"
 				:onUpdate:modelValue="value => onChangeIn(value, 'state')"
-				:onblur="e => checkRequiredIn('state', e)"
 			/>
 			<ErrorMessage
 				class="mt-1"
@@ -136,9 +99,7 @@
 				:options="optionsCounty"
 				name="county"
 				:modelValue="modelValue['county']"
-				required="true"
 				:onUpdate:modelValue="value => onChangeIn(value, 'county')"
-				:onblur="e => checkRequiredIn('county', e)"
 			/>
 			<ErrorMessage
 				class="mt-1"
@@ -190,10 +151,7 @@ export default {
 				}
 
 				this.user_detail = data.user_detail;
-				this.setAutoField(
-					data.user_detail,
-					data.billing_details['enterprise'] || 'Cá nhân'
-				);
+				this.setAutoField(data.user_detail);
 			}
 		}
 	},
@@ -210,23 +168,16 @@ export default {
 				}
 			];
 		},
-		setAutoField(user_detail, enterprise) {
+		setAutoField(user_detail) {
 			let billing_name = this.checkExsist ? this.modelValue.billing_name : '';
 			let phone = this.checkExsist ? this.modelValue.phone : '';
 			let email_id = this.checkExsist ? this.modelValue.email_id : '';
-			if (enterprise == 'Cá nhân') {
-				Object.assign(this.modelValue, {
-					billing_name: billing_name || user_detail.first_name,
-					phone: phone || user_detail.phone,
-					email_id: email_id || user_detail.email
-				});
-			} else {
-				Object.assign(this.modelValue, {
-					billing_name: billing_name,
-					phone: phone,
-					email_id: email_id
-				});
-			}
+
+			Object.assign(this.modelValue, {
+				billing_name: billing_name || user_detail.first_name,
+				phone: phone || user_detail.phone,
+				email_id: email_id || user_detail.email
+			});
 		},
 		async stateList() {
 			try {
@@ -269,15 +220,8 @@ export default {
 		},
 		onChangeIn(value, field) {
 			if (field == 'enterprise') {
-				if (value == 'Cá nhân') {
-					this.requiredFieldNotSet = this.requiredFieldNotSet.filter(
-						f => f !== 'tax_code'
-					);
-				}
-				this.setAutoField(this.user_detail, value);
+				this.setAutoField(this.user_detail);
 			}
-
-			this.checkRequiredIn(field, value);
 			this.updateValue(field, value);
 		},
 		updateValue(fieldname, value) {

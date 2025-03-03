@@ -321,21 +321,6 @@ def setup_account(key, business_data=None):
     if business_data:
         business_data = frappe.parse_json(business_data)
 
-    if isinstance(business_data, dict):
-        business_data = {
-            key: business_data.get(key)
-            for key in [
-                "company",
-                "no_of_employees",
-                "industry",
-                "no_of_users",
-                "designation",
-                "phone_number",
-                "referral_source",
-                "agreed_to_partner_consent",
-            ]
-        }
-
     account_request.update(business_data)
     account_request.save(ignore_permissions=True)
 
@@ -439,14 +424,15 @@ def create_marketplace_subscription(account_request, business_data=None):
                 "tax_code": business_data.get('tax_code', ""),
                 "email_id": business_data.get('email_id', ""),
                 "phone": business_data.get('phone', ""),
-                "enterprise": business_data.get('enterprise', ""),
+                "enterprise": business_data.get('enterprise', "Cá nhân"),
                 "postal_code": "",
                 "gstin": "",
                 "number_of_employees": 0,
                 "areas_of_concern": "",
                 "country": "Vietnam"
             }
-            team_doc.update_billing_details(billing_info)
+            billing_details = frappe._dict(billing_info)
+            team_doc.update_billing_details(billing_details)
 
         # allocate free credit amount
         team_doc.reload()

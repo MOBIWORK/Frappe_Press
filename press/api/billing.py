@@ -22,6 +22,9 @@ from press.utils.billing import (
     validate_gstin_check_digit,
     GSTIN_FORMAT,
 )
+from press.api.account import (
+    update_billing_information
+)
 import math
 from datetime import datetime, timedelta
 
@@ -111,7 +114,22 @@ def upcoming_invoice():
             so_tien_goi_y_thanh_toan += round(item.rate * day_left)
         so_tien_goi_y_thanh_toan = round(
             so_tien_goi_y_thanh_toan + round(vat*so_tien_goi_y_thanh_toan/100, 2))
+
+        # lay ten plan
+        plan_items = [item.plan for item in invoice.items]
+        plans = frappe.get_all(
+            "Plan",
+            filters={"name": ("in", plan_items)},
+            fields=[
+                "name",
+                "plan_title"
+            ],
+        )
         upcoming_invoice = invoice.as_dict()
+        for item in upcoming_invoice.get('items'):
+            plan_find = next((d for d in plans if d.get('name') == item.plan), {})
+            item.plan_title = plan_find.get('plan_title')
+        
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
 
     # tat ca so tien hien co
@@ -148,6 +166,7 @@ def past_invoices():
 
 @frappe.whitelist()
 def invoices_and_payments(**kwargs):
+    today = frappe.utils.today()
     team = get_current_team()
     filters = [['team', '=', team], ['status', 'not in', ("Draft", "Refunded")], ['docstatus', '!=', 2]]
     
@@ -162,7 +181,7 @@ def invoices_and_payments(**kwargs):
     
     start_time = kwargs.get('start_time')
     if not start_time:
-        start_time = frappe.utils.get_first_day(today).strftime('%Y-%m-%d')
+        start_time = frappe.utils.get_first_day(today, d_months=-1).strftime('%Y-%m-%d')
     filters.append(['period_start', '>=', start_time])
 
     end_time = kwargs.get('end_time')
@@ -189,7 +208,6 @@ def invoices_and_payments(**kwargs):
             "payment_date",
             "currency",
             "invoice_pdf",
-            "due_date as date",
             "link_to_electronic_invoice"
         ],
         start=start,
@@ -290,6 +308,7 @@ def get_ai_service_transaction_history(**kwargs):
 
 @frappe.whitelist()
 def balances(**kwargs):
+    today = frappe.utils.today()
     team = get_current_team()
     bt = frappe.qb.DocType("Balance Transaction")
     inv = frappe.qb.DocType("Invoice")
@@ -972,7 +991,21 @@ def get_invoice_usage(invoice):
     team = get_current_team()
     # apply team filter for safety
     doc = frappe.get_doc("Invoice", {"name": invoice, "team": team})
+    # lay ten plan
+    plan_items = [item.plan for item in doc.items]
+    plans = frappe.get_all(
+        "Plan",
+        filters={"name": ("in", plan_items)},
+        fields=[
+            "name",
+            "plan_title"
+        ],
+    )
     out = doc.as_dict()
+    for item in out.get('items'):
+        plan_find = next((d for d in plans if d.get('name') == item.plan), {})
+        item.plan_title = plan_find.get('plan_title')
+            
     # a dict with formatted currency values for display
     out.formatted = make_formatted_doc(doc)
     out.invoice_pdf = doc.invoice_pdf or (
@@ -1057,6 +1090,20 @@ def setup_intent_success(setup_intent, address=None):
         team.update_billing_details(address)
 
     return {"payment_method_name": 'Prepaid Credits'}
+
+
+@frappe.whitelist()
+def setup_billing_info(address=None):
+    team = get_current_team(True)
+    if not team.free_credits_allocated:
+        clear_setup_intent()
+        payment_method = team.create_payment_method(
+            '', set_default=True
+        )
+    if address:
+        update_billing_information(address)
+
+    return {}
 
 
 @frappe.whitelist()

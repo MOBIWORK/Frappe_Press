@@ -38,11 +38,14 @@ def app_service_payment(**kwargs):
             team = get_current_team(True)
             
             price = 0
+            site_name = kwargs.get('site_name')
             service_name = kwargs.get('service_name')
             processing_unit = kwargs.get('processing_unit')
             type_service = kwargs.get('type')
             description = kwargs.get('description', '')
             # validate
+            if not frappe.db.exists("Site",{"name": site_name, 'team': team.name}):
+                return {'code': 0,'msg': 'site_name not found'}
             if not service_name:
                 return {'code': 0,'msg': 'service_name is required!'}
             # ======
@@ -79,14 +82,15 @@ def app_service_payment(**kwargs):
                 invoice = team.create_upcoming_invoice()
             
             # add item
-            item = frappe.db.get_value('Invoice Item', {'parent': invoice.name,'document_type': 'Marketplace App', 'document_name': service_name, 'rate': price}, ['name', 'quantity'], as_dict=1)
+            item = frappe.db.get_value('Invoice Item', {'parent': invoice.name,'document_type': 'Marketplace App', 'document_name': service_name, 'rate': price, 'site': site_name}, ['name', 'quantity'], as_dict=1)
 
             if not item:
                 invoice.append('items', {
                     'document_type': 'Marketplace App',
                     'document_name': service_name,
                     'quantity': processing_unit,
-                    'rate': price
+                    'rate': price,
+                    'site': site_name
                 })
                 invoice.save(ignore_permissions=True)
             else:

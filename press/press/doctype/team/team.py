@@ -412,10 +412,10 @@ class Team(Document):
         invoice.insert()
 
     def allocate_free_credits(self):
-        if self.via_erpnext or self.is_saas_user:
-            # dont allocate free credits for signups via erpnext
-            # since they get a 14 day free trial site
-            return
+        # if self.via_erpnext or self.is_saas_user:
+        #     # dont allocate free credits for signups via erpnext
+        #     # since they get a 14 day free trial site
+        #     return
 
         if not self.free_credits_allocated:
             # allocate free credits on signup
@@ -505,6 +505,7 @@ class Team(Document):
             data_update['number_of_employees'] = billing_details.number_of_employees
 
         address_doc.update(data_update)
+        address_doc.flags.ignore_mandatory = True
         address_doc.save()
         address_doc.reload()
 

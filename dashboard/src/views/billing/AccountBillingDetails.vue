@@ -15,26 +15,20 @@
 		/>
 		<div class="divide-y" v-if="infoBilling">
 			<ListItem
-				:title="$t('object')"
-				:description="infoBilling.address?.enterprise"
+				:title="$t('full_name')"
+				:description="infoBilling.billing_name || $t('not_set')"
 			/>
 			<ListItem
-				:title="
-					infoBilling.address?.enterprise == `Công ty`
-						? $t('company_name')
-						: $t('full_name')
-				"
-				:description="infoBilling.billing_name"
-			/>
-			<ListItem
-				v-if="infoBilling.address?.enterprise == 'Công ty'"
 				:title="$t('tax_code')"
-				:description="infoBilling.address?.tax_code"
+				:description="infoBilling.address?.tax_code || $t('not_set')"
 			/>
-			<ListItem title="Email" :description="infoBilling.address?.email_id" />
+			<ListItem
+				title="Email"
+				:description="infoBilling.address?.email_id || $t('not_set')"
+			/>
 			<ListItem
 				:title="$t('phone')"
-				:description="infoBilling.address?.phone"
+				:description="infoBilling.address?.phone || $t('not_set')"
 			/>
 			<ListItem
 				:title="$t('address')"

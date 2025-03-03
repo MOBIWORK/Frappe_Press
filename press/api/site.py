@@ -2061,3 +2061,30 @@ def autocomplete_sites(keyword=None):
         )
         return [site_doc.name for site_doc in site_docs]
 
+
+@frappe.whitelist(allow_guest=True, methods=["POST"])
+def check_site_exists(site_name="", lang='vi'):
+    try:
+        site = frappe.db.get_value('Site', site_name, ['status'], as_dict=True)
+
+        if site:
+            if site.status == 'Active':
+                return {
+                    'code': '200',
+                    'msg': _('Success.', lang)
+                }
+            else:
+                return {
+                    'code': '0',
+                    'msg': _('The site has stopped operating.', lang)
+                }
+        else:
+            return {
+                'code': '1',
+                'msg': _('Site name not found.', lang)
+            }
+    except Exception as ex:
+        return {
+            'code': '500',
+            'msg': _('An error occurred.', lang)
+        }

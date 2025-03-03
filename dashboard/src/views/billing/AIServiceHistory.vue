@@ -63,7 +63,7 @@
 							<th
 								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
-								{{ $t('Vat') }}
+								{{ $t('VAT') }}
 							</th>
 							<th
 								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"

@@ -98,9 +98,9 @@ export default {
 		},
 		updateBillingInformation() {
 			return {
-				url: 'press.api.account.update_billing_information',
+				url: 'press.api.billing.setup_billing_info',
 				params: {
-					billing_details: this.billingInformation
+					address: this.billingInformation
 				},
 				async onSuccess() {
 					this.$emit('update:show', false);
@@ -108,10 +108,6 @@ export default {
 						icon: 'check',
 						color: 'green',
 						title: this.$t('address_updated_successfully')
-					});
-
-					await this.$call('press.api.billing.setup_intent_success', {
-						setup_intent: {}
 					});
 					this.$emit('updated');
 				},

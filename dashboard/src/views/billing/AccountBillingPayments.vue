@@ -39,6 +39,11 @@
 							<th
 								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
+								{{ $t('invoice_code') }}
+							</th>
+							<th
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+							>
 								{{ $t('date') }}
 							</th>
 							<th
@@ -82,20 +87,25 @@
 							class="text-base text-gray-900"
 						>
 							<td class="border-b px-2 py-4">
-								{{ this.$formatDate(invoice.date) }}
-							</td>
-							<td class="border-b px-2 py-4 text-gray-700">
 								<Link
-									v-if="['Subscription', 'Service AI'].includes(invoice.type)"
+									v-if="['Subscription'].includes(invoice.type)"
 									:to="'/billing/' + invoice.name + '/invoices'"
 								>
-									{{ $t('invoice_for') }}
-									{{ this.$formatDate(invoice.period_end) }}
+									{{ invoice.name }}
 								</Link>
-								<span v-if="invoice.type === 'Prepaid Credits'">
+							</td>
+							<td class="border-b px-2 py-4">
+								{{ this.$formatDate(invoice.due_date) }}
+							</td>
+							<td class="border-b px-2 py-4 text-gray-700">
+								<span v-if="['Subscription'].includes(invoice.type)">
+									{{ $t('invoice_for') }}
+									{{ this.$formatDate(invoice.period_end, 'MM-yyyy') }}
+								</span>
+								<span v-else-if="invoice.type === 'Prepaid Credits'">
 									{{ $t('Prepaid Credits') }}
 								</span>
-								<span v-if="invoice.type === 'Transferred Credits'">
+								<span v-else-if="invoice.type === 'Transferred Credits'">
 									{{ $t('Transferred Credits') }}
 								</span>
 							</td>
@@ -234,7 +244,7 @@ export default {
 	methods: {
 		setDefaultFilter() {
 			return {
-				start_time: this.$startTimeOfMonth(),
+				start_time: this.$startTimeOfMonth(1),
 				end_time: this.$endTimeOfMonth(),
 				status: '',
 				page: 1

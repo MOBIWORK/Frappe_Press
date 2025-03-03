@@ -12,15 +12,7 @@
 			<!-- Business Settings -->
 			<form class="form-step" data-step="1" data-action="business_settings">
 				<div class="form-group">
-					<label for="enterprise">Công ty/Cá nhân</label>
-					<select id="enterprise" name="enterprise" class="custom-select"
-						onchange="handleChangeEnterprise(this)">
-						<option selected value="Công ty">Công ty</option>
-						<option value="Cá nhân">Cá nhân</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<label for="billing_name">Tên công ty</label>
+					<label for="billing_name">Tên người dùng</label>
 					<input type="text" class="form-control" id="billing_name" name="billing_name"
 						value="{{billing_info.get('billing_name')}}" />
 				</div>
@@ -140,18 +132,6 @@
 	function filterDistrict(event) {
 		const newOptions = districts.filter(el => el.parent == event.value);
 		updateDistrictOptions(newOptions);
-	}
-	function handleChangeEnterprise(event) {
-		var taxCodeInput = document.getElementById("tax_code");
-		var billingLabel = document.querySelector("label[for='billing_name']");
-
-		if (event.value === "Công ty") {
-			taxCodeInput.parentElement.style.display = "block";
-			billingLabel.textContent = "Tên công ty";
-		} else {
-			taxCodeInput.parentElement.style.display = "none";
-			billingLabel.textContent = "Họ tên";
-		}
 	}
 
 	function updateDistrictOptions(options) {

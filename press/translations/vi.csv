@@ -62,3 +62,7 @@ Subdomain too short. Use 2 or more characters, Tên miền quá ngắn. Hãy s�
 Subdomain too long. Use 32 or less characters, Tên miền quá dài. Sử dụng 32 ký tự trở xuống,
 Subdomain contains invalid characters. Use lowercase characters, Tên miền chứa các ký tự không hợp lệ. Sử dụng ký tự chữ thường,
 numbers and hyphens, số và dấu gạch nối,
+Success.,Thành công.,
+An error occurred.,Có lỗi xảy ra.,
+The site has stopped operating.,Trang web đã dừng hoạt động.,
+Site name not found.,Không tìm thấy tên trang web.,

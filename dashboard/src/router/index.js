@@ -205,10 +205,10 @@ const routes = [
 				path: 'database',
 				component: () => import('../views/site/SiteDatabase.vue')
 			},
-			{
-				path: 'site-config',
-				component: () => import('../views/site/SiteConfig.vue')
-			},
+			// {
+			// 	path: 'site-config',
+			// 	component: () => import('../views/site/SiteConfig.vue')
+			// },
 			{
 				path: 'settings',
 				component: () => import('../views/site/SiteSettings.vue')
@@ -528,11 +528,11 @@ const routes = [
 				path: 'team',
 				component: () => import('../views/settings/TeamSettings.vue')
 			},
-			{
-				name: 'DeveloperSettings',
-				path: 'developer',
-				component: () => import('../views/settings/DeveloperSettings.vue')
-			},
+			// {
+			// 	name: 'DeveloperSettings',
+			// 	path: 'developer',
+			// 	component: () => import('../views/settings/DeveloperSettings.vue')
+			// },
 			{
 				name: 'PartnerSettings',
 				path: 'partner',

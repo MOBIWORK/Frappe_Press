@@ -247,9 +247,7 @@ export default {
 				{
 					label: this.$t('support_and_docs'),
 					icon: 'help-circle',
-					onClick: () =>
-						(window.location.href =
-							'https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page')
+					onClick: () => (window.location.href = 'https://mbw.vn')
 				},
 				{
 					label: this.$t('settings'),

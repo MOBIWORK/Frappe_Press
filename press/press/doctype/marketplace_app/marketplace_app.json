@@ -9,6 +9,7 @@
  "field_order": [
   "image",
   "app",
+  "service_id",
   "title",
   "column_break_3",
   "team",
@@ -354,6 +355,11 @@
    "fieldname": "level",
    "fieldtype": "Int",
    "label": "Level"
+  },
+  {
+   "fieldname": "service_id",
+   "fieldtype": "Data",
+   "label": "Service ID"
   }
  ],
  "has_web_view": 1,
@@ -377,7 +383,7 @@
    "link_fieldname": "app"
   }
  ],
- "modified": "2023-12-16 15:46:46.558126",
+ "modified": "2025-02-28 11:24:57.343245",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Marketplace App",

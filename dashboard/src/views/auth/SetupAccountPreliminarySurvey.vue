@@ -1,9 +1,9 @@
 <template>
 	<LoginBox>
 		<div>
-			<!-- <div class="mb-4 w-36">
+			<div class="mb-4 w-36">
 				<SelectLanguage></SelectLanguage>
-			</div> -->
+			</div>
 			<div class="text-center">
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('Welcome') }} {{ currenBilling.billing_name }}!</div>
@@ -53,25 +53,7 @@
 					/>
 				</div>
 				<div class="mt-3">
-					<!-- <FormControl
-						size="lg"
-						:label="$t('SetupAccountPreliminarySurvey_content_2')"
-						type="text"
-						variant="outline"
-						name="number_of_employees"
-						:modelValue="billingInformation['number_of_employees']"
-						required="true"
-						:onUpdate:modelValue="
-							value => onChangeIn(value, 'number_of_employees')
-						"
-						:onblur="e => checkRequiredIn('number_of_employees', e)"
-					/> -->
 					<div>
-						<div class="mb-2 mt-4">
-							<label class="text-base" for="employee">{{
-								$t('SetupAccountPreliminarySurvey_content_2')
-							}}</label>
-						</div>
 						<FormControl
 							name="number_of_employees"
 							class="custom-form-btn"
@@ -80,13 +62,12 @@
 							size="lg"
 							variant="outline"
 							placeholder="---"
-							label=""
+							:label="$t('SetupAccountPreliminarySurvey_content_2')"
 							:options="opsEmployees"
 							v-model="billingInformation['number_of_employees']"
 							:onUpdate:modelValue="
 								value => onChangeIn(value, 'number_of_employees')
 							"
-							:onblur="e => checkRequiredIn('number_of_employees', e)"
 						/>
 					</div>
 					<ErrorMessage
@@ -236,11 +217,11 @@ export default {
 					window.location.href = '/dashboard/sites/new';
 				},
 				async validate() {
-					let a = await this.validateValues();
-					this.msgError = a;
-					if (a) {
-						return this.$t(a);
-					}
+					// let a = await this.validateValues();
+					// this.msgError = a;
+					// if (a) {
+					// 	return this.$t(a);
+					// }
 				}
 			};
 		}
@@ -380,7 +361,6 @@ export default {
 			}
 		},
 		onChangeIn(value, field) {
-			this.checkRequiredIn(field, value);
 			if (field == 'number_of_employees') {
 				value = value.replace(/[^0-9]/gm, '');
 			}

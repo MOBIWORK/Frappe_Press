@@ -85,7 +85,7 @@
 						</div>
 						<div class="rounded-md border p-4">
 							<div class="mb-2 flex justify-between text-base">
-								<div>{{ $t('unpaid_invoice') }}</div>
+								<div>{{ $t('outstanding_balance') }}</div>
 							</div>
 							<div class="text-2xl font-medium">{{ unpaidAmountDue }}</div>
 						</div>

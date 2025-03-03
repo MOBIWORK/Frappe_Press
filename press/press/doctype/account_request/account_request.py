@@ -68,7 +68,7 @@ class AccountRequest(Document):
         'Press Settings', 'Press Settings', ['free_credits_vnd'], as_dict=True)
         free_credits_vnd = settings.free_credits_vnd if settings else 0
         money = fmt_money(free_credits_vnd, 0,"VND")
-        subject = """[EOVCloud] - Xác minh email đăng ký {{ email_customer }} của bạn"""
+        subject = f"""[EOVCloud] - Xác minh email đăng ký { self.email } của bạn"""
         args = {
             'user_name': (self.first_name + '') + (self.last_name or ''),
             'app': self.saas_app or '',
@@ -82,14 +82,8 @@ class AccountRequest(Document):
             template = "verify_account"
 
             if self.invited_by and self.role != "Press Admin":
-                subject = """[EOVCloud] - Bạn được {{ invited_by }} mời tham gia EOV Cloud"""
+                subject = f"""[EOVCloud] - Bạn được { self.invited_by } mời tham gia EOV Cloud"""
                 template = "invite_team_member"
-
-        template_subject = Template(subject)
-        subject = template_subject.render({
-            "email_customer": self.email,
-            "invited_by": self.invited_by
-        })
 
         args.update(
             {

@@ -101,8 +101,8 @@ let utils = {
 			}
 			return plural;
 		},
-		$startTimeOfMonth() {
-			const now = DateTime.now();
+		$startTimeOfMonth(mons = 0) {
+			const now = DateTime.now().minus({ months: mons });
 			return now.startOf('month').toFormat('yyyy-MM-dd');
 		},
 		$endTimeOfMonth() {
@@ -132,8 +132,8 @@ let utils = {
 			}
 			return format;
 		},
-		$formatDate(d) {
-			return this.$date(d).toFormat('dd-MM-yyyy');
+		$formatDate(d, strFormat = 'dd-MM-yyyy') {
+			return this.$date(d).toFormat(strFormat);
 		},
 		$getFormatTimeNow(f) {
 			return DateTime.now().toFormat(f, { zone: 'Asia/Ho_Chi_Minh' });

@@ -2,12 +2,12 @@
 	<div>
 		<LoginBox :class="{ 'pointer-events-none': $resources.signup.loading }">
 			<div>
-				<!-- <div
+				<div
 					class="mb-4 w-36"
 					v-if="!(resetPasswordEmailSent || hasForgotPassword)"
 				>
 					<SelectLanguage></SelectLanguage>
-				</div> -->
+				</div>
 
 				<div
 					v-if="hasForgotPassword || saasProduct || isLogin"
@@ -21,21 +21,41 @@
 								query: { ...$route.query, forgot: undefined }
 							}"
 						>
-							<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M13.8297 18.9993C13.5271 19.0004 13.2403 18.8643 13.0497 18.6293L8.21968 12.6293C7.91636 12.2603 7.91636 11.7283 8.21968 11.3593L13.2197 5.35932C13.5731 4.93406 14.2044 4.87586 14.6297 5.22932C15.0549 5.58278 15.1131 6.21406 14.7597 6.63932L10.2897 11.9993L14.6097 17.3593C14.8594 17.659 14.912 18.0766 14.7444 18.4289C14.5769 18.7812 14.2198 19.0039 13.8297 18.9993Z" fill="#171717"/>
+							<svg
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M13.8297 18.9993C13.5271 19.0004 13.2403 18.8643 13.0497 18.6293L8.21968 12.6293C7.91636 12.2603 7.91636 11.7283 8.21968 11.3593L13.2197 5.35932C13.5731 4.93406 14.2044 4.87586 14.6297 5.22932C15.0549 5.58278 15.1131 6.21406 14.7597 6.63932L10.2897 11.9993L14.6097 17.3593C14.8594 17.659 14.912 18.0766 14.7444 18.4289C14.5769 18.7812 14.2198 19.0039 13.8297 18.9993Z"
+									fill="#171717"
+								/>
 							</svg>
 						</router-link>
-						<div class="font-semibold text-[20px] leading-[21px] text-[#383838]">{{ $t('forgot_password') }}</div>
+						<div
+							class="text-[20px] font-semibold leading-[21px] text-[#383838]"
+						>
+							{{ $t('forgot_password') }}
+						</div>
 					</div>
 					<div v-else-if="saasProduct">
 						{{ $t('Auth_content_1') }}
 						<span class="font-semibold">{{ saasProduct.title }}</span>
 					</div>
-					<div class="flex justify-center" v-else-if="isLogin">{{ $t('login') }}</div>
-					<div class="flex justify-center" v-else>{{ $t('Sign_Up_Account') }}</div>
+					<div class="flex justify-center" v-else-if="isLogin">
+						{{ $t('login') }}
+					</div>
+					<div class="flex justify-center" v-else>
+						{{ $t('Sign_Up_Account') }}
+					</div>
 				</div>
 
-				<div v-else class="mb-4 text-3xl font-[500] text-gray-900 flex justify-center">
+				<div
+					v-else
+					class="mb-4 flex justify-center text-3xl font-[500] text-gray-900"
+				>
 					<div>{{ $t('Sign_Up_Account') }}</div>
 				</div>
 
@@ -67,8 +87,8 @@
 						</router-link>
 					</div>
 				</div> -->
-				
-				<form class="flex flex-col mt-8" @submit.prevent="submitForm">
+
+				<form class="mt-8 flex flex-col" @submit.prevent="submitForm">
 					<template v-if="hasForgotPassword">
 						<label class="mb-2 mt-5 text-base" for="email">Email</label>
 						<FormControl
@@ -99,7 +119,6 @@
 						>
 							{{ $t('send_link') }}
 						</Button>
-						
 					</template>
 					<template v-else-if="isLogin">
 						<label class="mb-2 text-base" for="email">Email</label>
@@ -161,7 +180,7 @@
 									query: { ...$route.query, forgot: 1 }
 								}"
 							>
-								<span class="font-[400] text-[#171717] text-[14px]">
+								<span class="text-[14px] font-[400] text-[#171717]">
 									{{ $t('forgot_password') }}?</span
 								>
 							</router-link>
@@ -170,28 +189,32 @@
 							class="mt-2"
 							:message="this.$translateMessage(loginError)"
 						/>
-						<Button
-							class="mt-7 h-9 text-base font-[700]"
-							variant="solid"
-						>
+						<Button class="mt-7 h-9 text-base font-[700]" variant="solid">
 							{{ $t('login') }}
 						</Button>
-						<div class="mt-8 text-center border-t">
-							<div class="transform -translate-y-1/2">
-							<span class="px-2 text-xs leading-8 tracking-wider text-gray-800 bg-white">
-								{{ $t('Or') }}
-							</span>
+						<div class="mt-8 border-t text-center">
+							<div class="-translate-y-1/2 transform">
+								<span
+									class="bg-white px-2 text-xs leading-8 tracking-wider text-gray-800"
+								>
+									{{ $t('Or') }}
+								</span>
 							</div>
 						</div>
-						<div class="flex justify-center items-center" v-if="!disableSignup">
-							<span class="font-normal text-[14px] leading-[17px] text-[#171717]">{{ $t('no_account_yet') }}?</span>
+						<div class="flex items-center justify-center" v-if="!disableSignup">
+							<span
+								class="text-[14px] font-normal leading-[17px] text-[#171717]"
+								>{{ $t('no_account_yet') }}?</span
+							>
 							<span>&nbsp;&nbsp;</span>
-							<router-link class="text-base text-blue-500 font-semibold" 
-							:to="{
-								name: $route.name == 'Login' ? 'Signup' : 'Login',
-								query: { ...$route.query, forgot: undefined }
-							}">
-							{{ $t('SIGN_UP') }}
+							<router-link
+								class="text-base font-semibold text-blue-500"
+								:to="{
+									name: $route.name == 'Login' ? 'Signup' : 'Login',
+									query: { ...$route.query, forgot: undefined }
+								}"
+							>
+								{{ $t('SIGN_UP') }}
 							</router-link>
 						</div>
 					</template>
@@ -217,22 +240,29 @@
 						>
 							{{ $t('sign_up') }}
 						</Button>
-						<div class="mt-8 text-center border-t">
-							<div class="transform -translate-y-1/2">
-							<span class="px-2 text-xs leading-8 tracking-wider text-gray-800 bg-white">
-								{{ $t('Or') }}
-							</span>
+						<div class="mt-8 border-t text-center">
+							<div class="-translate-y-1/2 transform">
+								<span
+									class="bg-white px-2 text-xs leading-8 tracking-wider text-gray-800"
+								>
+									{{ $t('Or') }}
+								</span>
 							</div>
 						</div>
-						<div class="flex justify-center items-center" v-if="!disableSignup">
-							<span class="font-normal text-[14px] leading-[17px] text-[#171717]">{{ $t('already_have_an_account') }}?</span>
+						<div class="flex items-center justify-center" v-if="!disableSignup">
+							<span
+								class="text-[14px] font-normal leading-[17px] text-[#171717]"
+								>{{ $t('already_have_an_account') }}?</span
+							>
 							<span>&nbsp;&nbsp;</span>
-							<router-link class="text-base text-blue-500 font-semibold" 
-							:to="{
-								name: $route.name == 'Login' ? 'Signup' : 'Login',
-								query: { ...$route.query, forgot: undefined }
-							}">
-							{{ $t('LOGIN') }}
+							<router-link
+								class="text-base font-semibold text-blue-500"
+								:to="{
+									name: $route.name == 'Login' ? 'Signup' : 'Login',
+									query: { ...$route.query, forgot: undefined }
+								}"
+							>
+								{{ $t('LOGIN') }}
 							</router-link>
 						</div>
 					</template>
@@ -306,7 +336,7 @@
 import LoginBox from '@/views/partials/LoginBox.vue';
 import GoogleIconSolid from '@/components/icons/GoogleIconSolid.vue';
 import SelectLanguage from '../../components/global/SelectLanguage.vue';
-import { FormControl } from 'frappe-ui'
+import { FormControl } from 'frappe-ui';
 
 export default {
 	name: 'Signup',

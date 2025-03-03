@@ -47,7 +47,8 @@ export default {
 				url: 'press.api.account.get_emails',
 				auto: true,
 				onSuccess(res) {
-					this.emailData = res;
+					const noti = res.filter(r => r.type != 'marketplace_notifications');
+					this.emailData = noti;
 				}
 			};
 		},
