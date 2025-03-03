@@ -629,105 +629,109 @@ class Invoice(Document):
             if due == 0:
                 break
 
-            allocated_promotion_1 = 0
             # so tien km1 tra duoc
-            allocated_promotion_1 = min(due, balance.unallocated_amount_1)
-            due -= allocated_promotion_1
+            allocated_promotion_1 = balance.unallocated_amount_1 or 0
+            if allocated_promotion_1>0:
+                allocated_promotion_1 = min(due, allocated_promotion_1)
+                due -= allocated_promotion_1
 
-            self.append(
-                "credit_allocations",
-                {
-                    "transaction": balance.name,
-                    "amount": 0,
-                    "amount_promotion_1": allocated_promotion_1,
-                    "amount_promotion_2": 0,
-                    "currency": self.currency,
-                    "source": balance.source,
-                },
-            )
-            doc = frappe.get_doc("Balance Transaction", balance.name)
-            doc.append(
-                "allocated_to",
-                {
-                    "invoice": self.name,
-                    "amount": 0,
-                    "amount_promotion_1": allocated_promotion_1,
-                    "amount_promotion_2": 0,
-                    "currency": self.currency
-                },
-            )
-            doc.save()
-            total_allocated_1 += allocated_promotion_1
+                if allocated_promotion_1:
+                self.append(
+                    "credit_allocations",
+                    {
+                        "transaction": balance.name,
+                        "amount": 0,
+                        "amount_promotion_1": allocated_promotion_1,
+                        "amount_promotion_2": 0,
+                        "currency": self.currency,
+                        "source": balance.source,
+                    },
+                )
+                doc = frappe.get_doc("Balance Transaction", balance.name)
+                doc.append(
+                    "allocated_to",
+                    {
+                        "invoice": self.name,
+                        "amount": 0,
+                        "amount_promotion_1": allocated_promotion_1,
+                        "amount_promotion_2": 0,
+                        "currency": self.currency
+                    },
+                )
+                doc.save()
+                total_allocated_1 += allocated_promotion_1
 
         # ap dung so tien goc
         for balance in unallocated_balances:
             if due == 0:
                 break
 
-            allocated_root = 0
             # so tien goc tra duoc
-            allocated_root = min(due, balance.unallocated_amount)
-            due -= allocated_root
+            allocated_root = balance.unallocated_amount or 0
+            if allocated_root>0:
+                allocated_root = min(due, allocated_root)
+                due -= allocated_root
 
-            self.append(
-                "credit_allocations",
-                {
-                    "transaction": balance.name,
-                    "amount": allocated_root,
-                    "amount_promotion_1": 0,
-                    "amount_promotion_2": 0,
-                    "currency": self.currency,
-                    "source": balance.source,
-                },
-            )
-            doc = frappe.get_doc("Balance Transaction", balance.name)
-            doc.append(
-                "allocated_to",
-                {
-                    "invoice": self.name,
-                    "amount": allocated_root,
-                    "amount_promotion_1": 0,
-                    "amount_promotion_2": 0,
-                    "currency": self.currency
-                },
-            )
-            doc.save()
-            total_allocated += allocated_root
+                self.append(
+                    "credit_allocations",
+                    {
+                        "transaction": balance.name,
+                        "amount": allocated_root,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": 0,
+                        "currency": self.currency,
+                        "source": balance.source,
+                    },
+                )
+                doc = frappe.get_doc("Balance Transaction", balance.name)
+                doc.append(
+                    "allocated_to",
+                    {
+                        "invoice": self.name,
+                        "amount": allocated_root,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": 0,
+                        "currency": self.currency
+                    },
+                )
+                doc.save()
+                total_allocated += allocated_root
         
         # ap dung km2
         for balance in unallocated_balances:
             if due == 0:
                 break
 
-            allocated_promotion_2 = 0
             # so tien km2 tra duoc
-            allocated_promotion_2 = min(due, balance.unallocated_amount_2)
-            due -= allocated_promotion_2
+            allocated_promotion_2 = balance.unallocated_amount_2 or 0
+            if allocated_promotion_2>0:
+                allocated_promotion_2 = min(due, allocated_promotion_2)
+                due -= allocated_promotion_2
 
-            self.append(
-                "credit_allocations",
-                {
-                    "transaction": balance.name,
-                    "amount": 0,
-                    "amount_promotion_1": 0,
-                    "amount_promotion_2": allocated_promotion_2,
-                    "currency": self.currency,
-                    "source": balance.source,
-                },
-            )
-            doc = frappe.get_doc("Balance Transaction", balance.name)
-            doc.append(
-                "allocated_to",
-                {
-                    "invoice": self.name,
-                    "amount": 0,
-                    "amount_promotion_1": 0,
-                    "amount_promotion_2": allocated_promotion_2,
-                    "currency": self.currency
-                },
-            )
-            doc.save()
-            total_allocated_2 += allocated_promotion_2
+                self.append(
+                    "credit_allocations",
+                    {
+                        "transaction": balance.name,
+                        "amount": 0,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": allocated_promotion_2,
+                        "currency": self.currency,
+                        "source": balance.source,
+                    },
+                )
+                doc = frappe.get_doc("Balance Transaction", balance.name)
+                doc.append(
+                    "allocated_to",
+                    {
+                        "invoice": self.name,
+                        "amount": 0,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": allocated_promotion_2,
+                        "currency": self.currency
+                    },
+                )
+                doc.save()
+                total_allocated_2 += allocated_promotion_2
 
         # tinh toan so tien sau khi chi tra hoa don
         balance_transaction = frappe.get_doc(
