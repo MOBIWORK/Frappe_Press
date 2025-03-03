@@ -172,15 +172,15 @@ class Invoice(Document):
             # link usage records of old cancelled invoice to the new amended invoice
             frappe.db.sql(
                 """
-				UPDATE
-					`tabUsage Record`
-				SET
-					`invoice` = %(new_invoice)s,
-					`modified` = %(modified)s,
-					`modified_by` = %(modified_by)s
-				WHERE
-					`invoice` = %(old_invoice)s
-				""",
+                UPDATE
+                    `tabUsage Record`
+                SET
+                    `invoice` = %(new_invoice)s,
+                    `modified` = %(modified)s,
+                    `modified_by` = %(modified_by)s
+                WHERE
+                    `invoice` = %(old_invoice)s
+                """,
                 values=values,
             )
 
@@ -635,7 +635,6 @@ class Invoice(Document):
                 allocated_promotion_1 = min(due, allocated_promotion_1)
                 due -= allocated_promotion_1
 
-                if allocated_promotion_1:
                 self.append(
                     "credit_allocations",
                     {
