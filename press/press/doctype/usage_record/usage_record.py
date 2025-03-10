@@ -20,6 +20,7 @@ class UsageRecord(Document):
 		try:
 			self.update_usage_in_invoice()
 		except Exception:
+			frappe.db.rollback()
 			log_error(title="Usage Record Invoice Update Error", name=self.name)
 
 	def on_cancel(self):

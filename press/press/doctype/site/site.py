@@ -102,11 +102,11 @@ class Site(Document):
             frappe.throw(msg)
         if len(self.subdomain) > 32:
             frappe.throw(
-                _("Subdomain too long. Use 32 or less characters"), lang)
+                _("Subdomain too long. Use 32 or less characters", lang))
 
         if len(self.subdomain) < 2:
             frappe.throw(
-                _("Subdomain too short. Use 2 or more characters"), lang)
+                _("Subdomain too short. Use 2 or more characters", lang))
 
     def set_site_admin_password(self):
         # set site.admin_password if doesn't exist
@@ -1035,7 +1035,7 @@ class Site(Document):
                 "Marketplace App Subscription", subscription)
             subscription_doc.disable()
 
-    def can_change_plan(self, ignore_card_setup):
+    def can_change_plan(self, ignore_card_setup, lang='vi'):
         if is_system_user(frappe.session.user):
             return
 
@@ -1049,23 +1049,22 @@ class Site(Document):
             team = frappe.get_doc("Team", team.parent_team)
 
         if team.is_defaulter():
-            frappe.throw("Cannot change plan because you have unpaid invoices")
+            frappe.throw(_("Cannot change plan because you have unpaid invoices", lang))
 
         if team.payment_mode == "Partner Credits" and (
                 not team.get_available_partner_credits() > 0
         ):
-            frappe.throw(
-                "Cannot change plan because you don't have sufficient partner credits")
+            frappe.throw(_("Cannot change plan because you don't have sufficient partner credits", lang))
 
         if team.payment_mode != "Partner Credits" and not (
                 team.default_payment_method or team.get_balance_all()
         ):
             frappe.throw(
-                "Cannot change plan because you haven't added a card and not have enough balance"
+                _("Cannot change plan because you haven't added a card and not have enough balance", lang)
             )
 
-    def change_plan(self, plan, ignore_card_setup=False):
-        self.can_change_plan(ignore_card_setup)
+    def change_plan(self, plan, ignore_card_setup=False, lang='vi'):
+        self.can_change_plan(ignore_card_setup, lang=lang)
         plan_config = self.get_plan_config(plan)
 
         if (

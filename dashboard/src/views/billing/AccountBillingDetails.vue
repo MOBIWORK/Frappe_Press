@@ -15,8 +15,12 @@
 		/>
 		<div class="divide-y" v-if="infoBilling">
 			<ListItem
-				:title="$t('full_name')"
+				:title="$t('User_name')"
 				:description="infoBilling.billing_name || $t('not_set')"
+			/>
+			<ListItem
+				:title="$t('Company_name')"
+				:description="infoBilling.address?.company_name || $t('not_set')"
 			/>
 			<ListItem
 				:title="$t('tax_code')"

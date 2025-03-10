@@ -16,25 +16,54 @@
 							<div class="mb-2 flex justify-between text-base">
 								<div class="flex">
 									<div class="mr-1">{{ $t('promotional_balance_1') }}</div>
-									<Tooltip
+									<!-- <Tooltip
 										:text="
-											$resources.upcomingInvoice.data?.val_check_promotion
+											$resources.upcomingInvoice.data?.apply_promotion
 												? `${$t('billingsummary_content_1')} ` +
 												  this.$formatDate(
 														$resources.upcomingInvoice.data?.date_promotion_1
 												  )
-												: $t('billingsummary_content_2')
+												: 
 										"
 									>
 										<FeatherIcon
 											name="help-circle"
 											class="ml-auto h-4 w-4 text-gray-700"
 										/>
-									</Tooltip>
+									</Tooltip> -->
+									<Popover :hideArrow="true">
+										<template #target="{ togglePopover }">
+											<FeatherIcon
+												name="help-circle"
+												class="ml-auto h-4 w-4 cursor-pointer text-gray-700"
+												@click="togglePopover()"
+											/>
+										</template>
+										<template #content>
+											<div
+												v-if="khuyenMai1"
+												class="min-w-60 max-w-96 p-2 text-base"
+											>
+												<div>{{ $t('billingsummary_content_7') }}:</div>
+												<div
+													class="my-1.5"
+													v-for="km in arrKhuyenMai1"
+													:key="km.name"
+												>
+													+ {{ formatterMoney(km.unallocated_amount_1) }}
+													{{ $t('billingsummary_content_8') }}
+													{{ km.date_expire }}
+												</div>
+											</div>
+											<div v-else class="min-w-60 max-w-96 p-2 text-base">
+												{{ $t('billingsummary_content_2') }}.
+											</div>
+										</template>
+									</Popover>
 								</div>
 							</div>
 							<div class="text-2xl font-medium">
-								{{ khuyenMai1 }}
+								{{ formatKhuyenMai1 }}
 							</div>
 						</div>
 						<div class="rounded-md border p-4">
@@ -60,11 +89,7 @@
 								{{ $t('this_month_provisional_invoice') }}
 							</div>
 							<div class="text-2xl font-medium">
-								{{
-									upcomingInvoice
-										? this.$formatMoney(upcomingInvoice.total, 0) + ' VND'
-										: '0 VND'
-								}}
+								{{ formatterMoney(upcomingInvoice?.total) }}
 							</div>
 						</div>
 						<div class="rounded-md border p-4">
@@ -98,12 +123,12 @@
 							</div>
 							<div class="text-2xl font-medium">
 								{{
-									this.$formatMoney(
+									formatterMoney(
 										$resources.upcomingInvoice.data?.available_credits
-											?.amount_all
+											?.amount_all,
+										2
 									)
 								}}
-								VND
 							</div>
 						</div>
 						<div class="mb-5 border-b border-dashed pb-2">
@@ -117,7 +142,7 @@
 							class="mb-3 flex flex-wrap justify-between text-base"
 						>
 							<div class="mb-2">
-								{{ $t('top_up') }} {{ this.$formatMoney(soTienThanhToan) }} VND
+								{{ $t('top_up') }} {{ formatterMoney(soTienThanhToan, 2) }}
 								{{ $t('billingsummary_content_4') }}
 							</div>
 							<Button
@@ -198,11 +223,13 @@ import PlanIcon from '@/components/PlanIcon.vue';
 import UpcomingInvoiceSummary from './UpcomingInvoiceSummary.vue';
 import { defineAsyncComponent } from 'vue';
 import InvoiceUsageTable from '@/components/InvoiceUsageTable.vue';
+import Popover from '@/components/Popover.vue';
 
 export default {
 	name: 'BillingSummary',
 	props: ['checkRefresh'],
 	components: {
+		Popover,
 		InvoiceUsageTable,
 		PlanIcon,
 		UpcomingInvoiceSummary,
@@ -287,15 +314,13 @@ export default {
 			return this.$resources.upcomingInvoice.data?.upcoming_invoice;
 		},
 		unpaidAmountDue() {
-			return (
-				this.$formatMoney(
-					this.$resources.upcomingInvoice.data?.total_unpaid_amount
-				) + ' VND'
+			return this.formatterMoney(
+				this.$resources.upcomingInvoice.data?.total_unpaid_amount
 			);
 		},
 		availableBalances() {
 			let total = this.$resources.upcomingInvoice.data?.available_balances || 0;
-			return this.$formatMoney(total, 0) + ' VND';
+			return this.formatterMoney(total);
 		},
 		soTienThanhToan() {
 			return this.$resources.upcomingInvoice.data?.so_tien_goi_y_thanh_toan;
@@ -307,24 +332,31 @@ export default {
 			// if (this.$account.team.payment_mode === 'Partner Credits') {
 			// 	amount = this.$resources.availablePartnerCredits.data;
 			// }
-			return this.$formatMoney(amount, 0) + ' VND';
+			return this.formatterMoney(amount);
 		},
-		khuyenMai1() {
+		formatKhuyenMai1() {
 			let amount =
 				this.$resources.upcomingInvoice.data?.available_credits
 					?.promotion_balance_1;
-			return this.$formatMoney(amount, 0) + ' VND';
+			return this.formatterMoney(amount);
+		},
+		khuyenMai1() {
+			return this.$resources.upcomingInvoice.data?.available_credits
+				?.promotion_balance_1;
+		},
+		arrKhuyenMai1() {
+			return this.$resources.upcomingInvoice.data?.list_promotion1;
 		},
 		khuyenMai2() {
 			let amount =
 				this.$resources.upcomingInvoice.data?.available_credits
 					?.promotion_balance_2;
-			return this.$formatMoney(amount, 0) + ' VND';
+			return this.formatterMoney(amount);
 		},
 		soTienAI() {
 			let amount =
 				this.$resources.upcomingInvoice.data?.so_tien_dich_vu_ai_tam_tinh;
-			return this.$formatMoney(amount, 0) + ' VND';
+			return this.formatterMoney(amount);
 		},
 		paymentDate() {
 			if (!this.upcomingInvoice) {
@@ -371,6 +403,13 @@ export default {
 				day: 'numeric',
 				year: 'numeric'
 			});
+		},
+		formatterMoney(amount, decimal = 0) {
+			let formatM = '0 VND';
+			if (amount) {
+				formatM = this.$formatMoney(amount, decimal) + ' VND';
+			}
+			return formatM;
 		}
 	}
 };

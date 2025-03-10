@@ -10,7 +10,12 @@ from frappe.utils import fmt_money
 from frappe.utils.data import time_diff
 from frappe.core.utils import find
 from press.press.doctype.team.team import has_unsettled_invoices
-from press.utils import get_current_team, check_payos_settings, check_promotion, get_date_expire_promotion
+from press.utils import (
+    get_current_team,
+    check_payos_settings,
+    check_promotion_expire,
+    get_date_expire_promotion
+)
 from press.utils.billing import (
     clear_setup_intent,
     get_publishable_key,
@@ -99,10 +104,6 @@ def upcoming_invoice():
     promotion_balance_2 = detail_balance_all.get('promotion_balance_2') or 0
     so_tien_dich_vu_ai_tam_tinh = team.AI_amount()
 
-    # lay so ngay het han km1
-    val_check_promotion = check_promotion(team.name)
-    date_promotion_1 = get_date_expire_promotion(team.name)
-
     # lay so tien no chua tra
     total_unpaid_amount = team.amount_owed()
 
@@ -116,19 +117,40 @@ def upcoming_invoice():
             so_tien_goi_y_thanh_toan + round(vat*so_tien_goi_y_thanh_toan/100, 2))
 
         # lay ten plan
-        plan_items = [item.plan for item in invoice.items]
+        plan_items = [item.plan for item in invoice.items if item.document_type == "Site"]
+        app_items = [item.document_name for item in invoice.items if item.document_type == "Marketplace App"]
         plans = frappe.get_all(
             "Plan",
             filters={"name": ("in", plan_items)},
             fields=[
                 "name",
-                "plan_title"
+                "plan_title",
+                "item_description"
+            ],
+        )
+        apps = frappe.get_all(
+            "Marketplace App",
+            filters={"name": ("in", app_items)},
+            fields=[
+                "name",
+                "title",
+                "item_description"
             ],
         )
         upcoming_invoice = invoice.as_dict()
         for item in upcoming_invoice.get('items'):
-            plan_find = next((d for d in plans if d.get('name') == item.plan), {})
-            item.plan_title = plan_find.get('plan_title')
+            if item.document_type == "Site":
+                plan_find = next((d for d in plans if d.get('name') == item.plan), {})
+                item.detail_info = {
+                    "title": plan_find.get('plan_title'),
+                    "description": plan_find.get('item_description'),
+                }
+            elif item.document_type == "Marketplace App":
+                app_find = next((d for d in apps if d.get('name') == item.document_name), {})
+                item.detail_info = {
+                    "title": app_find.get('title'),
+                    "description": app_find.get('item_description'),
+                }
         
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
 
@@ -154,8 +176,7 @@ def upcoming_invoice():
         "total_unpaid_amount": total_unpaid_amount,
         "so_tien_dich_vu_ai_tam_tinh": so_tien_dich_vu_ai_tam_tinh,
         "so_tien_goi_y_thanh_toan": so_tien_goi_y_thanh_toan,
-        "date_promotion_1": date_promotion_1,
-        "val_check_promotion": val_check_promotion
+        "list_promotion1": team.get_list_promotion1()
     }
 
 
@@ -222,7 +243,7 @@ def invoices_and_payments(**kwargs):
 
     for invoice in invoices:
         invoice.formatted_total = frappe.utils.fmt_money(
-            invoice.total, 2, invoice.currency)
+            invoice.total, 0)
         invoice.stripe_link_expired = False
         if invoice.status == "Unpaid":
             days_diff = frappe.utils.date_diff(
@@ -291,9 +312,9 @@ def get_ai_service_transaction_history(**kwargs):
     for d in data:
         d.formatted = dict(
             processing_unit=fmt_money(d.processing_unit, 0),
-            unit_price=fmt_money(d.unit_price, 0, "VND"),
+            unit_price=fmt_money(d.unit_price, 0),
             vat=fmt_money(d.vat, 0),
-            amount=fmt_money(d.amount, 0, "VND"),
+            amount=fmt_money(d.amount, 0),
         )
     
     return {
@@ -385,6 +406,8 @@ def balances(**kwargs):
             bt.payos_payment_status,
             bt.promotion_balance_1,
             bt.promotion_balance_2,
+            bt.unallocated_amount_1,
+            bt.date_promotion_1,
             bt.amount_promotion_1,
             bt.amount_promotion_2,
             inv.period_start,
@@ -401,10 +424,12 @@ def balances(**kwargs):
     total_page = math.ceil(total/page_length)
     
     for d in data:
+        d.promotion_expire = check_promotion_expire(d.name)
+        d.date_promotion_expire = get_date_expire_promotion(d.name, d.date_promotion_1)
         d.formatted = dict(
-            amount=fmt_money(d.amount, 0, d.currency),
-            amount_promotion_1=fmt_money(d.amount_promotion_1, 0, d.currency),
-            amount_promotion_2=fmt_money(d.amount_promotion_2, 0, d.currency),
+            amount=fmt_money(d.amount, 0),
+            amount_promotion_1=fmt_money(d.amount_promotion_1, 0),
+            amount_promotion_2=fmt_money(d.amount_promotion_2, 0),
         )
         # khoi tao bien va tinh toan so du
         pre_balance = 0
@@ -437,27 +462,29 @@ def balances(**kwargs):
             promotion_balance_2=pre_promotion_balance_2,
         )
         d.pre_formatted = dict(
-            total_balance=fmt_money(pre_total_balance, 0, d.currency),
-            balance=fmt_money(pre_balance, 0, d.currency),
+            total_balance=fmt_money(pre_total_balance, 0),
+            balance=fmt_money(pre_balance, 0),
             promotion_balance_1=fmt_money(
-                pre_promotion_balance_1, 0, d.currency),
+                pre_promotion_balance_1, 0),
             promotion_balance_2=fmt_money(
-                pre_promotion_balance_2, 0, d.currency),
+                pre_promotion_balance_2, 0),
         )
         d.total_amount = d.amount + d.amount_promotion_1 + d.amount_promotion_2
         d.total_balance = total_balance
         d.ending_balance = ending_balance
         # formatted
+        d.formatted['unallocated_amount_1'] = fmt_money(
+            d.unallocated_amount_1, 0, d.currency)
         d.formatted['promotion_balance_1'] = fmt_money(
-            promotion_balance_1, 0, d.currency)
+            promotion_balance_1, 0)
         d.formatted['promotion_balance_2'] = fmt_money(
-            promotion_balance_2, 0, d.currency)
+            promotion_balance_2, 0)
         d.formatted['total_amount'] = fmt_money(
-            d.total_amount, 0, d.currency)
+            d.total_amount, 0)
         d.formatted['total_balance'] = fmt_money(
-            d.total_balance, 0, d.currency)
+            d.total_balance, 0)
         d.formatted['ending_balance'] = fmt_money(
-            d.ending_balance, 0, d.currency)
+            d.ending_balance, 0)
 
         if d.period_start:
             d.formatted["invoice_for"] = d.period_start.strftime("%m-%Y")
@@ -992,19 +1019,40 @@ def get_invoice_usage(invoice):
     # apply team filter for safety
     doc = frappe.get_doc("Invoice", {"name": invoice, "team": team})
     # lay ten plan
-    plan_items = [item.plan for item in doc.items]
+    plan_items = [item.plan for item in doc.items if item.document_type == "Site"]
+    app_items = [item.document_name for item in doc.items if item.document_type == "Marketplace App"]
     plans = frappe.get_all(
         "Plan",
         filters={"name": ("in", plan_items)},
         fields=[
             "name",
-            "plan_title"
+            "plan_title",
+            "item_description"
+        ],
+    )
+    apps = frappe.get_all(
+        "Marketplace App",
+        filters={"name": ("in", app_items)},
+        fields=[
+            "name",
+            "title",
+            "item_description"
         ],
     )
     out = doc.as_dict()
     for item in out.get('items'):
-        plan_find = next((d for d in plans if d.get('name') == item.plan), {})
-        item.plan_title = plan_find.get('plan_title')
+        if item.document_type == "Site":
+            plan_find = next((d for d in plans if d.get('name') == item.plan), {})
+            item.detail_info = {
+                "title": plan_find.get('plan_title'),
+                "description": plan_find.get('item_description'),
+            }
+        elif item.document_type == "Marketplace App":
+            app_find = next((d for d in apps if d.get('name') == item.document_name), {})
+            item.detail_info = {
+                "title": app_find.get('title'),
+                "description": app_find.get('item_description'),
+            }
             
     # a dict with formatted currency values for display
     out.formatted = make_formatted_doc(doc)

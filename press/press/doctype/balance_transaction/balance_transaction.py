@@ -6,7 +6,10 @@
 import frappe
 from frappe.model.document import Document
 from press.overrides import get_permission_query_conditions_for_doctype
-from press.utils import check_promotion
+from press.press.doctype.team.team import (
+    enqueue_finalize_unpaid_for_team,
+    reset_used_and_noti_subscription    
+)
 
 
 class BalanceTransaction(Document):
@@ -32,25 +35,6 @@ class BalanceTransaction(Document):
             group_by="team",
         )
 
-        # kiem tra xem ngay dang ky khuyen mai da co chua va cap nhat
-        # dang ky khuyen mai cho giao dich hien tai
-        if not self.date_promotion_1:
-            date_promotion_1 = frappe.db.get_all(
-                "Balance Transaction",
-                fields=['date_promotion_1'],
-                filters={"team": self.team, "docstatus": 1},
-                order_by="creation desc",
-                pluck='date_promotion_1',
-                limit=1,
-            )
-            date_promotion_1 = date_promotion_1[0] if date_promotion_1 else None
-            self.date_promotion_1 = date_promotion_1
-
-        # kiem tra da het han khuyen mai 1 chua
-        # neu het han(False) thi reset khuyen mai 1 ve 0
-        val_check_promotion = check_promotion(self.team, self.date_promotion_1)
-        if not val_check_promotion:
-            self.promotion_balance_1 = 0
         # tinh toan lai tat ca so du va cap nhat lai so tien
         ending_balance = info_last_balance[0]['ending_balance'] if info_last_balance else 0
         promotion_balance_1 = info_last_balance[0]['promotion_balance_1'] if info_last_balance else 0
@@ -58,8 +42,6 @@ class BalanceTransaction(Document):
         last_balance = ending_balance + promotion_balance_1 + promotion_balance_2
 
         if info_last_balance:
-            if not val_check_promotion:
-                self.amount_promotion_1 = promotion_balance_1 * -1
             self.ending_balance = ending_balance + self.amount
             self.promotion_balance_1 = promotion_balance_1 + self.amount_promotion_1
             self.promotion_balance_2 = promotion_balance_2 + self.amount_promotion_2
@@ -119,20 +101,15 @@ class BalanceTransaction(Document):
         remaining_amount = abs(self.amount)
         remaining_amount_1 = abs(self.amount_promotion_1)
         remaining_amount_2 = abs(self.amount_promotion_2)
-
-        values = {'team': self.team}
-        transactions = frappe.db.sql("""
-            SELECT
-                bt.name,
-                bt.unallocated_amount,
-                bt.unallocated_amount_1,
-                bt.unallocated_amount_2
-            FROM `tabBalance Transaction` bt
-            WHERE bt.team = %(team)s
-            AND (bt.unallocated_amount > 0 OR bt.unallocated_amount_1 > 0 OR bt.unallocated_amount_2 > 0)
-            AND bt.docstatus = 1
-            ORDER BY bt.creation ASC
-        """, values=values, as_dict=1)
+        
+        transactions = frappe.get_all(
+			"Balance Transaction",
+			filters={"docstatus": 1, "team": self.team},
+            or_filters={"unallocated_amount": (">", 0), "unallocated_amount_1": (">", 0), "unallocated_amount_2": (">", 0)},
+			fields=["name", "unallocated_amount", "unallocated_amount_1", "unallocated_amount_2"],
+			order_by="creation asc",
+		)
+        
         for transaction in transactions:
             if not allocation_map.get(transaction.name):
                 allocation_map[transaction.name] = {
@@ -181,10 +158,9 @@ class BalanceTransaction(Document):
         unallocated_amount = (
             frappe.get_all(
                 "Balance Transaction",
-                filters={"docstatus": 1, "team": self.team,
-                         "unallocated_amount": (">", 0)},
-                fields=["sum(unallocated_amount) as total_unallocated_amount", "sum(unallocated_amount_1) as total_unallocated_amount_1",
-                        "sum(unallocated_amount_2) as total_unallocated_amount_2"],
+                filters={"docstatus": 1, "team": self.team},
+                or_filters={"unallocated_amount": (">", 0), "unallocated_amount_1": (">", 0), "unallocated_amount_2": (">", 0)},
+                fields=["sum(unallocated_amount) as total_unallocated_amount", "sum(unallocated_amount_1) as total_unallocated_amount_1", "sum(unallocated_amount_2) as total_unallocated_amount_2"],
             )[0]
             or []
         )
@@ -205,40 +181,31 @@ get_permission_query_conditions = get_permission_query_conditions_for_doctype(
     "Balance Transaction"
 )
 
+@frappe.whitelist()
+def handle_finalize_unpaid_invoices(team):
+    reset_used_and_noti_subscription(team)
+    enqueue_finalize_unpaid_for_team(team)
+    return {}
 
 def handle_for_expired_promotions():
-    from datetime import timedelta
-
-    number_days_promotion = frappe.db.get_single_value(
-        "Press Settings", "number_days_promotion") or 0
-    date_expire = frappe.utils.now_datetime()
-    date_expire = date_expire - timedelta(days=number_days_promotion)
-    date_expire = date_expire.date()
-
-    transactions = frappe.db.sql(
-        f"""
-    		SELECT b.name, b.team, b.currency, b.promotion_balance_1, b.date_promotion_1
-    		FROM `tabBalance Transaction` b
-            INNER JOIN (SELECT c.team, MAX(c.creation) as creation FROM `tabBalance Transaction` c
-            WHERE c.docstatus = 1
-    		GROUP BY c.team) b1
-            ON b.team = b1.team
-            WHERE b.docstatus = 1 AND b.creation = b1.creation
-    		GROUP BY b.team
-    	""",
-        as_dict=True,
+    date_now = frappe.utils.now_datetime().date()
+    transactions = frappe.get_all(
+        "Balance Transaction",
+        filters={"docstatus": 1, "unallocated_amount_1": (">", 0)},
+        fields=["name", "team", "currency", "date_promotion_1", "unallocated_amount_1"],
+        order_by="creation asc",
     )
 
     for tran in transactions:
-        if tran.get('promotion_balance_1') > 0 and tran.get('date_promotion_1') and tran.get('date_promotion_1') <= date_expire:
+        if tran.unallocated_amount_1 > 0 and tran.date_promotion_1 and tran.date_promotion_1 < date_now:
             doc = frappe.get_doc(
                 doctype="Balance Transaction",
-                team=tran.get('team'),
+                team=tran.team,
                 type="Promotion",
                 source="Free Credits",
-                currency=tran.get('currency'),
+                currency=tran.currency,
                 amount=0,
-                amount_promotion_1=tran.get('promotion_balance_1') * -1,
+                amount_promotion_1=tran.unallocated_amount_1 * -1,
                 amount_promotion_2=0,
                 description=f"Hết hạn khuyến mãi 1",
             )

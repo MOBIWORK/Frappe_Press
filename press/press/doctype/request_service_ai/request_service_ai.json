@@ -47,6 +47,7 @@
    "default": "Pending settlement",
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
    "options": "Pending settlement\nSettled"
   },
@@ -60,6 +61,7 @@
    "fieldname": "team",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Team",
    "options": "Team",
    "reqd": 1
@@ -90,7 +92,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-02-14 09:23:35.839552",
+ "modified": "2025-03-05 09:15:41.552968",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Request Service AI",

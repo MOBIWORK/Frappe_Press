@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 import time
 from datetime import datetime, timedelta
 import redis
@@ -90,7 +91,8 @@ def app_service_payment(**kwargs):
                     'document_name': service_name,
                     'quantity': processing_unit,
                     'rate': price,
-                    'site': site_name
+                    'site': site_name,
+                    "unit": 'Processing unit'
                 })
                 invoice.save(ignore_permissions=True)
             else:
@@ -152,6 +154,49 @@ def sendmail_storage_capacity_overflows(**kwargs):
     except Exception as ex:
         frappe.log_error(message=str(ex), title="Sendmail storage capacity overflows")
         return {'code': 500,'msg': str(ex)}
+
+
+@frappe.whitelist(methods=['POST'])
+def sendmail_invite_user(**kwargs):
+    try:
+        site_name = kwargs.get('site_name')
+        service_name = kwargs.get('service_name')
+        email_recipient = kwargs.get('email_recipient')
+        link_active = kwargs.get('link_active')
+        role = kwargs.get('role')
+        
+        if not site_name:
+            return {'code': 0,'msg': 'site_name is required!'}
+        if not service_name:
+            return {'code': 0,'msg': 'service_name is required!'}
+        if not email_recipient:
+            return {'code': 0,'msg': 'email_recipient is required!'}
+
+        email_recipient = email_recipient.strip()
+        date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        subject = f"""[EOVCloud] - Mời bạn tham gia nền tảng {service_name} trên {site_name} - {date_time}"""
+        args = {
+            'site_name': site_name,
+            'link_active': link_active,
+            'email_recipient': email_recipient,
+            'role': role,
+            'service_name': service_name
+        }
+        email_recipients = email_recipient
+        template = "sendmail_invite_user"
+        
+        frappe.sendmail(
+            recipients=email_recipients,
+            subject=subject,
+            template=template,
+            args=args
+        )
+        
+        return {'code': 200,'msg': 'Successfully'}
+    except Exception as ex:
+        frappe.log_error(message=str(ex), title="Sendmail invite user")
+        return {'code': 500,'msg': str(ex)}
+
 
 @frappe.whitelist(methods=['POST'])
 def add_schedule_delete_objects_in_bucket(**kwargs):

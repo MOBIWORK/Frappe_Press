@@ -4,13 +4,18 @@
 			<table class="text w-full text-sm">
 				<thead>
 					<tr class="text-gray-600">
-						<th class="border-b py-3 pr-2 text-left font-bold">
-							{{ $t('service') }}
-						</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-left font-bold"
 						>
-							{{ $t('plan') }}
+							{{ $t('plan') }} - {{ $t('service') }}
+						</th>
+						<th class="border-b py-3 pr-2 text-left font-bold">
+							{{ $t('site') }}
+						</th>
+						<th
+							class="whitespace-nowrap border-b py-3 pr-2 text-right font-bold"
+						>
+							{{ $t('Unit') }}
 						</th>
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-bold"
@@ -22,7 +27,6 @@
 						>
 							{{ $t('unit_price') }} (VND)
 						</th>
-
 						<th
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-bold"
 						>
@@ -33,11 +37,28 @@
 				<tbody>
 					<tr v-for="(row, i) in doc.items" :key="row.idx">
 						<td class="border-b py-3 pr-2 font-bold">
-							{{ row.document_name }}
-							<span v-if="row.site">{{ $t('of') }} {{ row.site }}</span>
+							<div class="flex gap-1">
+								<span>{{ row.detail_info?.title || row.document_name }}</span>
+								<Tooltip
+									:text="
+										row.detail_info?.description ||
+										row.detail_info?.title ||
+										row.document_name
+									"
+								>
+									<FeatherIcon
+										name="help-circle"
+										class="h-4 w-4 text-gray-700"
+									/>
+								</Tooltip>
+							</div>
 						</td>
 						<td class="border-b py-3 pr-2">
-							{{ row.plan_title || '-' }}
+							<span v-if="row.site">{{ row.site }}</span>
+							<span v-else>{{ row.document_name }}</span>
+						</td>
+						<td class="whitespace-nowrap border-b py-3 pr-2 text-right">
+							{{ $t(row.unit) }}
 						</td>
 						<td class="whitespace-nowrap border-b py-3 pr-2 text-right">
 							{{ row.quantity }}
@@ -48,7 +69,7 @@
 						<td
 							class="whitespace-nowrap border-b py-3 pr-2 text-right font-semibold"
 						>
-							{{ this.$formatMoney(doc.items[i].amount, 0) }}
+							{{ this.$formatMoney(doc.items[i].amount) }}
 						</td>
 					</tr>
 				</tbody>
@@ -71,7 +92,7 @@
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							{{ $t('total_amount_before_discount') }}
+							{{ $t('Total_without_discount') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -86,7 +107,7 @@
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							{{ $t('total_discounted_amount') }}
+							{{ $t('Total_discount_amount') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
@@ -106,12 +127,12 @@
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							{{ $t('invoiceusagetable_content_2') }}
+							{{ $t('invoiceusagetable_content_1') }}
 						</td>
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							{{ this.$formatMoney(doc.total_before_vat, 0) }} VND
+							{{ doc.formatted.total_before_vat }}
 						</td>
 					</tr>
 					<tr v-if="doc.vat > 0">
@@ -126,7 +147,7 @@
 						<td
 							class="whitespace-nowrap pb-2 pr-2 pt-4 text-right font-semibold"
 						>
-							{{ this.$formatMoney(doc.total - doc.total_before_vat) }} VND
+							{{ formatterMoney(doc.total - doc.total_before_vat, 2) }}
 						</td>
 					</tr>
 					<tr>
@@ -149,24 +170,18 @@
 							<td></td>
 							<td></td>
 							<td></td>
-							<td></td>
-							<td class="whitespace-nowrap pr-2 text-right">
-								{{ $t('applied_balance') }}:
-							</td>
+							<td class="pr-2 text-right">{{ $t('applied_balance') }}:</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
-								- {{ doc.formatted.applied_credits }}
+								- {{ formatterMoney(doc.applied_credits) }}
 							</td>
 						</tr>
 						<tr>
 							<td></td>
 							<td></td>
 							<td></td>
-							<td></td>
-							<td class="whitespace-nowrap pr-2 text-right">
-								{{ $t('amount_due') }}:
-							</td>
+							<td class="pr-2 text-right">{{ $t('amount_due') }}:</td>
 							<td class="whitespace-nowrap py-3 pr-2 text-right font-semibold">
-								{{ doc.formatted.amount_due }}
+								{{ formatterMoney(doc.amount_due) }}
 							</td>
 						</tr>
 					</template>
@@ -207,10 +222,15 @@ export default {
 				this.doc.partner_email && this.doc.partner_email != this.doc.team
 					? this.doc.total_before_discount
 					: this.doc.total;
-			return this.$formatMoney(total, 0) + ' VND';
+			return this.formatterMoney(total);
 		},
 		doc() {
 			return this.invoiceDoc || this.$resources.doc.data;
+		}
+	},
+	methods: {
+		formatterMoney(amount, decimal = 0) {
+			return this.$formatMoney(amount, decimal) + ' VND';
 		}
 	}
 };

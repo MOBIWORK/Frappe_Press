@@ -126,7 +126,7 @@
 										{{ $t('Privacy_Policy') }}
 									</span></Link
 								>
-								{{ $t('of_MBW_Cloud') }}
+								{{ $t('of_EOVCloud') }}
 							</label>
 						</div>
 

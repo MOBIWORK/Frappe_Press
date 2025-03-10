@@ -65,7 +65,7 @@
 			</div>
 		</div>
 		<div
-			v-if="$resources.cashPolicy.data && step == 'Create order'"
+			v-if="$resources.cashPolicy.data?.length && step == 'Create order'"
 			class="mt-5 rounded-lg border p-4"
 		>
 			<div class="text-md font-bold">{{ $t('bonus_policy') }}</div>

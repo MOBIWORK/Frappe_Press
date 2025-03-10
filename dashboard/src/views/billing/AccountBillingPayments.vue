@@ -1,6 +1,6 @@
 <template>
 	<Card
-		:title="$t('past_invoices')"
+		:title="$t('invoices')"
 		:subtitle="this.$t('AccountBillingPayments_1')"
 		v-if="!invoiceName"
 	>
@@ -44,7 +44,7 @@
 							<th
 								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
 							>
-								{{ $t('date') }}
+								{{ $t('invoice_date') }}
 							</th>
 							<th
 								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
@@ -52,9 +52,9 @@
 								{{ $t('description') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
 							>
-								{{ $t('amount_of_money') }}
+								{{ $t('amount_of_money') }} (VND)
 							</th>
 							<th
 								class="sticky top-0 min-w-32 border-b bg-white px-2 py-4 text-left"
@@ -109,20 +109,14 @@
 									{{ $t('Transferred Credits') }}
 								</span>
 							</td>
-							<td class="border-b px-2 py-4">
+							<td class="border-b px-2 py-4 text-right">
 								{{ invoice.formatted_total }}
 							</td>
 							<td class="whitespace-nowrap border-b px-2 py-4">
 								<Badge :label="this.$invoiceStatus(invoice.status)" />
 							</td>
 							<td class="border-b px-2 py-4">
-								<span
-									v-if="
-										invoice.status == 'Paid' &&
-										invoice.type !== 'Prepaid Credits' &&
-										invoice.payment_date
-									"
-								>
+								<span v-if="invoice.payment_date">
 									{{ this.$formatDate(invoice.payment_date) }}
 								</span>
 							</td>

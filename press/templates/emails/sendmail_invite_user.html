@@ -1,0 +1,21 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/saas.html" %} {% set title = title %} {% set image_path =
+image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
+
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white from-markdown">
+        <p>
+            <strong class="text-lg">Chào {{email_recipient}}</strong>,
+        </p>
+        <p>Bạn nhận được lời mời tham gia nền tảng {{service_name}} trên {{site_name}} với vai trò {{role}}.</p>
+        <p>Để kích hoạt tài khoản và bắt đầu sử dụng dịch vụ, vui lòng nhấn vào liên kết sau:</p>
+        {{ utils.button('Chấp nhận lời mời', link_active, true) }}
+        <p>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này.</p>
+        <p><strong>Cần hỗ trợ?</strong> Liên hệ với chúng tôi qua email <strong><a
+                    href="mailto:info@mbw.vn">info@mbw.vn</a></strong>.</p>
+        <p>Trân trọng,</p>
+        <p>EOVCloud</p>
+    </div>
+</td>
+
+{% endblock %}

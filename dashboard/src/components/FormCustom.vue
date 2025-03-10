@@ -4,7 +4,7 @@
 			<FormControl
 				variant="outline"
 				:size="size"
-				:label="$t('full_name')"
+				:label="$t('User_name')"
 				type="text"
 				name="billing_name"
 				:modelValue="modelValue['billing_name']"
@@ -13,7 +13,7 @@
 			<ErrorMessage
 				class="mt-1"
 				v-if="requiredFieldNotSet.includes('billing_name')"
-				:message="$t('full_name') + ` ${$t('cannot_be_left_empty')}`"
+				:message="$t('User_name') + ` ${$t('cannot_be_left_empty')}`"
 			/>
 		</div>
 		<div

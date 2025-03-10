@@ -55,6 +55,7 @@ export default {
 				country: '',
 				gstin: '',
 				billing_name: '',
+				company_name: '',
 				number_of_employees: '',
 				areas_of_concern: '',
 				enterprise: ''
@@ -84,6 +85,7 @@ export default {
 								? ''
 								: billingInformation.gstin,
 						billing_name: billingInformation.billing_name,
+						company_name: billingInformation.company_name,
 						number_of_employees: billingInformation.number_of_employees,
 						areas_of_concern: billingInformation.areas_of_concern
 					});

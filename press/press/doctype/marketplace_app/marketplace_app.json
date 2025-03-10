@@ -9,8 +9,9 @@
  "field_order": [
   "image",
   "app",
-  "service_id",
   "title",
+  "service_id",
+  "item_description",
   "column_break_3",
   "team",
   "route",
@@ -360,6 +361,11 @@
    "fieldname": "service_id",
    "fieldtype": "Data",
    "label": "Service ID"
+  },
+  {
+   "fieldname": "item_description",
+   "fieldtype": "Small Text",
+   "label": "Item Description"
   }
  ],
  "has_web_view": 1,
@@ -383,7 +389,7 @@
    "link_fieldname": "app"
   }
  ],
- "modified": "2025-02-28 11:24:57.343245",
+ "modified": "2025-03-05 15:43:15.918146",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Marketplace App",

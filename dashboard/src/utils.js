@@ -18,7 +18,7 @@ let utils = {
 
 			return '';
 		},
-		$validdateInput(val, type) {
+		$validdateInput(val, type, req = 1) {
 			let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 			let phoneRegex = /(((\+|)84)|0)(3|5|7|8|9)+([0-9]{8})\b/;
 			let passwordRegex =
@@ -26,13 +26,13 @@ let utils = {
 			let msgError = '';
 			switch (type) {
 				case 'term':
-					if (!val) {
+					if (!val && req) {
 						msgError = 'SetupAccount_content_6';
 						break;
 					}
 					break;
 				case 'phone':
-					if (!val) {
+					if (!val && req) {
 						msgError = 'utils_content_14';
 						break;
 					}
@@ -41,19 +41,19 @@ let utils = {
 					}
 					break;
 				case 'full_name':
-					if (!val) {
+					if (!val && req) {
 						msgError = 'SetupAccount_content_5';
 						break;
 					}
 					break;
 				case 'email1':
-					if (!val) {
+					if (!val && req) {
 						msgError = 'utils_content_11';
 						break;
 					}
 					break;
 				case 'email':
-					if (!val) {
+					if (!val && req) {
 						msgError = 'utils_content_11';
 						break;
 					}
@@ -62,12 +62,12 @@ let utils = {
 					}
 					break;
 				case 'password':
-					if (!val) {
+					if (!val && req) {
 						msgError = 'utils_content_12';
 					}
 					break;
 				case 'password1':
-					if (!val) {
+					if (!val && req) {
 						msgError = 'utils_content_12';
 						break;
 					}

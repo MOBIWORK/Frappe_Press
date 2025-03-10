@@ -194,7 +194,7 @@
 							>{{ $t('NewServer_content_2') }}
 						</span></Link
 					>
-					{{ $t('of_MBW_Cloud') }}
+					{{ $t('of_EOVCloud') }}
 				</label>
 			</div>
 		</div>

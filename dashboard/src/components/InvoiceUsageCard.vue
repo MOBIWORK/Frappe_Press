@@ -1,7 +1,10 @@
 <template>
-	<Card v-if="invoice" :title="title">
+	<Card v-if="invoice" :title="title" :description="description">
 		<template #actions-left>
 			<Button route="/billing/invoices"> ← {{ $t('back') }} </Button>
+		</template>
+		<template #info-more>
+			<Badge :label="this.$invoiceStatus(invoice?.status || doc?.status)" />
 		</template>
 		<InvoiceUsageTable :invoice="invoice" @doc="doc = $event" />
 	</Card>
@@ -21,6 +24,13 @@ export default {
 	},
 	computed: {
 		title() {
+			let doc = this.doc;
+			if (!doc) {
+				return '';
+			}
+			return doc.name;
+		},
+		description() {
 			let doc = this.doc;
 			if (!doc) {
 				return '';

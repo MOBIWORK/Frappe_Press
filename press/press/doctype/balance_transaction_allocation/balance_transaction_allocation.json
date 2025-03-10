@@ -29,6 +29,7 @@
    "options": "currency"
   },
   {
+   "columns": 1,
    "fieldname": "currency",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -36,6 +37,7 @@
    "options": "Currency"
   },
   {
+   "columns": 1,
    "fieldname": "balance_transaction",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -46,24 +48,28 @@
    "fieldtype": "Column Break"
   },
   {
+   "columns": 2,
    "default": "0",
    "fieldname": "amount_promotion_1",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 1",
-   "options": "Currency"
+   "options": "currency"
   },
   {
+   "columns": 2,
    "default": "0",
    "fieldname": "amount_promotion_2",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Ti\u1ec1n khuy\u1ebfn m\u1ea1i 2",
-   "options": "Currency"
+   "options": "currency"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-29 08:50:27.121677",
+ "modified": "2025-03-04 09:48:57.680886",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction Allocation",

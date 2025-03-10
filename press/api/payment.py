@@ -120,31 +120,34 @@ def webhook_payment(**webhookBody):
         payos_settings = check_payos_settings()
         data = webhookBody.get('data')
         if type(data) != dict:
-            doc_log.message = 'Dữ liệu webhook không đúng định dạng.'
+            msg = 'Dữ liệu webhook không đúng định dạng.'
+            doc_log.message = msg
             doc_log.insert(ignore_permissions=True)
             return {
                 'code': '1',
-                'desc': 'Dữ liệu webhook không đúng định dạng.'
+                'desc': msg
             }
 
         name = frappe.db.get_value(
             'Balance Transaction', {'order_code': data.get('orderCode')}, ['name'])
         if not payos_settings:
-            doc_log.message = 'Vui lòng cấu hình đầy đủ thông tin PayOs trong Press Settings.'
+            msg = 'Vui lòng cấu hình đầy đủ thông tin PayOs trong Press Settings.'
+            doc_log.message = 
             doc_log.insert(ignore_permissions=True)
 
             return {
                 'code': '1',
-                'desc': 'Vui lòng cấu hình đầy đủ thông tin PayOs trong Press Settings.'
+                'desc': msg
             }
 
         if not name:
-            doc_log.message = 'Không tìm thấy giao dịch.'
+            msg = 'Không tìm thấy giao dịch.'
+            doc_log.message = msg
             doc_log.insert(ignore_permissions=True)
 
             return {
                 'code': '1',
-                'desc': 'Không tìm thấy giao dịch.'
+                'desc': msg
             }
 
         payOS = PayOS(client_id=payos_settings.get('payos_client_id'), api_key=payos_settings.get(
@@ -155,11 +158,12 @@ def webhook_payment(**webhookBody):
         balance_transaction = frappe.get_doc(
             "Balance Transaction", name)
         if balance_transaction.docstatus != 0:
-            doc_log.message = 'Giao dịch đã thanh toán hoặc hủy trước đó.'
+            msg = 'Giao dịch đã thanh toán hoặc hủy trước đó.'
+            doc_log.message = msg
             doc_log.insert(ignore_permissions=True)
             return {
                 'code': '1',
-                'desc': 'Giao dịch đã thanh toán hoặc hủy trước đó.'
+                'desc': msg
             }
 
         balance_transaction.docstatus = 1
@@ -167,9 +171,10 @@ def webhook_payment(**webhookBody):
         balance_transaction.save(ignore_permissions=True)
 
         # send email template
+        msg = 'Thanh toán thành công.'
         balance_transaction.reload()
-        msg_send = send_email_confirm_money_into_account(
-            balance_transaction) or 'Thanh toán thành công.'
+        msg_send = msg + ' | ' + send_email_confirm_money_into_account(
+            balance_transaction) 
 
         doc_log.code = '00'
         doc_log.message = msg_send
@@ -180,7 +185,7 @@ def webhook_payment(**webhookBody):
 
         return {
             'code': '00',
-            'desc': 'Thanh toán thành công.'
+            'desc': msg
         }
     except Exception as ex:
         doc_log.code = '1'

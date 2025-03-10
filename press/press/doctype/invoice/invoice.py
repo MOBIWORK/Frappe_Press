@@ -6,9 +6,9 @@ import frappe
 
 from frappe import _
 from enum import Enum
-from press.utils import log_error, check_promotion
+from press.utils import log_error, check_promotion_expire
 from frappe.core.utils import find_all
-from frappe.utils import getdate, cint
+from frappe.utils import getdate, cint, flt
 from frappe.utils.data import fmt_money
 from press.api.billing import get_stripe
 from frappe.model.document import Document
@@ -34,18 +34,54 @@ class Invoice(Document):
         self.validate_dates()
         self.validate_duplicate()
         self.validate_items()
-        self.validate_amount()
+        self.calculate_values()
         self.compute_free_credits()
 
     def before_submit(self):
         if self.total > 0 and self.status != "Paid":
             frappe.throw("Invoice must be Paid to be submitted")
+    
+    def calculate_total(self):
+        total = 0
+        for item in self.items:
+            total += item.amount
+        self.total = flt(total, 2)
+    
+    def calculate_discounts(self):
+        self.total_discount_amount = sum([(item.discount or 0) for item in self.items]) + sum([(d.amount or 0) for d in self.discounts])
+        # TODO: handle percent discount from discount table
+        
+        self.total_before_discount = self.total
+        self.total_before_vat = self.total_before_discount - self.total_discount_amount
+        self.total = flt(self.total_before_discount - self.total_discount_amount, 0)
+    
+    def calculate_amount_due(self):
+        self.amount_due = flt(self.total - self.applied_credits, 0)
+    
+    def apply_taxes_if_applicable(self):
+        if self.vat is None:
+            vat_percentage = frappe.db.get_single_value(
+                "Press Settings", "vat_percentage") or 0
+            self.vat = vat_percentage
+        amount_vat = rounded(self.total_before_vat * self.vat / 100, 2)
+        self.total = rounded(self.total_before_vat + amount_vat)
+        self.calculate_amount_due()
+    
+    def calculate_values(self):
+        if self.status == "Paid" and self.docstatus == 1:
+            # don't calculate if already invoice is paid and already submitted
+            return
+        self.calculate_total()
+        self.calculate_discounts()
+        self.apply_taxes_if_applicable()
 
     @frappe.whitelist()
     def finalize_invoice(self):
         if self.type == "Prepaid Credits":
             return
 
+        self.calculate_values()
+        
         if self.total == 0:
             self.status = "Empty"
             self.submit()
@@ -62,97 +98,66 @@ class Invoice(Document):
 
         # set as unpaid by default
         self.status = "Unpaid"
+        self.update_item_descriptions()
+        
+        if self.amount_due > 0:
+            self.apply_credit_balance()
 
-        self.amount_due = self.total
-
-        if self.payment_mode == "Partner Credits":
-            self.payment_attempt_count += 1
-            self.save()
-            frappe.db.commit()
-
-            self.cancel_applied_credits()
-            self.apply_partner_credits()
-            return
-
-        self.apply_credit_balance()
         if self.amount_due == 0:
             self.status = "Paid"
+            self.payment_date = datetime.now()
 
-        self.update_item_descriptions()
-
-        if self.payment_mode == "Prepaid Credits" and self.amount_due > 0:
-            self.payment_attempt_count += 1
-            self.save()
-            frappe.db.commit()
-
-            frappe.throw(
-                "Not enough credits for this invoice."
-            )
-
-        # try:
-        #     self.create_stripe_invoice()
-        # except Exception:
-        #     frappe.db.rollback()
-        #     self.reload()
-
-        #     # log the traceback as comment
-        #     msg = "<pre><code>" + frappe.get_traceback() + "</pre></code>"
-        #     self.add_comment("Comment", _(
-        #         "Stripe Invoice Creation Failed") + "<br><br>" + msg)
-
-        #     if not self.stripe_invoice_id:
-        #         # if stripe invoice was created, find it and set it
-        #         # so that we avoid scenarios where Stripe Invoice was created but not set in Frappe Cloud
-        #         stripe_invoice_id = self.find_stripe_invoice()
-        #         if stripe_invoice_id:
-        #             self.stripe_invoice_id = stripe_invoice_id
-        #             self.status = "Invoice Created"
-        #             self.save()
-
-        #     frappe.db.commit()
-
-        #     raise
+        if self.amount_due > 0:
+            if self.payment_mode == "Prepaid Credits":
+                self.payment_attempt_count += 1                
+                self.add_comment(
+                    "Comment",
+                    "Not enough credits for this invoice.",
+                )
 
         self.save()
 
         if self.status == "Paid":
             self.submit()
-
-            if (
-                    frappe.db.count(
-                        "Invoice",
-                        {
-                            "status": "Unpaid",
-                            "team": self.team,
-                            "type": "Subscription",
-                                    "docstatus": ("<", 2),
-                        },
-                    )
-                    == 0
-            ):
-                # unsuspend sites only if all invoices are paid
-                team = frappe.get_cached_doc("Team", self.team)
-                team.unsuspend_sites(
-                    f"Invoice {self.name} Payment Successful.")
-
-            # update service ai
-            if self.period_start and self.period_end:
-                date_obj = datetime.strptime(self.period_end, "%Y-%m-%d")
-                new_date = date_obj + timedelta(days=1)
-                end_time = new_date.strftime("%Y-%m-%d")
-                
-                frappe.db.sql(
-                    f"""
-                    UPDATE
-                        `tabRequest Service AI` r
-                    SET
-                        status = 'Settled'
-                    WHERE
-                        r.start_time >= {self.period_start}
-                    AND
-                       r.start_time < {end_time}
+            self.unsuspend_sites_if_applicable()
+            self.update_request_service_ai()
+            
+    
+    def unsuspend_sites_if_applicable(self):
+        if (
+            frappe.db.count(
+                "Invoice",
+                {
+                    "status": "Unpaid",
+                    "team": self.team,
+                    "type": "Subscription",
+                    "docstatus": ("<", 2),
+                },
+            )
+            == 0
+        ):
+            # unsuspend sites only if all invoices are paid
+            team = frappe.get_cached_doc("Team", self.team)
+            team.unsuspend_sites(f"Invoice {self.name} Payment Successful.")
+    
+    def update_request_service_ai(self):
+        # update service ai
+        if self.period_start and self.period_end:
+            date_obj = datetime.strptime(str(self.period_end), "%Y-%m-%d")
+            new_date = date_obj + timedelta(days=1)
+            start_time = str(self.period_start)
+            end_time = new_date.strftime("%Y-%m-%d")
+            
+            frappe.db.sql(
                 """
-                )
+                UPDATE `tabRequest Service AI`
+                SET status = 'Settled'
+                WHERE start_time >= %s
+                AND start_time < %s
+                """,
+                (start_time, end_time)
+            )
+    
     def on_submit(self):
         pass
         # self.create_invoice_on_frappeio()
@@ -384,6 +389,9 @@ class Invoice(Document):
         if usage_record.payout:
             self.payout += usage_record.payout
 
+        self.validate_items()
+        self.calculate_values()
+        self.add_discount_if_available()
         self.save()
         usage_record.db_set("invoice", self.name)
 
@@ -430,23 +438,10 @@ class Invoice(Document):
             if row.quantity == 0:
                 items_to_remove.append(row)
             else:
-                row.amount = rounded(row.quantity * row.rate)
+                row.amount = rounded(row.quantity * row.rate, 2)
 
         for item in items_to_remove:
             self.remove(item)
-
-    def validate_amount(self):
-        # Already Submitted
-        if self.docstatus == 1:
-            return
-
-        total = 0
-        for item in self.items:
-            total += item.amount
-
-        self.total_before_discount = total
-        self.set_total_and_discount()
-        self.set_total_and_vat()
 
     def compute_free_credits(self):
         self.free_credits = sum(
@@ -594,46 +589,44 @@ class Invoice(Document):
                 text="Failed to pay via Partner credits" + "<br><br>" + response.text
             )
 
-    def apply_credit_balance(self):
-        # cancel applied credits to re-apply available credits
-        self.cancel_applied_credits()
-
-        balance = frappe.get_cached_doc("Team", self.team).get_balance_all()
-        if balance <= 0:
-            return
+    def add_discount_if_available(self):
+        team = frappe.get_cached_doc("Team", self.team)
 
         values = {'team': self.team}
         unallocated_balances = frappe.db.sql("""
             SELECT
                 bt.name,
-                bt.unallocated_amount,
                 bt.unallocated_amount_1,
                 bt.unallocated_amount_2,
                 bt.source
             FROM `tabBalance Transaction` bt
             WHERE bt.team = %(team)s
             AND bt.type = 'Adjustment'
-            AND (bt.unallocated_amount > 0 OR bt.unallocated_amount_1 > 0 OR bt.unallocated_amount_2 > 0)
+            AND (bt.unallocated_amount_1 > 0 OR bt.unallocated_amount_2 > 0)
             AND bt.docstatus < 2
+            ORDER BY bt.creation DESC
         """, values=values, as_dict=1)
         # sort by ascending for FIFO
         unallocated_balances.reverse()
 
-        total_allocated = 0
         total_allocated_1 = 0
         total_allocated_2 = 0
-        # tien con phai tra cho hoa don
-        due = self.total
+        
+        # so tien chua co VAT
+        total_before_vat = self.total_before_vat
         # ap dung km1
         for balance in unallocated_balances:
-            if due == 0:
+            if total_before_vat == 0:
                 break
-
             # so tien km1 tra duoc
             allocated_promotion_1 = balance.unallocated_amount_1 or 0
-            if allocated_promotion_1>0:
-                allocated_promotion_1 = min(due, allocated_promotion_1)
-                due -= allocated_promotion_1
+            if allocated_promotion_1 > 0:
+                promotion_expire = check_promotion_expire(balance.name)
+                if promotion_expire:
+                    continue
+
+                allocated_promotion_1 = min(total_before_vat, allocated_promotion_1)
+                total_before_vat -= allocated_promotion_1
 
                 self.append(
                     "credit_allocations",
@@ -660,11 +653,207 @@ class Invoice(Document):
                 doc.save()
                 total_allocated_1 += allocated_promotion_1
 
+        # ap dung km2
+        for balance in unallocated_balances:
+            if total_before_vat == 0:
+                break
+            # so tien km2 tra duoc
+            allocated_promotion_2 = balance.unallocated_amount_2 or 0
+            if allocated_promotion_2>0:
+                allocated_promotion_2 = min(total_before_vat, allocated_promotion_2)
+                total_before_vat -= allocated_promotion_2
+
+                self.append(
+                    "credit_allocations",
+                    {
+                        "transaction": balance.name,
+                        "amount": 0,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": allocated_promotion_2,
+                        "currency": self.currency,
+                        "source": balance.source,
+                    },
+                )
+                doc = frappe.get_doc("Balance Transaction", balance.name)
+                doc.append(
+                    "allocated_to",
+                    {
+                        "invoice": self.name,
+                        "amount": 0,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": allocated_promotion_2,
+                        "currency": self.currency
+                    },
+                )
+                doc.save()
+                total_allocated_2 += allocated_promotion_2
+        
+        # them km vao discount
+        tien_km_ap_dung = total_allocated_1 + total_allocated_2
+        if tien_km_ap_dung > 0:
+            if len(self.discounts) and self.discounts[0].based_on == "Amount":
+                doc_discount = self.discounts[0]
+                doc_discount.amount = doc_discount.amount + tien_km_ap_dung
+            else:
+                self.append(
+                    "discounts",
+                    {
+                        "discount_type": "Flat On Total",
+                        "based_on": "Amount",
+                        "amount": tien_km_ap_dung,
+                        "note": "Tien khuyen mai",
+                    },
+                )
+            
+            self.apply_balance_of_expenses(0, total_allocated_1, total_allocated_2)
+    
+    def apply_balance_of_expenses(self, total_allocated=0, total_allocated_1=0, total_allocated_2=0):
+        # tru so tien sau khi chi tra hoa don
+        balance_transaction = frappe.get_doc(
+            doctype="Balance Transaction",
+            team=self.team,
+            type="Applied To Invoice",
+            amount=total_allocated * -1,
+            amount_promotion_1=total_allocated_1 * -1,
+            amount_promotion_2=total_allocated_2 * -1,
+            invoice=self.name,
+        ).insert()
+        balance_transaction.submit()
+
+        self.applied_credits = sum(row.amount for row in self.credit_allocations)
+        # tinh toan lai so tien
+        self.calculate_values()
+
+    
+    def apply_credit_balance(self):
+        balance_all = frappe.get_cached_doc("Team", self.team).get_balance_all()
+        if balance_all <= 0:
+            return
+
+        values = {'team': self.team}
+        unallocated_balances = frappe.db.sql("""
+            SELECT
+                bt.name,
+                bt.unallocated_amount,
+                bt.unallocated_amount_1,
+                bt.unallocated_amount_2,
+                bt.source
+            FROM `tabBalance Transaction` bt
+            WHERE bt.team = %(team)s
+            AND bt.type = 'Adjustment'
+            AND (bt.unallocated_amount > 0 OR bt.unallocated_amount_1 > 0 OR bt.unallocated_amount_2 > 0)
+            AND bt.docstatus < 2
+            ORDER BY bt.creation DESC
+        """, values=values, as_dict=1)
+        # sort by ascending for FIFO
+        unallocated_balances.reverse()
+
+        total_allocated = 0
+        total_allocated_1 = 0
+        total_allocated_2 = 0
+        
+        # so tien chua co VAT
+        total_before_vat = self.total_before_vat
+        # ap dung km1
+        for balance in unallocated_balances:
+            if total_before_vat == 0:
+                break
+            # so tien km1 tra duoc
+            allocated_promotion_1 = balance.unallocated_amount_1 or 0
+            if allocated_promotion_1 > 0:
+                promotion_expire = check_promotion_expire(balance.name)
+                if promotion_expire:
+                    continue
+
+                allocated_promotion_1 = min(total_before_vat, allocated_promotion_1)
+                total_before_vat -= allocated_promotion_1
+
+                self.append(
+                    "credit_allocations",
+                    {
+                        "transaction": balance.name,
+                        "amount": 0,
+                        "amount_promotion_1": allocated_promotion_1,
+                        "amount_promotion_2": 0,
+                        "currency": self.currency,
+                        "source": balance.source,
+                    },
+                )
+                doc = frappe.get_doc("Balance Transaction", balance.name)
+                doc.append(
+                    "allocated_to",
+                    {
+                        "invoice": self.name,
+                        "amount": 0,
+                        "amount_promotion_1": allocated_promotion_1,
+                        "amount_promotion_2": 0,
+                        "currency": self.currency
+                    },
+                )
+                doc.save()
+                total_allocated_1 += allocated_promotion_1
+
+        # ap dung km2
+        for balance in unallocated_balances:
+            if total_before_vat == 0:
+                break
+            # so tien km2 tra duoc
+            allocated_promotion_2 = balance.unallocated_amount_2 or 0
+            if allocated_promotion_2>0:
+                allocated_promotion_2 = min(total_before_vat, allocated_promotion_2)
+                total_before_vat -= allocated_promotion_2
+
+                self.append(
+                    "credit_allocations",
+                    {
+                        "transaction": balance.name,
+                        "amount": 0,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": allocated_promotion_2,
+                        "currency": self.currency,
+                        "source": balance.source,
+                    },
+                )
+                doc = frappe.get_doc("Balance Transaction", balance.name)
+                doc.append(
+                    "allocated_to",
+                    {
+                        "invoice": self.name,
+                        "amount": 0,
+                        "amount_promotion_1": 0,
+                        "amount_promotion_2": allocated_promotion_2,
+                        "currency": self.currency
+                    },
+                )
+                doc.save()
+                total_allocated_2 += allocated_promotion_2
+        
+        # them km vao discount
+        tien_km_ap_dung = total_allocated_1 + total_allocated_2
+        if tien_km_ap_dung > 0:
+            if len(self.discounts) and self.discounts[0].based_on == "Amount":
+                doc_discount = self.discounts[0]
+                doc_discount.amount = doc_discount.amount + tien_km_ap_dung
+            else:
+                self.append(
+                    "discounts",
+                    {
+                        "discount_type": "Flat On Total",
+                        "based_on": "Amount",
+                        "amount": tien_km_ap_dung,
+                        "note": "Tien khuyen mai",
+                    },
+                )
+
+            # tinh toan lai so tien khi ap dung km
+            self.calculate_values()
+        
+        # tien con phai tra cho hoa don
+        due = self.amount_due
         # ap dung so tien goc
         for balance in unallocated_balances:
             if due == 0:
                 break
-
             # so tien goc tra duoc
             allocated_root = balance.unallocated_amount or 0
             if allocated_root>0:
@@ -696,90 +885,8 @@ class Invoice(Document):
                 doc.save()
                 total_allocated += allocated_root
         
-        # ap dung km2
-        for balance in unallocated_balances:
-            if due == 0:
-                break
+        self.apply_balance_of_expenses(total_allocated, total_allocated_1, total_allocated_2)
 
-            # so tien km2 tra duoc
-            allocated_promotion_2 = balance.unallocated_amount_2 or 0
-            if allocated_promotion_2>0:
-                allocated_promotion_2 = min(due, allocated_promotion_2)
-                due -= allocated_promotion_2
-
-                self.append(
-                    "credit_allocations",
-                    {
-                        "transaction": balance.name,
-                        "amount": 0,
-                        "amount_promotion_1": 0,
-                        "amount_promotion_2": allocated_promotion_2,
-                        "currency": self.currency,
-                        "source": balance.source,
-                    },
-                )
-                doc = frappe.get_doc("Balance Transaction", balance.name)
-                doc.append(
-                    "allocated_to",
-                    {
-                        "invoice": self.name,
-                        "amount": 0,
-                        "amount_promotion_1": 0,
-                        "amount_promotion_2": allocated_promotion_2,
-                        "currency": self.currency
-                    },
-                )
-                doc.save()
-                total_allocated_2 += allocated_promotion_2
-
-        # tinh toan so tien sau khi chi tra hoa don
-        balance_transaction = frappe.get_doc(
-            doctype="Balance Transaction",
-            team=self.team,
-            type="Applied To Invoice",
-            amount=total_allocated * -1,
-            amount_promotion_1=total_allocated_1 * -1,
-            amount_promotion_2=total_allocated_2 * -1,
-            invoice=self.name,
-        ).insert()
-        balance_transaction.submit()
-
-        self.applied_credits = total_allocated + total_allocated_1 + total_allocated_2
-        self.amount_due = self.total - self.applied_credits
-
-    def cancel_applied_credits(self):
-        # kiem tra xem con ap dung khuyen mai 1 khong, de tra lai khuyen mai 1
-        val_check_promotion = check_promotion(self.team)
-
-        # thuc hien huy phan bo lai so tien
-        for row in self.credit_allocations:
-            amount_promotion_1 = 0
-            # tra lai so tien km1 khi con thoi han
-            if val_check_promotion:
-                amount_promotion_1 = row.amount_promotion_1
-
-            doc = frappe.get_doc(
-                doctype="Balance Transaction",
-                type="Adjustment",
-                source=row.source,
-                team=self.team,
-                amount=row.amount,
-                amount_promotion_1=amount_promotion_1,
-                amount_promotion_2=row.amount_promotion_2,
-                description=(
-                    f"Reverse amount {row.get_formatted('amount')} of {row.transaction}"
-                    f" from invoice {self.name}"
-                ),
-            ).insert()
-            doc.submit()
-            self.applied_credits -= (row.amount +
-                                     row.amount_promotion_1 + row.amount_promotion_2)
-
-        self.clear_credit_allocation_table()
-        self.save()
-
-    def clear_credit_allocation_table(self):
-        self.set("credit_allocations", [])
 
     def create_next(self):
         # the next invoice's period starts after this invoice ends
@@ -1084,7 +1191,7 @@ def finalize_unpaid_prepaid_credit_invoices():
             "status": "Unpaid",
             "type": "Subscription",
             "period_end": ("<=", today),
-            "payment_mode": ("in", ["Prepaid Credits", "Partner Credits"]),
+            "payment_mode": "Prepaid Credits",
         },
         pluck="name",
     )

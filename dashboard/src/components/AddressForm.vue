@@ -85,11 +85,7 @@ export default {
 			});
 		},
 		async validateValues() {
-			let { country } = this.address;
-			let is_india = country == 'India';
-			let valueExists = this.fields
-				.flat()
-				.filter(df => df.fieldname != 'gstin' || is_india);
+			let valueExists = this.fields.flat().filter(df => df.required == 1);
 			let values = valueExists.map(df => this.address[df.fieldname]);
 			let fieldNotSetNew = valueExists
 				.filter(
@@ -101,12 +97,11 @@ export default {
 				.map(df => df.fieldname);
 
 			let fieldEx = [
-				'state',
-				'county',
-				'enterprise',
-				'billing_name',
-				'address',
-				'phone'
+				// 'state',
+				// 'county',
+				// 'enterprise',
+				// 'billing_name',
+				// 'address'
 			];
 			if (this.address['enterprise'] == 'Công ty') {
 				fieldEx.push('tax_code');
@@ -122,7 +117,7 @@ export default {
 				}
 				if (el == 'phone') {
 					// phone
-					let rs = this.$validdateInput(this.address[el], 'phone');
+					let rs = this.$validdateInput(this.address[el], 'phone', 0);
 					if (rs[0]) {
 						values.push(null);
 						fieldNotSetNew.push(el);
@@ -168,17 +163,24 @@ export default {
 				// 	size: this.size
 				// },
 				{
+					fieldtype: 'Company name',
+					label: this.$t('Company_name'),
+					fieldname: 'company_name',
+					required: 0,
+					size: this.size
+				},
+				{
 					fieldtype: 'Email',
 					label: this.$t('Invoice_email'),
 					fieldname: 'email_id',
-					required: 1,
+					required: 0,
 					size: this.size
 				},
 				{
 					fieldtype: 'Data',
 					label: this.$t('phone'),
 					fieldname: 'phone',
-					required: 1,
+					required: 0,
 					size: this.size
 				}
 				// {

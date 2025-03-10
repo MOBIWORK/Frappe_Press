@@ -51,24 +51,24 @@
 								{{ $t('description') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
 							>
 								{{ $t('processing_unit') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
 							>
-								{{ $t('unit_price') }}
+								{{ $t('unit_price') }} (VND)
 							</th>
 							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
 							>
-								{{ $t('VAT') }}
+								{{ $t('VAT') }} (%)
 							</th>
 							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
 							>
-								{{ $t('Amount') }}
+								{{ $t('Amount') }} (VND)
 							</th>
 						</tr>
 					</thead>
@@ -96,12 +96,18 @@
 							<td class="border-b px-2 py-4">
 								{{ d.description }}
 							</td>
-							<td class="border-b px-2 py-4">
+							<td class="border-b px-2 py-4 text-right">
 								{{ d.formatted.processing_unit }}
 							</td>
-							<td class="border-b px-2 py-4">{{ d.formatted.unit_price }}</td>
-							<td class="border-b px-2 py-4">{{ d.formatted.vat }}%</td>
-							<td class="border-b px-2 py-4">{{ d.formatted.amount }}</td>
+							<td class="border-b px-2 py-4 text-right">
+								{{ d.formatted.unit_price }}
+							</td>
+							<td class="border-b px-2 py-4 text-right">
+								{{ d.formatted.vat }}
+							</td>
+							<td class="border-b px-2 py-4 text-right">
+								{{ d.formatted.amount }}
+							</td>
 						</tr>
 					</tbody>
 					<tbody class="text-center text-base text-gray-600" v-else>

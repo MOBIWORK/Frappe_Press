@@ -484,57 +484,36 @@ def check_payos_settings():
     return payos_settings
 
 
-def check_promotion(team, date_promotion_1=None):
-    if not date_promotion_1:
-        date_promotion_1 = frappe.db.get_all(
-            "Balance Transaction",
-            fields=['date_promotion_1'],
-            filters={"team": team, "docstatus": 1},
-            order_by="creation desc",
-            pluck='date_promotion_1',
-            limit=1,
-        )
-        date_promotion_1 = date_promotion_1[0] if date_promotion_1 else None
-    number_days_promotion = frappe.db.get_single_value(
-        "Press Settings", "number_days_promotion") or 0
-
-    if not date_promotion_1 or not number_days_promotion or number_days_promotion == 0:
-        return False
-
+def check_promotion_expire(tran_name):
+    balance_tran = frappe.db.get_value('Balance Transaction', tran_name, ['date_promotion_1', 'unallocated_amount_1'], as_dict=1)
+    
+    if not balance_tran.date_promotion_1 or not balance_tran.unallocated_amount_1:
+        return True
+    
+    date_promotion_1 = balance_tran.date_promotion_1
     date_now = frappe.utils.now_datetime()
     if type(date_promotion_1) == str:
-        date_2 = date_promotion_1 + " 00:00:00"
+        expire_date = date_promotion_1 + " 00:00:00"
     else:
-        date_2 = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
-    date_2 = datetime.strptime(date_2, '%Y-%m-%d 00:00:00')
-    end_date = date_2 + timedelta(days=number_days_promotion)
+        expire_date = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
+    expire_date = datetime.strptime(expire_date, '%Y-%m-%d 00:00:00')
 
-    if date_now >= end_date:
-        return False
-    return True
+    if date_now >= expire_date:
+        return True
+    return False
 
 
-def get_date_expire_promotion(team, date_promotion_1=None):
+def get_date_expire_promotion(tran_name, date_promotion_1=None):
     if not date_promotion_1:
-        date_promotion_1 = frappe.db.get_all(
-            "Balance Transaction",
-            fields=['date_promotion_1'],
-            filters={"team": team, "docstatus": 1},
-            order_by="creation desc",
-            pluck='date_promotion_1',
-            limit=1,
-        )
-        date_promotion_1 = date_promotion_1[0] if date_promotion_1 else None
-    number_days_promotion = frappe.db.get_single_value(
-        "Press Settings", "number_days_promotion") or 0
+        date_promotion_1 = frappe.db.get_value('Balance Transaction', tran_name, ['date_promotion_1'])
 
-    if not date_promotion_1 or not number_days_promotion or number_days_promotion == 0:
+    if not date_promotion_1:
         return None
 
     if type(date_promotion_1) == str:
-        date_2 = date_promotion_1 + " 00:00:00"
+        expire_date = date_promotion_1 + " 00:00:00"
     else:
-        date_2 = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
-    date_2 = datetime.strptime(date_2, '%Y-%m-%d 00:00:00')
-    end_date = date_2 + timedelta(days=number_days_promotion-1)
-    return end_date
+        expire_date = date_promotion_1.strftime('%Y-%m-%d 00:00:00')
+    expire_date = datetime.strptime(expire_date, '%Y-%m-%d 00:00:00')
+    expire_date -= timedelta(days=1)
+    return expire_date.strftime('%d-%m-%Y')

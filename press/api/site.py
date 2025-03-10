@@ -99,33 +99,17 @@ def protected(doctypes):
     return wrapper
 
 
-def validate_balance_account(site):
+def validate_balance_account(site, lang = 'vi'):
     # lay so du kha dung
     team = get_current_team(True)
     invoice = team.get_upcoming_invoice()
-    amount_available_credits = team.get_balance_all()
-    amount_upcoming_invoice = 0
-    vat = 0
-    unpaid_amount_due = (
-        frappe.get_all(
-            "Invoice",
-            {"status": "Unpaid", "team": get_current_team(),
-             "type": "Subscription"},
-            ["sum(total) as total"],
-            pluck="total",
-        )[0]
-        or 0
-    )
-
     if invoice:
         vat = invoice.vat or 0
-        upcoming_invoice = invoice.as_dict()
-        amount_upcoming_invoice = upcoming_invoice.get('total')
     else:
         vat = frappe.db.get_single_value(
             "Press Settings", "vat_percentage") or 0
-    available_balances = amount_available_credits - \
-        amount_upcoming_invoice - unpaid_amount_due
+    
+    available_balances = team.available_balance()
 
     # tinh so tien cho cac goi dang ky
     total_amount = 0
@@ -167,15 +151,14 @@ def validate_balance_account(site):
     total_amount = total_amount + fee_vat
     # kiem tra so du
     if total_amount > available_balances:
-        frappe.throw(
-            "Số dư tài khoản không đủ để tạo tổ chức")
+        frappe.throw(_("The account balance is insufficient to create a site.", lang))
 
 
 def _new(site, server: str = None, ignore_plan_validation: bool = False, lang='vi'):
     team = get_current_team(get_doc=True)
 
     if site.get('plan') != 'Unlimited':
-        validate_balance_account(site)
+        validate_balance_account(site, lang=lang)
 
     if not team.enabled:
         frappe.throw(
@@ -1303,7 +1286,7 @@ def current_plan(name):
 def change_plan(name, plan, lang='vi'):
     site = frappe.get_doc("Site", name)
     validate_plan(site.server, plan, lang)
-    site.change_plan(plan)
+    site.change_plan(plan, lang=lang)
 
 
 @frappe.whitelist()

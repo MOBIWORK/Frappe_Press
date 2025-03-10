@@ -253,7 +253,7 @@ def suspend_site_when_account_balance_is_insufficient():
                 available_balances = team.available_balance()
                 amount_remaining_x = available_balances - total_prior_x
 
-            update_sub = False
+            update_sub = True
             if amount_remaining_x >= 0:
                 balance_prior[team_name] = amount_remaining_x
                 # cap nhat lai so lan su dung bang 0
@@ -264,14 +264,16 @@ def suspend_site_when_account_balance_is_insufficient():
                 if number_warn <= num_advance_warning:
                     subscription.estimated_number_of_notifications = number_warn
                     send_email_handle_site('prior', site_name, team)
+                else:
+                    update_sub = False
             
             if update_sub:
                 # cap nhat subscription
                 subscription.save(ignore_permissions=True)
                 frappe.db.commit()
                 subscription.reload()
-                update_sub = False
-                    
+            
+            update_sub = True
             # luu lai so tien con lai khi su dung cua 1 site
             if available_balances_team.get(team_name):
                 amount_remaining = available_balances_team[team_name] - \
@@ -285,11 +287,11 @@ def suspend_site_when_account_balance_is_insufficient():
                 available_balances_team[team_name] = amount_remaining
                 # cap nhat lai so lan su dung bang 0
                 subscription.number_days_used = 0
-                update_sub = True
             else:
                 # kiem tra so ngay de khoa site
                 number_days_used = (subscription.number_days_used or 0) + 1
                 if number_days_used > site_num_days_past_lock:
+                    update_sub = False
                     # khoa site
                     reason = 'Khong du so du'
                     frappe.get_doc("Site", site_name).suspend(reason)
@@ -297,7 +299,6 @@ def suspend_site_when_account_balance_is_insufficient():
                 else:
                     # tang so lan su dung
                     subscription.number_days_used = number_days_used
-                    update_sub = True
                     send_email_handle_site('warning', site_name, team)
 
             if update_sub:

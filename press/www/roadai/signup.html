@@ -11,7 +11,7 @@
 			<!-- 1. Personal Details -->
 			<form class="form-step" data-step="1" data-action="submit_account_request">
 				<div class="form-group">
-					<label for="subdomain">Tên trang web</label>
+					<label for="subdomain">Tên tổ chức</label>
 					<div class="input-group">
 						<input type="text" id="subdomain" name="subdomain" class="form-control"
 							placeholder="Nhập tên miền" autocomplete="off" onchange="validate_subdomain(this)" />
@@ -122,13 +122,13 @@
 			let MIN_LENGTH = 4;
 			let MAX_LENGTH = 20;
 			if (value.length < MIN_LENGTH) {
-				return `Tên trang web không thể có ít hơn ${MIN_LENGTH} kí tự.`;
+				return `Tên tổ chức không thể có ít hơn ${MIN_LENGTH} kí tự.`;
 			}
 			if (value.length > MAX_LENGTH) {
-				return `Tên trang web không thể có nhiều hơn ${MAX_LENGTH} kí tự.`;
+				return `Tên tổ chức không thể có nhiều hơn ${MAX_LENGTH} kí tự.`;
 			}
 			if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(value)) {
-				return 'Tên trang web phải chứa chữ cái viết thường, số và dấu gạch nối.';
+				return 'Tên tổ chức phải chứa chữ cái viết thường, số và dấu gạch nối.';
 			}
 		},
 		first_name: (value) => {

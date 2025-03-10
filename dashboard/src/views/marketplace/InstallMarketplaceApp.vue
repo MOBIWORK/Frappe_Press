@@ -1,8 +1,8 @@
 <template>
 	<div class="px-4 py-4 text-base sm:px-8">
-		<Button v-if="$resources.opionsForQuickInstall" :loading="true"
-			>{{ $t('Loading') }}</Button
-		>
+		<Button v-if="$resources.opionsForQuickInstall" :loading="true">{{
+			$t('Loading')
+		}}</Button>
 		<div v-else>
 			<h1 class="mb-4 text-xl font-semibold">
 				{{ $t('Install_App') }}: {{ options ? options.title : '' }}
@@ -11,7 +11,12 @@
 			<ErrorMessage :message="$resources.optionsForQuickInstall.error" />
 
 			<div v-if="options" class="mt-2 grid grid-cols-1 gap-2 md:grid-cols-2">
-				<Card :title="$t('Sites')" :subtitle="$t('Select_a_site_to_install')">
+				<Card
+					:title="$t('Sites')"
+					:subtitle="
+						options.sites?.length ? $t('Select_a_site_to_install') : ''
+					"
+				>
 					<ul v-if="options.sites?.length">
 						<li
 							v-for="site in options.sites"
@@ -29,15 +34,26 @@
 					</ul>
 
 					<div v-else>
-						<p class="text-sm text-gray-700">{{ $t('No_site_available_for_install') }}</p>
+						<p class="text-sm text-gray-700">
+							{{ $t('No_site_available_for_install') }}
+						</p>
 					</div>
 
 					<template v-slot:actions>
-						<Button variant="solid" route="/sites/new">{{ $t('New_Site') }}</Button>
+						<Button variant="solid" route="/sites/new">{{
+							$t('New_Site')
+						}}</Button>
 					</template>
 				</Card>
 
-				<Card :title="$t('Private_Benches')" :subtitle="$t('Select_a_bench_to_install')">
+				<Card
+					:title="$t('Private_Benches')"
+					:subtitle="
+						options.release_groups?.length
+							? $t('Select_a_bench_to_install')
+							: ''
+					"
+				>
 					<ul v-if="options.release_groups?.length" class="space-y-3">
 						<li
 							v-for="bench in options.release_groups"
@@ -49,7 +65,7 @@
 							<Button
 								@click="addAppToBench(bench)"
 								:loading="$resources.addAppToBench.loading"
-								>{{ $t("Add") }}</Button
+								>{{ $t('Add') }}</Button
 							>
 						</li>
 					</ul>
@@ -59,9 +75,9 @@
 							{{ $t('No_benches_available_for_install') }}
 						</p>
 					</div>
-					<template v-slot:actions>
+					<!-- <template v-slot:actions>
 						<Button variant="solid" route="/benches/new">{{ $t('New_Bench') }}</Button>
-					</template>
+					</template> -->
 				</Card>
 			</div>
 		</div>

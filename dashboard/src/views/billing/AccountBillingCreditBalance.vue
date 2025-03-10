@@ -33,157 +33,183 @@
 		</div>
 		<div>
 			<div class="max-h-96 overflow-auto">
-				<div
-					class="sticky top-0 grid grid-cols-7 items-center gap-x-8 border-b bg-white py-4 text-base text-gray-600 md:grid-cols-7"
-				>
-					<span class="font-bold">{{ $t('date') }}</span>
-					<span class="font-bold">{{ $t('description') }}</span>
-					<span class="font-bold">{{ $t('previous_balance') }}</span>
-					<span class="font-bold">{{ $t('amount_of_money') }}</span>
-					<span class="font-bold">{{ $t('balance') }}</span>
-					<span class="font-bold">{{ $t('status') }}</span>
-					<span class="font-bold"></span>
-				</div>
-				<div v-if="!dataTrans" class="flex justify-center px-2 py-4">
-					<LoadingText :text="$t('Loading') + '...'" />
-				</div>
-				<div v-else-if="dataTrans?.length">
-					<details
-						v-for="d in dataTrans"
-						:key="d.name"
-						class="cursor-pointer border-b"
+				<div class="min-w-max lg:min-w-full">
+					<div
+						class="sticky top-0 grid grid-cols-7 items-center gap-x-8 border-b bg-white py-4 text-base text-gray-600 md:grid-cols-7"
 					>
-						<summary class="w-full focus:outline-none">
-							<div
-								class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900"
-							>
-								<div>
-									<span :title="$t('view_details')">
-										<subsummary></subsummary>
-									</span>
-									<span class="ml-2">
-										{{ this.$formatDate(d.creation) }}
-									</span>
-								</div>
-								<div class="text-gray-700">
-									<div>
-										{{ getDescription(d) }}
-									</div>
-								</div>
-								<div>
-									{{ d.pre_formatted.total_balance }}
-								</div>
-								<div>
-									{{ d.formatted.total_amount }}
-								</div>
-								<div>
-									{{ d.formatted.total_balance }}
-								</div>
-								<div class="whitespace-nowrap">
-									<StatusOrder
-										:status="getStatus(d)"
-										:description="this.$getStatusDocTrans(getStatus(d))"
-									></StatusOrder>
-								</div>
+						<span class="font-bold">{{ $t('date') }}</span>
+						<span class="font-bold">{{ $t('description') }}</span>
+						<span class="text-right font-bold"
+							>{{ $t('previous_balance') }} (VND)</span
+						>
+						<span class="text-right font-bold"
+							>{{ $t('amount_of_money') }} (VND)</span
+						>
+						<span class="text-right font-bold">{{ $t('balance') }} (VND)</span>
+						<span class="font-bold">{{ $t('status') }}</span>
+						<span class="font-bold"></span>
+					</div>
+					<div v-if="!dataTrans" class="flex justify-center px-2 py-4">
+						<LoadingText :text="$t('Loading') + '...'" />
+					</div>
+					<div v-else-if="dataTrans?.length">
+						<details
+							v-for="d in dataTrans"
+							:key="d.name"
+							class="cursor-pointer border-b"
+						>
+							<summary class="w-full focus:outline-none">
 								<div
-									class="flex flex-wrap justify-end"
-									v-if="
-										d.docstatus == 0 &&
-										d.payos_payment_status == 'PENDING' &&
-										d.checkout_url
-									"
+									class="grid grid-cols-7 items-center gap-x-8 py-4 text-base text-gray-900"
 								>
-									<Link :href="d.checkout_url" class="mb-2 mr-2 border-none">
-										<Button
-											:variant="'solid'"
-											theme="blue"
-											size="sm"
-											label="Button"
-											:loading="false"
-											:loadingText="null"
-											:disabled="false"
-											:link="null"
-										>
-											{{ $t('payment') }}
-										</Button>
-									</Link>
-									<div class="mr-2">
-										<Button
-											:variant="'solid'"
-											theme="red"
-											size="sm"
-											label="Button"
-											@click="
-												$resources.cancelOrder.submit({
-													name: d.name,
-													lang: this.$i18n.locale
-												})
-											"
-											:loading="$resources.cancelOrder.loading"
-										>
-											{{ $t('cancel') }}
-										</Button>
+									<div>
+										<span :title="$t('view_details')">
+											<subsummary></subsummary>
+										</span>
+										<span class="ml-2">
+											{{ this.$formatDate(d.creation) }}
+										</span>
+									</div>
+									<div class="text-gray-700">
+										<div>
+											{{ getDescription(d) }}
+										</div>
+									</div>
+									<div class="text-right">
+										{{ d.pre_formatted.total_balance }}
+									</div>
+									<div class="text-right">
+										{{ d.formatted.total_amount }}
+									</div>
+									<div class="text-right">
+										{{ d.formatted.total_balance }}
+									</div>
+									<div class="whitespace-nowrap">
+										<StatusOrder
+											:status="getStatus(d)"
+											:description="this.$getStatusDocTrans(getStatus(d))"
+										></StatusOrder>
+									</div>
+									<div
+										class="flex flex-wrap justify-end"
+										v-if="
+											d.docstatus == 0 &&
+											d.payos_payment_status == 'PENDING' &&
+											d.checkout_url
+										"
+									>
+										<Link :href="d.checkout_url" class="mb-2 mr-2 border-none">
+											<Button
+												:variant="'solid'"
+												theme="blue"
+												size="sm"
+												label="Button"
+												:loading="false"
+												:loadingText="null"
+												:disabled="false"
+												:link="null"
+											>
+												{{ $t('payment') }}
+											</Button>
+										</Link>
+										<div class="mr-2">
+											<Button
+												:variant="'solid'"
+												theme="red"
+												size="sm"
+												label="Button"
+												@click="
+													$resources.cancelOrder.submit({
+														name: d.name,
+														lang: this.$i18n.locale
+													})
+												"
+												:loading="$resources.cancelOrder.loading"
+											>
+												{{ $t('cancel') }}
+											</Button>
+										</div>
 									</div>
 								</div>
-							</div>
-						</summary>
-						<div>
-							<div class="overflow-auto rounded-md text-xs text-gray-900">
-								<div class="w-full">
-									<div
-										class="grid grid-cols-7 items-center gap-x-8 pb-4 text-base text-gray-900 md:grid-cols-7"
-									>
-										<div></div>
-										<div>
-											<div class="py-1">{{ $t('deposit_amount') }}:</div>
-											<div class="py-1">{{ $t('promotion_1') }}:</div>
-											<div class="py-1">{{ $t('promotion_2') }}:</div>
-										</div>
-										<div>
-											<div class="py-1">{{ d.pre_formatted.balance }}</div>
-											<div class="py-1">
+							</summary>
+							<div>
+								<div class="overflow-auto rounded-md text-xs text-gray-900">
+									<div class="w-full">
+										<div
+											class="grid grid-cols-7 gap-x-8 pb-4 text-base text-gray-900 md:grid-cols-7"
+										>
+											<!-- 1 -->
+											<div></div>
+											<div class="py-1 font-bold">
+												{{ $t('deposit_amount') }}:
+											</div>
+											<div class="py-1 text-right">
+												{{ d.pre_formatted.balance }}
+											</div>
+											<div class="py-1 text-right">
+												{{ d.formatted.amount }}
+											</div>
+											<div class="py-1 text-right">
+												{{ d.formatted.ending_balance }}
+											</div>
+											<div></div>
+											<div></div>
+
+											<!-- 2 -->
+											<div></div>
+											<div class="py-1 font-bold">{{ $t('promotion_1') }}:</div>
+											<div class="py-1 text-right">
 												{{ d.pre_formatted.promotion_balance_1 }}
 											</div>
-											<div class="py-1">
-												{{ d.pre_formatted.promotion_balance_2 }}
-											</div>
-										</div>
-										<div>
-											<div class="py-1">{{ d.formatted.amount }}</div>
-											<div class="py-1">
+											<div class="py-1 text-right">
 												{{ d.formatted.amount_promotion_1 }}
 											</div>
-											<div class="py-1">
-												{{ d.formatted.amount_promotion_2 }}
-											</div>
-										</div>
-										<div>
-											<div class="py-1">{{ d.formatted.ending_balance }}</div>
-											<div class="py-1">
+											<div class="py-1 text-right">
 												{{ d.formatted.promotion_balance_1 }}
 											</div>
 											<div class="py-1">
+												<Popover v-if="!d.promotion_expire">
+													<template #target="{ togglePopover }">
+														<span class="underline" @click="togglePopover()">
+															{{ $t('Detail') }}
+														</span>
+													</template>
+													<template #content>
+														<div class="text-ink-gray-9 min-w-36 p-2 text-base">
+															{{ $t('AccountBillingCreditBalance_1') }}
+															{{ d.formatted.unallocated_amount_1 }}
+															{{ $t('AccountBillingCreditBalance_2') }}
+															{{ d.date_promotion_expire }}.
+														</div>
+													</template>
+												</Popover>
+											</div>
+											<div></div>
+
+											<!-- 3 -->
+											<div></div>
+											<div class="py-1 font-bold">{{ $t('promotion_2') }}:</div>
+											<div class="py-1 text-right">
+												{{ d.pre_formatted.promotion_balance_2 }}
+											</div>
+											<div class="py-1 text-right">
+												{{ d.formatted.amount_promotion_2 }}
+											</div>
+											<div class="py-1 text-right">
 												{{ d.formatted.promotion_balance_2 }}
 											</div>
+											<div></div>
+											<div></div>
 										</div>
-										<div></div>
-										<div
-											class="flex min-w-40 space-x-2"
-											v-if="
-												d.docstatus == 0 &&
-												d.payos_payment_status == 'PENDING' &&
-												d.checkout_url
-											"
-										></div>
 									</div>
 								</div>
 							</div>
+						</details>
+					</div>
+					<div class="text-center text-base text-gray-600" v-else>
+						<div class="px-2 py-4">
+							{{ $t('no_results') }}
 						</div>
-					</details>
-				</div>
-				<div class="text-center text-base text-gray-600" v-else>
-					<div class="px-2 py-4">
-						{{ $t('no_results') }}
 					</div>
 				</div>
 			</div>
@@ -199,18 +225,19 @@
 </template>
 <script>
 import { notify } from '@/utils/toast';
-import StatusOrder from '@/components/StatusOrder.vue';
 import { LoadingText } from 'frappe-ui';
 import { watchDebounced } from '@vueuse/core';
 import Pagination from '@/components/Table/Pagination.vue';
 import ClearFilterIcon from '@/components/icons/ClearFilterIcon.vue';
+import Popover from '@/components/Popover.vue';
 
 export default {
 	name: 'AccountBillingCreditBalance',
 	components: {
 		LoadingText,
 		Pagination,
-		ClearFilterIcon
+		ClearFilterIcon,
+		Popover
 	},
 	data() {
 		return {

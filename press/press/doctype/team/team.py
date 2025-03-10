@@ -9,9 +9,13 @@ from frappe import _
 from frappe.core.utils import find
 from typing import List
 from hashlib import blake2b
-from press.utils import log_error
 from frappe.utils import get_fullname
 from frappe.utils import get_url_to_form, random_string
+from press.utils import (
+    log_error,
+    get_current_team,
+    get_date_expire_promotion
+)
 from press.telegram_utils import Telegram
 from frappe.model.document import Document
 from press.exceptions import FrappeioServerNotSet
@@ -487,6 +491,7 @@ class Team(Document):
             )
 
         data_update = {
+            "company_name": billing_details.company_name,
             "address_line1": billing_details.address,
             "areas_of_concern": billing_details.areas_of_concern,
             "state": billing_details.state,
@@ -822,6 +827,27 @@ class Team(Document):
             or 0
         )
 
+    def get_list_promotion1(self):
+        today = frappe.utils.today()
+        
+        arr = frappe.get_all(
+                "Balance Transaction",
+                fields=["name", "unallocated_amount_1", "date_promotion_1"],
+                filters = [
+                    ['team', '=', self.name],
+                    ['docstatus', '=', 1],
+                    ['date_promotion_1', '>', today],
+                    ['unallocated_amount_1', '>', 0]
+                ],
+                order_by="creation asc"
+            )
+        print("==============")
+        print(arr)
+        for tran in arr:
+            tran.date_expire = get_date_expire_promotion(tran.name, tran.date_promotion_1)
+        
+        return arr
+    
     def AI_amount(self):
         today = frappe.utils.today()
         start_time = frappe.utils.get_first_day(today).strftime('%Y-%m-%d')
@@ -1212,6 +1238,18 @@ def get_default_team(user):
         return user
 
 
+def reset_used_and_noti_subscription(team):
+    if team:
+        frappe.db.sql(
+            """
+            UPDATE `tabSubscription`
+            SET number_days_used = 0, estimated_number_of_notifications = 0
+            WHERE team = %s
+            AND enabled = 1
+            """,
+            (team,)
+        )
+
 def process_payos_webhook(doc, method):
     if doc.code != "00":
         return
@@ -1220,6 +1258,8 @@ def process_payos_webhook(doc, method):
     team: Team = frappe.get_doc("Team", doc.team)
     team.allocate_free_credits()
 
+    reset_used_and_noti_subscription(team.name)
+    enqueue_finalize_unpaid_for_team(team.name)
 
 def process_stripe_webhook(doc, method):
     """This method runs after a Stripe Webhook Log is created"""
@@ -1309,8 +1349,6 @@ def enqueue_finalize_unpaid_for_team(team: str):
 
 
 def get_permission_query_conditions(user):
-    from press.utils import get_current_team
-
     if not user:
         user = frappe.session.user
 
@@ -1324,8 +1362,6 @@ def get_permission_query_conditions(user):
 
 
 def has_permission(doc, ptype, user):
-    from press.utils import get_current_team
-
     if not user:
         user = frappe.session.user
 
@@ -1367,8 +1403,6 @@ def has_unsettled_invoices(team):
 
 def is_us_eu():
     """Is the customer from U.S. or European Union"""
-    from press.utils import get_current_team
-
     countrygroup = [
         "United States",
         "United Kingdom",
