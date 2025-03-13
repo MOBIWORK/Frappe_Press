@@ -39,13 +39,7 @@
 						<td class="border-b py-3 pr-2 font-bold">
 							<div class="flex gap-1">
 								<span>{{ row.detail_info?.title || row.document_name }}</span>
-								<Tooltip
-									:text="
-										row.detail_info?.description ||
-										row.detail_info?.title ||
-										row.document_name
-									"
-								>
+								<Tooltip :text="itemDescription(row)">
 									<FeatherIcon
 										name="help-circle"
 										class="h-4 w-4 text-gray-700"
@@ -231,6 +225,14 @@ export default {
 	methods: {
 		formatterMoney(amount, decimal = 0) {
 			return this.$formatMoney(amount, decimal) + ' VND';
+		},
+		itemDescription(item) {
+			let des = item.detail_info?.description;
+			if (this.$i18n.locale == 'en') {
+				des = item.detail_info?.en_description;
+			}
+			des = des || item.detail_info?.title || item.document_name;
+			return des;
 		}
 	}
 };

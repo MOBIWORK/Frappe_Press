@@ -30,6 +30,7 @@
 		:type="'group'"
 		:show="showEditMemberDialog"
 		:name="group.name"
+		:title="group.title"
 		@close="showEditMemberDialog = false"
 	/>
 
@@ -55,6 +56,7 @@
 	>
 		<template v-slot:body-content>
 			<Input :label="$t('title')" type="text" v-model="groupName" required />
+			<ErrorMessage class="mt-2" :message="$resources.addGroup.error" />
 		</template>
 	</Dialog>
 </template>

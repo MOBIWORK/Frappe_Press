@@ -1,0 +1,161 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-12 10:48:25.975832",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_0",
+  "company",
+  "tax_code",
+  "column_break_gphmw",
+  "is_active",
+  "allow_send_email",
+  "language",
+  "recipient_email",
+  "sec_1",
+  "einvoice_provider",
+  "invoice_type",
+  "column_break_l8ugg",
+  "environment_type",
+  "sec_2",
+  "partner_guid_bkav",
+  "column_break_4q1sf",
+  "invoice_form_bkav",
+  "invoice_serial_bkav"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_0",
+   "fieldtype": "Section Break",
+   "label": "General configuration"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tax_code",
+   "fieldtype": "Data",
+   "label": "Tax Code"
+  },
+  {
+   "fieldname": "column_break_gphmw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Is Active"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_send_email",
+   "fieldtype": "Check",
+   "label": "Allow sending emails"
+  },
+  {
+   "default": "Vietnamese",
+   "fieldname": "language",
+   "fieldtype": "Select",
+   "label": "Select Language",
+   "options": "Vietnamese\nEnglish"
+  },
+  {
+   "depends_on": "eval: doc.allow_send_email == 1",
+   "fieldname": "recipient_email",
+   "fieldtype": "Data",
+   "label": "Recipient email"
+  },
+  {
+   "fieldname": "sec_1",
+   "fieldtype": "Section Break",
+   "label": "EInvoice service configuration"
+  },
+  {
+   "default": "BKAV eHoadon",
+   "fieldname": "einvoice_provider",
+   "fieldtype": "Select",
+   "label": "EInvoice provider",
+   "options": "BKAV eHoadon"
+  },
+  {
+   "default": "Value-added tax invoice",
+   "fieldname": "invoice_type",
+   "fieldtype": "Select",
+   "label": "Invoice type",
+   "options": "Value-added tax invoice"
+  },
+  {
+   "fieldname": "column_break_l8ugg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Testing",
+   "fieldname": "environment_type",
+   "fieldtype": "Select",
+   "label": "Select environment",
+   "options": "Production\nTesting"
+  },
+  {
+   "fieldname": "sec_2",
+   "fieldtype": "Section Break",
+   "label": "Connection configuration: BKAV eHoadon"
+  },
+  {
+   "fieldname": "partner_guid_bkav",
+   "fieldtype": "Data",
+   "label": "PartnerGUID",
+   "mandatory_depends_on": "eval:doc.einvoice_provider == \"BKAV eHoadon\""
+  },
+  {
+   "fieldname": "column_break_4q1sf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_form_bkav",
+   "fieldtype": "Data",
+   "label": "Invoice Form",
+   "mandatory_depends_on": "eval:doc.einvoice_provider == \"BKAV eHoadon\""
+  },
+  {
+   "fieldname": "invoice_serial_bkav",
+   "fieldtype": "Data",
+   "label": "Invoice Serial",
+   "mandatory_depends_on": "eval:doc.einvoice_provider == \"BKAV eHoadon\""
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-12 10:48:25.975832",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW EInvoice Company",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -123,22 +123,12 @@
 							<td class="border-b px-2 py-4">
 								<div class="flex items-center justify-end space-x-2">
 									<Button
-										v-if="invoice.link_to_electronic_invoice"
+										v-if="invoice.show_btn_einvoice"
 										icon-left="download"
 										class="shrink-0"
-										:link="invoice.link_to_electronic_invoice"
+										@click="getLinkPdfFile(invoice.name)"
 									>
 										<span class="text-sm">{{ $t('download') }}</span>
-									</Button>
-									<Button
-										v-if="
-											invoice.status != 'Paid' && invoice.stripe_invoice_url
-										"
-										icon-left="external-link"
-										class="shrink-0"
-										@click="payNow(invoice)"
-									>
-										<span class="text-sm">{{ $t('pay_now') }}</span>
 									</Button>
 								</div>
 							</td>
@@ -223,6 +213,14 @@ export default {
 					this.invoices = data?.result;
 				}
 			};
+		},
+		getLinkPdfFile() {
+			return {
+				url: 'press.api.einvoice.einvoice.get_link_pdf_file',
+				onSuccess(res) {
+					window.open(res?.data?.link_pdf, '_blank');
+				}
+			};
 		}
 	},
 	mounted() {
@@ -250,6 +248,9 @@ export default {
 		getInvoices() {
 			this.$resources.pastInvoices.submit(this.filters);
 		},
+		getLinkPdfFile(name) {
+			this.$resources.getLinkPdfFile.submit({ name, type_pdf: 'invoice' });
+		},
 		async refreshLink(invoiceName) {
 			let refreshed_link = await this.$call(
 				'press.api.billing.refresh_invoice_link',
@@ -259,13 +260,6 @@ export default {
 			);
 			if (refreshed_link) {
 				window.open(refreshed_link, '_blank');
-			}
-		},
-		payNow(invoice) {
-			if (invoice.stripe_link_expired) {
-				this.refreshLink(invoice.name);
-			} else {
-				window.open(invoice.stripe_invoice_url, '_blank');
 			}
 		}
 	}

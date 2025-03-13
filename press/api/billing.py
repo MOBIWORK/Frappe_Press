@@ -125,7 +125,8 @@ def upcoming_invoice():
             fields=[
                 "name",
                 "plan_title",
-                "item_description"
+                "item_description",
+                "en_item_description"
             ],
         )
         apps = frappe.get_all(
@@ -134,7 +135,8 @@ def upcoming_invoice():
             fields=[
                 "name",
                 "title",
-                "item_description"
+                "item_description",
+                "en_item_description"
             ],
         )
         upcoming_invoice = invoice.as_dict()
@@ -144,12 +146,14 @@ def upcoming_invoice():
                 item.detail_info = {
                     "title": plan_find.get('plan_title'),
                     "description": plan_find.get('item_description'),
+                    "en_description": plan_find.get('en_item_description'),
                 }
             elif item.document_type == "Marketplace App":
                 app_find = next((d for d in apps if d.get('name') == item.document_name), {})
                 item.detail_info = {
                     "title": app_find.get('title'),
                     "description": app_find.get('item_description'),
+                    "en_description": app_find.get('en_item_description'),
                 }
         
         upcoming_invoice.formatted = make_formatted_doc(invoice, ["Currency"])
@@ -229,7 +233,7 @@ def invoices_and_payments(**kwargs):
             "payment_date",
             "currency",
             "invoice_pdf",
-            "link_to_electronic_invoice"
+            "custom_status_einvoice"
         ],
         start=start,
         page_length=page_length,
@@ -250,6 +254,8 @@ def invoices_and_payments(**kwargs):
                 frappe.utils.now(), invoice.due_date)
             if days_diff > 30:
                 invoice.stripe_link_expired = True
+        if invoice.custom_status_einvoice in ['Issued']:
+            invoice.show_btn_einvoice = True
 
     return {
         "result": invoices,
@@ -294,6 +300,10 @@ def get_ai_service_transaction_history(**kwargs):
     service_name = kwargs.get('service_name', '')
     if service_name:
         filters.append(['service_name', 'like', f'%{service_name}%'])
+    
+    site_name = kwargs.get('site_name', '')
+    if site_name:
+        filters.append(['site_name', 'like', f'%{site_name}%'])
     
     data = frappe.db.get_all(
         "Request Service AI",
@@ -1027,7 +1037,8 @@ def get_invoice_usage(invoice):
         fields=[
             "name",
             "plan_title",
-            "item_description"
+            "item_description",
+            "en_item_description"
         ],
     )
     apps = frappe.get_all(
@@ -1036,7 +1047,8 @@ def get_invoice_usage(invoice):
         fields=[
             "name",
             "title",
-            "item_description"
+            "item_description",
+            "en_item_description"
         ],
     )
     out = doc.as_dict()
@@ -1046,12 +1058,14 @@ def get_invoice_usage(invoice):
             item.detail_info = {
                 "title": plan_find.get('plan_title'),
                 "description": plan_find.get('item_description'),
+                "en_description": plan_find.get('en_item_description'),
             }
         elif item.document_type == "Marketplace App":
             app_find = next((d for d in apps if d.get('name') == item.document_name), {})
             item.detail_info = {
                 "title": app_find.get('title'),
                 "description": app_find.get('item_description'),
+                "en_description": app_find.get('en_item_description'),
             }
             
     # a dict with formatted currency values for display

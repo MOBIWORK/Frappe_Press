@@ -58,22 +58,19 @@ def app_service_payment(**kwargs):
                 price = doc_price
             else:
                 return {'code': 0,'msg': f'service_name `{service_name}` not found!'}
-            
-            vat_percentage = frappe.db.get_single_value(
-                    "Press Settings", "vat_percentage") or 0
+
             processing_unit = int(processing_unit)
-            amount = price*processing_unit
-            amount_vat = amount * vat_percentage / 100
-            total_amount = amount + amount_vat
+            # amount = price*processing_unit
             
             # thêm log sử dụng
             doc = frappe.new_doc("Request Service AI")
             doc.team = team.name
+            doc.site_name = site_name
             doc.service_name = service_name
             doc.description = description
             doc.start_time = datetime.now()
             doc.processing_unit = processing_unit
-            doc.vat = vat_percentage
+            doc.vat = 0
             doc.unit_price = price
             doc.insert(ignore_permissions=True)
             
@@ -83,7 +80,10 @@ def app_service_payment(**kwargs):
                 invoice = team.create_upcoming_invoice()
             
             # add item
-            item = frappe.db.get_value('Invoice Item', {'parent': invoice.name,'document_type': 'Marketplace App', 'document_name': service_name, 'rate': price, 'site': site_name}, ['name', 'quantity'], as_dict=1)
+            item = None
+            for it in invoice.items:
+                if it.parent == invoice.name and it.document_type == 'Marketplace App' and it.document_name == service_name and it.rate == price and it.site == site_name:
+                    item = it
 
             if not item:
                 invoice.append('items', {
@@ -94,13 +94,12 @@ def app_service_payment(**kwargs):
                     'site': site_name,
                     "unit": 'Processing unit'
                 })
-                invoice.save(ignore_permissions=True)
             else:
-                frappe.db.set_value('Invoice Item', item.name, {
-                    'quantity': item.quantity + processing_unit
-                })
-                invoice.reload()
-                invoice.save(ignore_permissions=True)
+                item.quantity = item.quantity + processing_unit
+            
+            # save invoice
+            invoice.add_discount_if_available()
+            invoice.save(ignore_permissions=True)
 
             return {'code': 200, 'msg': 'Successfully'}
     

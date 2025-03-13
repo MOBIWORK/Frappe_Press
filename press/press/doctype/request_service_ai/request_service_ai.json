@@ -10,10 +10,11 @@
   "team",
   "start_time",
   "service_name",
+  "site_name",
   "description",
+  "col_1",
   "processing_unit",
   "unit_price",
-  "col_1",
   "vat",
   "type",
   "status",
@@ -88,11 +89,16 @@
    "fieldname": "description",
    "fieldtype": "Small Text",
    "label": "Description"
+  },
+  {
+   "fieldname": "site_name",
+   "fieldtype": "Data",
+   "label": "Site Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-03-05 09:15:41.552968",
+ "modified": "2025-03-11 17:00:58.629838",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Request Service AI",

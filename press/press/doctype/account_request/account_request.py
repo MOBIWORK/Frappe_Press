@@ -58,11 +58,11 @@ class AccountRequest(Document):
     def send_verification_email(self):
         url = self.get_verification_url()
 
-        if frappe.conf.developer_mode:
-            print(f"\nSetup account URL for {self.email}:")
-            print(url)
-            print()
-            return
+        # if frappe.conf.developer_mode:
+        #     print(f"\nSetup account URL for {self.email}:")
+        #     print(url)
+        #     print()
+        #     return
 
         settings = frappe.db.get_value(
         'Press Settings', 'Press Settings', ['free_credits_vnd'], as_dict=True)

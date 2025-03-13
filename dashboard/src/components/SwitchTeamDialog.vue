@@ -1,8 +1,8 @@
 <template>
-	<Dialog :options="{ title: 'Chuyển đổi nhóm' }">
+	<Dialog :options="{ title: $t('switch_team') }">
 		<template v-slot:body-content>
 			<span class="text-xs text-gray-600"
-				>Nhóm hiện tại: {{ $account.team.name }}</span
+				>{{ $t('Current Team') }}: {{ $account.team.team_title }}</span
 			>
 			<div class="my-2 border-t">
 				<ListItem
@@ -17,7 +17,7 @@
 						</div>
 						<div v-else class="flex flex-row justify-end">
 							<Button @click="$account.switchToTeam(team.name)">
-								Chuyển đổi
+								{{ $t('Switch') }}
 							</Button>
 						</div>
 					</template>

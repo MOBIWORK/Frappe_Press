@@ -1,4 +1,14 @@
 {
+	"Switch": "Switch",
+	"Current Team": "Current Team",
+	"Download Backups": "Download Backups",
+	"View": "View",
+	"Login as Admin": "Login as Admin",
+	"Archive": "Archive",
+	"Database Access": "Database Access",
+	"Change Plan": "Change Plan",
+	"Add Member": "Add Member",
+	"Manage Members for": "Manage Members for",
 	"of_EOVCloud": "of EOVCloud",
 	"Detail": "Detail",
 	"invoice_date": "Invoice date",
@@ -626,7 +636,7 @@
 	"payment": "Payment",
 	"provisional_invoice": "Provisional invoice",
 	"no_upcoming_invoice": "No upcoming invoice",
-	"estimated_total_up_to_now": "Estimated total up to now",
+	"estimated_invoice_up_to_now": "Estimated invoice up to now",
 	"description": "Description",
 	"rate": "Rate",
 	"Total_without_discount": "Total without discount",
@@ -1266,5 +1276,9 @@
 	"FinalizeInvoicesDialog_5": "Finalize Invoices",
 	"===94===": "AccountBillingCreditBalance.vue",
 	"AccountBillingCreditBalance_1": "The remaining promotional amount of",
-	"AccountBillingCreditBalance_2": "is valid until the end of"
+	"AccountBillingCreditBalance_2": "is valid until the end of",
+	"===95===": "ManageGroupMembers.vue",
+	"ManageGroupMembers_1": "No members added to this group.",
+	"ManageGroupMembers_2": "Select a member to add",
+	"ManageGroupMembers_3": "You must select at least one member"
 }

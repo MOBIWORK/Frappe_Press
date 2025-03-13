@@ -218,6 +218,9 @@ scheduler_events = {
             "press.press.doctype.balance_transaction.balance_transaction.handle_for_expired_promotions",
             "press.api.ai_s3_client.run_handle_schedule_delete_bucket",
         ],
+        "0 2 * * *": [
+            "press.api.einvoice.handle_einvoice.kiem_tra_trang_thai_hoa_don"
+        ],
         "0 4 * * *": [
             "press.press.doctype.site.backups.cleanup_offsite",
             "press.press.cleanup.unlink_remote_files_from_site",

@@ -121,6 +121,7 @@ class Invoice(Document):
             self.submit()
             self.unsuspend_sites_if_applicable()
             self.update_request_service_ai()
+            validate_item_invoice(self.name)
             
     
     def unsuspend_sites_if_applicable(self):
@@ -389,8 +390,6 @@ class Invoice(Document):
         if usage_record.payout:
             self.payout += usage_record.payout
 
-        self.validate_items()
-        self.calculate_values()
         self.add_discount_if_available()
         self.save()
         usage_record.db_set("invoice", self.name)
@@ -589,102 +588,76 @@ class Invoice(Document):
                 text="Failed to pay via Partner credits" + "<br><br>" + response.text
             )
 
-    def add_discount_if_available(self):
+    def add_discount_if_available(self, allow_save=False):
+        self.validate_items()
+        self.calculate_values()
+        
+        today = frappe.utils.today()
         team = frappe.get_cached_doc("Team", self.team)
-
-        values = {'team': self.team}
-        unallocated_balances = frappe.db.sql("""
-            SELECT
-                bt.name,
-                bt.unallocated_amount_1,
-                bt.unallocated_amount_2,
-                bt.source
-            FROM `tabBalance Transaction` bt
-            WHERE bt.team = %(team)s
-            AND bt.type = 'Adjustment'
-            AND (bt.unallocated_amount_1 > 0 OR bt.unallocated_amount_2 > 0)
-            AND bt.docstatus < 2
-            ORDER BY bt.creation DESC
-        """, values=values, as_dict=1)
-        # sort by ascending for FIFO
-        unallocated_balances.reverse()
-
         total_allocated_1 = 0
         total_allocated_2 = 0
         
         # so tien chua co VAT
         total_before_vat = self.total_before_vat
+        
+        # lay sanh sach trans để giao dịch cho km1
+        unallocated_balances = frappe.db.get_all(
+			"Balance Transaction",
+			filters={
+				"team": self.team,
+				"type": "Adjustment",
+				"unallocated_amount_1": (">", 0),
+				"docstatus": ("<", 2),
+                "date_promotion_1": (">", today),
+			},
+			fields=["name", "unallocated_amount_1", "promotion1_amount_used", "source", "(COALESCE(unallocated_amount_1, 0) - COALESCE(promotion1_amount_used, 0)) AS remaining_amount"],
+			order_by="date_promotion_1 desc, creation desc",
+		)
+        # sort by ascending for FIFO
+        unallocated_balances.reverse()
+        
         # ap dung km1
         for balance in unallocated_balances:
             if total_before_vat == 0:
                 break
             # so tien km1 tra duoc
-            allocated_promotion_1 = balance.unallocated_amount_1 or 0
+            allocated_promotion_1 = balance.remaining_amount or 0
             if allocated_promotion_1 > 0:
-                promotion_expire = check_promotion_expire(balance.name)
-                if promotion_expire:
-                    continue
-
                 allocated_promotion_1 = min(total_before_vat, allocated_promotion_1)
                 total_before_vat -= allocated_promotion_1
 
-                self.append(
-                    "credit_allocations",
-                    {
-                        "transaction": balance.name,
-                        "amount": 0,
-                        "amount_promotion_1": allocated_promotion_1,
-                        "amount_promotion_2": 0,
-                        "currency": self.currency,
-                        "source": balance.source,
-                    },
-                )
                 doc = frappe.get_doc("Balance Transaction", balance.name)
-                doc.append(
-                    "allocated_to",
-                    {
-                        "invoice": self.name,
-                        "amount": 0,
-                        "amount_promotion_1": allocated_promotion_1,
-                        "amount_promotion_2": 0,
-                        "currency": self.currency
-                    },
-                )
+                doc.promotion1_amount_used = (doc.promotion1_amount_used or 0) + allocated_promotion_1
                 doc.save()
                 total_allocated_1 += allocated_promotion_1
 
+        # lay sanh sach trans để giao dịch cho km2        
+        unallocated_balances = frappe.db.get_all(
+			"Balance Transaction",
+			filters={
+				"team": self.team,
+				"type": "Adjustment",
+				"unallocated_amount_2": (">", 0),
+				"docstatus": ("<", 2),
+			},
+            fields=["name", "unallocated_amount_2", "promotion2_amount_used", "source", "(COALESCE(unallocated_amount_2, 0) - COALESCE(promotion2_amount_used, 0)) AS remaining_amount"],
+			order_by="creation desc",
+		)
+        # sort by ascending for FIFO
+        unallocated_balances.reverse()
+        
         # ap dung km2
         for balance in unallocated_balances:
             if total_before_vat == 0:
                 break
             # so tien km2 tra duoc
-            allocated_promotion_2 = balance.unallocated_amount_2 or 0
+            allocated_promotion_2 = balance.remaining_amount or 0
             if allocated_promotion_2>0:
                 allocated_promotion_2 = min(total_before_vat, allocated_promotion_2)
                 total_before_vat -= allocated_promotion_2
 
-                self.append(
-                    "credit_allocations",
-                    {
-                        "transaction": balance.name,
-                        "amount": 0,
-                        "amount_promotion_1": 0,
-                        "amount_promotion_2": allocated_promotion_2,
-                        "currency": self.currency,
-                        "source": balance.source,
-                    },
-                )
                 doc = frappe.get_doc("Balance Transaction", balance.name)
-                doc.append(
-                    "allocated_to",
-                    {
-                        "invoice": self.name,
-                        "amount": 0,
-                        "amount_promotion_1": 0,
-                        "amount_promotion_2": allocated_promotion_2,
-                        "currency": self.currency
-                    },
-                )
+                doc.promotion2_amount_used = (doc.promotion2_amount_used or 0) + allocated_promotion_2
                 doc.save()
                 total_allocated_2 += allocated_promotion_2
         
@@ -704,8 +677,9 @@ class Invoice(Document):
                         "note": "Tien khuyen mai",
                     },
                 )
-            
-            self.apply_balance_of_expenses(0, total_allocated_1, total_allocated_2)
+        # save invoice
+        if allow_save:
+            self.save()
     
     def apply_balance_of_expenses(self, total_allocated=0, total_allocated_1=0, total_allocated_2=0):
         # tru so tien sau khi chi tra hoa don
@@ -730,41 +704,40 @@ class Invoice(Document):
         if balance_all <= 0:
             return
 
-        values = {'team': self.team}
-        unallocated_balances = frappe.db.sql("""
-            SELECT
-                bt.name,
-                bt.unallocated_amount,
-                bt.unallocated_amount_1,
-                bt.unallocated_amount_2,
-                bt.source
-            FROM `tabBalance Transaction` bt
-            WHERE bt.team = %(team)s
-            AND bt.type = 'Adjustment'
-            AND (bt.unallocated_amount > 0 OR bt.unallocated_amount_1 > 0 OR bt.unallocated_amount_2 > 0)
-            AND bt.docstatus < 2
-            ORDER BY bt.creation DESC
-        """, values=values, as_dict=1)
-        # sort by ascending for FIFO
-        unallocated_balances.reverse()
-
         total_allocated = 0
         total_allocated_1 = 0
         total_allocated_2 = 0
         
         # so tien chua co VAT
         total_before_vat = self.total_before_vat
+        
+        # lay sanh sach trans để giao dịch cho km1
+        unallocated_balances = frappe.db.get_all(
+			"Balance Transaction",
+			filters={
+				"team": self.team,
+				"type": "Adjustment",
+				"docstatus": ("<", 2),
+                "unallocated_amount_1": (">", 0),
+			},
+			fields=["name", "unallocated_amount_1", "promotion1_amount_used", "source"],
+			order_by="date_promotion_1 desc, creation desc",
+		)
+        # sort by ascending for FIFO
+        unallocated_balances.reverse()
+        
         # ap dung km1
         for balance in unallocated_balances:
             if total_before_vat == 0:
                 break
+            
             # so tien km1 tra duoc
+            promotion_expire = check_promotion_expire(balance.name)
             allocated_promotion_1 = balance.unallocated_amount_1 or 0
+            if promotion_expire:
+                allocated_promotion_1 = balance.promotion1_amount_used or 0
+            
             if allocated_promotion_1 > 0:
-                promotion_expire = check_promotion_expire(balance.name)
-                if promotion_expire:
-                    continue
-
                 allocated_promotion_1 = min(total_before_vat, allocated_promotion_1)
                 total_before_vat -= allocated_promotion_1
 
@@ -790,8 +763,24 @@ class Invoice(Document):
                         "currency": self.currency
                     },
                 )
+                doc.promotion1_amount_used = 0
                 doc.save()
                 total_allocated_1 += allocated_promotion_1
+
+        # lay sanh sach trans để giao dịch cho km2        
+        unallocated_balances = frappe.db.get_all(
+			"Balance Transaction",
+			filters={
+				"team": self.team,
+				"type": "Adjustment",
+				"docstatus": ("<", 2),
+                "unallocated_amount_2": (">", 0),
+			},
+			fields=["name", "unallocated_amount_2", "source"],
+			order_by="creation desc",
+		)
+        # sort by ascending for FIFO
+        unallocated_balances.reverse()
 
         # ap dung km2
         for balance in unallocated_balances:
@@ -825,6 +814,7 @@ class Invoice(Document):
                         "currency": self.currency
                     },
                 )
+                doc.promotion2_amount_used = 0
                 doc.save()
                 total_allocated_2 += allocated_promotion_2
         
@@ -850,6 +840,22 @@ class Invoice(Document):
         
         # tien con phai tra cho hoa don
         due = self.amount_due
+        
+        # lay sanh sach trans để giao dịch cho tien nap
+        unallocated_balances = frappe.db.get_all(
+			"Balance Transaction",
+			filters={
+				"team": self.team,
+				"type": "Adjustment",
+				"unallocated_amount": (">", 0),
+				"docstatus": ("<", 2),
+			},
+			fields=["name", "unallocated_amount", "source"],
+			order_by="creation desc",
+		)
+        # sort by ascending for FIFO
+        unallocated_balances.reverse()
+        
         # ap dung so tien goc
         for balance in unallocated_balances:
             if due == 0:
@@ -1233,3 +1239,32 @@ get_permission_query_conditions = get_permission_query_conditions_for_doctype(
 
 def calculate_gst(amount):
     return amount * 0.18
+
+
+def validate_item_invoice(invoice_name):
+    items = frappe.get_all("Invoice Item", 
+        filters={
+            "parent": invoice_name
+        },
+        fields=["name", "item_code", "item_name", "document_type", "document_name", "site", "plan"]
+    )
+
+    for item in items:
+        data_update = {}
+        if item.document_type == "Site":
+            doc = frappe.db.get_value("Plan", item.plan, ['service_id', 'item_description', 'en_item_description'], as_dict=1)
+            if doc:
+                if not item.item_code:
+                    data_update['item_code'] = doc.service_id
+                if not item.item_name:
+                    data_update['item_name'] = doc.item_description
+        elif item.document_type == "Marketplace App":
+            doc = frappe.db.get_value("Marketplace App", item.document_name, ['service_id', 'item_description', 'en_item_description'], as_dict=1)
+            if doc:
+                if not item.item_code:
+                    data_update['item_code'] = doc.service_id
+                if not item.item_name:
+                    data_update['item_name'] = doc.item_description
+        if data_update:
+            frappe.db.set_value('Invoice Item', item.name, data_update)
+            frappe.db.commit()

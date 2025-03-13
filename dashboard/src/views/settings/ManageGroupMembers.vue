@@ -1,6 +1,6 @@
 <template>
 	<Dialog
-		:options="{ title: `Manage Members for ${group.title}` }"
+		:options="{ title: `${$t('Manage Members for')} ${group.title}` }"
 		:modelValue="show"
 		@after-leave="
 			() => {
@@ -14,9 +14,9 @@
 			<div v-else>
 				<span
 					v-if="$resources.groupUsers.data.length === 0"
-					class="text-gray-500 text-center"
+					class="text-center text-gray-500"
 				>
-					No members added to this group.
+					{{ $t('ManageGroupMembers_1') }}
 				</span>
 				<ListItem
 					v-else
@@ -40,14 +40,17 @@
 			</div>
 		</template>
 		<template v-slot:actions>
-			<Autocomplete
-				:options="autoCompleteList"
-				v-model="member"
-				placeholder="Select a member to add"
-			/>
+			<div class="mb-4">
+				<Autocomplete
+					:options="autoCompleteList"
+					v-model="member"
+					:placeholder="$t('ManageGroupMembers_2')"
+				/>
+				<ErrorMessage class="my-2" :message="$resources.addGroupUser.error" />
+			</div>
 			<Button
 				variant="solid"
-				label="Add Member"
+				:label="$t('Add Member')"
 				class="mt-2 w-full"
 				:loading="$resources.groupUsers.loading"
 				@click="
@@ -85,6 +88,11 @@ export default {
 		},
 		addGroupUser: {
 			url: 'press.api.account.add_permission_group_user',
+			validate() {
+				if (!this.member?.value) {
+					return this.$t('ManageGroupMembers_3');
+				}
+			},
 			onSuccess() {
 				this.$resources.groupUsers.fetch();
 				this.member = {};

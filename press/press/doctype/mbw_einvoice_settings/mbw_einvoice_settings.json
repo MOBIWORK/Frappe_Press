@@ -1,0 +1,119 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-12 11:02:35.346032",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_0",
+  "enable_einvoice",
+  "column_break_qp9ov",
+  "number_of_retries",
+  "er_email_template_vi",
+  "er_email_template_en",
+  "sec_1",
+  "col_0",
+  "api_url_bkav",
+  "link_web_bkav",
+  "col_1",
+  "api_url_bkav_dev",
+  "link_web_bkav_dev"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_0",
+   "fieldtype": "Section Break",
+   "label": "General configuration"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_einvoice",
+   "fieldtype": "Check",
+   "label": "Allow EInvoice creation"
+  },
+  {
+   "fieldname": "column_break_qp9ov",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "number_of_retries",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Number of retry attempts on service failure",
+   "reqd": 1
+  },
+  {
+   "fieldname": "er_email_template_vi",
+   "fieldtype": "Link",
+   "label": "Error notification email template in Vietnamese",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "er_email_template_en",
+   "fieldtype": "Link",
+   "label": "Error notification email template in English",
+   "options": "Email Template"
+  },
+  {
+   "fieldname": "sec_1",
+   "fieldtype": "Section Break",
+   "label": "General connection configuration: BKAV eHoadon"
+  },
+  {
+   "fieldname": "col_0",
+   "fieldtype": "Column Break",
+   "label": "Production environment"
+  },
+  {
+   "fieldname": "api_url_bkav",
+   "fieldtype": "Data",
+   "label": "API URL"
+  },
+  {
+   "fieldname": "link_web_bkav",
+   "fieldtype": "Data",
+   "label": "Link Web"
+  },
+  {
+   "fieldname": "col_1",
+   "fieldtype": "Column Break",
+   "label": "Testing environment"
+  },
+  {
+   "fieldname": "api_url_bkav_dev",
+   "fieldtype": "Data",
+   "label": "API URL"
+  },
+  {
+   "fieldname": "link_web_bkav_dev",
+   "fieldtype": "Data",
+   "label": "Link Web"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-03-12 11:02:35.346032",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW EInvoice Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

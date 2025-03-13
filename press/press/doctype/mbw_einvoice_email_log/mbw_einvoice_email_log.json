@@ -1,0 +1,106 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-03-12 11:51:00.514371",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "start_time",
+  "recipient_email",
+  "column_break_jedju",
+  "num_of_invoices_reviewed",
+  "num_of_successful_invoices",
+  "num_of_failed_invoices",
+  "section_break_vmaq7",
+  "names_of_successful_invoices",
+  "names_of_failed_invoices"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Datetime",
+   "label": "Start Time"
+  },
+  {
+   "fieldname": "recipient_email",
+   "fieldtype": "Data",
+   "label": "Recipient email"
+  },
+  {
+   "fieldname": "column_break_jedju",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "num_of_invoices_reviewed",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Number of invoices reviewed",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "num_of_successful_invoices",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Number of successful invoices",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "num_of_failed_invoices",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Number of failed invoices",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_vmaq7",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "names_of_successful_invoices",
+   "fieldtype": "Code",
+   "label": "Names of the successful invoices"
+  },
+  {
+   "fieldname": "names_of_failed_invoices",
+   "fieldtype": "Code",
+   "label": "Names of the failed invoices"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-03-12 11:51:00.514371",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW EInvoice Email Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -3,7 +3,7 @@
 		:options="{
 			title: `${$t('EditPermissions_content_1')} ${
 				type === 'group' ? $t('group') : $t('member')
-			} ${name}`,
+			} ${title}`,
 			size: '3xl'
 		}"
 		:modelValue="show"
@@ -35,7 +35,7 @@
 					class="border-b pt-2"
 				>
 					<span class="mr-2 mt-4 w-full pb-2 text-lg text-gray-600">
-						{{ option.doctype }}
+						{{ $t(option.doctype) }}
 					</span>
 					<span class="inline-block align-middle text-base font-bold">
 						{{ option.title ? option.title : option.name }}
@@ -46,12 +46,12 @@
 						:label="$t('Select_All')"
 						@change="val => toggleSelectAll(option, index, val)"
 					/>
-					<div class="grid grid-cols-4 gap-4 py-4">
+					<div class="grid grid-cols-4 items-center gap-4 py-4">
 						<Input
 							v-for="[label, action] in Object.entries(actions[option.doctype])"
 							type="checkbox"
 							:checked="isSelected(option, action)"
-							:label="label"
+							:label="$t(label)"
 							@change="() => updateAction(option, index, action)"
 						>
 						</Input>
@@ -78,7 +78,7 @@ import { notify } from '@/utils/toast';
 
 export default {
 	name: 'EditPermissions',
-	props: ['show', 'name', 'type'],
+	props: ['show', 'name', 'title', 'type'],
 	data() {
 		return {
 			updated: {},

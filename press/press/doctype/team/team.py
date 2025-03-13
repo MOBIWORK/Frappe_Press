@@ -686,8 +686,7 @@ class Team(Document):
                 "payment_date",
                 "currency",
                 "invoice_pdf",
-                "due_date as date",
-                "link_to_electronic_invoice"
+                "due_date as date"
             ],
             order_by="due_date desc",
         )
@@ -798,9 +797,25 @@ class Team(Document):
             order_by="creation desc",
             limit=1,
         )
-        if not res:
-            return 0
-        return (res[0].get('ending_balance') or 0) + (res[0].get('promotion_balance_1') or 0) + (res[0].get('promotion_balance_2') or 0)
+        info = frappe.get_all(
+            "Balance Transaction",
+            filters={"docstatus": 1, "team": self.name},
+            or_filters={
+                "promotion1_amount_used": (">", 0),
+                "promotion2_amount_used": (">", 0),
+            },
+            fields=["sum(promotion1_amount_used) as amount_used1", "sum(promotion2_amount_used) as amount_used2"],
+        )[0]
+        balance = 0
+        if res:
+            amount_used1 = info.amount_used1 or 0
+            amount_used2 = info.amount_used2 or 0
+            ending_balance = res[0].get('ending_balance') or 0
+            promotion_balance_1 = res[0].get('promotion_balance_1') or 0
+            promotion_balance_2 = res[0].get('promotion_balance_2') or 0
+            balance = (ending_balance + promotion_balance_1 + promotion_balance_2) - (amount_used1 + amount_used2)
+        
+        return balance
 
     @frappe.whitelist()
     def get_detail_balance_all(self):
@@ -812,7 +827,23 @@ class Team(Document):
             order_by="creation desc",
             limit=1,
         )
-        return res[0] if len(res) else {'ending_balance': 0, 'promotion_balance_1': 0, "promotion_balance_2": 0}
+        
+        info = frappe.get_all(
+            "Balance Transaction",
+            filters={"docstatus": 1, "team": self.name},
+            or_filters={
+                "promotion1_amount_used": (">", 0),
+                "promotion2_amount_used": (">", 0),
+            },
+            fields=["sum(promotion1_amount_used) as amount_used1", "sum(promotion2_amount_used) as amount_used2"],
+        )[0]
+        
+        rs = {'ending_balance': 0, 'promotion_balance_1': 0, "promotion_balance_2": 0}
+        if len(res):
+            rs['ending_balance'] = (res[0].get('ending_balance') or 0)
+            rs['promotion_balance_1'] = (res[0].get('promotion_balance_1') or 0) - (info.amount_used1 or 0)
+            rs['promotion_balance_2'] = (res[0].get('promotion_balance_2') or 0) - (info.amount_used2 or 0)
+        return rs
 
     def amount_owed(self):
         # số tiền còn nợ từ đăng ký gói site theo tháng
@@ -832,17 +863,16 @@ class Team(Document):
         
         arr = frappe.get_all(
                 "Balance Transaction",
-                fields=["name", "unallocated_amount_1", "date_promotion_1"],
+                fields=["name", "unallocated_amount_1", "promotion1_amount_used","date_promotion_1", "(COALESCE(unallocated_amount_1, 0) - COALESCE(promotion1_amount_used, 0)) AS remaining_amount"],
                 filters = [
                     ['team', '=', self.name],
                     ['docstatus', '=', 1],
                     ['date_promotion_1', '>', today],
                     ['unallocated_amount_1', '>', 0]
                 ],
-                order_by="creation asc"
+                order_by="date_promotion_1 asc"
             )
-        print("==============")
-        print(arr)
+
         for tran in arr:
             tran.date_expire = get_date_expire_promotion(tran.name, tran.date_promotion_1)
         

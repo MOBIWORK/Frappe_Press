@@ -1,4 +1,14 @@
 {
+	"Switch": "Chuyển đổi",
+	"Current Team": "Nhóm hiện tại",
+	"Download Backups": "Tải xuống sao lưu",
+	"View": "Xem",
+	"Login as Admin": "Đăng nhập bằng admin",
+	"Archive": "Xóa",
+	"Database Access": "Truy cập database",
+	"Change Plan": "Thay đổi gói",
+	"Add Member": "Thêm thành viên",
+	"Manage Members for": "Quản lý thành viên cho",
 	"of_EOVCloud": "của EOVCloud",
 	"Detail": "Chi tiết",
 	"invoice_date": "Ngày lập",
@@ -558,7 +568,7 @@
 	"search": "Tìm kiếm",
 	"sites": "Tổ chức",
 	"settings": "Cài đặt",
-	"switch_team": "Chuyển nhóm",
+	"switch_team": "Chuyển đổi nhóm",
 	"support_and_docs": "Hỗ trợ và Tài liệu",
 	"search_sites": "Tìm tên miền",
 	"status": "Trạng thái",
@@ -626,7 +636,7 @@
 	"payment": "Thanh toán",
 	"provisional_invoice": "Hóa đơn tạm tính",
 	"no_upcoming_invoice": "Không có hóa đơn",
-	"estimated_total_up_to_now": "Ước tính tổng cộng cho đến hiện tại",
+	"estimated_invoice_up_to_now": "Ước tính hóa đơn cho đến hiện tại",
 	"description": "Mô tả",
 	"rate": "Tỉ lệ",
 	"Total_without_discount": "Tổng tiền chưa chiết khấu",
@@ -1265,5 +1275,9 @@
 	"FinalizeInvoicesDialog_5": "Hoàn tất hóa đơn",
 	"===94===": "AccountBillingCreditBalance.vue",
 	"AccountBillingCreditBalance_1": "Số tiền khuyến mãi còn lại",
-	"AccountBillingCreditBalance_2": "áp dụng đến hết ngày"
+	"AccountBillingCreditBalance_2": "áp dụng đến hết ngày",
+	"===95===": "ManageGroupMembers.vue",
+	"ManageGroupMembers_1": "Không có thành viên nào được thêm vào nhóm này.",
+	"ManageGroupMembers_2": "Chọn một thành viên để thêm",
+	"ManageGroupMembers_3": "Bạn phải chọn ít nhất một thành viên"
 }

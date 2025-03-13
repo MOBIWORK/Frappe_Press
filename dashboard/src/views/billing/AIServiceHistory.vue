@@ -22,6 +22,12 @@
 				v-model="filters.service_name"
 				type="text"
 			></FormControl>
+			<FormControl
+				class="w-full"
+				:label="$t('Site')"
+				v-model="filters.site_name"
+				type="text"
+			></FormControl>
 			<div class="flex items-end">
 				<Tooltip :text="$t('clear_filter')">
 					<Button theme="gray" variant="subtle" @click="clearFilter">
@@ -46,7 +52,12 @@
 								{{ $t('service_name') }}
 							</th>
 							<th
-								class="sticky top-0 min-w-56 border-b bg-white px-2 py-4 text-left"
+								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-left"
+							>
+								{{ $t('site') }}
+							</th>
+							<th
+								class="sticky top-0 min-w-48 border-b bg-white px-2 py-4 text-left"
 							>
 								{{ $t('description') }}
 							</th>
@@ -59,11 +70,6 @@
 								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
 							>
 								{{ $t('unit_price') }} (VND)
-							</th>
-							<th
-								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
-							>
-								{{ $t('VAT') }} (%)
 							</th>
 							<th
 								class="sticky top-0 min-w-28 border-b bg-white px-2 py-4 text-right"
@@ -93,6 +99,9 @@
 							<td class="border-b px-2 py-4 text-gray-700">
 								{{ d.service_name }}
 							</td>
+							<td class="border-b px-2 py-4 text-right">
+								{{ d.site_name }}
+							</td>
 							<td class="border-b px-2 py-4">
 								{{ d.description }}
 							</td>
@@ -101,9 +110,6 @@
 							</td>
 							<td class="border-b px-2 py-4 text-right">
 								{{ d.formatted.unit_price }}
-							</td>
-							<td class="border-b px-2 py-4 text-right">
-								{{ d.formatted.vat }}
 							</td>
 							<td class="border-b px-2 py-4 text-right">
 								{{ d.formatted.amount }}
@@ -190,6 +196,7 @@ export default {
 				start_time: this.$startTimeOfMonth(),
 				end_time: this.$endTimeOfMonth(),
 				service_name: null,
+				site_name: null,
 				page: 1
 			};
 		},

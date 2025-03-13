@@ -2028,46 +2028,34 @@ def change_server(name, group, scheduled_datetime=None):
     if not scheduled_datetime:
         site_migration.start()
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True, methods=["GET"])
 def autocomplete_sites(keyword=None):
-    if keyword is not None and keyword != "":
-        site_docs = frappe.db.get_list('Site',
+    if keyword and len(keyword)>3:
+        keyword = keyword.lower()
+        site_docs = frappe.db.get_all('Site',
             filters={
-                'name': ['like', f'%{keyword}%']
+                'name': ['like', f'{keyword}%'],
+                'status': 'Active'
             },
             fields=['name']
         )
         return [site_doc.name for site_doc in site_docs]
-    else:
-        site_docs = frappe.db.get_list('Site',
-            fields=['name']
-        )
-        return [site_doc.name for site_doc in site_docs]
+    return []
 
 
 @frappe.whitelist(allow_guest=True, methods=["POST"])
 def check_site_exists(site_name="", lang='vi'):
     try:
         site = frappe.db.get_value('Site', site_name, ['status'], as_dict=True)
-
         if site:
             if site.status == 'Active':
                 return {
-                    'code': '200',
+                    'site_name': site_name,
                     'msg': _('Success.', lang)
                 }
             else:
-                return {
-                    'code': '0',
-                    'msg': _('The site has stopped operating.', lang)
-                }
+                frappe.throw(_('The site has stopped operating.', lang))
         else:
-            return {
-                'code': '1',
-                'msg': _('Site name not found.', lang)
-            }
+            frappe.throw(_('Site name not found.', lang))
     except Exception as ex:
-        return {
-            'code': '500',
-            'msg': _('An error occurred.', lang)
-        }
+        frappe.throw(_('An error occurred.', lang))

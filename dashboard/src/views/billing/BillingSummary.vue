@@ -16,21 +16,6 @@
 							<div class="mb-2 flex justify-between text-base">
 								<div class="flex">
 									<div class="mr-1">{{ $t('promotional_balance_1') }}</div>
-									<!-- <Tooltip
-										:text="
-											$resources.upcomingInvoice.data?.apply_promotion
-												? `${$t('billingsummary_content_1')} ` +
-												  this.$formatDate(
-														$resources.upcomingInvoice.data?.date_promotion_1
-												  )
-												: 
-										"
-									>
-										<FeatherIcon
-											name="help-circle"
-											class="ml-auto h-4 w-4 text-gray-700"
-										/>
-									</Tooltip> -->
 									<Popover :hideArrow="true">
 										<template #target="{ togglePopover }">
 											<FeatherIcon
@@ -50,7 +35,7 @@
 													v-for="km in arrKhuyenMai1"
 													:key="km.name"
 												>
-													+ {{ formatterMoney(km.unallocated_amount_1) }}
+													+ {{ formatterMoney(km.remaining_amount, 2) }}
 													{{ $t('billingsummary_content_8') }}
 													{{ km.date_expire }}
 												</div>
@@ -320,7 +305,7 @@ export default {
 		},
 		availableBalances() {
 			let total = this.$resources.upcomingInvoice.data?.available_balances || 0;
-			return this.formatterMoney(total);
+			return this.formatterMoney(total, 2);
 		},
 		soTienThanhToan() {
 			return this.$resources.upcomingInvoice.data?.so_tien_goi_y_thanh_toan;
@@ -338,7 +323,7 @@ export default {
 			let amount =
 				this.$resources.upcomingInvoice.data?.available_credits
 					?.promotion_balance_1;
-			return this.formatterMoney(amount);
+			return this.formatterMoney(amount, 2);
 		},
 		khuyenMai1() {
 			return this.$resources.upcomingInvoice.data?.available_credits

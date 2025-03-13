@@ -45,8 +45,6 @@
   "amount_paid",
   "section_break_15",
   "credit_allocations",
-  "electronic_bill_section",
-  "link_to_electronic_invoice",
   "stripe_billing_section",
   "stripe_invoice_id",
   "stripe_payment_intent_id",
@@ -69,7 +67,20 @@
   "razorpay_payment_id",
   "razorpay_payment_method",
   "section_break_47",
-  "discounts"
+  "discounts",
+  "tab_br_einvoice",
+  "custom_status_einvoice",
+  "custom_tax_status_einvoice",
+  "custom_einvoice_supplier",
+  "custom_env_type_einvoice",
+  "col_br_1",
+  "custom_tax_code",
+  "custom_adjustment_einvoice_for",
+  "custom_replacement_einvoice_for",
+  "custom_get_pdf_invoice_link",
+  "custom_get_pdf_cancellation_report_link",
+  "section_break_kjvzl",
+  "custom_queue_einvoice"
  ],
  "fields": [
   {
@@ -242,6 +253,7 @@
    "no_copy": 1
   },
   {
+   "default": "0",
    "fieldname": "applied_credits",
    "fieldtype": "Currency",
    "label": "Applied Credits",
@@ -453,17 +465,6 @@
    "label": "PayOs Invoice ID"
   },
   {
-   "fieldname": "electronic_bill_section",
-   "fieldtype": "Section Break",
-   "label": "H\u00f3a \u0111\u01a1n \u0111i\u1ec7n t\u1eed"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "link_to_electronic_invoice",
-   "fieldtype": "Data",
-   "label": "Link t\u1edbi h\u00f3a \u0111\u01a1n"
-  },
-  {
    "fieldname": "total_after_vat",
    "fieldtype": "Currency",
    "hidden": 1,
@@ -471,6 +472,7 @@
    "options": "currency"
   },
   {
+   "default": "0",
    "fieldname": "vat",
    "fieldtype": "Float",
    "label": "VAT",
@@ -481,6 +483,91 @@
    "fieldtype": "Currency",
    "label": "S\u1ed1 ti\u1ec1n tr\u01b0\u1edbc VAT",
    "options": "currency"
+  },
+  {
+   "depends_on": "eval: doc.docstatus != 0",
+   "fieldname": "tab_br_einvoice",
+   "fieldtype": "Tab Break",
+   "label": "EInvoice"
+  },
+  {
+   "default": "Not created",
+   "fieldname": "custom_status_einvoice",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "EInvoice Status",
+   "options": "\nNot created\nNewly created\nPending issuance\nPending revocation\nPending adjustment\nPending replacement\nReplacement\nReplaced\nIssued\nRevoked\nAdjustment\nAdjusted\nNot in use"
+  },
+  {
+   "fieldname": "custom_tax_status_einvoice",
+   "fieldtype": "Select",
+   "label": "Tax Status",
+   "options": "\nPending approval\nSigned\nRejected\nSent\nError\nPending signature"
+  },
+  {
+   "fieldname": "col_br_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "custom_tax_code",
+   "fieldtype": "Data",
+   "label": "Tax Code",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "custom_adjustment_einvoice_for",
+   "fieldtype": "Data",
+   "label": "Adjustment EInvoice For",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "custom_replacement_einvoice_for",
+   "fieldtype": "Data",
+   "label": "Replacement EInvoice For",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.custom_status_einvoice != \"Not created\"",
+   "fieldname": "custom_get_pdf_invoice_link",
+   "fieldtype": "Button",
+   "label": "Get PDF Invoice Link"
+  },
+  {
+   "depends_on": "eval: [\"Revoked\", \"Pending revocation\"].includes(doc.custom_status_einvoice)",
+   "fieldname": "custom_get_pdf_cancellation_report_link",
+   "fieldtype": "Button",
+   "label": "Get PDF Cancellation Report Link"
+  },
+  {
+   "fieldname": "section_break_kjvzl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "custom_queue_einvoice",
+   "fieldtype": "Table",
+   "label": " Invoice Processing Log",
+   "options": "MBW Detail EInvoice",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "custom_einvoice_supplier",
+   "fieldtype": "Select",
+   "label": "Supplier",
+   "options": "\nBKAV eHoadon\nM - Invoice",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "custom_env_type_einvoice",
+   "fieldtype": "Select",
+   "label": "Environment",
+   "options": "\nProduction\nTesting",
+   "read_only": 1
   }
  ],
  "is_submittable": 1,
@@ -506,7 +593,7 @@
    "link_fieldname": "invoice"
   }
  ],
- "modified": "2025-02-11 14:42:57.198199",
+ "modified": "2025-03-13 14:27:19.718728",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice",

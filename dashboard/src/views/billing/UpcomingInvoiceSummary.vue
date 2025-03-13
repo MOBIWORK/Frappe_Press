@@ -19,7 +19,7 @@ export default {
 			let start = this.$date(this.invoiceDoc.period_start);
 			// let end = this.$date(this.invoiceDoc.period_end);
 
-			return `${this.$t('estimated_total_up_to_now')} (${start.toFormat(
+			return `${this.$t('estimated_invoice_up_to_now')} (${start.toFormat(
 				'dd/MM'
 			)} - ${this.$getFormatTimeNow('dd/MM/yyyy')})`;
 		}
