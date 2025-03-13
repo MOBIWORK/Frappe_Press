@@ -164,7 +164,7 @@ export default {
 		};
 	},
 	resources: {
-		balances() {
+		transHistory() {
 			return {
 				url: 'press.api.billing.get_ai_service_transaction_history',
 				onSuccess(data) {
@@ -210,7 +210,7 @@ export default {
 			};
 		},
 		getHistory() {
-			this.$resources.balances.submit(this.filters);
+			this.$resources.transHistory.submit(this.filters);
 		},
 		getStatus(d) {
 			let color = d.status == 'Settled' ? 1 : 3;

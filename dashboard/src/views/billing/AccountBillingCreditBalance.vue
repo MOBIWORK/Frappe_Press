@@ -76,13 +76,13 @@
 										</div>
 									</div>
 									<div class="text-right">
-										{{ d.pre_formatted.total_balance }}
+										{{ formatterMoney(d.pre.total_balance, 2) }}
 									</div>
 									<div class="text-right">
-										{{ d.formatted.total_amount }}
+										{{ formatterMoney(d.total_amount, 2) }}
 									</div>
 									<div class="text-right">
-										{{ d.formatted.total_balance }}
+										{{ formatterMoney(d.total_balance, 2) }}
 									</div>
 									<div class="whitespace-nowrap">
 										<StatusOrder
@@ -144,13 +144,13 @@
 												{{ $t('deposit_amount') }}:
 											</div>
 											<div class="py-1 text-right">
-												{{ d.pre_formatted.balance }}
+												{{ formatterMoney(d.pre.balance, 2) }}
 											</div>
 											<div class="py-1 text-right">
-												{{ d.formatted.amount }}
+												{{ formatterMoney(d.amount, 2) }}
 											</div>
 											<div class="py-1 text-right">
-												{{ d.formatted.ending_balance }}
+												{{ formatterMoney(d.ending_balance, 2) }}
 											</div>
 											<div></div>
 											<div></div>
@@ -159,27 +159,45 @@
 											<div></div>
 											<div class="py-1 font-bold">{{ $t('promotion_1') }}:</div>
 											<div class="py-1 text-right">
-												{{ d.pre_formatted.promotion_balance_1 }}
+												{{ formatterMoney(d.pre.promotion_balance_1, 2) }}
 											</div>
 											<div class="py-1 text-right">
-												{{ d.formatted.amount_promotion_1 }}
+												{{ formatterMoney(d.amount_promotion_1, 2) }}
 											</div>
 											<div class="py-1 text-right">
-												{{ d.formatted.promotion_balance_1 }}
+												{{ formatterMoney(d.promotion_balance_1, 2) }}
 											</div>
 											<div class="py-1">
-												<Popover v-if="!d.promotion_expire">
+												<Popover
+													v-if="!d.promotion_expire || d.remaining_amount2 > 0"
+												>
 													<template #target="{ togglePopover }">
 														<span class="underline" @click="togglePopover()">
 															{{ $t('Detail') }}
 														</span>
 													</template>
 													<template #content>
-														<div class="text-ink-gray-9 min-w-36 p-2 text-base">
-															{{ $t('AccountBillingCreditBalance_1') }}
-															{{ d.formatted.unallocated_amount_1 }}
-															{{ $t('AccountBillingCreditBalance_2') }}
-															{{ d.date_promotion_expire }}.
+														<div class="flex flex-col flex-wrap gap-2 p-2">
+															<div
+																v-if="!d.promotion_expire"
+																class="text-ink-gray-9 min-w-36 text-base"
+															>
+																{{ $t('AccountBillingCreditBalance_1') }}
+																{{
+																	formatterMoney(d.remaining_amount1, 2, 'VND')
+																}}
+																{{ $t('AccountBillingCreditBalance_2') }}
+																{{ d.date_promotion_expire }}.
+															</div>
+															<div
+																v-if="d.remaining_amount2 > 0"
+																class="text-ink-gray-9 min-w-36 text-base"
+															>
+																{{ $t('AccountBillingCreditBalance_3') }}
+																{{
+																	formatterMoney(d.remaining_amount2, 2, 'VND')
+																}}.
+															</div>
 														</div>
 													</template>
 												</Popover>
@@ -190,13 +208,13 @@
 											<div></div>
 											<div class="py-1 font-bold">{{ $t('promotion_2') }}:</div>
 											<div class="py-1 text-right">
-												{{ d.pre_formatted.promotion_balance_2 }}
+												{{ formatterMoney(d.pre.promotion_balance_2, 2) }}
 											</div>
 											<div class="py-1 text-right">
-												{{ d.formatted.amount_promotion_2 }}
+												{{ formatterMoney(d.amount_promotion_2, 2) }}
 											</div>
 											<div class="py-1 text-right">
-												{{ d.formatted.promotion_balance_2 }}
+												{{ formatterMoney(d.promotion_balance_2, 2) }}
 											</div>
 											<div></div>
 											<div></div>
@@ -367,6 +385,16 @@ export default {
 		},
 		getHistory() {
 			this.$resources.balances.submit(this.filters);
+		},
+		formatterMoney(amount, decimal = 0, currency) {
+			let formatM = '0';
+			if (amount) {
+				formatM = this.$formatMoney(amount, decimal);
+			}
+			if (currency) {
+				formatM += ` ${currency}`;
+			}
+			return formatM;
 		}
 	}
 };

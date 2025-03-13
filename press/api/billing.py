@@ -417,6 +417,9 @@ def balances(**kwargs):
             bt.promotion_balance_1,
             bt.promotion_balance_2,
             bt.unallocated_amount_1,
+            bt.unallocated_amount_2,
+            bt.promotion1_amount_used,
+            bt.promotion2_amount_used,
             bt.date_promotion_1,
             bt.amount_promotion_1,
             bt.amount_promotion_2,
@@ -434,6 +437,8 @@ def balances(**kwargs):
     total_page = math.ceil(total/page_length)
     
     for d in data:
+        d.remaining_amount1 = d.unallocated_amount_1 - d.promotion1_amount_used
+        d.remaining_amount2 = d.unallocated_amount_2 - d.promotion2_amount_used
         d.promotion_expire = check_promotion_expire(d.name)
         d.date_promotion_expire = get_date_expire_promotion(d.name, d.date_promotion_1)
         d.formatted = dict(
@@ -471,30 +476,9 @@ def balances(**kwargs):
             promotion_balance_1=pre_promotion_balance_1,
             promotion_balance_2=pre_promotion_balance_2,
         )
-        d.pre_formatted = dict(
-            total_balance=fmt_money(pre_total_balance, 0),
-            balance=fmt_money(pre_balance, 0),
-            promotion_balance_1=fmt_money(
-                pre_promotion_balance_1, 0),
-            promotion_balance_2=fmt_money(
-                pre_promotion_balance_2, 0),
-        )
         d.total_amount = d.amount + d.amount_promotion_1 + d.amount_promotion_2
         d.total_balance = total_balance
         d.ending_balance = ending_balance
-        # formatted
-        d.formatted['unallocated_amount_1'] = fmt_money(
-            d.unallocated_amount_1, 0, d.currency)
-        d.formatted['promotion_balance_1'] = fmt_money(
-            promotion_balance_1, 0)
-        d.formatted['promotion_balance_2'] = fmt_money(
-            promotion_balance_2, 0)
-        d.formatted['total_amount'] = fmt_money(
-            d.total_amount, 0)
-        d.formatted['total_balance'] = fmt_money(
-            d.total_balance, 0)
-        d.formatted['ending_balance'] = fmt_money(
-            d.ending_balance, 0)
 
         if d.period_start:
             d.formatted["invoice_for"] = d.period_start.strftime("%m-%Y")
