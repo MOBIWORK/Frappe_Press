@@ -723,8 +723,7 @@ class Invoice(Document):
 			filters={
 				"team": self.team,
 				"type": "Adjustment",
-				"docstatus": ("<", 2),
-                "promotion1_allocated": 0
+				"docstatus": ("<", 2)
 			},
             or_filters={
                 "unallocated_amount_1": (">", 0),
@@ -780,7 +779,7 @@ class Invoice(Document):
                             "currency": self.currency
                         },
                     )
-                doc.promotion1_allocated = 1
+                doc.promotion1_amount_used = 0
                 doc.save()
 
         # lay sanh sach trans để giao dịch cho km2        

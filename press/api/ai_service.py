@@ -157,6 +157,9 @@ def sendmail_storage_capacity_overflows(**kwargs):
 
 @frappe.whitelist(methods=['POST'])
 def sendmail_invite_user(**kwargs):
+    from press.press.doctype.balance_transaction.balance_transaction import handle_for_expired_promotions
+    handle_for_expired_promotions()
+    return
     try:
         site_name = kwargs.get('site_name')
         service_name = kwargs.get('service_name')

@@ -196,17 +196,16 @@ def handle_for_expired_promotions():
 
     for tran in transactions:
         if tran.date_promotion_1 and tran.date_promotion_1 <= date_now:
-            doc = frappe.get_doc(
-                doctype="Balance Transaction",
-                team=tran.team,
-                type="Promotion",
-                source="Free Credits",
-                currency=tran.currency,
-                amount=0,
-                amount_promotion_1=tran.unallocated_amount_1 * -1,
-                promotion1_amount_used=tran.promotion1_amount_used * -1,
-                amount_promotion_2=0,
-                description=f"Hết hạn khuyến mãi 1",
+            # them phẩn bổ để giảm tiền
+            doc = frappe.get_doc("Balance Transaction", tran.name)
+            doc.append(
+                "allocated_to",
+                {
+                    "invoice": '',
+                    "amount": 0,
+                    "amount_promotion_1": tran.unallocated_amount_1,
+                    "amount_promotion_2": 0,
+                    "currency": tran.currency
+                },
             )
-            doc.insert()
-            doc.submit()
+            doc.save(ignore_permissions=True)

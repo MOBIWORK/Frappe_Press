@@ -186,7 +186,13 @@
 															>
 																{{ $t('AccountBillingCreditBalance_1') }}
 																{{
-																	formatterMoney(d.remaining_amount1, 2, 'VND')
+																	d.promotion_expire
+																		? formatterMoney(0, 2, 'VND')
+																		: formatterMoney(
+																				d.remaining_amount1,
+																				2,
+																				'VND'
+																		  )
 																}}
 																{{ $t('AccountBillingCreditBalance_2') }}
 																{{ d.date_promotion_expire }}.

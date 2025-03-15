@@ -801,7 +801,7 @@ class Team(Document):
             "Balance Transaction",
             filters={"docstatus": 1, "team": self.name},
             or_filters={
-                "promotion1_amount_used": ("!=", 0),
+                "promotion1_amount_used": (">", 0),
                 "promotion2_amount_used": (">", 0),
             },
             fields=["sum(promotion1_amount_used) as amount_used1", "sum(promotion2_amount_used) as amount_used2"],
@@ -832,7 +832,7 @@ class Team(Document):
             "Balance Transaction",
             filters={"docstatus": 1, "team": self.name},
             or_filters={
-                "promotion1_amount_used": ("!=", 0),
+                "promotion1_amount_used": (">", 0),
                 "promotion2_amount_used": (">", 0),
             },
             fields=["sum(promotion1_amount_used) as amount_used1", "sum(promotion2_amount_used) as amount_used2"],

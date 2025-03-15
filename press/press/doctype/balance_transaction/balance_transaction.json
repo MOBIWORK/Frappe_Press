@@ -24,7 +24,6 @@
   "promotion_balance_1",
   "unallocated_amount_1",
   "promotion1_amount_used",
-  "promotion1_allocated",
   "date_promotion_1",
   "amount_promotion_2",
   "promotion_balance_2",
@@ -212,20 +211,12 @@
    "fieldtype": "Currency",
    "label": "S\u1ed1 ti\u1ec1n KM 2 s\u1eed d\u1ee5ng",
    "options": "currency"
-  },
-  {
-   "allow_on_submit": 1,
-   "default": "0",
-   "fieldname": "promotion1_allocated",
-   "fieldtype": "Check",
-   "label": "\u0110\u00e3 ph\u00e2n b\u1ed5 KM 1",
-   "read_only_depends_on": "eval: doc.amount_promotion_1 <= 0"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-03-15 09:50:22.900124",
+ "modified": "2025-03-15 10:49:23.244879",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Balance Transaction",
