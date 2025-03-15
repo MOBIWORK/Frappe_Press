@@ -174,7 +174,7 @@ def send_email_handle_site(type_email, site_name, team):
 
         if type_email in ['lock', 'warning', 'prior']:
             frappe.sendmail(
-                recipients=team.user,
+                recipients=team.get_email_invoice(),
                 subject=subject,
                 template=template,
                 args=args,

@@ -169,7 +169,9 @@
 											</div>
 											<div class="py-1">
 												<Popover
-													v-if="!d.promotion_expire || d.remaining_amount2 > 0"
+													v-if="
+														d.amount_promotion_1 > 0 || d.amount_promotion_2 > 0
+													"
 												>
 													<template #target="{ togglePopover }">
 														<span class="underline" @click="togglePopover()">
@@ -179,7 +181,7 @@
 													<template #content>
 														<div class="flex flex-col flex-wrap gap-2 p-2">
 															<div
-																v-if="!d.promotion_expire"
+																v-if="d.amount_promotion_1"
 																class="text-ink-gray-9 min-w-36 text-base"
 															>
 																{{ $t('AccountBillingCreditBalance_1') }}
@@ -190,7 +192,7 @@
 																{{ d.date_promotion_expire }}.
 															</div>
 															<div
-																v-if="d.remaining_amount2 > 0"
+																v-if="d.amount_promotion_2 > 0"
 																class="text-ink-gray-9 min-w-36 text-base"
 															>
 																{{ $t('AccountBillingCreditBalance_3') }}

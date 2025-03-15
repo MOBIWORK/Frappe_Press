@@ -797,19 +797,19 @@ class Team(Document):
             order_by="creation desc",
             limit=1,
         )
-        info = frappe.get_all(
+        balance_promotion = frappe.get_all(
             "Balance Transaction",
             filters={"docstatus": 1, "team": self.name},
             or_filters={
-                "promotion1_amount_used": (">", 0),
+                "promotion1_amount_used": ("!=", 0),
                 "promotion2_amount_used": (">", 0),
             },
             fields=["sum(promotion1_amount_used) as amount_used1", "sum(promotion2_amount_used) as amount_used2"],
         )[0]
         balance = 0
         if res:
-            amount_used1 = info.amount_used1 or 0
-            amount_used2 = info.amount_used2 or 0
+            amount_used1 = balance_promotion.amount_used1 or 0
+            amount_used2 = balance_promotion.amount_used2 or 0
             ending_balance = res[0].get('ending_balance') or 0
             promotion_balance_1 = res[0].get('promotion_balance_1') or 0
             promotion_balance_2 = res[0].get('promotion_balance_2') or 0
@@ -828,11 +828,11 @@ class Team(Document):
             limit=1,
         )
         
-        info = frappe.get_all(
+        balance_promotion = frappe.get_all(
             "Balance Transaction",
             filters={"docstatus": 1, "team": self.name},
             or_filters={
-                "promotion1_amount_used": (">", 0),
+                "promotion1_amount_used": ("!=", 0),
                 "promotion2_amount_used": (">", 0),
             },
             fields=["sum(promotion1_amount_used) as amount_used1", "sum(promotion2_amount_used) as amount_used2"],
@@ -841,8 +841,8 @@ class Team(Document):
         rs = {'ending_balance': 0, 'promotion_balance_1': 0, "promotion_balance_2": 0}
         if len(res):
             rs['ending_balance'] = (res[0].get('ending_balance') or 0)
-            rs['promotion_balance_1'] = (res[0].get('promotion_balance_1') or 0) - (info.amount_used1 or 0)
-            rs['promotion_balance_2'] = (res[0].get('promotion_balance_2') or 0) - (info.amount_used2 or 0)
+            rs['promotion_balance_1'] = (res[0].get('promotion_balance_1') or 0) - (balance_promotion.amount_used1 or 0)
+            rs['promotion_balance_2'] = (res[0].get('promotion_balance_2') or 0) - (balance_promotion.amount_used2 or 0)
         return rs
 
     def amount_owed(self):
@@ -1112,7 +1112,37 @@ class Team(Document):
         ]
         for site in suspended_sites:
             frappe.get_doc("Site", site).unsuspend(reason)
+        
+        # gui email mo sites
+        self.sendemail_open_sites()
+        
         return suspended_sites
+    
+    def get_email_invoice(self):
+        email = (
+            frappe.db.get_value(
+                "Communication Email", {
+                    "parent": self.name, "type": "invoices"}, "value"
+            )
+            or self.user
+        )
+        return email
+    
+    
+    def sendemail_open_sites(self):
+        user = frappe.db.get_value('User', self.user, ['first_name'], as_dict=1)
+        email = self.get_email_invoice()
+        date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        subject = f"[EOVCloud] - Các tổ chức của bạn đã được mở - {date_time}"
+
+        frappe.sendmail(
+            recipients=email,
+            subject=subject,
+            template="site_open_email",
+            args={
+                "user_name": user.first_name if user else self.user,
+            },
+        )
     
     def available_balance(self):
         # hóa đơn chưa thanh toán của tháng
@@ -1177,13 +1207,7 @@ class Team(Document):
     @frappe.whitelist()
     def send_email_for_failed_payment(self, invoice, sites=None):
         invoice = frappe.get_doc("Invoice", invoice)
-        email = (
-            frappe.db.get_value(
-                "Communication Email", {
-                    "parent": self.name, "type": "invoices"}, "value"
-            )
-            or self.user
-        )
+        email = self.get_email_invoice()
         payment_method = self.default_payment_method
         # last_4 = frappe.db.get_value(
         #     "Stripe Payment Method", payment_method, "last_4")
@@ -1275,7 +1299,6 @@ def reset_used_and_noti_subscription(team):
             UPDATE `tabSubscription`
             SET number_days_used = 0, estimated_number_of_notifications = 0
             WHERE team = %s
-            AND enabled = 1
             """,
             (team,)
         )
@@ -1288,7 +1311,6 @@ def process_payos_webhook(doc, method):
     team: Team = frappe.get_doc("Team", doc.team)
     team.allocate_free_credits()
 
-    reset_used_and_noti_subscription(team.name)
     enqueue_finalize_unpaid_for_team(team.name)
 
 def process_stripe_webhook(doc, method):
@@ -1376,6 +1398,17 @@ def enqueue_finalize_unpaid_for_team(team: str):
             "press.press.doctype.invoice.invoice.finalize_draft_invoice",
             invoice=invoice,
         )
+
+    # neu khong thanh toan hoa don nao thi chay function unsuspend_sites_when_recharge
+    if not invoices:
+        unsuspend_sites_when_recharge(team)
+
+
+def unsuspend_sites_when_recharge(team_name):
+    team = frappe.get_doc("Team", team_name)
+    if team.available_balance() > 0:
+        reset_used_and_noti_subscription(team_name)
+        # team.unsuspend_sites('Nap tien vao TK EOVCloud')
 
 
 def get_permission_query_conditions(user):

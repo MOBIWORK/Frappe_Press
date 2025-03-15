@@ -89,8 +89,9 @@ def send_email_confirm_money_into_account(balance_transaction):
                         "amount": amount
                     })
 
+                    email_recipients = team.get_email_invoice()
                     frappe.sendmail(
-                        recipients=billing_details.email_id,
+                        recipients=email_recipients,
                         subject=rendered_subject,
                         template="confirm_money_into_account",
                         args={

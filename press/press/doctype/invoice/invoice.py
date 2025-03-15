@@ -18,6 +18,10 @@ from datetime import datetime, timedelta
 from press.overrides import get_permission_query_conditions_for_doctype
 from press.utils.billing import get_frappe_io_connection, convert_stripe_money
 
+from press.press.doctype.team.team import (
+    unsuspend_sites_when_recharge
+)
+
 class InvoiceDiscountType(Enum):
     FLAT_ON_TOTAL = "Flat On Total"
 
@@ -707,6 +711,8 @@ class Invoice(Document):
         total_allocated = 0
         total_allocated_1 = 0
         total_allocated_2 = 0
+        tien_km1_ap_dung = 0
+        tien_km2_ap_dung = 0
         
         # so tien chua co VAT
         total_before_vat = self.total_before_vat
@@ -718,9 +724,13 @@ class Invoice(Document):
 				"team": self.team,
 				"type": "Adjustment",
 				"docstatus": ("<", 2),
-                "unallocated_amount_1": (">", 0),
+                "promotion1_allocated": 0
 			},
-			fields=["name", "unallocated_amount_1", "promotion1_amount_used", "source"],
+            or_filters={
+                "unallocated_amount_1": (">", 0),
+                "promotion1_amount_used": (">", 0)
+            },
+			fields=["name", "unallocated_amount_1", "promotion1_amount_used", "source", "(COALESCE(unallocated_amount_1, 0) - COALESCE(promotion1_amount_used, 0)) AS remaining_amount"],
 			order_by="date_promotion_1 desc, creation desc",
 		)
         # sort by ascending for FIFO
@@ -731,41 +741,47 @@ class Invoice(Document):
             if total_before_vat == 0:
                 break
             
-            # so tien km1 tra duoc
+            # kiem tra km1 con han khong
             promotion_expire = check_promotion_expire(balance.name)
-            allocated_promotion_1 = balance.unallocated_amount_1 or 0
+            # so tien con lai cua km1 ap dung duoc
             if promotion_expire:
                 allocated_promotion_1 = balance.promotion1_amount_used or 0
-            
-            if allocated_promotion_1 > 0:
-                allocated_promotion_1 = min(total_before_vat, allocated_promotion_1)
+            else:
+                allocated_promotion_1 = min(total_before_vat, balance.remaining_amount)
                 total_before_vat -= allocated_promotion_1
-
+                
+            if allocated_promotion_1 > 0:
+                tat_ca_tien_km1_ap_dung = balance.promotion1_amount_used
+                if not promotion_expire:
+                    total_allocated_1 += allocated_promotion_1 + balance.promotion1_amount_used
+                    tien_km1_ap_dung += allocated_promotion_1
+                    tat_ca_tien_km1_ap_dung = total_allocated_1
+                    
                 self.append(
                     "credit_allocations",
                     {
                         "transaction": balance.name,
                         "amount": 0,
-                        "amount_promotion_1": allocated_promotion_1,
+                        "amount_promotion_1": tat_ca_tien_km1_ap_dung,
                         "amount_promotion_2": 0,
                         "currency": self.currency,
                         "source": balance.source,
                     },
                 )
                 doc = frappe.get_doc("Balance Transaction", balance.name)
-                doc.append(
-                    "allocated_to",
-                    {
-                        "invoice": self.name,
-                        "amount": 0,
-                        "amount_promotion_1": allocated_promotion_1,
-                        "amount_promotion_2": 0,
-                        "currency": self.currency
-                    },
-                )
-                doc.promotion1_amount_used = 0
+                if not promotion_expire:
+                    doc.append(
+                        "allocated_to",
+                        {
+                            "invoice": self.name,
+                            "amount": 0,
+                            "amount_promotion_1": tat_ca_tien_km1_ap_dung,
+                            "amount_promotion_2": 0,
+                            "currency": self.currency
+                        },
+                    )
+                doc.promotion1_allocated = 1
                 doc.save()
-                total_allocated_1 += allocated_promotion_1
 
         # lay sanh sach trans để giao dịch cho km2        
         unallocated_balances = frappe.db.get_all(
@@ -776,7 +792,7 @@ class Invoice(Document):
 				"docstatus": ("<", 2),
                 "unallocated_amount_2": (">", 0),
 			},
-			fields=["name", "unallocated_amount_2", "source"],
+			fields=["name", "unallocated_amount_2", "source", "promotion2_amount_used", "(COALESCE(unallocated_amount_2, 0) - COALESCE(promotion2_amount_used, 0)) AS remaining_amount"],
 			order_by="creation desc",
 		)
         # sort by ascending for FIFO
@@ -786,19 +802,23 @@ class Invoice(Document):
         for balance in unallocated_balances:
             if total_before_vat == 0:
                 break
-            # so tien km2 tra duoc
-            allocated_promotion_2 = balance.unallocated_amount_2 or 0
+            # so tien con lai cua km2 ap dung duoc
+            allocated_promotion_2 = balance.remaining_amount
             if allocated_promotion_2>0:
                 allocated_promotion_2 = min(total_before_vat, allocated_promotion_2)
                 total_before_vat -= allocated_promotion_2
 
+                tien_km2_ap_dung += allocated_promotion_2
+                tat_ca_tien_km2_ap_dung = allocated_promotion_2 + balance.promotion2_amount_used
+                total_allocated_2 += tat_ca_tien_km2_ap_dung
+                
                 self.append(
                     "credit_allocations",
                     {
                         "transaction": balance.name,
                         "amount": 0,
                         "amount_promotion_1": 0,
-                        "amount_promotion_2": allocated_promotion_2,
+                        "amount_promotion_2": tat_ca_tien_km2_ap_dung,
                         "currency": self.currency,
                         "source": balance.source,
                     },
@@ -810,16 +830,15 @@ class Invoice(Document):
                         "invoice": self.name,
                         "amount": 0,
                         "amount_promotion_1": 0,
-                        "amount_promotion_2": allocated_promotion_2,
+                        "amount_promotion_2": tat_ca_tien_km2_ap_dung,
                         "currency": self.currency
                     },
                 )
                 doc.promotion2_amount_used = 0
                 doc.save()
-                total_allocated_2 += allocated_promotion_2
         
         # them km vao discount
-        tien_km_ap_dung = total_allocated_1 + total_allocated_2
+        tien_km_ap_dung = tien_km1_ap_dung + tien_km2_ap_dung
         if tien_km_ap_dung > 0:
             if len(self.discounts) and self.discounts[0].based_on == "Amount":
                 doc_discount = self.discounts[0]

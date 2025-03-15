@@ -7,8 +7,7 @@ import frappe
 from frappe.model.document import Document
 from press.overrides import get_permission_query_conditions_for_doctype
 from press.press.doctype.team.team import (
-    enqueue_finalize_unpaid_for_team,
-    reset_used_and_noti_subscription    
+    enqueue_finalize_unpaid_for_team
 )
 
 
@@ -182,8 +181,7 @@ get_permission_query_conditions = get_permission_query_conditions_for_doctype(
 )
 
 @frappe.whitelist()
-def handle_finalize_unpaid_invoices(team):
-    reset_used_and_noti_subscription(team)
+def handling_upon_recharge(team):
     enqueue_finalize_unpaid_for_team(team)
     return {}
 
@@ -192,12 +190,12 @@ def handle_for_expired_promotions():
     transactions = frappe.get_all(
         "Balance Transaction",
         filters={"docstatus": 1, "unallocated_amount_1": (">", 0)},
-        fields=["name", "team", "currency", "date_promotion_1", "unallocated_amount_1"],
+        fields=["name", "team", "currency", "date_promotion_1", "unallocated_amount_1", "promotion1_amount_used"],
         order_by="creation asc",
     )
 
     for tran in transactions:
-        if tran.unallocated_amount_1 > 0 and tran.date_promotion_1 and tran.date_promotion_1 < date_now:
+        if tran.date_promotion_1 and tran.date_promotion_1 <= date_now:
             doc = frappe.get_doc(
                 doctype="Balance Transaction",
                 team=tran.team,
@@ -206,6 +204,7 @@ def handle_for_expired_promotions():
                 currency=tran.currency,
                 amount=0,
                 amount_promotion_1=tran.unallocated_amount_1 * -1,
+                promotion1_amount_used=tran.promotion1_amount_used * -1,
                 amount_promotion_2=0,
                 description=f"Hết hạn khuyến mãi 1",
             )

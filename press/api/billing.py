@@ -111,11 +111,21 @@ def upcoming_invoice():
     upcoming_invoice = None
     if invoice:
         vat = invoice.vat or 0
-        for item in invoice.items:
-            so_tien_goi_y_thanh_toan += round(item.rate * day_left)
-        so_tien_goi_y_thanh_toan = round(
+        
+        # danh sach sites va tinh so tien uoc tinh
+        sites = frappe.get_all('Site', fields=['name', 'plan'], filters={
+            'team': team.name,
+            'status': ('in', ["Active", "Inactive"])
+        })
+        for site in sites:
+            plan = frappe.get_cached_doc("Plan", site.plan)
+            price = plan.get_price_for_interval(plan.interval, team.currency)
+            so_tien_goi_y_thanh_toan += round(price * day_left, 2)
+        
+        so_tien_goi_y_thanh_toan -= (promotion_balance_1 + promotion_balance_2)
+        so_tien_goi_y_thanh_toan = math.ceil(
             so_tien_goi_y_thanh_toan + round(vat*so_tien_goi_y_thanh_toan/100, 2))
-
+            
         # lay ten plan
         plan_items = [item.plan for item in invoice.items if item.document_type == "Site"]
         app_items = [item.document_name for item in invoice.items if item.document_type == "Marketplace App"]
@@ -372,12 +382,12 @@ def balances(**kwargs):
     conditions = conditions & (bt.creation < end_time)
 
     # delete payment is spam
-    query = (
-        frappe.qb.from_(bt)
-        .where((bt.team == team) & (bt.docstatus == 0) & (bt.checkout_url.isnull() | bt.checkout_url == '') & ((bt.order_code.notnull()) | (bt.order_code != '')))
-        .delete()
-    )
-    query.run(as_dict=True)
+    # query = (
+    #     frappe.qb.from_(bt)
+    #     .where((bt.team == team) & (bt.docstatus == 0) & (bt.checkout_url.isnull() | bt.checkout_url == '') & ((bt.order_code.notnull()) | (bt.order_code != '')))
+    #     .delete()
+    # )
+    # query.run(as_dict=True)
 
     has_bought_credits = frappe.db.get_all(
         "Balance Transaction",
@@ -453,22 +463,20 @@ def balances(**kwargs):
         pre_promotion_balance_2 = 0
         total_balance = 0
 
-        promotion_balance_1 = d.promotion_balance_1
-        promotion_balance_2 = d.promotion_balance_2
         if d.docstatus == 1:
             ending_balance = d.ending_balance
-            total_balance = d.ending_balance + d.promotion_balance_1 + d.promotion_balance_2
-        elif d.docstatus == 2:
-            ending_balance = d.ending_balance - d.amount
-            total_balance = ending_balance
-            promotion_balance_1 = d.promotion_balance_1 - d.amount_promotion_1
-            promotion_balance_2 = d.promotion_balance_2 - d.amount_promotion_2
 
         if d.docstatus in [1, 2]:
             pre_promotion_balance_1 = d.promotion_balance_1 - d.amount_promotion_1
             pre_promotion_balance_2 = d.promotion_balance_2 - d.amount_promotion_2
             pre_balance = d.ending_balance - d.amount
 
+        if d.docstatus == 2:
+            ending_balance = d.ending_balance - d.amount
+            d.promotion_balance_1 -= d.amount_promotion_1
+            d.promotion_balance_2 -= d.amount_promotion_2
+
+        total_balance = ending_balance + d.promotion_balance_1 + d.promotion_balance_2
         pre_total_balance = pre_balance+pre_promotion_balance_1+pre_promotion_balance_2
         d.pre = dict(
             total_balance=pre_total_balance,
@@ -476,9 +484,10 @@ def balances(**kwargs):
             promotion_balance_1=pre_promotion_balance_1,
             promotion_balance_2=pre_promotion_balance_2,
         )
+
         d.total_amount = d.amount + d.amount_promotion_1 + d.amount_promotion_2
-        d.total_balance = total_balance
         d.ending_balance = ending_balance
+        d.total_balance = total_balance
 
         if d.period_start:
             d.formatted["invoice_for"] = d.period_start.strftime("%m-%Y")

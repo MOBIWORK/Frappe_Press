@@ -45,7 +45,7 @@ def suspend_sites_and_send_email(team):
         frappe.db.rollback()
     # send email
     if sites:
-        email = team.user
+        email = team.get_email_invoice()
         frappe.sendmail(
             recipients=email,
             subject="[EOVCloud] - Các tổ chức của bạn đã bị tạm dừng trên EOV Cloud",

@@ -139,7 +139,7 @@ def sendmail_storage_capacity_overflows(**kwargs):
             'link': f'https://eov.mbwcloud.com/dashboard/sites/{site_name}/overview',
             'max_storage_usage': max_storage_usage
         }
-        email_recipients = team.user
+        email_recipients = team.get_email_invoice()
         template = "storage_capacity_overflows"
         
         frappe.sendmail(
