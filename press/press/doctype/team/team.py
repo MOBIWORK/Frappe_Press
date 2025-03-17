@@ -1408,7 +1408,7 @@ def unsuspend_sites_when_recharge(team_name):
     team = frappe.get_doc("Team", team_name)
     if team.available_balance() > 0:
         reset_used_and_noti_subscription(team_name)
-        # team.unsuspend_sites('Nap tien vao TK EOVCloud')
+        team.unsuspend_sites('Nap tien vao TK EOVCloud')
 
 
 def get_permission_query_conditions(user):

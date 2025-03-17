@@ -381,14 +381,6 @@ def balances(**kwargs):
     end_time = new_date.strftime("%Y-%m-%d")
     conditions = conditions & (bt.creation < end_time)
 
-    # delete payment is spam
-    # query = (
-    #     frappe.qb.from_(bt)
-    #     .where((bt.team == team) & (bt.docstatus == 0) & (bt.checkout_url.isnull() | bt.checkout_url == '') & ((bt.order_code.notnull()) | (bt.order_code != '')))
-    #     .delete()
-    # )
-    # query.run(as_dict=True)
-
     has_bought_credits = frappe.db.get_all(
         "Balance Transaction",
         filters={
@@ -623,97 +615,6 @@ def generator_order_code(number=12):
 
 
 @frappe.whitelist()
-def create_order(amount, lang='vi'):
-    try:
-        team = get_current_team()
-        amount_new = round(amount)
-        remark = "Nap tien TK EOV Cloud"
-
-        # tinh toan so du khuyen mai 2
-        amount_promotion_2 = 0
-        policy_type = 'Nạp lần đầu'
-        if check_first_deposit():
-            policy_type = 'Nạp thường'
-
-        cash_policy = frappe.get_list(
-            "Cash Gift Policy",
-            filters={
-                'policy_type': policy_type,
-                'status': 'Hoạt động'
-            },
-            fields=["*"],
-            order_by="amount_from asc",
-            ignore_permissions=True
-        )
-
-        for item in cash_policy:
-            if amount_new >= item['amount_from']:
-                amount_free = amount_new * item['cash_gift_percentage'] / 100
-                if amount_free > item['maximum_amount']:
-                    amount_free = item['maximum_amount']
-                amount_promotion_2 = round(amount_free)
-
-        # kiem tra config payos
-        payos_settings = check_payos_settings()
-        if not payos_settings:
-            return {
-                'code': '2',
-                'desc': _("Unable to deposit funds at the moment", lang) + ', ' + _("please try again later", lang)
-            }
-
-        # check exists pre payment
-        check_pre_payment = frappe.db.exists(
-            "Balance Transaction",
-            {
-                "team": team,
-                "payos_payment_status": "PENDING"
-            }
-        )
-
-        if check_pre_payment:
-            return {
-                'code': '1',
-                'desc': _("Please settle the payment for the previous deposit transaction", lang)
-            }
-
-        # check orderCode exsists
-        order_code = generator_order_code()
-        checkOrder = frappe.db.exists('Balance Transaction', {
-            'order_code': order_code
-        })
-        while checkOrder:
-            order_code = generator_order_code()
-            checkOrder = frappe.db.exists('Balance Transaction', {
-                'order_code': order_code
-            })
-
-        doc = frappe.get_doc(
-            order_code=order_code,
-            doctype="Balance Transaction",
-            team=team,
-            type="Adjustment",
-            source='Prepaid Credits',
-            amount=amount_new,
-            amount_promotion_2=amount_promotion_2,
-            description=remark,
-            payos_payment_status='PROCESSING'
-        )
-        doc.insert(ignore_permissions=True)
-
-        infoOrder = doc.as_dict()
-        return {
-            'code': '00',
-            'infoOrder': infoOrder,
-            'desc': 'Success'
-        }
-    except Exception as ex:
-        return {
-            'code': '2',
-            'desc': str(ex)
-        }
-
-
-@frappe.whitelist()
 def payos_return_cancel_order(order_code, lang='vi'):
     try:
         name = frappe.db.get_value(
@@ -798,25 +699,100 @@ def cancel_order(name, lang='vi'):
 
 
 @frappe.whitelist()
-def get_link_payment_payos(info_order, lang='vi'):
+def get_link_payment_payos(amount, lang='vi'):
     try:
-        payos_settings = check_payos_settings()
-        balance_transaction = frappe.get_doc(
-            "Balance Transaction", info_order.get('name'))
+        # create order - payos
+        team = get_current_team()
+        amount_new = round(amount)
+        remark = "Nap tien TK EOV Cloud"
 
-        if not payos_settings or not balance_transaction:
+        # tinh toan so du khuyen mai 2
+        amount_promotion_2 = 0
+        policy_type = 'Nạp lần đầu'
+        if check_first_deposit():
+            policy_type = 'Nạp thường'
+
+        cash_policy = frappe.get_list(
+            "Cash Gift Policy",
+            filters={
+                'policy_type': policy_type,
+                'status': 'Hoạt động'
+            },
+            fields=["*"],
+            order_by="amount_from asc",
+            ignore_permissions=True
+        )
+
+        for item in cash_policy:
+            if amount_new >= item['amount_from']:
+                amount_free = amount_new * item['cash_gift_percentage'] / 100
+                if amount_free > item['maximum_amount']:
+                    amount_free = item['maximum_amount']
+                amount_promotion_2 = round(amount_free)
+
+        # kiem tra config payos
+        payos_settings = check_payos_settings()
+        if not payos_settings:
             return {
-                'code': '1',
+                'code': '2',
                 'desc': _("Unable to deposit funds at the moment", lang) + ', ' + _("please try again later", lang)
             }
+
+        # check exists pre payment
+        check_pre_payment = frappe.db.exists(
+            "Balance Transaction",
+            {
+                "team": team,
+                "payos_payment_status": "PENDING"
+            }
+        )
+
+        if check_pre_payment:
+            return {
+                'code': '1',
+                'desc': _("Please settle the payment for the previous deposit transaction", lang)
+            }
+
+        # check orderCode exsists
+        order_code = generator_order_code()
+        checkOrder = frappe.db.exists('Balance Transaction', {
+            'order_code': order_code
+        })
+        while checkOrder:
+            order_code = generator_order_code()
+            checkOrder = frappe.db.exists('Balance Transaction', {
+                'order_code': order_code
+            })
+
+        balance_transaction = frappe.get_doc(
+            order_code=order_code,
+            doctype="Balance Transaction",
+            team=team,
+            type="Adjustment",
+            source='Prepaid Credits',
+            amount=amount_new,
+            amount_promotion_2=amount_promotion_2,
+            description=remark,
+            payos_payment_status='PROCESSING'
+        )
+
+        payos_settings = check_payos_settings()
+        if not payos_settings:
+            return {
+                'code': '2',
+                'desc': _("Unable to deposit funds at the moment, please try again later", lang)
+            }
+        
+        balance_transaction.insert(ignore_permissions=True)
+        balance_transaction.reload()
 
         payOS = PayOS(client_id=payos_settings.get('payos_client_id'), api_key=payos_settings.get(
             'payos_api_key'), checksum_key=payos_settings.get('payos_checksum_key'))
 
         paymentData = PaymentData(
-            orderCode=int(info_order.get('order_code')),
-            amount=info_order.get('amount'),
-            description=info_order.get('description'),
+            orderCode=int(balance_transaction.order_code),
+            amount=math.ceil(balance_transaction.amount),
+            description=balance_transaction.description,
             cancelUrl=payos_settings.get('payos_cancel_url'),
             returnUrl=payos_settings.get('payos_return_url')
         )
@@ -836,8 +812,9 @@ def get_link_payment_payos(info_order, lang='vi'):
             'desc': 'Success'
         }
     except Exception as ex:
+        frappe.db.rollback()
         return {
-            'code': '1',
+            'code': '3',
             'desc': str(ex)
         }
 

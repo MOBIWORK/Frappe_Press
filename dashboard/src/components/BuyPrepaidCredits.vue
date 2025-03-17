@@ -57,8 +57,8 @@
 				<ErrorMessage
 					class="mt-2"
 					:message="
-						(['1', '2'].includes($resources.createaOrder.data?.code) &&
-							$resources.createaOrder.data?.desc) ||
+						(['1', '2', '3'].includes($resources.getLinkPayment.data?.code) &&
+							$resources.getLinkPayment.data?.desc) ||
 						errorMessage
 					"
 				/>
@@ -115,34 +115,17 @@
 			</div>
 		</div>
 		<router-link
-			v-if="$resources.createaOrder.data?.code == 1"
+			v-if="$resources.getLinkPayment.data?.code == 1"
 			class="text-sm underline"
 			to="transaction-history"
 		>
 			{{ $t('go_to_checkout') }}
 		</router-link>
-		<div v-if="infoOrder">
-			<div>{{ $t('invoice_information_created') }}:</div>
-			<div class="rounded-md border p-2">
-				<p>{{ $t('invoice_code') }}: {{ infoOrder.order_code }}</p>
-				<p>{{ $t('amount_of_money') }}: {{ formatAmount() }} VND</p>
-				<p>{{ $t('content') }}: {{ infoOrder.description }}</p>
-			</div>
-		</div>
 
 		<div class="mt-4 flex w-full justify-between">
 			<!-- <StripeLogo /> -->
 			<PayOSLogo />
 			<div v-if="step == 'Create order'">
-				<Button
-					variant="solid"
-					@click="$resources.createaOrder.submit()"
-					:loading="$resources.createaOrder.loading"
-				>
-					{{ $t('create_invoice') }}
-				</Button>
-			</div>
-			<div v-if="step == 'Get link payment'">
 				<Button @click="$emit('cancel')"> {{ $t('cancel') }} </Button>
 				<Button
 					class="ml-2"
@@ -153,26 +136,6 @@
 					{{ $t('proceed_to_payment') }}
 				</Button>
 			</div>
-			<!-- <div v-if="step == 'Get Amount'">
-        <Button
-          variant="solid"
-          @click="$resources.createPaymentIntent.submit()"
-          :loading="$resources.createPaymentIntent.loading"
-        >
-          Tiếp theo
-        </Button>
-      </div>
-      <div v-if="step == 'Add Card Details'">
-        <Button @click="$emit('cancel')"> Hủy </Button>
-        <Button
-          class="ml-2"
-          variant="solid"
-          @click="onBuyClick"
-          :loading="paymentInProgress"
-        >
-          Sang link thanh toán
-        </Button>
-      </div> -->
 		</div>
 	</div>
 </template>
@@ -251,9 +214,9 @@ export default {
 				}
 			};
 		},
-		createaOrder() {
+		getLinkPayment() {
 			return {
-				url: 'press.api.billing.create_order',
+				url: 'press.api.billing.get_link_payment_payos',
 				params: {
 					amount: this.creditsToBuy,
 					lang: this.$i18n.locale
@@ -276,35 +239,6 @@ export default {
 				},
 				async onSuccess(data) {
 					if (data.code == '00') {
-						this.step = 'Get link payment';
-						this.infoOrder = data.infoOrder;
-					} else {
-						notify({
-							title: data.desc,
-							color: 'red',
-							icon: 'x'
-						});
-					}
-				}
-				// onError(e) {
-				// 	notify({
-				// 		title: 'Có lỗi xảy ra vui lòng thử lại.',
-				// 		color: 'red',
-				// 		icon: 'x'
-				// 	});
-				// }
-			};
-		},
-		getLinkPayment() {
-			return {
-				url: 'press.api.billing.get_link_payment_payos',
-				params: {
-					info_order: this.infoOrder,
-					lang: this.$i18n.locale
-				},
-				async onSuccess(data) {
-					if (data.code == '00') {
-						this.step = 'Get link payment';
 						window.location.href = data.infoPayment.checkoutUrl;
 					} else {
 						notify({
