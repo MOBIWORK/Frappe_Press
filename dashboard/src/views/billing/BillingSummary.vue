@@ -74,7 +74,7 @@
 								{{ $t('this_month_provisional_invoice') }}
 							</div>
 							<div class="text-2xl font-medium">
-								{{ formatterMoney(upcomingInvoice?.total) }}
+								{{ formatterMoney(upcomingInvoice?.total, 2) }}
 							</div>
 						</div>
 						<div class="rounded-md border p-4">
@@ -300,7 +300,8 @@ export default {
 		},
 		unpaidAmountDue() {
 			return this.formatterMoney(
-				this.$resources.upcomingInvoice.data?.total_unpaid_amount
+				this.$resources.upcomingInvoice.data?.total_unpaid_amount,
+				2
 			);
 		},
 		availableBalances() {
@@ -317,7 +318,7 @@ export default {
 			// if (this.$account.team.payment_mode === 'Partner Credits') {
 			// 	amount = this.$resources.availablePartnerCredits.data;
 			// }
-			return this.formatterMoney(amount);
+			return this.formatterMoney(amount, 2);
 		},
 		formatKhuyenMai1() {
 			let amount =
@@ -336,12 +337,12 @@ export default {
 			let amount =
 				this.$resources.upcomingInvoice.data?.available_credits
 					?.promotion_balance_2;
-			return this.formatterMoney(amount);
+			return this.formatterMoney(amount, 2);
 		},
 		soTienAI() {
 			let amount =
 				this.$resources.upcomingInvoice.data?.so_tien_dich_vu_ai_tam_tinh;
-			return this.formatterMoney(amount);
+			return this.formatterMoney(amount, 2);
 		},
 		paymentDate() {
 			if (!this.upcomingInvoice) {
