@@ -9,7 +9,7 @@
 				{{ $t('deposit_money_into_account') }}
 			</h3>
 			<p class="mt-1 text-base text-gray-600">
-				{{ paymentGateway ? '' : 'Chọn cổng thanh toán của bạn' }}
+				{{ paymentGateway ? '' : $t('Choose your payment gateway') }}
 			</p>
 		</template>
 		<template v-slot:body-content>
@@ -175,7 +175,7 @@ export default {
 				},
 				validate() {
 					if (this.creditsToBuy < this.minimumAmount) {
-						return 'Số tiền ít hơn số tiền tối thiểu yêu cầu';
+						return this.$t('Amount less than minimum amount required')
 					}
 				}
 			};
