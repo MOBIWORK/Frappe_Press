@@ -5,11 +5,11 @@
 
 {%- block content -%}
 <section>
-	<div class="mx-auto mt-20 mb-24 col-xl-4 col-lg-6 col-md-7 col-sm-9">
+	<div class="mx-auto pt-20 col-xl-4 col-lg-6 col-md-7 col-sm-9">
 		<div class="card">
 			<div class="text-center card-body">
 				{%- if frappe.form_dict.key -%}
-				<h1>Your site is being prepared</h1>
+				<h1>{{_('Your site is being prepared', lang)}}</h1>
 				<p class="setup-message"></p>
 				<svg class="spinner animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 					<circle style="color: var(--primary-light)" cx="12" cy="12" r="10" stroke="currentColor"
@@ -19,8 +19,8 @@
 					</path>
 				</svg>
 				{%- else -%}
-				<div>
-					Invalid or expired key
+				<div class="m-0 alert alert-danger small" role="alert">
+					{{_('Invalid or Expired Key', lang)}}
 				</div>
 				{%- endif -%}
 			</div>
@@ -60,17 +60,17 @@
 
 	function get_site_status() {
 		return frappe.call('press.api.saas.get_site_status', {
-				key,
-				app
-			})
+			key,
+			app
+		})
 			.then(r => r.message);
 	}
 
 	function get_site_url_and_sid() {
 		return frappe.call('press.api.saas.get_site_url_and_sid', {
-				key,
-				app
-			})
+			key,
+			app
+		})
 			.then(r => r.message);
 	}
 </script>
@@ -83,19 +83,24 @@
 	}
 
 	h1 {
-		font-size: var(--font-size-lg);
+		margin: 0 0 2rem;
+		font-size: var(--font-size-xl);
+		font-weight: 600;
 		text-align: center;
 	}
 
 	.card {
-		box-shadow: 0px 1px 42px rgba(97, 97, 97, 0.07), 0px 1px 4px rgba(255, 255, 255, 1);
-		border-radius: 10px;
+		box-shadow: 0px 2px 6px rgba(17, 43, 66, 0.08), 0px 1px 4px rgba(17, 43, 66, 0.1);
+		border-radius: 0.5rem;
 		border-color: transparent;
-		padding: 0px 80px 60px 80px;
+		padding: 2rem;
 	}
 
 	.card-body {
-			padding: 0px;
+		flex: 1 1 auto;
+		min-height: 1px;
+		padding: 1.25rem;
+
 	}
 
 	.spinner {

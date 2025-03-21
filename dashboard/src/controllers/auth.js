@@ -1,4 +1,5 @@
 import call from './call';
+import { changeLanguage } from '@/composables/language';
 
 export default class Auth {
 	constructor() {
@@ -33,6 +34,7 @@ export default class Auth {
 			}
 			localStorage.setItem('current_team', team);
 			this.isLoggedIn = true;
+			changeLanguage.submit({ lang: localStorage.getItem('lang') });
 			window.location.reload();
 			return res;
 		}

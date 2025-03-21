@@ -14,6 +14,7 @@
   "role",
   "invited_by",
   "ip_address",
+  "language",
   "invited_by_parent_team",
   "section_break_8",
   "erpnext",
@@ -258,11 +259,17 @@
    "fieldtype": "Link",
    "label": "Saas App",
    "options": "Marketplace App"
+  },
+  {
+   "default": "vi",
+   "fieldname": "language",
+   "fieldtype": "Data",
+   "label": "Language"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-17 15:42:31.892347",
+ "modified": "2025-03-21 10:19:48.607099",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Account Request",

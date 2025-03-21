@@ -1,6 +1,27 @@
 {%- extends "templates/eov_signup_layout.html" -%} {%- block content -%}
 
-<h1>Tạo tài khoản mới</h1>
+<div class="flex justify-center">
+	<div class="dropdown">
+		<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"
+			id="languageDropdown">
+			<img class="h-4.5 w-7" src="/assets/press/images/icon_flag_vi.svg" alt=""> <span
+				class="ml-1">{{_('Vietnamese',
+				lang)}}</span>
+		</button>
+		<ul class="dropdown-menu" id="languageMenu">
+			<li><a class="dropdown-item flex items-center" data-lang="vi" href="#"><img class="h-4.5 w-7"
+						src="/assets/press/images/icon_flag_vi.svg" alt=""> <span class="ml-1">{{_('Vietnamese',
+						lang)}}</span></a>
+			</li>
+			<li><a class="dropdown-item flex items-center" data-lang="en" href="#"><img class="h-4.5 w-7"
+						src="/assets/press/images/icon_flag_en.svg" alt=""> <span class="ml-1">{{_('English',
+						lang)}}</span>
+				</a></li>
+		</ul>
+	</div>
+</div>
+
+<h1>{{_('Create a new account', lang)}}</h1>
 
 <div class="mx-auto form-container col-xl-5 col-lg-6 col-md-7 col-sm-9" id="user-signup"
 	data-validators="field_validators">
@@ -11,10 +32,11 @@
 			<!-- 1. Personal Details -->
 			<form class="form-step" data-step="1" data-action="submit_account_request">
 				<div class="form-group">
-					<label for="subdomain">Tên tổ chức</label>
+					<label for="subdomain">{{_('Site name', lang)}}</label>
 					<div class="input-group">
 						<input type="text" id="subdomain" name="subdomain" class="form-control"
-							placeholder="Nhập tên miền" autocomplete="off" onchange="validate_subdomain(this)" />
+							placeholder="{{_('Enter domain name', lang)}}" autocomplete="off"
+							onchange="validate_subdomain(this)" />
 						<div class="input-group-append">
 							<span class="input-group-text rounded-right"
 								style="line-height: 0.5 !important;">.{{domain}}</span>
@@ -24,7 +46,7 @@
 				</div>
 
 				<div class="form-group">
-					<label for="first_name">Họ và tên</label>
+					<label for="first_name">{{_('Full name', lang)}}</label>
 					<input type="text" id="first_name" name="first_name" class="form-control"
 						autocomplete="given-name" />
 				</div>
@@ -41,11 +63,11 @@
 					</div>
 				</div> -->
 				<div class="form-group">
-					<label for="phone">Số điện thoại</label>
+					<label for="phone">{{_('Phone number', lang)}}</label>
 					<input type="tel" id="phone" class="form-control" name="phone_number" autocomplete="tel" />
 				</div>
 				<div class="form-group">
-					<label for="email">Địa chỉ Email</label>
+					<label for="email">{{_('Email address', lang)}}</label>
 					<input type="email" id="email" class="form-control" name="email" autocomplete="email" />
 				</div>
 				<!-- <div class="form-group">
@@ -64,40 +86,43 @@
 					</select>
 				</div> -->
 				<div class="form-group">
-					<label for="password">Mật khẩu</label>
+					<label for="password">{{_('Password', lang)}}</label>
 					<input type="password" id="password" class="form-control" name="password"
 						onkeyup="validate_password(this)" />
 				</div>
 				<div class="form-group">
 					<input id="showPassword" type="checkbox" onclick="togglePasswordVisibility()" />
-					<label for="showPassword" class="text-xs mb-0">Hiện mật khẩu</label>
+					<label for="showPassword" class="text-xs mb-0">{{_('Show password', lang)}}</label>
 				</div>
 
 				<div class="form-group">
 					<input type="checkbox" name="user_accept_terms" id="user_accept_terms" />
 					<label class="d-inline" for="user_accept_terms">
-						Bằng cách chọn <b>Tạo tài khoản</b>, bạn sẽ chấp nhận
-						<a href="https://frappecloud.com/terms" class="text-blue-600">Điều khoản dịch vụ</a>,
-						<a href="https://frappecloud.com/privacy" class="text-blue-600">Chính sách quyền riêng tư</a>
+						{{_('By clicking on', lang)}} <b>{{_('Create Account', lang)}}</b>, {{_('you accept our',
+						lang)}}
+						<a href="https://frappecloud.com/terms" class="text-blue-600">{{_('Terms of service',
+							lang)}}</a>,
+						<a href="https://frappecloud.com/privacy" class="text-blue-600">{{_('Privacy policy',
+							lang)}}</a>
 						&#38;
-						<a href="https://frappecloud.com/cookie-policy" class="text-blue-600">Chính sách cookie</a> của
-						chúng tôi.
+						<a href="https://frappecloud.com/cookie-policy" class="text-blue-600">{{_('Cookie policy',
+							lang)}}</a>.
 					</label>
 				</div>
 				<div class="form-message text-danger"></div>
 				<div class="mt-8 d-flex justify-content-between">
 					<div></div>
 					<button type="submit" class="btn btn-primary btn-step-1">
-						Tạo tài khoản
+						{{_('Create Account', lang)}}
 					</button>
 				</div>
 			</form>
 			<!-- 2. Verification Email Sent -->
 			<form class="form-step" data-step="2">
 				<div class="text-center">
-					<h2 class="font-size-base">Email xác minh đã được gửi!</h2>
-					Chúng tôi đã gửi một email xác thực đến <span class="verification-email"></span>.
-					Vui lòng nhấp vào liên kết nhận được để xác minh email, tạo tài khoản và trang web của bạn.
+					<h2 class="font-size-base">{{_('Verification Email Sent!', lang)}}</h2>
+					{{_('We have sent an email to', lang)}} <span class="verification-email"></span>.
+					{{_('Please click on the link received to verify your email and create your account.', lang)}}
 				</div>
 			</form>
 		</div>
@@ -105,6 +130,8 @@
 </div>
 {%- endblock -%} {%- block script -%}
 <script src="/assets/press/js/form_controller.js"></script>
+<script src="/assets/press/js/change_language.js"></script>
+
 <script>
 	let controller;
 	const app = 'roadai';
@@ -122,18 +149,18 @@
 			let MIN_LENGTH = 4;
 			let MAX_LENGTH = 20;
 			if (value.length < MIN_LENGTH) {
-				return `Tên tổ chức không thể có ít hơn ${MIN_LENGTH} kí tự.`;
+				return "{{_('Site name cannot have less than {0} characters', lang).format(4)}}";
 			}
 			if (value.length > MAX_LENGTH) {
-				return `Tên tổ chức không thể có nhiều hơn ${MAX_LENGTH} kí tự.`;
+				return `{{_('Site name cannot have more than {0} characters', lang).format(20)}}`;
 			}
 			if (!/^[a-z0-9][a-z0-9-]*[a-z0-9]$/.test(value)) {
-				return 'Tên tổ chức phải chứa chữ cái viết thường, số và dấu gạch nối.';
+				return "{{_('Site name should contain lowercase alphabets, numbers, and hyphens', lang)}}";
 			}
 		},
 		first_name: (value) => {
 			if (!value) {
-				return 'Trường bắt buộc.';
+				return `{{_('Full name', lang)}} {{_('is required', lang)}}`;
 			}
 		},
 		// last_name: (value) => {
@@ -143,25 +170,25 @@
 		// },
 		phone_number: (value) => {
 			if (!value) {
-				return 'Trường Số điện thoại là bắt buộc.';
+				return `{{_('Phone number', lang)}} {{_('is required', lang)}}`;
 			}
 
 			let regExp = /[a-zA-Z]/g;
 			if (regExp.test(value)) {
-				return 'Số điện thoại không thể chứa bảng chữ cái.';
+				return `{{_('Phone number', lang)}} {{_('cannot contain alphabets', lang)}}`;
 			}
 		},
 		email: (value) => {
 			if (!valid_email(value)) {
-				return 'Email không hợp lệ.';
+				return `{{_('Invalid email', lang)}}`;
 			}
 		},
 		password: (value) => {
 			if (!value) {
-				return 'Vui lòng điền mật khẩu.';
+				return `{{_('Password', lang)}} {{_('is required', lang)}}`;
 			} else {
 				if (validate_password(value, true)) {
-					return 'Vui lòng sử dụng mật khẩu mạnh hơn.';
+					return `{{_('Please use a strong password', lang)}}`;
 				}
 			}
 		},
@@ -172,7 +199,7 @@
 		// },
 		user_accept_terms: (value) => {
 			if (!value) {
-				return 'Bạn cần chấp nhận chính sách của chúng tôi.';
+				return `{{_('You need to accept our Terms of Service & Privary Policy', lang)}}`;
 			}
 		},
 	};
@@ -227,8 +254,8 @@
 				controller.show_input_feedback(
 					'subdomain',
 					!available
-						? `${subdomain}.${domain} đã được sử dụng.`
-						: `${subdomain}.${domain} hợp lệ.`,
+						? `${subdomain}.${domain} {{_('is already taken', lang)}}`
+						: `${subdomain}.${domain} {{_('is available', lang)}}`,
 					!available
 				);
 			});
@@ -250,14 +277,14 @@
 		if (password.match(pattern) && password.length >= 8) {
 			controller.show_input_feedback(
 				'password',
-				"Bạn đã sử dụng mật khẩu mạnh.",
+				`{{_("Now that's a strong password", lang)}}`,
 				false
 			);
 			return false;
 		} else {
 			controller.show_input_feedback(
 				'password',
-				'Mật khẩu yếu! Độ dài mật khẩu phải có ít nhất 8 ký tự và phải chứa sự kết hợp của chữ in hoa, chữ thường, số và ký hiệu. Ví dụ: Gene@31480, Merz313$oo',
+				`{{_("Bad Password! The password length should be atleast 8 characters and it should contain a combination of capital letters, small letters, numbers and symbols. For e.g. Gene@31480, Merz313$oo", lang)}}`,
 				true
 			);
 			return true;

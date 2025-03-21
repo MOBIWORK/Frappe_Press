@@ -380,11 +380,11 @@ def set_country(country):
     team_doc.create_stripe_customer()
 
 
-def get_account_request_from_key(key):
+def get_account_request_from_key(key, lang='vi'):
     """Find Account Request using `key` in the past 12 hours or if site is active"""
 
     if not key or not isinstance(key, str):
-        frappe.throw(_("Invalid Key"))
+        frappe.throw(_("Invalid Key", lang))
 
     hours = 12
     ar = frappe.get_doc("Account Request", {"request_key": key})

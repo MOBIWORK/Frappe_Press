@@ -2,11 +2,15 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from press.api.site import get_domain
 from press.utils import get_country_info
 
 def get_context(context):
     context.no_cache = True
+    args = frappe.request.args
+    lang = args.get('lang', 'vi')
+    context.lang = lang
     domain = frappe.db.get_value("Press Settings", "Press Settings", ["domain"])
     context.domain = domain
     country_info = get_country_info() or {}

@@ -1,6 +1,27 @@
 {%- extends "templates/eov_signup_layout.html" -%} {%- block content -%}
 
-<h1>Bổ sung thông tin</h1>
+<div class="flex justify-center">
+	<div class="dropdown">
+		<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"
+			id="languageDropdown">
+			<img class="h-4.5 w-7" src="/assets/press/images/icon_flag_vi.svg" alt=""> <span
+				class="ml-1">{{_('Vietnamese',
+				lang)}}</span>
+		</button>
+		<ul class="dropdown-menu" id="languageMenu">
+			<li><a class="dropdown-item flex items-center" data-lang="vi" href="#"><img class="h-4.5 w-7"
+						src="/assets/press/images/icon_flag_vi.svg" alt=""> <span class="ml-1">{{_('Vietnamese',
+						lang)}}</span></a>
+			</li>
+			<li><a class="dropdown-item flex items-center" data-lang="en" href="#"><img class="h-4.5 w-7"
+						src="/assets/press/images/icon_flag_en.svg" alt=""> <span class="ml-1">{{_('English',
+						lang)}}</span>
+				</a></li>
+		</ul>
+	</div>
+</div>
+
+<h1>{{_('Additional information', lang)}}</h1>
 
 <div class="mx-auto form-container col-xl-5 col-lg-6 col-md-7 col-sm-9" id="user-signup-verify"
 	data-validators="field_validators">
@@ -12,61 +33,62 @@
 			<!-- Business Settings -->
 			<form class="form-step" data-step="1" data-action="business_settings">
 				<div class="form-group">
-					<label for="billing_name">Tên người dùng</label>
+					<label for="billing_name">{{_('Username', lang)}}</label>
 					<input type="text" class="form-control" id="billing_name" name="billing_name"
 						value="{{billing_info.get('billing_name')}}" />
 				</div>
 				<div class="form-group">
-					<label for="tax_code">Mã số thuế</label>
+					<label for="tax_code">{{_('Tax Code', lang)}}</label>
 					<input type="text" class="form-control" id="tax_code" name="tax_code" />
 				</div>
 				<div class="form-group">
-					<label for="email_id">Email xuất hóa đơn</label>
+					<label for="email_id">{{_('Billing email', lang)}}</label>
 					<input type="email" class="form-control" id="email_id" value="{{billing_info.get('email_id')}}"
 						name="email_id" />
 				</div>
 				<div class="form-group">
-					<label for="phone">Số điện thoại</label>
+					<label for="phone">{{_('Phone number', lang)}}</label>
 					<input type="tel" id="phone" class="form-control" value="{{billing_info.get('phone')}}" name="phone"
 						autocomplete="tel" />
 				</div>
 				<div class="form-group">
-					<label for="address">Địa chỉ</label>
+					<label for="address">{{_('Address', lang)}}</label>
 					<input type="text" class="form-control" id="address" name="address" />
 				</div>
 				<div class="form-row">
 					<div class="form-group col">
-						<label for="province">Tỉnh thành</label>
+						<label for="province">{{_('Province', lang)}}</label>
 						<select id="province" name="province" class="custom-select" onchange="filterDistrict(this)"
 							placeholder="test">
-							<option value="" selected disabled>Chọn Tỉnh thành</option>
+							<option value="" selected disabled>{{_('Select Province', lang)}}</option>
 							{%- for province in provinces -%}
 							<option value="{{province.value}}">{{province.name}}</option>
 							{%- endfor -%}
 						</select>
 					</div>
 					<div class="form-group col">
-						<label for="district">Quận huyện</label>
+						<label for="district">{{_('District', lang)}}</label>
 						<select id="district" name="district" class="custom-select">
-							<option value="" selected disabled>Chọn Quận/Huyện</option>
+							<option value="" selected disabled>{{_('Select District', lang)}}</option>
 						</select>
 					</div>
 				</div>
 				<div class="form-group">
 					<input type="checkbox" name="agreed_to_partner_consent" id="agreed_to_partner_consent" />
-					<label class="d-inline" for="agreed_to_partner_consent">Tôi đồng ý chia sẻ thông tin của tôi với
-						EOVCloud</label>
+					<label class="d-inline" for="agreed_to_partner_consent">
+						{{_('I agree to share my information with EOVCloud', lang)}}
+					</label>
 				</div>
 				<div class="mt-8 d-flex justify-content-between">
 					<div></div>
 					<button type="submit" class="ml-4 btn btn-primary btn-step-4">
-						Hoàn thành
+						{{_('Complete', lang)}}
 					</button>
 				</div>
 			</form>
 			{%- else -%}
 			<div class="m-0 alert alert-danger small" role="alert">
-				Link không hợp lệ hoặc đã hết hạn.
+				{{_('Invalid or Expired Key', lang)}}
 			</div>
 			{%- endif -%}
 		</div>
@@ -75,6 +97,8 @@
 
 {%- endblock -%} {%- block script -%}
 <script src="/assets/press/js/form_controller.js"></script>
+<script src="/assets/press/js/change_language.js"></script>
+
 <script>
 	let controller;
 	let form_values = {};
@@ -124,6 +148,11 @@
 				return 'Vui lòng điền số lượng người dùng';
 			}
 		},
+		agreed_to_partner_consent: (value) => {
+			if (!value) {
+				return `{{_('You need to agree to share your information with EOVCloud', lang)}}`;
+			}
+		},
 	};
 
 	const districtSelect = document.getElementById("district");
@@ -142,7 +171,7 @@
 		const defaultOption = document.createElement("option");
 		defaultOption.value = "";
 		defaultOption.selected = true;
-		defaultOption.textContent = "Chọn Quận/Huyện";
+		defaultOption.textContent = "{{_('Select District', lang)}}";
 		districtSelect.appendChild(defaultOption);
 
 		// Add new options
@@ -162,10 +191,10 @@
 		Object.assign(form_values, values);
 		return call(
 			'press.api.saas.setup_account',
-			{ key, business_data: form_values },
+			{ key, business_data: form_values, lang: "{{lang}}" },
 			$form
 		).then(() => {
-			window.location.href = '/prepare-site?key=' + key + '&app=roadai';
+			window.location.href = '/prepare-site?key=' + key + '&app=roadai&lang={{lang}}';
 		});
 	}
 

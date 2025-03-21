@@ -47,19 +47,22 @@ def account_request(
     """
     return: Stripe setup intent and AR key if stripe flow, else None
     """
+    url_args = json.loads(url_args) if url_args else {}
+    lang = url_args.get('lang', 'vi')
     email = email.strip().lower()
     frappe.utils.validate_email_address(email, True)
+    frappe.throw(_('Account with email {0} has been deactivated', lang).format(email))
 
     exists, enabled = frappe.db.get_value("Team", {"user": email}, ["name", "enabled"]
     ) or [0, 0]
 
     if exists and not enabled:
-        frappe.throw(f"Account with email {email} has been deactivated")
+        frappe.throw(_('Account with email {0} has been deactivated', lang).format(email))
     elif exists and enabled:
-        frappe.throw(f"Account with email {email} is already registered")
+        frappe.throw(_('Account with email {0} is already registered', lang).format(email))
 
     if not check_subdomain_availability(subdomain, app):
-        frappe.throw(f"Subdomain {subdomain} is already taken")
+        frappe.throw(_('Subdomain {0} is already taken', lang).format(subdomain))
 
     password_validation = validate_password(
         password, first_name, last_name, email)
@@ -69,7 +72,7 @@ def account_request(
     all_countries = frappe.db.get_all("Country", pluck="name")
     country = find(all_countries, lambda x: x.lower() == country.lower())
     if not country:
-        frappe.throw(_("Country field should be a valid country name"))
+        frappe.throw(_("Country field should be a valid country name", lang))
 
     current_user = frappe.session.user
     try:
@@ -90,6 +93,7 @@ def account_request(
                 "country": country,
                 "url_args": url_args or json.dumps({}),
                 "send_email": True,
+                "language": lang
             }
         )
         site_name = account_request.get_site_name()
@@ -280,13 +284,13 @@ def check_subdomain_availability(subdomain, app):
 
 
 @frappe.whitelist(allow_guest=True)
-def validate_account_request(key):
+def validate_account_request(key, lang='vi'):
     if not key:
-        frappe.throw("Request Key not provided")
+        frappe.throw(_("Request Key not provided", lang))
     
-    account_request = get_account_request_from_key(key)
+    account_request = get_account_request_from_key(key, lang)
     if not account_request:
-        frappe.throw(_("Invalid or Expired Key", 'vi'))
+        frappe.throw(_("Invalid or Expired Key", lang))
 
     app = frappe.db.get_value(
         "Account Request", {"request_key": key}, "saas_app")
@@ -298,18 +302,18 @@ def validate_account_request(key):
         headless_setup_account(key)
     else:
         frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = f"/{route}?key={key}"
+        frappe.local.response["location"] = f"/{route}?key={key}&lang={lang}"
 
     
 
 @frappe.whitelist(allow_guest=True)
-def setup_account(key, business_data=None):
+def setup_account(key, business_data=None, lang='vi'):
     """
     Includes the data collection step in setup-account.html
     """
-    account_request = get_account_request_from_key(key)
+    account_request = get_account_request_from_key(key, lang)
     if not account_request:
-        frappe.throw(_("Invalid or Expired Key", 'vi'))
+        frappe.throw(_("Invalid or Expired Key", lang))
 
     capture(
         "init_server_setup_account",
@@ -338,8 +342,9 @@ def headless_setup_account(key):
     Ignores the data collection step in setup-account.html
     """
     account_request = get_account_request_from_key(key)
+    lang = account_request.language or 'vi'
     if not account_request:
-        frappe.throw(_("Invalid or Expired Key", 'vi'))
+        frappe.throw(_("Invalid or Expired Key", lang))
 
     capture(
         "init_server_setup_account",
@@ -359,7 +364,7 @@ def headless_setup_account(key):
     frappe.local.response["type"] = "redirect"
     frappe.local.response[
         "location"
-    ] = f"/prepare-site?key={key}&app={account_request.saas_app}"
+    ] = f"/prepare-site?key={key}&app={account_request.saas_app}&lang={lang}"
 
 
 # === saas old

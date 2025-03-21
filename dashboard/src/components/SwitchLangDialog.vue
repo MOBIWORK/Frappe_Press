@@ -1,5 +1,7 @@
 <template>
-	<Dialog :options="{ title: $t('change_language') }">
+	<Dialog
+		:options="{ title: $t('change_language'), size: 'lg', position: 'top' }"
+	>
 		<template v-slot:body-content>
 			<SelectLanguage></SelectLanguage>
 		</template>

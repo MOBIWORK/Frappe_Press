@@ -1,7 +1,7 @@
 <template>
 	<LoginBox>
 		<div>
-			<div class="mb-4 w-36">
+			<div class="mb-4 w-max">
 				<SelectLanguage></SelectLanguage>
 			</div>
 			<div class="text-center">

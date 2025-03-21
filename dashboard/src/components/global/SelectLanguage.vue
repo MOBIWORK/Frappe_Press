@@ -1,46 +1,75 @@
 <template>
-	<FormControl
-		type="select"
-		:options="[
-			{
-				label: this.$t('vietnameses'),
-				value: 'vi'
-			},
-			{
-				label: this.$t('english'),
-				value: 'en'
-			}
-		]"
-		size="md"
-		variant="outline"
-		placeholder="Placeholder"
-		label=""
-		v-model="langSelected"
-	>
-		<template #prefix>
-			<img
-				v-if="this.$i18n.locale == 'vi'"
-				src="@/assets/icon_flag_vi.svg"
-				alt="Icon Flag"
-			/>
-			<img v-else src="@/assets/icon_flag_en.svg" alt="Icon Flag" />
-		</template>
-	</FormControl>
+	<div class="min-w-[162px]">
+		<Autocomplete
+			:options="optionsLanguage"
+			v-model="langSelected"
+			placeholder="Select language"
+			:hideSearch="true"
+		>
+			<template #prefix>
+				<img :src="langSelected?.image" class="mr-2 h-4.5 w-7" />
+			</template>
+			<template #item-prefix="{ option }">
+				<img :src="option.image.toString()" class="mr-2 h-4.5 w-7" />
+			</template>
+		</Autocomplete>
+	</div>
 </template>
 
-<script>
-export default {
-	name: 'SelectLanguage',
-	watch: {
-		langSelected(value) {
-			localStorage.setItem('lang', value);
-			this.$i18n.locale = value;
+<script setup>
+import Autocomplete from '../frappe-ui/Autocomplete.vue';
+import { watch, ref, onMounted } from 'vue';
+import { translate, setLocaleI18n } from '@/utils/index';
+import {
+	defaultLanguage,
+	fetchLanguage,
+	changeLanguage
+} from '@/composables/language';
+
+const langSelected = ref();
+const optionsLanguage = [
+	{
+		label: translate('Vietnamese'),
+		value: 'vi',
+		image: '/assets/press/images/icon_flag_vi.svg'
+	},
+	{
+		label: translate('English'),
+		value: 'en',
+		image: '/assets/press/images/icon_flag_en.svg'
+	}
+];
+
+onMounted(() => {
+	let currentTeam = localStorage.getItem('current_team');
+	if (currentTeam) {
+		fetchLanguage.fetch();
+	}
+});
+
+watch(
+	defaultLanguage,
+	val => {
+		if (val) {
+			langSelected.value = optionsLanguage.find(item => item.value === val);
 		}
 	},
-	data() {
-		return {
-			langSelected: this.$i18n.locale || 'vi'
-		};
+	{
+		immediate: true
 	}
-};
+);
+
+watch(langSelected, val => {
+	setDefaultLanguage(val.value);
+	let currentTeam = localStorage.getItem('current_team');
+	if (currentTeam) {
+		changeLanguage.submit({ lang: val.value });
+	}
+});
+
+function setDefaultLanguage(lang) {
+	localStorage.setItem('lang', lang);
+	defaultLanguage.value = lang;
+	setLocaleI18n(lang);
+}
 </script>

@@ -3,7 +3,7 @@
 		<LoginBox :class="{ 'pointer-events-none': $resources.signup.loading }">
 			<div>
 				<div
-					class="mb-4 w-36"
+					class="mb-4 w-max"
 					v-if="!(resetPasswordEmailSent || hasForgotPassword)"
 				>
 					<SelectLanguage></SelectLanguage>

@@ -89,7 +89,6 @@ class AccountRequest(Document):
             {
                 "invited_by": self.invited_by,
                 "link": url,
-                # "image_path": "/assets/press/images/frappe-logo-black.png",
                 "image_path": "https://eov.mbwcloud.com/assets/press/images/EOV.png",
                 "read_pixel_path": get_url(
                     f"/api/method/press.utils.telemetry.capture_read_event?name={self.name}"
@@ -106,12 +105,13 @@ class AccountRequest(Document):
         )
 
     def get_verification_url(self):
+        language = self.language or 'vi'
         if self.saas:
             return get_url(
-                f"/api/method/press.api.saas.validate_account_request?key={self.request_key}"
+                f"/api/method/press.api.saas.validate_account_request?key={self.request_key}&lang={language}"
             )
 
-        return get_url(f"/dashboard/setup-account/{self.request_key}")
+        return get_url(f"/dashboard/setup-account/{self.request_key}&lang={language}")
 
     @property
     def full_name(self):

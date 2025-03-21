@@ -3804,20 +3804,25 @@ PROVINCES = [
 
 def get_context(context):
     context.no_cache = True
+    args = frappe.request.args
+    lang = args.get('lang', 'vi')
+    context.lang = lang
     context.districts = DISTRICTS
     context.provinces = PROVINCES
     key = frappe.form_dict.key
-    account_request = get_account_request_from_key(key)
-    if account_request:
-        context.billing_info = {
-            "billing_name": account_request.first_name or "",
-            "email_id": account_request.email or "",
-            "phone": account_request.phone_number or "",
-        }
-    else:
-        context.billing_info = {
-            "billing_name": "",
-            "email_id": "",
-            "phone": "",
-        }
+    context.billing_info = {
+        "billing_name": "",
+        "email_id": "",
+        "phone": "",
+    }
+    try:
+        account_request = get_account_request_from_key(key)
+        if account_request:
+            context.billing_info = {
+                "billing_name": account_request.first_name or "",
+                "email_id": account_request.email or "",
+                "phone": account_request.phone_number or "",
+            }
+    except:
+        pass
     return context
