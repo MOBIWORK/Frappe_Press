@@ -246,3 +246,7 @@ Account with email {0} is already registered,Tài khoản có email {0} đã đ�
 Subdomain {0} is already taken,Tên miền {0} đã được sử dụng,
 Country field should be a valid country name,Trường quốc gia phải là tên quốc gia hợp lệ,
 Invalid Key,Khóa không hợp lệ,
+Verify your registered email {0},Xác minh email đăng ký {0} của bạn,
+You are invited by {0} to join EOV Cloud,Bạn được {0} mời tham gia EOV Cloud,
+Admin dashboard,Trang quản trị,
+This email was sent by EOVCloud,Email này được gửi bởi EOVCloud,

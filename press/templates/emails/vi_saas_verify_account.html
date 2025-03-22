@@ -1,10 +1,11 @@
 {% import "templates/emails/macros.html" as utils %} {% extends
-"templates/emails/saas.html" %} {% set title = title %} {% block content %}
+"templates/emails/vi_saas.html" %} {% set title = title %} {% set image_path =
+image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
 		<p>
-			<strong class="text-lg">Chào {{user_name}}</strong>,
+			<strong class="text-lg">Xin chào {{user_name}}</strong>,
 		</p>
 		<p>
 			Chào mừng bạn đến với <strong>EOVCloud</strong>!
@@ -16,17 +17,21 @@
 			của bạn, vui lòng xác nhận email bằng cách nhấp vào nút bên dưới:
 		</p>
 		{{ utils.button('Kích hoạt tài khoản', link, true) }}
+		{% if bonus %}
 		<p>
 			<strong>Quà tặng đặc biệt dành cho bạn:</strong> Nhận ngay {{money}} <strong>vào tài khoản sau khi hoàn
 				tất xác thực đăng ký!</strong>
 		</p>
+		{% endif %}
 		<p>Nếu bạn không thực hiện đăng ký, vui lòng bỏ qua email này.</p>
 		<p><strong>Cần hỗ trợ?</strong> Liên hệ với chúng tôi qua email <strong><a
 					href="mailto:info@mbw.vn">info@mbw.vn</a></strong>.</p>
-		<p>Trân trọng,</p>
-		<p>EOVCloud</p>
-		<!-- {{ utils.separator()}}
-		{{ utils.footer() }} -->
+		<p>
+			Trân trọng,<br />
+			EOVCloud
+		</p>
+		{{ utils.separator()}}
+		{{ utils.footer() }}
 	</div>
 </td>
 

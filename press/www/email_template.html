@@ -1,94 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Email template</title>
-		<link rel="stylesheet" href="/assets/press/css/email.css" />
-		<link rel="stylesheet" href="/assets/press/email/style.css" />
-		<link rel="stylesheet" href="/assets/press/marketplace/ql-editor.css" />
-	</head>
-	<body>
-		<div class="pt-10">
-			<h1>- Template site_lock_email</h1>
-			{% include 'templates/emails/site_lock_email.html' %}
-		</div>
-		<div class="pt-10">
-			<h1>- Template site_lock_warning_email</h1>
-			{% include 'templates/emails/site_lock_warning_email.html' %}
-		</div>
-		<div class="pt-10">
-			<h1>- Template site_open_email</h1>
-			{% include 'templates/emails/site_open_email.html' %}
-		</div>
-		<div class="pt-10">
-			<h1>- Template saas_verify_account</h1>
-			{% include 'templates/emails/saas_verify_account.html' %}
-		</div>
 
-		<div class="pt-10">
-			<h1>- Template confirm_money_into_account</h1>
-			{% include 'templates/emails/confirm_money_into_account.html' %}
-		</div>
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Email template</title>
+	<link rel="stylesheet" href="/assets/press/css/email.css" />
+	<link rel="stylesheet" href="/assets/press/email/style.css" />
+	<link rel="stylesheet" href="/assets/press/marketplace/ql-editor.css" />
+</head>
 
-		<div class="pt-10">
-			<h1>- Template verify_account</h1>
-			{% include 'templates/emails/verify_account.html' %}
-		</div>
+<body>
+	<div class="pt-10">
+		<h1>- Template vi_saas_verify_account</h1>
+		{% include 'templates/emails/vi_saas_verify_account.html' %}
+	</div>
 
-		<div class="pt-10">
-			<h1>- Template one_time_login_link</h1>
-			{% include 'templates/emails/one_time_login_link.html' %}
-		</div>
+	<div class="pt-10">
+		<h1>- Template en_saas_verify_account</h1>
+		{% include 'templates/emails/en_saas_verify_account.html' %}
+	</div>
+</body>
 
-		<div class="pt-10">
-			<h1>- Template reset_password</h1>
-			{% include 'templates/emails/reset_password.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template remote_login</h1>
-			{% include 'templates/emails/remote_login.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template partner_approval</h1>
-			{% include 'templates/emails/partner_approval.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template app_approval_request_update</h1>
-			{% include 'templates/emails/app_approval_request_update.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template drip_email</h1>
-			{% include 'templates/emails/drip_email.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template bench_deploy_failure</h1>
-			{% include 'templates/emails/bench_deploy_failure.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template unpaid_invoices</h1>
-			{% include 'templates/emails/unpaid_invoices.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template payment_failed_partner</h1>
-			{% include 'templates/emails/payment_failed_partner.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template payment_failed</h1>
-			{% include 'templates/emails/payment_failed.html' %}
-		</div>
-
-		<div class="pt-10">
-			<h1>- Template version_upgrade_failed</h1>
-			{% include 'templates/emails/version_upgrade_failed.html' %}
-		</div>
-	</body>
 </html>

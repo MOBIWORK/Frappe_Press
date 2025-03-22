@@ -136,7 +136,7 @@ def sendmail_storage_capacity_overflows(**kwargs):
         args = {
             'user_name': user.first_name if user else team.user,
             'site_name': site_name,
-            'link': f'https://eov.mbwcloud.com/dashboard/sites/{site_name}/overview',
+            'link': f'https://cloud.eov.solutions/dashboard/sites/{site_name}/overview',
             'max_storage_usage': max_storage_usage
         }
         email_recipients = team.get_email_invoice()

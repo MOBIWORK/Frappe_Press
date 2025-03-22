@@ -152,7 +152,7 @@
 								{{ $t('and') }}
 								<Link
 									class="border-none"
-									href="https://eov.mbwcloud.com/privacy"
+									href="https://cloud.eov.solutions/privacy"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700">
 										{{ $t('Privacy_Policy') }}

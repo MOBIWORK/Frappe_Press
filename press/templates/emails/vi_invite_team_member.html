@@ -1,0 +1,24 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/vi_saas.html" %} {% set invited_by = invited_by %} {%
+block content %}
+
+<td class="text-gray-900 text-base leading-6">
+    <div class="p-8 bg-white from-markdown">
+        <p>
+            <strong class="text-lg">Xin chào {{user_name}}</strong>,
+        </p>
+        <p class="font-bold">
+            Bạn đã được mời tham gia nhóm {{invited_by}} trên EOV Cloud.
+        </p>
+        <p>
+            Vui lòng xác nhận địa chỉ email của bạn bằng cách nhấp vào nút bên dưới:
+        </p>
+        {{ utils.button('Kích hoạt tài khoản', link, true) }}
+        <p>
+            Trân trọng,<br />
+            EOVCloud
+        </p>
+    </div>
+</td>
+
+{% endblock %}

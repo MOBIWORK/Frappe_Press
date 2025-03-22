@@ -1,0 +1,24 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/en_saas.html" %} {% set invited_by = invited_by %} {%
+block content %}
+
+<td class="text-gray-900 text-base leading-6">
+	<div class="p-8 bg-white from-markdown">
+		<p>
+			<strong class="text-lg">Hello {{user_name}}</strong>,
+		</p>
+		<p class="font-bold">
+			You have been invited to join {{ invited_by }} team on EOV Cloud.
+		</p>
+		<p>
+			Please confirm your email address by clicking the button below:
+		</p>
+		{{ utils.button('Verify account', link, true) }}
+		<p>
+			Sincerely,<br />
+			EOVCloud
+		</p>
+	</div>
+</td>
+
+{% endblock %}

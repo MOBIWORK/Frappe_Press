@@ -47,11 +47,10 @@ def account_request(
     """
     return: Stripe setup intent and AR key if stripe flow, else None
     """
-    url_args = json.loads(url_args) if url_args else {}
-    lang = url_args.get('lang', 'vi')
+    args = json.loads(url_args) if url_args else {}
+    lang = args.get('lang', 'vi')
     email = email.strip().lower()
     frappe.utils.validate_email_address(email, True)
-    frappe.throw(_('Account with email {0} has been deactivated', lang).format(email))
 
     exists, enabled = frappe.db.get_value("Team", {"user": email}, ["name", "enabled"]
     ) or [0, 0]

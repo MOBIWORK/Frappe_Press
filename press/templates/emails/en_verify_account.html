@@ -1,0 +1,37 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/en_saas.html" %} {% set title = title %} {% set image_path =
+image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
+
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white from-markdown">
+        <p>
+            <strong class="text-lg">Hello {{user_name}}</strong>,
+        </p>
+        <p>
+            Welcome to <strong>EOVCloud</strong>!
+        </p>
+        <p>We are thrilled to have you join our community!</p>
+        <p>
+            You have registered the {{app}} application with the website {{site_name}}. To complete the registration
+            process and activate your account, please confirm your email by clicking the button below:
+        </p>
+        {{ utils.button('Verify account', link, true) }}
+        {% if bonus %}
+        <p>
+            <strong>Special gift for you:</strong> Get {{money}} <strong>added to your account after completing
+                registration verification!</strong>
+        </p>
+        {% endif %}
+        <p>If you did not register, please ignore this email.</p>
+        <p><strong>Need support?</strong> Contact us via email at <strong><a
+                    href="mailto:info@mbw.vn">info@mbw.vn</a></strong>.</p>
+        <p>
+            Sincerely,<br />
+            EOVCloud
+        </p>
+        {{ utils.separator()}}
+        {{ utils.footer('en') }}
+    </div>
+</td>
+
+{% endblock %}

@@ -1,11 +1,11 @@
 {% import "templates/emails/macros.html" as utils %} {% extends
-"templates/emails/saas.html" %} {% set title = title %} {% set image_path =
+"templates/emails/vi_saas.html" %} {% set title = title %} {% set image_path =
 image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
 		<p>
-			<strong class="text-lg">Kính gửi Khách hàng,</strong>
+			<strong class="text-lg">Xin chào,</strong>
 		</p>
 		<p>
 			Chúng tôi viết thư này để cảnh báo về tình trạng thanh toán của tài khoản
@@ -28,8 +28,10 @@ image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
 			Nếu bạn cần hỗ trợ hoặc có bất kỳ câu hỏi nào, xin đừng ngần ngại liên hệ
 			với chúng tôi.
 		</p>
-		<p>Trân trọng,</p>
-		<p>EOVCloud</p>
+		<p>
+			Trân trọng,<br />
+			EOVCloud
+		</p>
 		{{ utils.separator() }} {{ utils.footer() }}
 	</div>
 </td>

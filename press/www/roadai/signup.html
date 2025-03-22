@@ -1,6 +1,6 @@
 {%- extends "templates/eov_signup_layout.html" -%} {%- block content -%}
 
-<div class="flex justify-center">
+<div class="flex justify-center" id="change-language">
 	<div class="dropdown">
 		<button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false"
 			id="languageDropdown">
@@ -50,18 +50,6 @@
 					<input type="text" id="first_name" name="first_name" class="form-control"
 						autocomplete="given-name" />
 				</div>
-				<!-- <div class="form-row">
-					<div class="form-group col-12 col-md-6">
-						<label for="first_name">Họ</label>
-						<input type="text" id="first_name" name="first_name" class="form-control"
-							autocomplete="given-name" />
-					</div>
-					<div class="form-group col-12 col-md-6">
-						<label for="last_name">Tên</label>
-						<input type="text" id="last_name" name="last_name" class="form-control"
-							autocomplete="family-name" />
-					</div>
-				</div> -->
 				<div class="form-group">
 					<label for="phone">{{_('Phone number', lang)}}</label>
 					<input type="tel" id="phone" class="form-control" name="phone_number" autocomplete="tel" />
@@ -70,21 +58,6 @@
 					<label for="email">{{_('Email address', lang)}}</label>
 					<input type="email" id="email" class="form-control" name="email" autocomplete="email" />
 				</div>
-				<!-- <div class="form-group">
-					<label for="country">Quốc Gia</label>
-					<select id="country" class="custom-select" name="country">
-						{%- if country_name -%}
-						<option selected="selected">{{ country_name }}</option>
-						{%- else -%}
-						<option disabled selected="selected">Chọn quốc gia</option>
-						{%- endif -%}
-						{%- for country in frappe.db.get_all('Country') -%}
-						<option>
-							{{ country.name }}
-						</option>
-						{%- endfor -%}
-					</select>
-				</div> -->
 				<div class="form-group">
 					<label for="password">{{_('Password', lang)}}</label>
 					<input type="password" id="password" class="form-control" name="password"
@@ -120,7 +93,7 @@
 			<!-- 2. Verification Email Sent -->
 			<form class="form-step" data-step="2">
 				<div class="text-center">
-					<h2 class="font-size-base">{{_('Verification Email Sent!', lang)}}</h2>
+					<h2 class="font-size-base mt-0">{{_('Verification Email Sent!', lang)}}</h2>
 					{{_('We have sent an email to', lang)}} <span class="verification-email"></span>.
 					{{_('Please click on the link received to verify your email and create your account.', lang)}}
 				</div>
@@ -211,7 +184,8 @@
 		}
 		values.app = app;
 		return call('press.api.saas.account_request', values, $form).then(() => {
-			$('h1').hide();
+			$('h1').html('');
+			$('#change-language').hide()
 			$('.verification-email').text(values.email);
 		});
 	}

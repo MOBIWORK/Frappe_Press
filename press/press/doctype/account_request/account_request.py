@@ -4,6 +4,7 @@
 
 
 import frappe
+from frappe import _
 import json
 from frappe.model.document import Document
 from frappe.utils import random_string, get_url
@@ -64,16 +65,21 @@ class AccountRequest(Document):
         #     print()
         #     return
 
+        pre_subject = "[EOVCloud] - "
+        lang = self.language if self.language in ['vi', 'en'] else 'vi'
+        
         settings = frappe.db.get_value(
         'Press Settings', 'Press Settings', ['free_credits_vnd'], as_dict=True)
         free_credits_vnd = settings.free_credits_vnd if settings else 0
         money = fmt_money(free_credits_vnd, 0,"VND")
-        subject = f"""[EOVCloud] - Xác minh email đăng ký { self.email } của bạn"""
+        subject = pre_subject + _('Verify your registered email {0}', lang).format(self.email)
+        user_name = (self.first_name or '') + ' ' + (self.last_name or '')
         args = {
-            'user_name': (self.first_name + '') + (self.last_name or ''),
+            'user_name': user_name,
             'app': self.saas_app or '',
             'site_name': self.get_site_name(),
             'money': money,
+            'bonus': free_credits_vnd > 0
         }
 
         if self.saas_product:
@@ -82,14 +88,17 @@ class AccountRequest(Document):
             template = "verify_account"
 
             if self.invited_by and self.role != "Press Admin":
-                subject = f"""[EOVCloud] - Bạn được { self.invited_by } mời tham gia EOV Cloud"""
+                subject = pre_subject + _('You are invited by {0} to join EOV Cloud', lang).format(self.invited_by)
                 template = "invite_team_member"
 
+        # get language template
+        template = f"{lang}_{template}"
+        
         args.update(
             {
                 "invited_by": self.invited_by,
                 "link": url,
-                "image_path": "https://eov.mbwcloud.com/assets/press/images/EOV.png",
+                "image_path": "https://cloud.eov.solutions/assets/press/images/EOV.png",
                 "read_pixel_path": get_url(
                     f"/api/method/press.utils.telemetry.capture_read_event?name={self.name}"
                 ),

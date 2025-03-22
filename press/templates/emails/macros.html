@@ -21,22 +21,22 @@
 	</tbody>
 </table>
 {% endmacro %} {% macro signature() %}
-<p class="m-0">
-	Thanks,<br />
-	Team Frappe
+<p>
+	Trân trọng,<br />
+	EOVCloud
 </p>
-{% endmacro %} {% macro footer() %}
+{% endmacro %} {% macro footer(lang='vi') %}
 <div class="my-0">
 	<p class="my-0">
 		-
-		<a href="https://eov.mbwcloud.com/dashboard">Trang quản trị</a>
+		<a href="https://cloud.eov.solutions/dashboard">{{_('Admin dashboard', lang)}}</a>
 	</p>
 </div>
-{% endmacro %} {% macro footer_top_up() %}
+{% endmacro %} {% macro footer_top_up(lang='vi') %}
 <div class="my-0">
 	<p class="my-0">
 		-
-		<a href="https://eov.mbwcloud.com/dashboard">Trang quản trị</a>
+		<a href="https://cloud.eov.solutions/dashboard">{{_('Admin dashboard', lang)}}</a>
 	</p>
 </div>
 {% endmacro %}
