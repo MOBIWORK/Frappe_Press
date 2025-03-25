@@ -170,7 +170,7 @@ export default {
 	},
 	pageMeta() {
 		return {
-			title: 'Benches - EOV Cloud'
+			title: 'Benches - EOVCloud'
 		};
 	},
 	components: {

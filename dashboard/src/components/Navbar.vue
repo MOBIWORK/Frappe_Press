@@ -69,7 +69,7 @@
 				</div>
 				<div class="mt-3 space-y-3 px-2">
 					<a
-						href="https://doc.mbwcloud.com/User_Guide_MBWCloud/new-wiki-page"
+						href="https://support.eov.solutions"
 						target="_blank"
 						class="block rounded-md px-3 pt-4 text-base font-medium focus:outline-none"
 					>

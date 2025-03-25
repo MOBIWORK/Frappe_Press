@@ -3,30 +3,36 @@
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p><strong class="text-lg">Chào mừng bạn đến với EOVCloud!</strong></p>
+		<p><strong class="text-lg">Xin chào,</strong></p>
 		<p class="mb-4 font-bold">{{ subject }}</p>
 		{%- if card_not_added -%}
 		<p class="mb-6">
-			Bạn không đủ số dư để sử dụng tổ chức của mình trên EOV Cloud. Vui lòng
-			nạp thêm tiền để thanh toán tự động. Bạn cũng có thể thanh toán hóa đơn
-			này bằng cách thủ công bằng cách nhấp vào liên kết sau.
+			Bạn không đủ số dư để sử dụng tổ chức của mình trên EOVCloud. Vui lòng
+			nạp thêm tiền để thanh toán tự động. Bạn cũng có thể thanh toán thủ công hóa đơn này bằng cách nhấp vào liên
+			kết sau:
 		</p>
 		{{ utils.button('Thanh toán ngay', payment_link) }} {%- endif -%} {%- if
 		team and team.default_payment_method -%}
 		<p class="mb-6">
-			Vui lòng cập nhật thông tin thanh toán của bạn trong {{ utils.link('Cài
-			đặt thanh toán', account_update_link) }} hoặc thanh toán thủ công bằng
+			Vui lòng cập nhật thông tin thanh toán của bạn trong {{ utils.link('Cập nhật thanh toán',
+			account_update_link) }} hoặc thanh toán thủ công bằng
 			cách nhấp vào liên kết sau.
 		</p>
 		{{ utils.button('Thanh toán ngay', payment_link) }} {%- endif -%} {%- if
 		sites -%} {{ utils.separator() }}
-		<p class="mt-0 mb-2">Following sites were suspended:</p>
+		<p class="mt-0 mb-2">Các tổ chức sau đã bị tạm dừng:</p>
 		<ul class="list-disc">
 			{%- for site in sites -%}
 			<li class="text-sm font-medium">{{ site }}</li>
 			{%- endfor -%}
 		</ul>
-		{%- endif -%} {{ utils.separator() }} {{ utils.footer() }}
+		{%- endif -%}
+		<p>
+			Trân trọng,<br />
+			EOVCloud
+		</p>
+		{{ utils.separator() }}
+		{{ utils.footer() }}
 	</div>
 </td>
 

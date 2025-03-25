@@ -25,6 +25,10 @@ import {
 	fetchLanguage,
 	changeLanguage
 } from '@/composables/language';
+import { useRouter, useRoute } from 'vue-router';
+
+const router = useRouter();
+const route = useRoute();
 
 const langSelected = ref();
 const optionsLanguage = [
@@ -44,6 +48,11 @@ onMounted(() => {
 	let currentTeam = localStorage.getItem('current_team');
 	if (currentTeam) {
 		fetchLanguage.fetch();
+	} else {
+		let lang = getLanguageParams();
+		if (['vi', 'en'].includes(lang)) {
+			setDefaultLanguage(lang);
+		}
 	}
 });
 
@@ -67,9 +76,24 @@ watch(langSelected, val => {
 	}
 });
 
+function getLanguageParams() {
+	return route.query.lang;
+}
+
+function setLanguageParams(lang) {
+	let language = route.query.lang;
+	if (language && lang != language) {
+		router.replace({
+			path: route.path,
+			query: { ...route.query, lang }
+		});
+	}
+}
+
 function setDefaultLanguage(lang) {
 	localStorage.setItem('lang', lang);
 	defaultLanguage.value = lang;
 	setLocaleI18n(lang);
+	setLanguageParams(lang);
 }
 </script>

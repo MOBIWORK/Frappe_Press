@@ -14,6 +14,7 @@ from frappe.utils.oauth import get_oauth2_authorize_url, get_oauth_keys
 from frappe.website.utils import build_response
 from frappe.core.utils import find
 from frappe.rate_limiter import rate_limit
+from press.api.language import get_language
 
 from press.press.doctype.team.team import (
     Team,
@@ -54,6 +55,7 @@ def signup(email, product=None, referrer=None, lang='vi'):
                 "referrer_id": referrer,
                 "saas_product": product,
                 "send_email": True,
+                "language": lang
             }
         ).insert()
 
@@ -71,7 +73,7 @@ def setup_account(
         phone=None,
         password=None,
         is_invitation=False,
-        country=None,
+        country="Vietnam",
         user_exists=False,
         accepted_user_terms=False,
         invited_by_parent_team=False,
@@ -126,8 +128,8 @@ def setup_account(
     if is_invitation:
         # if this is a request from an invitation
         # then Team already exists and will be added to that team
-        doc = frappe.get_doc("Team", team)
-        doc.create_user_for_member(
+        team_doc = frappe.get_doc("Team", team)
+        team_doc.create_user_for_member(
             first_name, phone, email, password, role)
     else:
         # Team doesn't exist, create it
@@ -152,6 +154,9 @@ def setup_account(
                 team=team_doc.name,
             ).insert(ignore_permissions=True)
 
+    # allocate free credit amount
+    team_doc.allocate_free_credits()
+    
     # Telemetry: Created account
     capture("completed_signup", "fc_signup", account_request.name)
     frappe.local.login_manager.login_as(email)
@@ -160,8 +165,11 @@ def setup_account(
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60 * 60)
 def send_login_link(email):
+    lang = get_language()
+    lang = lang if lang in ['vi', 'en'] else 'vi'
+    
     if not frappe.db.exists("User", email):
-        frappe.throw(_("No registered account with this email address"))
+        frappe.throw(_("No registered account with this email address", lang))
 
     key = frappe.generate_hash("Login Link", 20)
     minutes = 10
@@ -176,11 +184,18 @@ def send_login_link(email):
         print(f"One time login link for {email}")
         print(link)
         print()
-    subject = f"[EOVCloud] - Đăng nhập vào EOV Cloud bằng email {email} của bạn"
+    
+    pre_subject = "[EOVCloud] - "
+    subject = pre_subject + _("Log in to EOVCloud using your email {0}", lang).format(email)
+    
+    # get language template
+    template = 'one_time_login_link'
+    template = f"{lang}_{template}"
+    
     frappe.sendmail(
         subject=subject,
         recipients=email,
-        template="one_time_login_link",
+        template=template,
         args={"link": link, "minutes": minutes},
         now=True,
     )
@@ -551,10 +566,10 @@ def new_team(email, current_team):
             "doctype": "Account Request",
             "email": email,
             "role": "Press Member",
-                    "send_email": True,
-                    "team": email,
-                    "invited_by": current_team,
-                    "invited_by_parent_team": 1,
+            "send_email": True,
+            "team": email,
+            "invited_by": current_team,
+            "invited_by_parent_team": 1,
         }
     ).insert()
 
@@ -623,10 +638,12 @@ def update_feature_flags(values=None):
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(limit=5, seconds=60 * 60)
-def send_reset_password_email(email):
+def send_reset_password_email(email, lang='vi'):
     from datetime import datetime
     frappe.utils.validate_email_address(email, True)
 
+    lang = lang if lang in ['vi', 'en'] else 'vi'
+    
     email = email.strip()
     key = random_string(32)
     if frappe.db.exists("User", email):
@@ -636,16 +653,22 @@ def send_reset_password_email(email):
         })
 
         url = get_url("/dashboard/reset-password/" + key)
-        subject = f"Thiết lập lại mật khẩu"
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _('Reset password', lang)
+        
+        # get language template
+        template = 'reset_password'
+        template = f"{lang}_{template}"
+        
         frappe.sendmail(
             recipients=email,
             subject=subject,
-            template="reset_password",
+            template=template,
             args={"link": url},
             now=True,
         )
     else:
-        frappe.throw("User {0} does not exist".format(email))
+        frappe.throw(_("User {0} does not exist", lang).format(email))
 
 
 @frappe.whitelist(allow_guest=True)
@@ -665,6 +688,9 @@ def get_user_for_reset_password_key(key):
 def add_team_member(email):
     frappe.utils.validate_email_address(email, True)
 
+    lang = get_language()
+    lang = lang if lang in ['vi', 'en'] else 'vi'
+    
     team = get_current_team(True)
     frappe.get_doc(
         {
@@ -672,8 +698,9 @@ def add_team_member(email):
             "team": team.name,
             "email": email,
             "role": "Press Member",
-                    "invited_by": team.user,
-                    "send_email": True,
+            "invited_by": team.user,
+            "send_email": True,
+            "language": lang
         }
     ).insert()
 

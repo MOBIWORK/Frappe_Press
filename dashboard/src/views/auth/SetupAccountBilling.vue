@@ -1,9 +1,6 @@
 <template>
-	<LoginBox top="mt-6" py="py-0">
+	<LoginBox top="mt-6">
 		<div class="mt-6">
-			<div class="mb-4 w-max">
-				<SelectLanguage></SelectLanguage>
-			</div>
 			<div class="text-center">
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('SetupAccountBilling_content_1') }}</div>
@@ -45,15 +42,13 @@
 import LoginBox from '@/views/partials/LoginBox.vue';
 import AddressForm from '@/components/AddressForm.vue';
 import { notify } from '@/utils/toast';
-import SelectLanguage from '../../components/global/SelectLanguage.vue';
 
 export default {
 	name: 'SetupAccountBilling',
 	props: ['message'],
 	components: {
 		AddressForm,
-		LoginBox,
-		SelectLanguage
+		LoginBox
 	},
 	data() {
 		return {

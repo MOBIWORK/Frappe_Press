@@ -47,19 +47,22 @@ class DripEmail(Document):
     def send_mail(self, context, recipient):
         # build the message
         message = frappe.render_template(self.message, context)
+        account_request = context.get("account_request", "")
         title = frappe.db.get_value("Marketplace App", self.saas_app, "title")
 
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + self.subject
+        
         # add to queue
         frappe.sendmail(
-            subject='[EOVCloud] - ' + self.subject,
+            subject=subject,
             recipients=[recipient],
             sender=f"{self.sender_name} <{self.sender}>",
             reply_to=self.reply_to,
             reference_doctype="Drip Email",
             reference_name=self.name,
-            unsubscribe_message="Vui lòng không gửi các tin nhắn hỗ trợ vào email này",
-            attachments=self.get_setup_guides(
-                context.get("account_request", "")),
+            unsubscribe_message="Unsubscribe",
+            attachments=self.get_setup_guides(account_request),
             template="drip_email",
             args={"message": message, "title": title},
         )

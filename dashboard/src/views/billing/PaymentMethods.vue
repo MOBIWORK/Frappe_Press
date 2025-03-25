@@ -13,7 +13,7 @@ export default {
 	name: 'BillingScreen',
 	pageMeta() {
 		return {
-			title: 'Billing - EOV Cloud'
+			title: 'Billing - EOVCloud'
 		};
 	},
 	props: ['invoiceName'],

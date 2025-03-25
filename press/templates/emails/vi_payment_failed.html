@@ -3,23 +3,22 @@
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p><strong class="text-lg">Chào mừng bạn đến với EOVCloud!</strong></p>
-
+		<p><strong class="text-lg">Xin chào,</strong></p>
 		<p class="mb-4 font-bold">
 			{%- if subject -%} {{ subject }} {%- else -%} Thanh toán {{ amount }} cho
-			EOV Cloud không thành công. {%- endif -%}
+			EOVCloud không thành công. {%- endif -%}
 		</p>
 		{%- if card_not_added -%}
 		<p class="mb-6">
 			Bạn chưa cập nhận thông tin thành toán. Tổ chức của bạn sẽ sẽ bị tạm dừng
 			cho đến khi bạn cập nhật chi tiết thành toán trong tài khoản của mình.
 		</p>
-		{{ utils.button('Update Billing Settings', account_update_link) }} {%- else
+		{{ utils.button('Cập nhật thanh toán', account_update_link) }} {%- else
 		-%}
 		<p class="mb-6">
-			Vui lòng cập nhật thông tin thanh toán của bạn trong {{ utils.link('Cài
-			đặt thanh toán', account_update_link) }} hoặc thanh toán thủ công bằng
-			cách nhấp vào liên kết sau.
+			Vui lòng cập nhật thông tin thanh toán của bạn trong {{ utils.link('Cập nhật thanh toán',
+			account_update_link) }} hoặc thanh toán thủ công bằng
+			cách nhấp vào liên kết sau:
 		</p>
 		{{ utils.button('Thanh toán ngay', payment_link) }} {%- endif -%} {%- if
 		sites -%} {{ utils.separator() }}
@@ -29,7 +28,12 @@
 			<li class="text-sm font-medium">{{ site }}</li>
 			{%- endfor -%}
 		</ul>
-		{%- endif -%} {{ utils.separator() }} {{ utils.footer() }}
+		{%- endif -%}
+		<p>
+			Trân trọng,<br />
+			EOVCloud
+		</p>
+		{{ utils.separator() }} {{ utils.footer() }}
 	</div>
 </td>
 

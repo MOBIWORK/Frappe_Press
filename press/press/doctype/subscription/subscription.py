@@ -7,11 +7,11 @@ from typing import List
 from press.press.doctype.plan.plan import Plan
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from press.utils import log_error
 from press.overrides import get_permission_query_conditions_for_doctype
 from jinja2 import Template
-
 
 class Subscription(Document):
     def validate(self):
@@ -159,27 +159,37 @@ class Subscription(Document):
 
 def send_email_handle_site(type_email, site_name, team):
     try:
+        if type_email not in ['lock', 'warning', 'prior']:
+            return
+
+        lang = frappe.db.get_value('User', team.user, 'language')
+        lang = lang if lang in ['vi', 'en'] else 'vi'
+        
+        pre_subject = "[EOVCloud] - "
         args = {'site_name': site_name}
+        
         if type_email == 'lock':
-            subject = f"""[EOVCloud] - Khóa truy cập vào tổ chức { site_name } của bạn"""
+            subject = _('Access to your site {0} has been locked', lang).format(site_name)
             template = 'site_lock_email'
         elif type_email == 'warning':
-            subject = f"""[EOVCloud] - Sắp khóa truy cập vào tổ chức { site_name } của bạn"""
+            subject = _('Access to your site {0} is about to be locked', lang).format(site_name)
             template = 'site_lock_warning_email'
         elif type_email == 'prior':
             args['number_day'] = (frappe.db.get_single_value(
                 "Press Settings", "site_num_days_advance_warning") or 0)
-            subject = f"""[EOVCloud] - Số dư tài khoản của bạn không đủ để duy trì tổ chức { site_name }"""
+            subject = _('Your account balance is insufficient to maintain the site {0}', lang).format(site_name)
             template = 'insufficient_funds_warning_prior_date'
 
-        if type_email in ['lock', 'warning', 'prior']:
-            frappe.sendmail(
-                recipients=team.get_email_invoice(),
-                subject=subject,
-                template=template,
-                args=args,
-                # now=True,
-            )
+        subject = pre_subject + subject
+        # get language template
+        template = f"{lang}_{template}"
+        
+        frappe.sendmail(
+            recipients=team.get_email_invoice(),
+            subject=subject,
+            template=template,
+            args=args,
+        )
     except Exception as ex:
         log_error(title="Send email handle site", name=str(ex))
 

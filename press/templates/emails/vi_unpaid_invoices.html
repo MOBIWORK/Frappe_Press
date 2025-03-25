@@ -3,16 +3,16 @@
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p><strong class="text-lg">Chào mừng bạn đến với EOVCloud!</strong></p>
+		<p><strong class="text-lg">Xin chào,</strong></p>
 		<p class="mb-4 font-bold">{{ subject }}</p>
 		<p class="mb-6">
 			Rất tiếc, chúng tôi phải thông báo rằng tổ chức của bạn đang được lưu trữ
-			trên EOV Cloud đã bị tạm thời <strong>dừng</strong> do một hóa đơn chưa
+			trên EOVCloud đã bị tạm thời <strong>dừng</strong> do một hóa đơn chưa
 			thanh toán.<br />
 			<br />
-			Để tiếp tục sử dụng tổ chức của bạn trên EOV Cloud, vui lòng thanh toán
+			Để tiếp tục sử dụng tổ chức của bạn trên EOVCloud, vui lòng thanh toán
 			hóa đơn của bạn bằng cách truy cập vào trang của bạn.
-			<a href="https://cloud.eov.solutions/dashboard/billing/overview">EOV Cloud Dashboard.</a>
+			<a href="https://cloud.eov.solutions/dashboard/billing/overview">EOVCloud Dashboard.</a>
 			<br />
 			<br />
 			<strong>Sau khi hóa đơn của bạn được thanh toán, tổ chức của bạn sẽ được kích
@@ -24,7 +24,7 @@
 			vĩnh viễn.<br />
 			<br />
 			Nếu bạn có bất kỳ lo ngại hoặc câu hỏi nào, vui lòng liên hệ
-			<a href="https://cloud.eov.solutions/lien-he/">đội hỗ trợ</a>
+			<a href="https://support.eov.solutions">đội hỗ trợ</a>
 			của chúng tôi.
 		</p>
 
@@ -35,7 +35,12 @@
 			<li class="text-sm font-medium">{{ site }}</li>
 			{%- endfor -%}
 		</ul>
-		{%- endif -%} {{ utils.separator() }} {{ utils.footer() }}
+		{%- endif -%}
+		<p>
+			Trân trọng,<br />
+			EOVCloud
+		</p>
+		{{ utils.separator() }} {{ utils.footer() }}
 	</div>
 </td>
 

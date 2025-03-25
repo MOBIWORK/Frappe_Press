@@ -3,13 +3,6 @@
 		<LoginBox :class="{ 'pointer-events-none': $resources.signup.loading }">
 			<div>
 				<div
-					class="mb-4 w-max"
-					v-if="!(resetPasswordEmailSent || hasForgotPassword)"
-				>
-					<SelectLanguage></SelectLanguage>
-				</div>
-
-				<div
 					v-if="hasForgotPassword || saasProduct || isLogin"
 					class="mb-4 text-3xl font-[500] text-gray-900"
 				>
@@ -335,7 +328,6 @@
 <script>
 import LoginBox from '@/views/partials/LoginBox.vue';
 import GoogleIconSolid from '@/components/icons/GoogleIconSolid.vue';
-import SelectLanguage from '../../components/global/SelectLanguage.vue';
 import { FormControl } from 'frappe-ui';
 
 export default {
@@ -343,7 +335,6 @@ export default {
 	components: {
 		LoginBox,
 		GoogleIconSolid,
-		SelectLanguage,
 		FormControl
 	},
 	data() {
@@ -390,7 +381,8 @@ export default {
 			return {
 				url: 'press.api.account.send_reset_password_email',
 				params: {
-					email: this.email
+					email: this.email,
+					lang: localStorage.getItem('lang') || 'vi'
 				},
 				onSuccess() {
 					this.resetPasswordEmailSent = true;

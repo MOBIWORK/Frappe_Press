@@ -107,25 +107,6 @@
 								:message="this.$translateMessage(inputError.password)"
 							/>
 						</template>
-						<div>
-							<div class="mb-2 mt-4">
-								<label class="text-base" for="country">{{
-									$t('country')
-								}}</label>
-							</div>
-							<FormControl
-								class="custom-form-btn"
-								type="select"
-								id="country"
-								size="lg"
-								variant="outline"
-								placeholder="---"
-								label=""
-								:options="countries"
-								v-if="!isInvitation"
-								v-model="country"
-							/>
-						</div>
 						<Form
 							v-if="signupFields.length > 0"
 							:fields="signupFields"
@@ -143,7 +124,7 @@
 								{{ $t('NewServer_content_1') }}
 								<Link
 									class="border-none"
-									href="http://mbwcloud.com/terms"
+									href="https://support.eov.solutions"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700"
 										>{{ $t('NewServer_content_2') }}
@@ -152,7 +133,7 @@
 								{{ $t('and') }}
 								<Link
 									class="border-none"
-									href="https://cloud.eov.solutions/privacy"
+									href="https://support.eov.solutions"
 									target="_blank"
 									><span class="text-blue-500 hover:text-blue-700">
 										{{ $t('Privacy_Policy') }}
@@ -217,15 +198,13 @@
 import LoginBox from '@/views/partials/LoginBox.vue';
 import Link from '@/components/Link.vue';
 import Form from '@/components/Form.vue';
-import SelectLanguage from '../../components/global/SelectLanguage.vue';
 
 export default {
 	name: 'SetupAccount',
 	components: {
 		LoginBox,
 		Link,
-		Form,
-		SelectLanguage
+		Form
 	},
 	props: ['requestKey', 'joinRequest'],
 	data() {
@@ -295,7 +274,7 @@ export default {
 					password: this.password,
 					first_name: this.firstName,
 					phone: this.phone,
-					country: this.country,
+					// country: this.country,
 					is_invitation: this.isInvitation,
 					user_exists: this.userExists,
 					invited_by_parent_team: this.invitedByParentTeam,
@@ -328,7 +307,6 @@ export default {
 			rs = this.$validdateInput(this.password, 'password1');
 			numErr += rs[0];
 			this.inputError.password = rs[1];
-			console.log(this.inputError.password);
 			// termsAccepted
 			rs = this.$validdateInput(this.termsAccepted, 'term');
 			numErr += rs[0];

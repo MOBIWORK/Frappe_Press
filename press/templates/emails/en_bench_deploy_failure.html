@@ -1,0 +1,19 @@
+{% extends "templates/emails/en_saas.html" %} {% import
+"templates/emails/macros.html" as utils %} {% block content %}
+
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white from-markdown">
+        <p><strong class="text-lg">Welcome to EOVCloud!</strong></p>
+        <p class="mb-4">{{ message }}</p>
+        <p>
+            If you have any concerns or questions, please do not hesitate to reach out to our support team at {{
+            utils.link('support.eov.solutions/lien-he',
+            'https://support.eov.solutions/lien-he/')}}
+        </p>
+        {{ utils.button('View Deploy Job', link, true) }}
+        {{ utils.separator() }}
+        {{ utils.footer('en') }}
+    </div>
+</td>
+
+{% endblock %}

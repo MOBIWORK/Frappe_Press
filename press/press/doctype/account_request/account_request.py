@@ -68,27 +68,27 @@ class AccountRequest(Document):
         pre_subject = "[EOVCloud] - "
         lang = self.language if self.language in ['vi', 'en'] else 'vi'
         
-        settings = frappe.db.get_value(
-        'Press Settings', 'Press Settings', ['free_credits_vnd'], as_dict=True)
-        free_credits_vnd = settings.free_credits_vnd if settings else 0
+        free_credits_vnd = frappe.db.get_single_value("Press Settings", "free_credits_vnd") or 0
         money = fmt_money(free_credits_vnd, 0,"VND")
         subject = pre_subject + _('Verify your registered email {0}', lang).format(self.email)
         user_name = (self.first_name or '') + ' ' + (self.last_name or '')
         args = {
             'user_name': user_name,
             'app': self.saas_app or '',
-            'site_name': self.get_site_name(),
             'money': money,
             'bonus': free_credits_vnd > 0
         }
-
+        
+        if self.subdomain:
+            args['site_name'] = self.get_site_name()
+            
         if self.saas_product:
             template = "saas_verify_account"
         else:
             template = "verify_account"
 
             if self.invited_by and self.role != "Press Admin":
-                subject = pre_subject + _('You are invited by {0} to join EOV Cloud', lang).format(self.invited_by)
+                subject = pre_subject + _('You are invited by {0} to join EOVCloud', lang).format(self.invited_by)
                 template = "invite_team_member"
 
         # get language template
@@ -120,7 +120,7 @@ class AccountRequest(Document):
                 f"/api/method/press.api.saas.validate_account_request?key={self.request_key}&lang={language}"
             )
 
-        return get_url(f"/dashboard/setup-account/{self.request_key}&lang={language}")
+        return get_url(f"/dashboard/setup-account/{self.request_key}?lang={language}")
 
     @property
     def full_name(self):

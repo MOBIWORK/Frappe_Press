@@ -5,15 +5,11 @@ image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
 		<p>
-			<strong class="text-lg">Xin chào {{user_name}}</strong>,
-		</p>
-		<p>
 			Chào mừng bạn đến với <strong>EOVCloud</strong>!
 		</p>
 		<p>Chúng tôi rất vui khi bạn tham gia cùng cộng đồng của chúng tôi.</p>
 		<p>
-			Bạn đã đăng ký ứng dụng {{app}} với trang web là {{site_name}}. Để hoàn tất quá trình đăng ký và kích hoạt
-			tài khoản
+			Để hoàn tất quá trình đăng ký và kích hoạt tài khoản
 			của bạn, vui lòng xác nhận email bằng cách nhấp vào nút bên dưới:
 		</p>
 		{{ utils.button('Kích hoạt tài khoản', link, true) }}

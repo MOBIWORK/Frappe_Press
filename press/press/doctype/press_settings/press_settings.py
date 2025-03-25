@@ -29,8 +29,13 @@ class PressSettings(Document):
                 'Vui lòng cấu hình đầy đủ thông tin Client Id, Api Key, Checksum Key để thực hiện thiết lập Webhook PayOs.')
 
         try:
+            print('====')
+            print(client_id)
+            print(api_key)
+            print(checksum_key)
             payOS = PayOS(client_id=client_id, api_key=api_key,
                           checksum_key=checksum_key)
+            print(payOS)
 
             if not payos_webhook_url:
                 frappe.throw(

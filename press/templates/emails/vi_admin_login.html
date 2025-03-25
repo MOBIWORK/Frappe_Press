@@ -1,0 +1,24 @@
+{% extends "templates/emails/vi_saas.html" %} {% block content %}
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white">
+        <div class="from-markdown">
+            <p><strong class="text-lg">Xin chào,</strong></p>
+            <p>
+                <strong>{{user}}</strong> vừa đăng nhập vào trang web <strong>{{site}}</strong> với quyền quản trị viên.
+                Họ đã cung cấp lý do như sau:
+            </p>
+            <blockquote>{{reason}}</blockquote>
+            <p>
+                Có thể đây là một trong những lập trình viên của chúng tôi đang kiểm tra sự cố thay mặt bạn.
+                Vui lòng tạo phiếu hỗ trợ tại
+                <a href="https://support.eov.solutions" target="_blank">support.eov.solutions</a> nếu bạn không biết về
+                hoạt động này.
+            </p>
+            <p>
+                Trân trọng,<br />
+                EOVCloud
+            </p>
+        </div>
+    </div>
+</td>
+{% endblock %}

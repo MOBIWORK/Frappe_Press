@@ -166,7 +166,7 @@
 				</div>
 
 				<!-- <a
-					href="https://doc.mbwcloud.com/User_Guide_MBWCloud/lựa-chọn-thanh-toán"
+					href="https://support.eov.solutions"
 					target="_blank"
 					class="text-sm text-gray-700 underline"
 				>

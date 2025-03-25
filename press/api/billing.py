@@ -704,7 +704,7 @@ def get_link_payment_payos(amount, lang='vi'):
         # create order - payos
         team = get_current_team()
         amount_new = round(amount)
-        remark = "Nap tien TK EOV Cloud"
+        remark = "Nap tien TK EOVCloud"
 
         # tinh toan so du khuyen mai 2
         amount_promotion_2 = 0
@@ -1222,8 +1222,8 @@ def create_razorpay_order(amount):
         "amount": int(amount * 100),
         "currency": team.currency,
         "notes": {
-            "Description": "Order for EOV Cloud Prepaid Credits",
-            "Team (EOV Cloud ID)": team.name,
+            "Description": "Order for EOVCloud Prepaid Credits",
+            "Team (EOVCloud ID)": team.name,
             "gst": gst_amount if team.currency == "INR" else 0,
         },
     }

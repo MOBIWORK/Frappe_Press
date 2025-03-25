@@ -4,7 +4,6 @@ import time
 from datetime import datetime, timedelta
 import redis
 from contextlib import contextmanager
-from press.api.ai_s3_client import get_all_buckets
 from press.utils import get_current_team
 import json
 
@@ -122,6 +121,9 @@ def get_user_balance():
 @frappe.whitelist(methods=['POST'])
 def sendmail_storage_capacity_overflows(**kwargs):
     try:
+        lang = kwargs.get('site_name', 'vi')
+        lang = lang if lang in ['vi', 'en'] else 'vi'
+        
         team = get_current_team(True)
         user = frappe.db.get_value('User', team.user, ['first_name'], as_dict=1)
         site_name = kwargs.get('site_name')
@@ -132,7 +134,8 @@ def sendmail_storage_capacity_overflows(**kwargs):
         max_storage_usage = frappe.db.get_value('Plan', plan_name, ['max_storage_usage']) or 0
         max_storage_usage = round(max_storage_usage / 1024)
         date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        subject = f"""[EOVCloud] - Dung lượng lưu trữ website {site_name} của bạn đã đầy! - {date_time}"""
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _("Your website {0}'s storage is full!", lang).format(site_name) + f" - {date_time}"
         args = {
             'user_name': user.first_name if user else team.user,
             'site_name': site_name,
@@ -140,7 +143,10 @@ def sendmail_storage_capacity_overflows(**kwargs):
             'max_storage_usage': max_storage_usage
         }
         email_recipients = team.get_email_invoice()
+        
+        # get language template
         template = "storage_capacity_overflows"
+        template = f"{lang}_{template}"
         
         frappe.sendmail(
             recipients=email_recipients,
@@ -158,6 +164,9 @@ def sendmail_storage_capacity_overflows(**kwargs):
 @frappe.whitelist(methods=['POST'])
 def sendmail_invite_user(**kwargs):
     try:
+        lang = kwargs.get('site_name', 'vi')
+        lang = lang if lang in ['vi', 'en'] else 'vi'
+        
         site_name = kwargs.get('site_name')
         service_name = kwargs.get('service_name')
         email_recipient = kwargs.get('email_recipient')
@@ -173,7 +182,8 @@ def sendmail_invite_user(**kwargs):
 
         email_recipient = email_recipient.strip()
         date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        subject = f"""[EOVCloud] - Mời bạn tham gia nền tảng {service_name} trên {site_name} - {date_time}"""
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _("You are invited to join the {0} platform on {1}", lang).format(service_name,site_name) + f" - {date_time}"
         args = {
             'site_name': site_name,
             'link_active': link_active,
@@ -182,7 +192,10 @@ def sendmail_invite_user(**kwargs):
             'service_name': service_name
         }
         email_recipients = email_recipient
+        
+        # get language template
         template = "sendmail_invite_user"
+        template = f"{lang}_{template}"
         
         frappe.sendmail(
             recipients=email_recipients,
@@ -213,10 +226,6 @@ def add_schedule_delete_objects_in_bucket(**kwargs):
         config = frappe.db.get_value('Site Config', {'parent': site_name, 'parentfield': 'configuration', 'parenttype': 'Site', 'key': 'bucket_name'}, ['key','value'], as_dict=1)
         if not config:
             return {'code': 0,'msg': 'bucket_name not found'}
-        
-        # print("================")
-        # print(get_all_buckets())
-        # return {}
         
         if len(objects):
             objects = json.dumps(objects, indent=4)

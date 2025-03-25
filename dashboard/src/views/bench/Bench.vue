@@ -70,7 +70,7 @@ export default {
 	name: 'Bench',
 	pageMeta() {
 		return {
-			title: `Bench - ${this.bench?.title || 'Private'} - EOV Cloud`
+			title: `Bench - ${this.bench?.title || 'Private'} - EOVCloud`
 		};
 	},
 	props: ['benchName'],

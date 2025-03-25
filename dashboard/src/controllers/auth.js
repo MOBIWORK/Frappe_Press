@@ -47,7 +47,8 @@ export default class Auth {
 	}
 	async resetPassword(email) {
 		return await call('press.api.account.send_reset_password_email', {
-			email
+			email,
+			lang: localStorage.getItem('lang') || 'vi'
 		});
 	}
 }

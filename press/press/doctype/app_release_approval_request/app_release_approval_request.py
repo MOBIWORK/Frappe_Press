@@ -9,10 +9,12 @@ from pygments.formatters import HtmlFormatter as HF
 from pygments import highlight
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.model.naming import make_autoname
 from press.press.doctype.app_release.app_release import AppRelease
 from press.press.doctype.marketplace_app.marketplace_app import MarketplaceApp
+from press.api.language import get_language_from_team
 
 
 class AppReleaseApprovalRequest(Document):
@@ -117,17 +119,27 @@ class AppReleaseApprovalRequest(Document):
             "App Release", self.app_release)
         publisher_email = frappe.get_doc("Team", marketplace_app.team).user
 
+        lang = get_language_from_team(marketplace_app.team)
+        lang = lang if lang in ['vi', 'en'] else 'vi'
+        
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _('Marketplace: {0}', lang).format(marketplace_app.title)
+        
+        # get language template
+        template = 'app_approval_request_update'
+        template = f"{lang}_{template}"
+        
         frappe.sendmail(
             [publisher_email],
-            subject=f"[EOVCloud] - EOV Cloud Marketplace: {marketplace_app.title}",
+            subject=subject,
             args={
-                "subject": "Cập nhật về yêu cầu xuất bản bản phát hành ứng dụng của bạn",
+                "subject": _('Update on your app release publish request', lang),
                 "status": self.status,
                 "rejection_reason": self.reason_for_rejection,
                 "commit_message": app_release.message,
                 "releases_link": f"{frappe.local.site}/dashboard/marketplace/apps/{self.marketplace_app}/releases",
             },
-            template="app_approval_request_update",
+            template=template,
         )
 
     @frappe.whitelist()

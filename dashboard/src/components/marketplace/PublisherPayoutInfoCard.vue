@@ -57,7 +57,7 @@
 						:label="$t('Preferred_Payment_Method')"
 						type="select"
 						:options="[
-							'EOV Cloud Credits',
+							'EOVCloud Credits',
 							'Frappe Cloud Credits',
 							'Bank Transfer',
 							'PayPal'
@@ -74,7 +74,7 @@
 					<FormControl
 						label="GSTIN (if applicable)"
 						v-if="
-							payoutMethod != 'EOV Cloud Credits' &&
+							payoutMethod != 'EOVCloud Credits' &&
 							payoutMethod != 'Frappe Cloud Credits'
 						"
 						v-model="gstin"

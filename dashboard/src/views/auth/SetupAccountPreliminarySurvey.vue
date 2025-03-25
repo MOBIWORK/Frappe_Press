@@ -1,9 +1,6 @@
 <template>
 	<LoginBox>
 		<div>
-			<div class="mb-4 w-max">
-				<SelectLanguage></SelectLanguage>
-			</div>
 			<div class="text-center">
 				<div class="mb-4 text-3xl font-[500] text-gray-900">
 					<div>{{ $t('Welcome') }} {{ currenBilling.billing_name }}!</div>
@@ -11,8 +8,7 @@
 				<div class="text-sm text-gray-700">
 					{{ $t('SetupAccountPreliminarySurvey_content_8') }}
 					{{ $formatMoney(bonuses.free_credits_vnd, 0) }} VND
-					{{ $t('SetupAccountPreliminarySurvey_content_9') }}
-					{{ bonuses.number_days_promotion }}
+					{{ $t('SetupAccountPreliminarySurvey_content_9') }}.
 					{{ $t('SetupAccountPreliminarySurvey_content_10') }}
 				</div>
 			</div>
@@ -142,15 +138,13 @@
 import LoginBox from '@/views/partials/LoginBox.vue';
 import { notify } from '@/utils/toast';
 import Multiselect from 'vue-multiselect';
-import SelectLanguage from '../../components/global/SelectLanguage.vue';
 
 export default {
 	name: 'SetupAccountPreliminarySurvey',
 	props: ['message'],
 	components: {
 		Multiselect,
-		LoginBox,
-		SelectLanguage
+		LoginBox
 	},
 	data() {
 		return {

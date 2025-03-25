@@ -162,7 +162,7 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False, lang='v
 
     if not team.enabled:
         frappe.throw(
-            _("You can't create a new organization because your account has been disabled", lang))
+            _("You can't create a new site because your account has been disabled", lang))
 
     files = site.get("files", {})
     share_details_consent = site.get("share_details_consent")
@@ -1783,7 +1783,7 @@ def change_team(team, name, lang='vi'):
 
     if team not in teams:
         frappe.throw(
-            _("{0} is not part of your organization.", lang).format(team))
+            _("{0} is not part of your site.", lang).format(team))
 
     child_team = frappe.get_doc("Team", {"team_title": team})
     site_doc = frappe.get_doc("Site", name)

@@ -14,10 +14,7 @@
 					class="absolute left-1/2 top-1/2 h-full -translate-x-1/2 -translate-y-1/2"
 					:class="hasSetupAccount ? 'py-[8%]' : 'py-[20%]'"
 				>
-					<div
-						class="flex justify-center"
-						v-if="!hasForgotPassword && !hasResetPassword"
-					>
+					<div class="flex justify-center">
 						<slot name="logo">
 							<img src="../../assets/logo_eov.png" />
 						</slot>
@@ -28,6 +25,9 @@
 					>
 						<div class="mb-6 text-center" v-if="title">
 							<span class="text-base text-gray-900">{{ title }}</span>
+						</div>
+						<div class="mb-4 w-max">
+							<SelectLanguage></SelectLanguage>
 						</div>
 						<slot></slot>
 					</div>
@@ -41,13 +41,15 @@
 import FCLogo from '@/components/icons/FCLogo.vue';
 import FrappeLogo from '@/components/icons/FrappeLogo.vue';
 import { notify } from '@/utils/toast';
+import SelectLanguage from '@/components/global/SelectLanguage.vue';
 
 export default {
 	name: 'LoginBox',
 	props: ['title', 'logo', 'top', 'py'],
 	components: {
 		FCLogo,
-		FrappeLogo
+		FrappeLogo,
+		SelectLanguage
 	},
 	mounted() {
 		const params = new URLSearchParams(window.location.search);

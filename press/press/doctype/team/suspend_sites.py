@@ -17,6 +17,7 @@ The `execute` method is the main method which is run by the scheduler on every 1
 
 
 import frappe
+from frappe import _
 from press.utils import log_error
 
 
@@ -45,13 +46,23 @@ def suspend_sites_and_send_email(team):
         frappe.db.rollback()
     # send email
     if sites:
+        lang = frappe.db.get_value('User', team.user, 'language')
+        lang = lang if lang in ['vi', 'en'] else 'vi'
+        
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _('Your sites have been temporarily suspended on EOVCloud', lang)
+        
+        # get language template
+        template = "unpaid_invoices"
+        template = f"{lang}_{template}"
+        
         email = team.get_email_invoice()
         frappe.sendmail(
             recipients=email,
-            subject="[EOVCloud] - Các tổ chức của bạn đã bị tạm dừng trên EOV Cloud",
-            template="unpaid_invoices",
+            subject=subject,
+            template=template,
             args={
-                "subject": "Các tổ chức của bạn đã bị tạm dừng trên Frappe Cloud",
+                "subject": subject,
                 "sites": sites,
             },
         )

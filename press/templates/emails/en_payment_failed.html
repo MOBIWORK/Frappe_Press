@@ -1,0 +1,38 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/en_saas.html" %} {% block content %}
+
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white from-markdown">
+        <p><strong class="text-lg">Hello,</strong></p>
+        <p class="mb-4 font-bold">
+            {%- if subject -%} {{ subject }} {%- else -%} Payment of {{ amount }} for
+            EOVCloud was unsuccessful. {%- endif -%}
+        </p>
+        {%- if card_not_added -%}
+        <p class="mb-6">
+            You have not updated your payment information. Your site will be suspended
+            until you update the payment details in your account.
+        </p>
+        {{ utils.button('Update Payment', account_update_link) }} {%- else -%}
+        <p class="mb-6">
+            Please update your payment information in {{ utils.link('Update Payment', account_update_link) }}
+            or make a manual payment by clicking the link below:
+        </p>
+        {{ utils.button('Pay now', payment_link) }} {%- endif -%} {%- if
+        sites -%} {{ utils.separator() }}
+        <p class="mt-0 mb-2">Following sites were suspended:</p>
+        <ul class="list-disc">
+            {%- for site in sites -%}
+            <li class="text-sm font-medium">{{ site }}</li>
+            {%- endfor -%}
+        </ul>
+        {%- endif -%}
+        <p>
+            Sincerely,<br />
+            EOVCloud
+        </p>
+        {{ utils.separator() }} {{ utils.footer('en') }}
+    </div>
+</td>
+
+{% endblock %}

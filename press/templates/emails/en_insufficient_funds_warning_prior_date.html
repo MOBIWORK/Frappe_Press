@@ -1,0 +1,28 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/en_saas.html" %} {% set title = title %} {% set image_path =
+image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
+
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white from-markdown">
+        <p>
+            <strong class="text-lg">Hello,</strong>
+        </p>
+        <p> We are writing to warn you about your account's payment status and the upcoming risk of insufficient balance
+            within the next {{number_day}} days for your site <strong class="text-lg">{{ site_name }}</strong>.
+        </p>
+        <p> Following a recent payment transaction review, we have detected that your account balance will not be
+            sufficient to cover our services within the next {{number_day}} days. This could result in your site
+            becoming inactive in the near future. </p>
+        <p> To avoid this situation, we recommend reviewing your account and ensuring you maintain a sufficient balance
+            to continue using our services. If you encounter any issues, please contact our billing department for
+            support. </p>
+        <p> If you need any assistance or have any questions, feel free to contact us. </p>
+        <p>
+            Sincerely,<br />
+            EOVCloud
+        </p>
+        {{ utils.separator() }} {{ utils.footer('en') }}
+    </div>
+</td>
+
+{% endblock %}

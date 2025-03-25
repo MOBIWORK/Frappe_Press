@@ -19,7 +19,7 @@ export default {
 	name: 'BillingScreen',
 	pageMeta() {
 		return {
-			title: `${this.$t('billing')} - EOV Cloud`
+			title: `${this.$t('billing')} - EOVCloud`
 		};
 	},
 	props: ['invoiceName'],

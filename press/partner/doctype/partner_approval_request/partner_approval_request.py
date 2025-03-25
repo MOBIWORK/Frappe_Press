@@ -2,9 +2,10 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import get_url
-
+from press.api.language import get_language_from_team
 
 class PartnerApprovalRequest(Document):
     def before_insert(self):
@@ -17,16 +18,24 @@ class PartnerApprovalRequest(Document):
     def send_approval_request_email(self):
         email = frappe.db.get_value("Team", self.partner, "user")
         customer = frappe.db.get_value("Team", self.requested_by, "user")
+        
+        lang = get_language_from_team(self.partner)
+        lang = lang if lang in ['vi', 'en'] else 'vi'
 
         link = get_url(
             f"/api/method/press.api.account.approve_partner_request?key={self.key}"
         )
-        subject = f"[EOVCloud] - Yêu cầu phê duyệt đối tác {customer}"
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _('Partner Approval Request', lang)
 
+        # get language template
+        template = 'partner_approval'
+        template = f"{lang}_{template}"
+        
         frappe.sendmail(
             subject=subject,
             recipients=email,
-            template="partner_approval",
-            args={"link": link, "user": customer},
+            template=template,
+            args={"link": link, "user": customer, "partner": email},
             now=True,
         )

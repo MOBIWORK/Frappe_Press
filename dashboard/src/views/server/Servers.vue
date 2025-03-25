@@ -185,7 +185,7 @@ export default {
 	},
 	pageMeta() {
 		return {
-			title: 'Servers - EOV Cloud'
+			title: 'Servers - EOVCloud'
 		};
 	},
 	data() {
@@ -196,7 +196,7 @@ export default {
 			server_tag: '',
 			dropDownOptions: [
 				{
-					label: 'EOV Cloud Server',
+					label: 'EOVCloud Server',
 					onClick: () => this.$router.replace('/servers/new')
 				},
 				{

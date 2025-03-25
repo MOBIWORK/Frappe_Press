@@ -1,10 +1,12 @@
 import frappe
+from frappe import _
 from frappe.utils import get_url
 from typing import Dict, List
 
 from press.api.developer import raise_invalid_key_error
 from press.api.marketplace import prepaid_saas_payment
 from press.api.site import get_plans as get_site_plans
+from press.api.language import get_language_from_team
 
 
 class DeveloperApiHandler:
@@ -130,12 +132,22 @@ class DeveloperApiHandler:
     def send_login_link(self):
         try:
             login_url = self.get_login_url()
-            users = frappe.get_doc("Team", self.app_subscription_doc.team).user
-            subject = f"[EOVCloud] - Email xác minh đăng nhập"
+            user = frappe.db.get_value('Team', self.app_subscription_doc.team, 'user')
+            
+            lang = get_language_from_team(self.app_subscription_doc.team)
+            lang = lang if lang in ['vi', 'en'] else 'vi'
+            
+            pre_subject = "[EOVCloud] - "
+            subject = pre_subject + _('Login verification email', lang)
+            
+            # get language template
+            template = 'remote_login'
+            template = f"{lang}_{template}"
+            
             frappe.sendmail(
                 subject=subject,
-                recipients=[users],
-                template="remote_login",
+                recipients=[user],
+                template=template,
                 args={"login_url": login_url,
                       "site": self.app_subscription_doc.site},
                 now=True,

@@ -173,7 +173,7 @@ export default {
 	name: 'Site',
 	pageMeta() {
 		return {
-			title: `${this.$t('sites')} - ${this.siteName} - EOV Cloud`
+			title: `${this.$t('sites')} - ${this.siteName} - EOVCloud`
 		};
 	},
 	props: ['siteName'],

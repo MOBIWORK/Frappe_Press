@@ -188,7 +188,7 @@
 					{{ $t('NewServer_content_1') }}
 					<Link
 						class="border-none"
-						href="http://mbwcloud.com/terms"
+						href="https://support.eov.solutions"
 						target="_blank"
 						><span class="text-blue-500 hover:text-blue-700"
 							>{{ $t('NewServer_content_2') }}

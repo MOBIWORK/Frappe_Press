@@ -95,7 +95,7 @@ export default {
 	},
 	pageMeta() {
 		return {
-			title: 'Security - EOV Cloud'
+			title: 'Security - EOVCloud'
 		};
 	},
 	data() {

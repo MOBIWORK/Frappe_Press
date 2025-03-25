@@ -4,7 +4,9 @@
 from typing import List
 
 import frappe
+from frappe import _
 from frappe.model.document import Document
+from press.api.language import get_language_from_team
 
 from press.press.doctype.press_notification.press_notification import (
     create_new_notification,
@@ -154,12 +156,22 @@ def update_from_site_update():
                 recipient = site.notify_email or frappe.get_doc(
                     "Team", site.team).get_email_invoice()
 
+                lang = get_language_from_team(site.team)
+                lang = lang if lang in ['vi', 'en'] else 'vi'
+                
+                pre_subject = "[EOVCloud] - "
+                subject = pre_subject + _('Automatic version upgrade failed for {0}', lang).format(version_upgrade.site)
+                
+                # get language template
+                template = "version_upgrade_failed"
+                template = f"{lang}_{template}"
+                
                 frappe.sendmail(
                     recipients=[recipient],
-                    subject=f"[EOVCloud] - Nâng cấp phiên bản tự động không thành công cho {version_upgrade.site}",
+                    subject=subject,
                     reference_doctype="Version Upgrade",
                     reference_name=version_upgrade.name,
-                    template="version_upgrade_failed",
+                    template=template,
                     args={
                         "site": version_upgrade.site,
                         "traceback": last_traceback,

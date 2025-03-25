@@ -1,0 +1,66 @@
+{% import "templates/emails/macros.html" as utils %} {% block content %}
+<table class="sm:bg-white bg-gray-100" cellpadding="0" cellspacing="0" role="presentation" width="100%">
+	<tr>
+		<td align="center" valign="top">
+			<table cellpadding="0" cellspacing="0" role="presentation" width="80%">
+				<tbody>
+					<tr>
+						<td class="px-8 pt-10 pb-8 text-center text-gray-900">
+							<div>
+								{% if image_path %}
+								<img src="{{ image_path }}" alt="Logo" class="h-10 mx-auto" />
+								{% else %}
+								<img src="https://cloud.eov.solutions/assets/press/images/EOV.png" alt="Logo"
+									class="h-10 mx-auto" />
+								{% endif %}
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="text-base leading-6 text-gray-900">
+							<div class="p-8 bg-white from-markdown">
+								<p><strong>Kinh gửi quý khách: {{customer_name}}</strong></p>
+								<p>EOVCloud xin thông báo về thông tin tài khoản của quý khách như sau:</p>
+								<p>Số dư tài khoản đến thời điểm {{transaction_time}} ngày {{transaction_date}} là
+									{{balance}}.</p>
+								<table class="w-full">
+									<tbody>
+										<tr>
+											<td style="border: 1px solid gray;padding: 6px;">Loại thanh toán:</td>
+											<td style="border: 1px solid gray;padding: 6px;">{{transaction_type}}</td>
+										</tr>
+										<tr>
+											<td style="border: 1px solid gray;padding: 6px;">Mã giao dịch:</td>
+											<td style="border: 1px solid gray;padding: 6px;">{{trading_code}}</td>
+										</tr>
+										<tr>
+											<td style="border: 1px solid gray;padding: 6px;">Số tiền:</td>
+											<td style="border: 1px solid gray;padding: 6px;">{{amount}}</td>
+										</tr>
+										<tr>
+											<td style="border: 1px solid gray;padding: 6px;">Nội dung giao dịch:</td>
+											<td style="border: 1px solid gray;padding: 6px;">{{transaction_information}}
+											</td>
+										</tr>
+									</tbody>
+								</table>
+								<p>
+									Trân trọng,<br />
+									EOVCloud
+								</p>
+								{{ utils.separator() }}
+								{{ utils.footer_top_up() }}
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<td class="py-8 text-center text-gray-500 text-sm">
+							{{_('This email was sent by EOVCloud', 'vi')}}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</td>
+	</tr>
+</table>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/en_saas.html" %} {% set title = title %} {% set image_path =
+image_path %} {% set read_pixel_path = read_pixel_path %} {% block content %}
+
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white from-markdown">
+        <p>
+            <strong class="text-lg">Hello,</strong>
+        </p>
+        <p> Your site <strong class="text-lg">{{ site_name }}</strong> has been locked! </p>
+        <p> We regret to inform you that access to your site has been temporarily locked. The reason for this is
+            that your account balance is insufficient to cover the invoice. As a result, we are unable to continue
+            providing services until the payment issue is resolved. To continue using our services, please top up your
+            account. </p>
+        <p> If you need support or have any questions, please contact our customer service team for assistance. </p>
+        <p> We look forward to hearing from you soon and hope this issue can be resolved smoothly and quickly. </p>
+        <p>
+            Sincerely,<br />
+            EOVCloud
+        </p>
+        {{ utils.separator() }} {{ utils.footer('en') }}
+    </div>
+</td>
+
+{% endblock %}

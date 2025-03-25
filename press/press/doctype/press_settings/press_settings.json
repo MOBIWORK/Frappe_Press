@@ -123,9 +123,6 @@
   "column_break_95",
   "standby_queue_size",
   "integrations_tab",
-  "email_section",
-  "email_template_money_into_account",
-  "ehoadon_section",
   "telegram_section",
   "telegram_chat_id",
   "column_break_65",
@@ -1152,17 +1149,6 @@
    "label": "Cancel Url"
   },
   {
-   "fieldname": "email_section",
-   "fieldtype": "Section Break",
-   "label": "Email"
-  },
-  {
-   "fieldname": "email_template_money_into_account",
-   "fieldtype": "Link",
-   "label": "Template Confirm Money Into Account",
-   "options": "Email Template"
-  },
-  {
    "default": "0",
    "fieldname": "vnd_rate",
    "fieldtype": "Float",
@@ -1173,11 +1159,6 @@
    "fieldtype": "Data",
    "label": "Webhook Url Current",
    "read_only": 1
-  },
-  {
-   "fieldname": "ehoadon_section",
-   "fieldtype": "Section Break",
-   "label": "eHoadon"
   },
   {
    "fieldname": "site_num_days_required",
@@ -1265,7 +1246,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2025-02-21 15:13:18.510823",
+ "modified": "2025-03-25 09:54:20.474864",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

@@ -547,6 +547,7 @@ class Team(Document):
             data_update['number_of_employees'] = billing_details.number_of_employees
 
         address_doc.update(data_update)
+        address_doc.flags.ignore_mandatory = True
         address_doc.save()
         address_doc.reload()
 
@@ -1130,15 +1131,23 @@ class Team(Document):
     
     
     def sendemail_open_sites(self):
-        user = frappe.db.get_value('User', self.user, ['first_name'], as_dict=1)
+        user = frappe.db.get_value('User', self.user, ['first_name', 'language'], as_dict=1)
+        lang = user.language if user.language in ['vi', 'en'] else 'vi'
+        
         email = self.get_email_invoice()
         date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        subject = f"[EOVCloud] - Các tổ chức của bạn đã được mở - {date_time}"
 
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _('Your sites have been reactivated - {0}', lang).format(date_time)
+        
+        # get language template
+        template = "site_open_email"
+        template = f"{lang}_{template}"
+        
         frappe.sendmail(
             recipients=email,
             subject=subject,
-            template="site_open_email",
+            template=template,
             args={
                 "user_name": user.first_name if user else self.user,
             },
@@ -1212,12 +1221,21 @@ class Team(Document):
         # last_4 = frappe.db.get_value(
         #     "Stripe Payment Method", payment_method, "last_4")
         account_update_link = frappe.utils.get_url("/dashboard")
-        subject = "[EOVCloud] - Thanh toán hóa đơn không thành công khi đăng ký EOV Cloud"
 
+        lang = frappe.db.get_value('User', self.user, 'language')
+        lang = lang if lang in ['vi', 'en'] else 'vi'
+        
+        pre_subject = "[EOVCloud] - "
+        subject = pre_subject + _('Unsuccessful Invoice Payment During EOVCloud Registration', lang)
+
+        # get language template
+        template = "payment_failed_partner" if self.erpnext_partner else "payment_failed"
+        template = f"{lang}_{template}"
+        
         frappe.sendmail(
             recipients=email,
             subject=subject,
-            template="payment_failed_partner" if self.erpnext_partner else "payment_failed",
+            template=template,
             args={
                 "subject": subject,
                 "payment_link": invoice.stripe_invoice_url,

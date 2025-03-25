@@ -1,0 +1,22 @@
+{% import "templates/emails/macros.html" as utils %} {% extends
+"templates/emails/en_saas.html" %} {% block content %}
+<td class="text-base leading-6 text-gray-900">
+    <div class="p-8 bg-white from-markdown">
+        <p><strong class="text-lg">Hello,</strong></p>
+        <p class="mb-4 font-bold">
+            Automatic version upgrade failed. Please resolve the issue and try again.
+        </p>
+        <p class="font-bold">Site:</p>
+        <pre>{{ site }}</pre>
+        <p class="font-bold">Traceback:</p>
+        <pre>{{ traceback }}</pre>
+        <p class="font-bold">Output:</p>
+        <pre>{{ output }}</pre>
+        <p>
+            Sincerely,<br />
+            EOVCloud
+        </p>
+        {{ utils.separator() }} {{ utils.footer('en') }}
+    </div>
+</td>
+{% endblock %}

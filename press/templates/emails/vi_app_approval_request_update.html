@@ -3,13 +3,11 @@
 
 <td class="text-base leading-6 text-gray-900">
 	<div class="p-8 bg-white from-markdown">
-		<p><strong class="text-lg">Chào mừng bạn đến với EOVCloud!</strong></p>
-
-		<p>
-			{%- if subject -%} {{ subject }}{% else %} Cập nhật về yêu cầu xuất bản
-			bản phát hành ứng dụng của bạn {%- endif -%}
+		<p class="mb-4 font-bold">
+			{%- if subject -%}
+			{{ subject }}
+			{%- endif -%}
 		</p>
-
 		<p>
 			{%- if status == 'Rejected' -%} Rất tiếc, yêu cầu phê duyệt của bạn cho
 			bản phát hành ứng dụng
