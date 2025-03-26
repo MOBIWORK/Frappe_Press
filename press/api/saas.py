@@ -156,6 +156,7 @@ def create_or_rename_saas_site(app, account_request):
     Creates site for Saas App
     """
     try:
+        lang = account_request.language or 'vi'
         site = {
             "domain": get_saas_domain(app),
             "name": account_request.subdomain,
@@ -164,7 +165,7 @@ def create_or_rename_saas_site(app, account_request):
             "cluster": get_saas_cluster(app),
             "plan": get_saas_site_plan(app)
         }
-        _new(site)
+        _new(site, lang=lang)
         
         capture("completed_server_site_created",
                 "fc_saas", account_request.get_site_name())
