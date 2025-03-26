@@ -245,6 +245,9 @@ def _new(site, server: str = None, ignore_plan_validation: bool = False, lang='v
         secret_keys = {f"sk_{s.app}": s.secret_key for s in subscription_docs}
         site._update_configuration(secret_keys, save=False)
 
+    # set default language
+    site._update_configuration({'lang': lang}, save=False)
+    
     site.insert(ignore_permissions=True)
 
     if app_plans and len(app_plans) > 0:

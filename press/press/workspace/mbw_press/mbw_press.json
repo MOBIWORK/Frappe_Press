@@ -83,134 +83,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Infrastructure",
-   "link_count": 12,
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Cluster",
-   "link_count": 0,
-   "link_to": "Cluster",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "App server",
-   "link_count": 0,
-   "link_to": "Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Database Server",
-   "link_count": 0,
-   "link_to": "Database Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Proxy Server",
-   "link_count": 0,
-   "link_to": "Proxy Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Bench",
-   "link_count": 0,
-   "link_to": "Bench",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Site",
-   "link_count": 0,
-   "link_to": "Site",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Monitor Server",
-   "link_count": 0,
-   "link_to": "Monitor Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Log Server",
-   "link_count": 0,
-   "link_to": "Log Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Analytics Server",
-   "link_count": 0,
-   "link_to": "Analytics Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Trace Server",
-   "link_count": 0,
-   "link_to": "Trace Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Registry Server",
-   "link_count": 0,
-   "link_to": "Registry Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Code Server",
-   "link_count": 0,
-   "link_to": "Code Server",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Report",
    "link_count": 9,
    "onboard": 0,
@@ -432,7 +304,8 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Apps",
-   "link_count": 7,
+   "link_count": 6,
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
   },
@@ -462,16 +335,6 @@
    "label": "App Release",
    "link_count": 0,
    "link_to": "App Release",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "App Tag",
-   "link_count": 0,
-   "link_to": "App Tag",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
@@ -509,8 +372,108 @@
   {
    "hidden": 0,
    "is_query_report": 0,
+   "label": "Infrastructure",
+   "link_count": 9,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Cluster",
+   "link_count": 0,
+   "link_to": "Cluster",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "App server",
+   "link_count": 0,
+   "link_to": "Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Database Server",
+   "link_count": 0,
+   "link_to": "Database Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Proxy Server",
+   "link_count": 0,
+   "link_to": "Proxy Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Bench",
+   "link_count": 0,
+   "link_to": "Bench",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Site",
+   "link_count": 0,
+   "link_to": "Site",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Monitor Server",
+   "link_count": 0,
+   "link_to": "Monitor Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Log Server",
+   "link_count": 0,
+   "link_to": "Log Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Analytics Server",
+   "link_count": 0,
+   "link_to": "Analytics Server",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
    "label": "Payment",
-   "link_count": 7,
+   "link_count": 5,
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
   },
@@ -537,36 +500,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Marketplace App Payment",
-   "link_count": 0,
-   "link_to": "Marketplace App Payment",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Stripe Payment Method",
-   "link_count": 0,
-   "link_to": "Stripe Payment Method",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Payout Order",
-   "link_count": 0,
-   "link_to": "Payout Order",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Balance Transaction",
    "link_count": 0,
    "link_to": "Balance Transaction",
@@ -577,15 +510,25 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Marketplace App Plan",
+   "label": "Subscription",
    "link_count": 0,
-   "link_to": "Marketplace App Plan",
+   "link_to": "Subscription",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "AI Service Price",
+   "link_count": 0,
+   "link_to": "AI Service Price",
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2025-02-14 15:28:26.428667",
+ "modified": "2025-03-26 08:37:37.924361",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "MBW Press",
