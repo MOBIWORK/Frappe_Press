@@ -49,7 +49,7 @@
 				<Tooltip v-if="options.documentation" text="View documentation">
 					<div class="rounded-md bg-gray-100 p-1.5">
 						<a :href="options.documentation" target="_blank">
-							<FeatherIcon class="h-4 w-4" name="help-circle" />
+							<i-lucide-help-circle class="h-4 w-4" />
 						</a>
 					</div>
 				</Tooltip>
@@ -61,10 +61,17 @@
 				>
 					<template #icon>
 						<Tooltip text="Refresh">
-							<FeatherIcon class="h-4 w-4" name="refresh-ccw" />
+							<i-lucide-refresh-ccw class="h-4 w-4" />
 						</Tooltip>
 					</template>
 				</Button>
+
+				<Dropdown v-if="moreActions.length" :options="moreActions">
+					<Button>
+						<FeatherIcon name="more-horizontal" class="h-4 w-4" />
+					</Button>
+				</Dropdown>
+
 				<ActionButton
 					v-for="button in actions"
 					v-bind="button"
@@ -146,7 +153,6 @@ import {
 	ListHeader,
 	ListRow,
 	TextInput,
-	FeatherIcon,
 	Tooltip,
 	ErrorMessage,
 } from 'frappe-ui';
@@ -167,7 +173,6 @@ export default {
 		ListHeader,
 		ListRow,
 		TextInput,
-		FeatherIcon,
 		Tooltip,
 		ErrorMessage,
 	},
@@ -374,6 +379,16 @@ export default {
 		actions() {
 			if (!this.options.actions) return [];
 			let actions = this.options.actions(this.context);
+			return actions.filter((action) => {
+				if (action.condition) {
+					return action.condition(this.context);
+				}
+				return true;
+			});
+		},
+		moreActions() {
+			if (!this.options.moreActions) return [];
+			const actions = this.options.moreActions(this.context);
 			return actions.filter((action) => {
 				if (action.condition) {
 					return action.condition(this.context);

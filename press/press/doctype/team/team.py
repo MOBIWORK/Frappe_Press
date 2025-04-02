@@ -47,8 +47,10 @@ class Team(Document):
 		child_team_members: DF.Table[ChildTeamMember]
 		code_servers_enabled: DF.Check
 		communication_emails: DF.Table[CommunicationEmail]
+		company_logo: DF.Attach | None
 		country: DF.Link | None
 		currency: DF.Link | None
+		customers: DF.SmallText | None
 		database_access_enabled: DF.Check
 		default_payment_method: DF.Link | None
 		discounts: DF.Table[InvoiceDiscount]
@@ -61,6 +63,7 @@ class Team(Document):
 		free_account: DF.Check
 		free_credits_allocated: DF.Check
 		github_access_token: DF.Data | None
+		introduction: DF.SmallText | None
 		is_code_server_user: DF.Check
 		is_developer: DF.Check
 		is_saas_user: DF.Check
@@ -74,6 +77,7 @@ class Team(Document):
 		partner_commission: DF.Percent
 		partner_email: DF.Data | None
 		partner_referral_code: DF.Data | None
+		partner_tier: DF.Data | None
 		partnership_date: DF.Date | None
 		payment_mode: DF.Literal["", "Card", "Prepaid Credits", "Paid By Partner"]
 		razorpay_enabled: DF.Check
@@ -89,6 +93,7 @@ class Team(Document):
 		team_title: DF.Data | None
 		user: DF.Link | None
 		via_erpnext: DF.Check
+		website_link: DF.Data | None
 	# end: auto-generated types
 
 	dashboard_fields = (
@@ -119,6 +124,7 @@ class Team(Document):
 		"mpesa_tax_id",
 		"mpesa_phone_number",
 		"mpesa_enabled",
+		"account_request",
 	)
 
 	def get_doc(self, doc):
@@ -208,15 +214,10 @@ class Team(Document):
 			self.partner_email = self.user
 
 	def validate_disable(self):
-		if self.has_value_changed("enabled"):
-			has_unpaid_invoices = frappe.get_all(
-				"Invoice",
-				{"team": self.name, "status": ("in", ["Draft", "Unpaid"]), "type": "Subscription"},
+		if self.has_value_changed("enabled") and self.enabled == 0 and has_unsettled_invoices(self.name):
+			frappe.throw(
+				"Cannot disable team with Draft or Unpaid invoices. Please finalize and settle the pending invoices first"
 			)
-			if self.enabled == 0 and has_unpaid_invoices:
-				frappe.throw(
-					"Cannot disable team with Draft or Unpaid invoices. Please finalize and settle the pending invoices first"
-				)
 
 	def validate_billing_team(self):
 		if not (self.billing_team and self.payment_mode == "Paid By Partner"):
@@ -225,17 +226,7 @@ class Team(Document):
 		if self.payment_mode == "Paid By Partner" and not self.billing_team:
 			frappe.throw("Billing Team is mandatory for Paid By Partner payment mode")
 
-		has_unpaid_invoices = frappe.get_all(
-			"Invoice",
-			{
-				"team": self.name,
-				"status": ("in", ["Draft", "Unpaid"]),
-				"type": "Subscription",
-				"total": (">", 0),
-			},
-		)
-
-		if self.payment_mode == "Paid By Partner" and has_unpaid_invoices:
+		if self.payment_mode == "Paid By Partner" and has_unsettled_invoices(self.name):
 			frappe.throw(
 				"Cannot set payment mode to Paid By Partner. Please finalize and settle the pending invoices first"
 			)
@@ -727,6 +718,7 @@ class Team(Document):
 		mandate_id,
 		mandate_reference,
 		set_default=False,
+		verified_with_micro_charge=False,
 	):
 		stripe = get_stripe()
 		payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
@@ -744,6 +736,7 @@ class Team(Document):
 				"stripe_setup_intent_id": setup_intent_id,
 				"stripe_mandate_id": mandate_id if mandate_id else None,
 				"stripe_mandate_reference": mandate_reference if mandate_reference else None,
+				"is_verified_with_micro_charge": verified_with_micro_charge,
 			}
 		)
 		doc.insert()
@@ -1054,6 +1047,9 @@ class Team(Document):
 		return "/welcome"
 
 	def get_pending_saas_site_request(self):
+		if frappe.db.exists("Product Trial Request", {"team": self.name, "status": "Site Created"}):
+			return None
+
 		return frappe.db.get_value(
 			"Product Trial Request",
 			{
@@ -1074,16 +1070,18 @@ class Team(Document):
 				"trial_end_date": ("is", "set"),
 				"status": ("!=", "Archived"),
 			},
-			["name", "trial_end_date", "standby_for_product.title as product_title"],
+			["name", "trial_end_date", "standby_for_product.title as product_title", "host_name"],
 			order_by="`tabSite`.`modified` desc",
 		)
 
 	@frappe.whitelist()
 	def suspend_sites(self, reason=None):
+		from press.press.doctype.site.site import Site
+
 		sites_to_suspend = self.get_sites_to_suspend()
 		for site in sites_to_suspend:
 			try:
-				frappe.get_doc("Site", site).suspend(reason, skip_reload=True)
+				Site("Site", site).suspend(reason, skip_reload=True)
 			except Exception:
 				log_error("Failed to Suspend Sites", traceback=frappe.get_traceback())
 		return sites_to_suspend
@@ -1125,13 +1123,14 @@ class Team(Document):
 	@frappe.whitelist()
 	def unsuspend_sites(self, reason=None):
 		from press.press.doctype.bench.bench import Bench
+		from press.press.doctype.site.site import Site
 
 		suspended_sites = [
 			d.name for d in frappe.db.get_all("Site", {"team": self.name, "status": "Suspended"})
 		]
 		workloads_before = list(Bench.get_workloads(suspended_sites))
 		for site in suspended_sites:
-			frappe.get_doc("Site", site).unsuspend(reason)
+			Site("Site", site).unsuspend(reason, skip_reload=True)
 		workloads_after = list(Bench.get_workloads(suspended_sites))
 		self.reallocate_workers_if_needed(workloads_before, workloads_after)
 
@@ -1506,6 +1505,9 @@ def validate_site_creation(doc, method):
 		return
 	if not doc.team:
 		return
+	# allow product signups
+	if doc.standby_for_product:
+		return
 
 	# validate site creation for team
 	team = frappe.get_doc("Team", doc.team)
@@ -1515,14 +1517,24 @@ def validate_site_creation(doc, method):
 
 
 def has_unsettled_invoices(team):
-	return frappe.db.exists(
+	if not frappe.db.exists(
+		"Invoice", {"team": team, "status": ("in", ("Unpaid", "Draft")), "type": "Subscription"}
+	):
+		return False
+
+	currency = frappe.db.get_value("Team", team, "currency")
+	minimum_amount = 5
+	if currency == "INR":
+		minimum_amount = 450
+
+	data = frappe.get_all(
 		"Invoice",
 		{"team": team, "status": ("in", ("Unpaid", "Draft")), "type": "Subscription"},
-	)
-
-
-def has_active_servers(team):
-	return frappe.db.exists("Server", {"status": "Active", "team": team})
+		["sum(amount_due) as amount_due"],
+	)[0]
+	if data.amount_due <= minimum_amount:
+		return False
+	return True
 
 
 def is_us_eu():

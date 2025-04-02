@@ -172,6 +172,11 @@ class DeployCandidate(Document):
 		return results
 
 	def get_doc(self, doc):
+		def get_job_duration_in_seconds(duration):
+			if not duration:
+				return 0
+			return f"{float(rounded(duration.total_seconds(), 2))}s"
+
 		doc.jobs = []
 		deploys = frappe.get_all("Deploy", {"candidate": self.name}, limit=1)
 		if deploys:
@@ -185,7 +190,17 @@ class DeployCandidate(Document):
 					{"bench": bench.bench, "job_type": "New Bench"},
 					limit=1,
 				) or [{}]
-				doc.jobs.append(job[0])
+				doc.jobs.append(
+					{
+						**job[0],
+						"title": f"Deploying {bench.bench}",
+						"duration": get_job_duration_in_seconds(getattr(job[0], "duration", 0)) if job else 0,
+					}
+				)
+
+		# if any job is in running, pending state, set the status to deploying
+		if any(job.get("status") in ["Running", "Pending"] for job in doc.jobs):
+			doc.status = "Deploying"
 
 	def autoname(self):
 		group = self.group[6:]
@@ -1055,6 +1070,7 @@ class DeployCandidate(Document):
 
 			app_packages = []
 			for p in pkgs:
+				p = p.strip()
 				if p in existing_apt_packages:
 					continue
 				existing_apt_packages.add(p)
@@ -1063,7 +1079,30 @@ class DeployCandidate(Document):
 			if not app_packages:
 				continue
 
-			package = dict(package_manager="apt", package=" ".join(app_packages))
+			self._add_packages(app_packages)
+
+	def __prepare_chunks(self, packages: list[str]):
+		"""Chunk packages into groups of 140 characters"""
+		# Start with one empty chunk
+		chunks = [[]]
+		for package in packages:
+			# Appending the package to the last chunk will keep it under 140
+			# Append package to last chunk
+			if len(" ".join(chunks[-1] + [package])) < 140:
+				chunks[-1].append(package)
+			# Appending the package to the last chunk will make it larger than 140
+			# Add package in a new chunk
+			else:
+				if len(package) > 140:
+					raise frappe.ValidationError(
+						f"Package {package} is too long to be added to the Dockerfile"
+					)
+				chunks.append([package])
+		return chunks
+
+	def _add_packages(self, packages: list[str]):
+		for chunk in self.__prepare_chunks(packages):
+			package = dict(package_manager="apt", package=" ".join(chunk))
 			self.append("packages", package)
 
 	def _set_additional_packages(self):

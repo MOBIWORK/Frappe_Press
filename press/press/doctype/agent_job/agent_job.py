@@ -28,7 +28,6 @@ from press.press.doctype.agent_job_type.agent_job_type import (
 from press.press.doctype.site_database_user.site_database_user import SiteDatabaseUser
 from press.press.doctype.site_migration.site_migration import (
 	get_ongoing_migration,
-	job_matches_site_migration,
 	process_site_migration_job_update,
 )
 from press.utils import has_role, log_error, timer
@@ -100,8 +99,10 @@ class AgentJob(Document):
 		if site and not has_role("Press Support Agent"):
 			is_owned_by_team("Site", site, raise_exception=True)
 
-		if group and not has_role("Press Support Agent"):
-			is_owned_by_team("Release Group", group, raise_exception=True)
+		if group:
+			if not has_role("Press Support Agent"):
+				is_owned_by_team("Release Group", group, raise_exception=True)
+
 			AgentJob = frappe.qb.DocType("Agent Job")
 			Bench = frappe.qb.DocType("Bench")
 			benches = frappe.qb.from_(Bench).select(Bench.name).where(Bench.group == filters.group)
@@ -975,6 +976,7 @@ def process_job_updates(job_name: str, response_data: dict | None = None):  # no
 			process_setup_erpnext_site_job_update,
 		)
 		from press.press.doctype.site.site import (
+			process_add_domain_job_update,
 			process_archive_site_job_update,
 			process_complete_setup_wizard_job_update,
 			process_create_user_job_update,
@@ -990,7 +992,10 @@ def process_job_updates(job_name: str, response_data: dict | None = None):  # no
 			process_uninstall_app_site_job_update,
 		)
 		from press.press.doctype.site_backup.site_backup import process_backup_site_job_update
-		from press.press.doctype.site_domain.site_domain import process_new_host_job_update
+		from press.press.doctype.site_domain.site_domain import (
+			process_add_domain_to_upstream_job_update,
+			process_new_host_job_update,
+		)
 		from press.press.doctype.site_update.site_update import (
 			process_activate_site_job_update,
 			process_deactivate_site_job_update,
@@ -999,7 +1004,7 @@ def process_job_updates(job_name: str, response_data: dict | None = None):  # no
 		)
 
 		site_migration = get_ongoing_migration(job.site)
-		if site_migration and job_matches_site_migration(job, site_migration):
+		if site_migration:
 			process_site_migration_job_update(job, site_migration)
 		elif job.job_type == "Add Upstream to Proxy":
 			process_new_server_job_update(job)
@@ -1038,6 +1043,8 @@ def process_job_updates(job_name: str, response_data: dict | None = None):  # no
 			process_archive_site_job_update(job)
 		elif job.job_type == "Add Host to Proxy":
 			process_new_host_job_update(job)
+		elif job.job_type == "Add Domain to Upstream":
+			process_add_domain_to_upstream_job_update(job)
 		elif job.job_type == "Update Site Migrate" or job.job_type == "Update Site Pull":
 			process_update_site_job_update(job)
 		elif (
@@ -1089,6 +1096,8 @@ def process_job_updates(job_name: str, response_data: dict | None = None):  # no
 			process_deactivate_site_job_update(job)
 		elif job.job_type == "Activate Site" and job.reference_doctype == "Site Update":
 			process_activate_site_job_update(job)
+		elif job.job_type == "Add Domain":
+			process_add_domain_job_update(job)
 
 		# send failure notification if job failed
 		if job.status == "Failure":

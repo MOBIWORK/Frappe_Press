@@ -4,9 +4,11 @@
 from __future__ import annotations
 
 import json
+import time
 from typing import TYPE_CHECKING
 
 import frappe
+import frappe.utils
 from frappe.desk.doctype.tag.tag import add_tag
 from frappe.model.document import Document
 
@@ -15,6 +17,9 @@ from press.press.doctype.ansible_console.ansible_console import AnsibleAdHoc
 
 if TYPE_CHECKING:
 	from datetime import datetime
+
+	from apps.press.press.press.doctype.site_update.site_update import SiteUpdate
+	from apps.press.press.press.doctype.virtual_machine.virtual_machine import VirtualMachine
 
 
 class SiteBackup(Document):
@@ -26,10 +31,6 @@ class SiteBackup(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
-		from press.press.doctype.physical_backup_file_metadata.physical_backup_file_metadata import (
-			PhysicalBackupFileMetadata,
-		)
-
 		config_file: DF.Data | None
 		config_file_size: DF.Data | None
 		config_file_url: DF.Text | None
@@ -39,10 +40,7 @@ class SiteBackup(Document):
 		database_snapshot: DF.Link | None
 		database_url: DF.Text | None
 		files_availability: DF.Literal["", "Available", "Unavailable"]
-		files_metadata: DF.Table[PhysicalBackupFileMetadata]
-		innodb_tables: DF.JSON | None
 		job: DF.Link | None
-		myisam_tables: DF.JSON | None
 		offsite: DF.Check
 		offsite_backup: DF.Code | None
 		physical: DF.Check
@@ -59,7 +57,6 @@ class SiteBackup(Document):
 		site: DF.Link
 		snapshot_request_key: DF.Data | None
 		status: DF.Literal["Pending", "Running", "Success", "Failure"]
-		table_schema: DF.Code | None
 		team: DF.Link | None
 		with_files: DF.Check
 	# end: auto-generated types
@@ -149,30 +146,52 @@ class SiteBackup(Document):
 
 	def on_update(self):
 		if self.physical and self.has_value_changed("status") and self.status in ["Success", "Failure"]:
-			"""
-			Rollback the permission changes made to the database directory
-			Change it back to 770 from 700
+			site_update_doc_name = frappe.db.exists("Site Update", {"site_backup": self.name})
+			if site_update_doc_name:
+				"""
+				If site backup was trigerred for Site Update,
+				Then, trigger Site Update to proceed with the next steps
+				"""
+				site_update: SiteUpdate = frappe.get_doc("Site Update", site_update_doc_name)
+				if self.status == "Success":
+					site_update.create_update_site_agent_request()
+				elif self.status == "Failure":
+					site_update.activate_site(backup_failed=True)
 
-			Check `_create_physical_backup` method for more information
-			"""
-			success = self.run_ansible_command_in_database_server(
-				f"chmod 700 /var/lib/mysql/{self.database_name}"
+			frappe.enqueue_doc(
+				self.doctype,
+				self.name,
+				method="_rollback_db_directory_permissions",
+				enqueue_after_commit=True,
 			)
-			if not success:
-				"""
-				Don't throw an error here, Because the backup is already created
-				And keeping the permission as 770 will not cause issue in database operations
-				"""
-				frappe.log_error(
-					"Failed to rollback the permission changes of the database directory",
-					reference_doctype=self.doctype,
-					reference_name=self.name,
-				)
+
+	def _rollback_db_directory_permissions(self):
+		if not self.physical:
+			return
+		"""
+		Rollback the permission changes made to the database directory
+		Change it back to 770 from 700
+
+		Check `_create_physical_backup` method for more information
+		"""
+		success = self.run_ansible_command_in_database_server(
+			f"chmod 700 /var/lib/mysql/{self.database_name}"
+		)
+		if not success:
+			"""
+			Don't throw an error here, Because the backup is already created
+			And keeping the permission as 770 will not cause issue in database operations
+			"""
+			frappe.log_error(
+				"Failed to rollback the permission changes of the database directory",
+				reference_doctype=self.doctype,
+				reference_name=self.name,
+			)
 
 	def _create_physical_backup(self):
 		site = frappe.get_doc("Site", self.site)
 		"""
-		Change the /var/lib/mysql/<database_name> directory's permission to 770 from 770
+		Change the /var/lib/mysql/<database_name> directory's permission to 700 from 770
 		The files inside that directory will have 660 permission, So no need to change the permission of the files
 
 		`frappe` user on server is already part of `mysql` group.
@@ -212,12 +231,33 @@ class SiteBackup(Document):
 		if self.database_snapshot:
 			# Snapshot already exists, So no need to create a new one
 			return
+
 		server = frappe.get_value("Site", self.site, "server")
 		database_server = frappe.get_value("Server", server, "database_server")
-		virtual_machine = frappe.get_doc(
+		virtual_machine: VirtualMachine = frappe.get_doc(
 			"Virtual Machine", frappe.get_value("Database Server", database_server, "virtual_machine")
 		)
-		virtual_machine.create_snapshots(exclude_boot_volume=True, created_for_site_update=True)
+
+		cache_key = f"volume_active_snapshot:{self.database_server}"
+
+		max_retries = 3
+		while max_retries > 0:
+			is_ongoing_snapshot = frappe.utils.cint(frappe.cache.get_value(cache_key, expires=True))
+			if not is_ongoing_snapshot:
+				break
+			time.sleep(2)
+			max_retries -= 1
+
+		if frappe.cache.get_value(cache_key, expires=True):
+			raise OngoingSnapshotError("Snapshot creation per volume rate exceeded")
+
+		frappe.cache.set_value(
+			cache_key,
+			1,
+			expires_in_sec=15,
+		)
+
+		virtual_machine.create_snapshots(exclude_boot_volume=True, physical_backup=True)
 		if len(virtual_machine.flags.created_snapshots) == 0:
 			frappe.throw("Failed to create a snapshot for the database server")
 		frappe.db.set_value(
@@ -240,6 +280,12 @@ class SiteBackup(Document):
 	@classmethod
 	def file_backup_exists(cls, site: str, day: datetime.date) -> bool:
 		return cls.backup_exists(site, day, {"with_files": True})
+
+
+class OngoingSnapshotError(Exception):
+	"""Exception raised when other snapshot creation is ongoing"""
+
+	pass
 
 
 def track_offsite_backups(site: str, backup_data: dict, offsite_backup_data: dict) -> tuple:
@@ -279,7 +325,7 @@ def track_offsite_backups(site: str, backup_data: dict, offsite_backup_data: dic
 	)
 
 
-def process_backup_site_job_update(job):  # noqa: C901
+def process_backup_site_job_update(job):
 	backups = frappe.get_all("Site Backup", fields=["name", "status"], filters={"job": job.name}, limit=1)
 	if not backups:
 		return
@@ -291,35 +337,10 @@ def process_backup_site_job_update(job):  # noqa: C901
 
 		if job.status == "Success":
 			if frappe.get_value("Site Backup", backup.name, "physical"):
-				site_backup: SiteBackup = frappe.get_doc("Site Backup", backup.name)
-				data = json.loads(job.data)
-				if site_backup.database_name not in data:
-					frappe.log_error("[Failure] Database name not found in the backup data", data=job.data)
-					site_backup.status = "Failure"
-				else:
-					site_backup.files_availability = "Available"
-					site_backup.innodb_tables = json.dumps(data[site_backup.database_name]["innodb_tables"])
-					site_backup.myisam_tables = json.dumps(data[site_backup.database_name]["myisam_tables"])
-					site_backup.table_schema = data[site_backup.database_name]["table_schema"]
-					files_metadata = data[site_backup.database_name]["files_metadata"]
-					for x in files_metadata:
-						site_backup.append(
-							"files_metadata",
-							{
-								"file": x,
-								"size": files_metadata[x]["size"],
-								"checksum": files_metadata[x]["checksum"],
-							},
-						)
-					site_backup.status = "Success"
-				site_backup.save()
-				site_backup.reload()
-				# If site backup was trigerred for Site Update,
-				# Then, trigger Site Update to proceed with the next steps
-				site_update_doc_name = frappe.db.exists("Site Update", {"site_backup": site_backup.name})
-				if site_update_doc_name:
-					site_update = frappe.get_doc("Site Update", site_update_doc_name)
-					site_update.create_update_site_agent_request()
+				doc: SiteBackup = frappe.get_doc("Site Backup", backup.name)
+				doc.files_availability = "Available"
+				doc.status = "Success"
+				doc.save()
 			else:
 				frappe.db.set_value("Site Backup", backup.name, "status", status)
 				job_data = json.loads(job.data)

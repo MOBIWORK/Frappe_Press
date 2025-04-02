@@ -290,8 +290,18 @@ class Bench(Document):
 			"is_code_server_enabled": self.is_code_server_enabled,
 			"use_rq_workerpool": self.use_rq_workerpool,
 		}
+
+		self.update_bench_config_with_rq_port(bench_config)
 		self.add_limits(bench_config)
 		self.update_bench_config_with_rg_config(bench_config)
+
+	def update_bench_config_with_rq_port(self, bench_config):
+		if self.is_new():
+			bench_config["rq_port"] = 11000 + self.port_offset
+		elif old := self.get_doc_before_save():
+			config = json.loads(old.bench_config)
+			if config.get("rq_port"):
+				bench_config["rq_port"] = config["rq_port"]
 
 	def add_limits(self, bench_config):
 		if any([self.memory_high, self.memory_max, self.memory_swap]):
@@ -1192,7 +1202,7 @@ def sync_benches():
 
 
 def sync_bench(name):
-	bench = frappe.get_doc("Bench", name)
+	bench = Bench("Bench", name)
 	try:
 		active_archival_jobs = frappe.get_all(
 			"Agent Job",

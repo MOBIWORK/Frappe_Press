@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils.data import now_datetime
+from frappe.utils.data import add_to_date, now_datetime
 from frappe.utils.momentjs import get_all_timezones
 from frappe.utils.password import decrypt as decrypt_password
 from frappe.utils.password import encrypt as encrypt_password
@@ -39,18 +39,25 @@ class ProductTrialRequest(Document):
 
 		account_request: DF.Link | None
 		agent_job: DF.Link | None
+		domain: DF.Data | None
 		product_trial: DF.Link | None
 		signup_details: DF.JSON | None
 		site: DF.Link | None
 		site_creation_completed_on: DF.Datetime | None
 		site_creation_started_on: DF.Datetime | None
 		status: DF.Literal[
-			"Pending", "Wait for Site", "Completing Setup Wizard", "Site Created", "Error", "Expired"
+			"Pending",
+			"Wait for Site",
+			"Completing Setup Wizard",
+			"Adding Domain",
+			"Site Created",
+			"Error",
+			"Expired",
 		]
 		team: DF.Link | None
 	# end: auto-generated types
 
-	dashboard_fields = ("site", "status", "product_trial")
+	dashboard_fields = ("site", "status", "product_trial", "domain")
 
 	agent_job_step_to_frontend_step = {  # noqa: RUF012
 		"New Site": {
@@ -72,9 +79,6 @@ class ProductTrialRequest(Document):
 			"Enable Scheduler": "Just a moment",
 		},
 	}
-
-	def get_doc(self, doc):
-		doc.site_label = frappe.get_value("Site", doc.site, "label")
 
 	def get_email(self):
 		return frappe.db.get_value("Team", self.team, "user")
@@ -98,19 +102,20 @@ class ProductTrialRequest(Document):
 
 	def on_update(self):
 		if self.has_value_changed("status"):
-			if self.status == "Error":
-				self.capture_posthog_event("product_trial_request_failed")
-			elif self.status == "Wait for Site":
-				self.capture_posthog_event("product_trial_request_initiated_site_creation")
-			elif self.status == "Completing Setup Wizard":
-				self.capture_posthog_event("product_trial_request_started_setup_wizard_completion")
-			elif self.status == "Site Created":
-				self.capture_posthog_event("product_trial_request_site_created")
+			match self.status:
+				case "Error":
+					self.capture_posthog_event("product_trial_request_failed")
+				case "Wait for Site":
+					self.capture_posthog_event("product_trial_request_initiated_site_creation")
+				case "Completing Setup Wizard":
+					self.capture_posthog_event("product_trial_request_started_setup_wizard_completion")
+				case "Site Created":
+					self.capture_posthog_event("product_trial_request_site_created")
 
-				# this is to create a webhook record in the site
-				# so that the user records can be synced with press
-				site = frappe.get_doc("Site", self.site)
-				site.create_sync_user_webhook()
+					# this is to create a webhook record in the site
+					# so that the user records can be synced with press
+					site: Site = frappe.get_doc("Site", self.site)
+					site.create_sync_user_webhook()
 
 	@frappe.whitelist()
 	def get_setup_wizard_payload(self):
@@ -158,7 +163,12 @@ class ProductTrialRequest(Document):
 			return frappe._dict(_locals.get("payload", {}))
 
 		except Exception as e:
-			frappe.log_error(title="Product Trial Request Setup Wizard Payload Generation Error")
+			log_error(
+				title="Product Trial Request Setup Wizard Payload Generation Error",
+				data=e,
+				reference_doctype=self.doctype,
+				reference_name=self.name,
+			)
 			frappe.throw(f"Failed to generate payload for Setup Wizard: {e}")
 
 	def get_user_login_password_from_signup_details(self) -> str | None:
@@ -205,46 +215,57 @@ class ProductTrialRequest(Document):
 						frappe.throw(f"Invalid value for {field.label}. Please choose a valid option")
 
 	@dashboard_whitelist()
-	def create_site(self, site_label: str, cluster: str | None = None, signup_values: dict | None = None):
+	def create_site(self, subdomain: str, cluster: str | None = None, signup_values: dict | None = None):
 		if not signup_values:
 			signup_values = {}
 
-		product = frappe.get_doc("Product Trial", self.product_trial)
-		for field in product.signup_fields:
-			if field.fieldtype == "Password" and field.fieldname in signup_values:
-				password_analysis = test_password_strength(signup_values[field.fieldname])
-				if int(field.min_password_score) > password_analysis["score"]:
-					suggestions = password_analysis["feedback"]["suggestions"]
-					suggestion = suggestions[0] if suggestions else ""
-					frappe.throw(f"{field.label} is easy to guess.\n{suggestion}")
-				signup_values[field.fieldname] = encrypt_password(signup_values[field.fieldname])
+		try:
+			product = frappe.get_doc("Product Trial", self.product_trial)
+			for field in product.signup_fields:
+				if field.fieldtype == "Password" and field.fieldname in signup_values:
+					password_analysis = test_password_strength(signup_values[field.fieldname])
+					if int(field.min_password_score) > password_analysis["score"]:
+						suggestions = password_analysis["feedback"]["suggestions"]
+						suggestion = suggestions[0] if suggestions else ""
+						frappe.throw(f"{field.label} is easy to guess.\n{suggestion}")
+					signup_values[field.fieldname] = encrypt_password(signup_values[field.fieldname])
 
-		self.signup_details = json.dumps(signup_values)
-		self.validate_signup_fields()
-		product = frappe.get_doc("Product Trial", self.product_trial)
-		self.status = "Wait for Site"
-		self.site_creation_started_on = now_datetime()
-		self.save(ignore_permissions=True)
-		self.reload()
-		site, agent_job_name, is_standby_site = product.setup_trial_site(
-			site_label=site_label, team=self.team, cluster=cluster, account_request=self.account_request
-		)
-		self.agent_job = agent_job_name
-		self.site = site.name
-		self.save(ignore_permissions=True)
+			self.signup_details = json.dumps(signup_values)
+			self.validate_signup_fields()
+			product = frappe.get_doc("Product Trial", self.product_trial)
+			self.status = "Wait for Site"
+			self.site_creation_started_on = now_datetime()
+			self.domain = f"{subdomain}.{product.domain}"
+			site, agent_job_name, is_standby_site = product.setup_trial_site(
+				subdomain=subdomain, team=self.team, cluster=cluster, account_request=self.account_request
+			)
+			self.agent_job = agent_job_name
+			self.site = site.name
+			self.save()
 
-		if is_standby_site and product.setup_wizard_completion_mode == "auto":
-			self.complete_setup_wizard()
+			if is_standby_site and product.setup_wizard_completion_mode == "auto":
+				self.complete_setup_wizard()
 
-		user_mail = frappe.db.get_value("Team", self.team, "user")
-		frappe.get_doc(
-			{
-				"doctype": "Site User",
-				"site": site.name,
-				"user": user_mail,
-				"enabled": 1,
-			}
-		).insert()
+			user_mail = frappe.db.get_value("Team", self.team, "user")
+			frappe.get_doc(
+				{
+					"doctype": "Site User",
+					"site": site.name,
+					"user": user_mail,
+					"enabled": 1,
+				}
+			).insert(ignore_permissions=True)
+		except frappe.exceptions.ValidationError:
+			raise
+		except Exception as e:
+			log_error(
+				title="Product Trial Request Site Creation Error",
+				data=e,
+				reference_doctype=self.doctype,
+				reference_name=self.name,
+			)
+			self.status = "Error"
+			self.save()
 
 	@dashboard_whitelist()
 	def get_progress(self, current_progress=None):  # noqa: C901
@@ -261,7 +282,9 @@ class ProductTrialRequest(Document):
 		if status == "Success":
 			if self.status == "Site Created":
 				return {"progress": 100}
-			return {"progress": 90, "current_step": self.status}
+			if self.status == "Adding Domain":
+				return {"progress": 90, "current_step": self.status}
+			return {"progress": 80, "current_step": self.status}
 
 		if status == "Running":
 			mode = frappe.get_value("Product Trial", self.product_trial, "setup_wizard_completion_mode")
@@ -329,3 +352,13 @@ def get_app_trial_page_url():
 	except Exception:
 		frappe.log_error(title="App Trial Page URL Error")
 		return None
+
+
+def expire_long_pending_trial_requests():
+	frappe.db.set_value(
+		"Product Trial Request",
+		{"status": "Pending", "creation": ("<", add_to_date(now_datetime(), hours=-6))},
+		"status",
+		"Expired",
+		update_modified=False,
+	)

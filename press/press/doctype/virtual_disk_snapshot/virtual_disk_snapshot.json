@@ -13,7 +13,6 @@
   "cluster",
   "region",
   "volume_id",
-  "created_for_site_update",
   "section_break_41e4",
   "size",
   "start_time",
@@ -21,7 +20,11 @@
   "progress",
   "duration",
   "section_break_12",
-  "mariadb_root_password"
+  "mariadb_root_password",
+  "snapshot_purpose_section",
+  "physical_backup",
+  "column_break_xgrp",
+  "rolling_snapshot"
  ],
  "fields": [
   {
@@ -119,7 +122,8 @@
    "fieldname": "volume_id",
    "fieldtype": "Data",
    "label": "Volume ID",
-   "read_only": 1
+   "read_only": 1,
+   "search_index": 1
   },
   {
    "fieldname": "duration",
@@ -129,9 +133,24 @@
   },
   {
    "default": "0",
-   "fieldname": "created_for_site_update",
+   "fieldname": "physical_backup",
    "fieldtype": "Check",
-   "label": "Created For Site Update"
+   "label": "Physical Backup"
+  },
+  {
+   "fieldname": "snapshot_purpose_section",
+   "fieldtype": "Section Break",
+   "label": "Snapshot Purpose"
+  },
+  {
+   "fieldname": "column_break_xgrp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "rolling_snapshot",
+   "fieldtype": "Check",
+   "label": "Rolling Snapshot"
   }
  ],
  "index_web_pages_for_search": 1,
@@ -141,7 +160,7 @@
    "link_fieldname": "database_snapshot"
   }
  ],
- "modified": "2025-01-28 15:28:24.912058",
+ "modified": "2025-03-27 01:35:12.859467",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Virtual Disk Snapshot",

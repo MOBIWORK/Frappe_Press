@@ -10,6 +10,7 @@ from datetime import date
 from typing import TYPE_CHECKING
 
 import frappe
+import frappe.utils
 import requests
 from frappe.utils.password import get_decrypted_password
 from requests.exceptions import HTTPError
@@ -490,10 +491,6 @@ class Agent:
 		)
 
 	def physical_restore_database(self, site, backup_restoration: PhysicalBackupRestoration):
-		backup: SiteBackup = frappe.get_doc("Site Backup", backup_restoration.site_backup)
-		files_metadata = {}
-		for item in backup.files_metadata:
-			files_metadata[item.file] = {"size": item.size, "checksum": item.checksum}
 		data = {
 			"backup_db": backup_restoration.source_database,
 			"target_db": backup_restoration.destination_database,
@@ -501,10 +498,6 @@ class Agent:
 			"private_ip": frappe.get_value(
 				"Database Server", frappe.db.get_value("Server", site.server, "database_server"), "private_ip"
 			),
-			"files_metadata": files_metadata,
-			"innodb_tables": json.loads(backup.innodb_tables),
-			"myisam_tables": json.loads(backup.myisam_tables),
-			"table_schema": backup.table_schema,
 			"backup_db_base_directory": os.path.join(backup_restoration.mount_point, "var/lib/mysql"),
 			"restore_specific_tables": backup_restoration.restore_specific_tables,
 			"tables_to_restore": json.loads(backup_restoration.tables_to_restore),
@@ -632,6 +625,18 @@ class Agent:
 			data,
 			site=site,
 			code_server=code_server,
+			upstream=server,
+		)
+
+	def add_domain_to_upstream(self, server, site=None, domain=None):
+		_server = frappe.get_doc("Server", server)
+		ip = _server.ip if _server.is_self_hosted else _server.private_ip
+		data = {"domain": domain}
+		return self.create_agent_job(
+			"Add Domain to Upstream",
+			f"proxy/upstreams/{ip}/domains",
+			data,
+			site=site,
 			upstream=server,
 		)
 
@@ -1317,6 +1322,19 @@ Response: {reason or getattr(result, "text", "Unknown")}
 			f"benches/{site.bench}/sites/{site.name}/database/kill-process/{id}",
 			data={
 				"mariadb_root_password": get_mariadb_root_password(site),
+			},
+		)
+
+	def fetch_database_variables(self):
+		if self.server_type != "Database Server":
+			return NotImplementedError("Only Database Server supports this method")
+		return self.post(
+			"database/variables",
+			data={
+				"private_ip": frappe.get_value("Database Server", self.server, "private_ip"),
+				"mariadb_root_password": get_decrypted_password(
+					"Database Server", self.server, "mariadb_root_password"
+				),
 			},
 		)
 

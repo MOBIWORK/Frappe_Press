@@ -194,7 +194,7 @@ let router = createRouter({
 			],
 		},
 		{
-			name: 'Partner Portal',
+			name: 'Partnership',
 			path: '/partners',
 			redirect: { name: 'PartnerOverview' },
 			component: () => import('./pages/Partners.vue'),
@@ -210,6 +210,12 @@ let router = createRouter({
 					component: () => import('./components/partners/PartnerCustomers.vue'),
 				},
 				{
+					name: 'PartnerCertificates',
+					path: 'certificates',
+					component: () =>
+						import('./components/partners/PartnerCertificates.vue'),
+				},
+				{
 					name: 'PartnerApprovalRequests',
 					path: 'approval-requests',
 					component: () =>
@@ -220,6 +226,24 @@ let router = createRouter({
 					path: 'local-payment-setup',
 					component: () =>
 						import('./components/partners/PartnerLocalPaymentSetup.vue'),
+				},
+			],
+		},
+		{
+			name: 'Partner Admin',
+			path: '/partner-admin',
+			redirect: { name: 'PartnerList' },
+			component: () => import('./pages/PartnerAdmin.vue'),
+			children: [
+				{
+					name: 'PartnerList',
+					path: 'partner-list',
+					component: () => import('./pages/PartnerList.vue'),
+				},
+				{
+					name: 'CertificateList',
+					path: 'certificate-list',
+					component: () => import('./pages/PartnerAdminCertificates.vue'),
 				},
 			],
 		},
@@ -307,19 +331,6 @@ router.beforeEach(async (to, from, next) => {
 		!document.cookie.includes('user_id=Guest');
 	let goingToLoginPage = to.matched.some((record) => record.meta.isLoginPage);
 
-	// if user is trying to access saas login page, allow irrespective of login status
-	if (
-		[
-			'SaaSLogin',
-			'SaaSSignup',
-			'SaaSSignupVerifyEmail',
-			'SaaSSignupOAuthSetupAccount',
-		].includes(to.name)
-	) {
-		next();
-		return;
-	}
-
 	if (isLoggedIn) {
 		await waitUntilTeamLoaded();
 		let $team = getTeam();
@@ -365,6 +376,12 @@ router.beforeEach(async (to, from, next) => {
 		}
 
 		if (goingToLoginPage) {
+			if (to.name == 'Signup' && to.query?.product) {
+				next({
+					name: 'SignupSetup',
+					params: { productId: to.query.product },
+				});
+			}
 			next({ name: defaultRoute });
 		} else {
 			next();
@@ -375,13 +392,8 @@ router.beforeEach(async (to, from, next) => {
 		} else {
 			if (to.name == 'Site Login') {
 				next();
-			} else if (to.name == 'SignupSetup') {
-				next({
-					name: 'SaaSSignup',
-					params: to.params,
-				});
 			} else {
-				next({ name: 'Login' });
+				next({ name: 'Login', query: { redirect: to.href } });
 			}
 		}
 	}

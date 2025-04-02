@@ -11,18 +11,18 @@ EXTRA_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 IGNORE_TEST_RECORD_DEPENDENCIES = []  # eg. ["User"]
 
 
-class UnitTestPhysicalBackupFileMetadata(UnitTestCase):
+class UnitTestPartnerCertificate(UnitTestCase):
 	"""
-	Unit tests for PhysicalBackupFileMetadata.
+	Unit tests for PartnerCertificate.
 	Use this class for testing individual functions and methods.
 	"""
 
 	pass
 
 
-class IntegrationTestPhysicalBackupFileMetadata(IntegrationTestCase):
+class IntegrationTestPartnerCertificate(IntegrationTestCase):
 	"""
-	Integration tests for PhysicalBackupFileMetadata.
+	Integration tests for PartnerCertificate.
 	Use this class for testing interactions between multiple components.
 	"""
 

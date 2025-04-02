@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import contextlib
 import json
-import re
 from collections import defaultdict
 from contextlib import suppress
 from functools import cached_property, wraps
@@ -19,7 +18,7 @@ import pytz
 import requests
 from frappe import _
 from frappe.core.utils import find
-from frappe.frappeclient import FrappeClient
+from frappe.frappeclient import FrappeClient, FrappeException
 from frappe.model.document import Document
 from frappe.model.naming import append_number_if_name_exists
 from frappe.utils import (
@@ -84,6 +83,7 @@ from press.utils import (
 	human_readable,
 	log_error,
 	unique,
+	validate_subdomain,
 )
 from press.utils.dns import _change_dns_record, create_dns_record
 
@@ -159,6 +159,7 @@ class Site(Document, TagHelpers):
 		setup_wizard_complete: DF.Check
 		setup_wizard_status_check_next_retry_on: DF.Datetime | None
 		setup_wizard_status_check_retries: DF.Int
+		signup_time: DF.Datetime | None
 		skip_auto_updates: DF.Check
 		skip_failing_patches: DF.Check
 		skip_scheduled_backups: DF.Check
@@ -166,7 +167,15 @@ class Site(Document, TagHelpers):
 		standby_for: DF.Link | None
 		standby_for_product: DF.Link | None
 		status: DF.Literal[
-			"Pending", "Installing", "Updating", "Active", "Inactive", "Broken", "Archived", "Suspended"
+			"Pending",
+			"Installing",
+			"Updating",
+			"Recovering",
+			"Active",
+			"Inactive",
+			"Broken",
+			"Archived",
+			"Suspended",
 		]
 		status_before_update: DF.Data | None
 		subdomain: DF.Data
@@ -205,6 +214,8 @@ class Site(Document, TagHelpers):
 		"skip_auto_updates",
 		"additional_system_user_created",
 		"label",
+		"signup_time",
+		"account_request",
 	)
 
 	@staticmethod
@@ -278,12 +289,15 @@ class Site(Document, TagHelpers):
 		doc.inbound_ip = self.inbound_ip
 		doc.is_dedicated_server = is_dedicated_server(self.server)
 
+		if doc.owner == "Administrator":
+			doc.signup_by = frappe.db.get_value("Account Request", doc.account_request, "email")
+
 		if broken_domain_tls_certificate := frappe.db.get_value(
 			"Site Domain", {"site": self.name, "status": "Broken"}, "tls_certificate"
 		):
-			doc.broken_domain_error = frappe.db.get_value(
-				"TLS Certificate", broken_domain_tls_certificate, "error"
-			)
+			doc.broken_domain_error, doc.tls_cert_retry_count = frappe.db.get_values(
+				"TLS Certificate", broken_domain_tls_certificate, ("error", "retry_count")
+			)[0]
 
 		return doc
 
@@ -338,16 +352,7 @@ class Site(Document, TagHelpers):
 			self.setup_wizard_status_check_next_retry_on = now_datetime()
 
 	def validate_site_name(self):
-		site_regex = r"^[a-z0-9][a-z0-9-]*[a-z0-9]$"
-		if not re.match(site_regex, self.subdomain):
-			frappe.throw(
-				"Subdomain contains invalid characters. Use lowercase characters, numbers and hyphens"
-			)
-		if len(self.subdomain) > 32:
-			frappe.throw("Subdomain too long. Use 32 or less characters")
-
-		if len(self.subdomain) < 5:
-			frappe.throw("Subdomain too short. Use 5 or more characters")
+		validate_subdomain(self.subdomain)
 
 	def set_site_admin_password(self):
 		# set site.admin_password if doesn't exist
@@ -702,7 +707,12 @@ class Site(Document, TagHelpers):
 
 	@dashboard_whitelist()
 	@site_action(["Active"])
-	def uninstall_app(self, app: str) -> str:
+	def uninstall_app(self, app: str, feedback: str = "") -> str:
+		from press.marketplace.doctype.marketplace_app_feedback.marketplace_app_feedback import (
+			collect_app_uninstall_feedback,
+		)
+
+		collect_app_uninstall_feedback(app, feedback, self.name)
 		agent = Agent(self.server)
 		job = agent.uninstall_app_site(self, app)
 
@@ -1015,7 +1025,7 @@ class Site(Document, TagHelpers):
 			frappe.throw(f"Site Update is scheduled for {self.name} at {time}")
 
 	def ready_for_move(self):
-		if self.status in ["Updating", "Pending", "Installing"]:
+		if self.status in ["Updating", "Recovering", "Pending", "Installing"]:
 			frappe.throw(f"Site is in {self.status} state. Cannot Update", SiteUnderMaintenance)
 		elif self.status == "Archived":
 			frappe.throw("Site is archived. Cannot Update", SiteAlreadyArchived)
@@ -1133,6 +1143,9 @@ class Site(Document, TagHelpers):
 		domain = domain.lower().strip(".")
 		response = check_dns(self.name, domain)
 		if response["matched"]:
+			if frappe.db.exists("Site Domain", {"domain": domain}):
+				frappe.throw(f"The domain {frappe.bold(domain)} is already used by a site")
+
 			log_site_activity(self.name, "Add Domain")
 			frappe.get_doc(
 				{
@@ -1145,9 +1158,29 @@ class Site(Document, TagHelpers):
 				}
 			).insert()
 
+	def add_domain_for_product_site(self, domain):
+		domain = domain.lower().strip(".")
+		log_site_activity(self.name, "Add Domain")
+		create_dns_record(doc=self, record_name=domain)
+		frappe.get_doc(
+			{
+				"doctype": "Site Domain",
+				"status": "Pending",
+				"site": self.name,
+				"domain": domain,
+				"dns_type": "CNAME",
+			}
+		).insert()
+
 	@frappe.whitelist()
 	def create_dns_record(self):
-		create_dns_record(doc=self, record_name=self._get_site_name(self.subdomain))
+		self._create_default_site_domain()
+		domains = frappe.db.get_list(
+			"Site Domain", filters={"site": self.name}, fields=["domain"], pluck="domain"
+		)
+		for domain in domains:
+			if bool(frappe.db.exists("Root Domain", domain.split(".", 1)[1], "name")):
+				create_dns_record(doc=self, record_name=domain)
 
 	@frappe.whitelist()
 	def update_dns_record(self, value):
@@ -1462,33 +1495,48 @@ class Site(Document, TagHelpers):
 		password = get_decrypted_password("Site", self.name, "admin_password")
 		return FrappeClient(f"https://{self.name}", "Administrator", password)
 
-	def get_login_sid(self, user="Administrator"):
+	def get_sid_from_agent(self, user: str) -> str | None:
+		try:
+			agent = Agent(self.server)
+			return agent.get_site_sid(self, user)
+		except requests.HTTPError as e:
+			if "validate_ip_address" in str(e):
+				frappe.throw(
+					f"Login with {user}'s credentials is IP restricted. Please remove the same and try again.",
+					frappe.ValidationError,
+				)
+			elif f"User {user} does not exist" in str(e):
+				frappe.throw(f"User {user} does not exist in the site", frappe.ValidationError)
+			elif frappe.db.exists(
+				"Incident",
+				{
+					"server": self.server,
+					"status": ("not in", ["Resolved", "Auto-Resolved", "Press-Resolved"]),
+				},
+			):
+				frappe.throw(
+					"Server appears to be unresponsive. Please try again in some time.",
+					frappe.ValidationError,
+				)
+			else:
+				raise e
+		except AgentRequestSkippedException:
+			frappe.throw(
+				"Server is unresponsive. Please try again in some time.",
+				frappe.ValidationError,
+			)
+
+	def get_login_sid(self, user: str = "Administrator"):
 		sid = None
 		if user == "Administrator":
 			password = get_decrypted_password("Site", self.name, "admin_password")
 			response = requests.post(
 				f"https://{self.name}/api/method/login",
-				data={"usr": "Administrator", "pwd": password},
+				data={"usr": user, "pwd": password},
 			)
 			sid = response.cookies.get("sid")
-		if not sid:
-			try:
-				agent = Agent(self.server)
-				sid = agent.get_site_sid(self, user)
-			except requests.HTTPError as e:
-				if "validate_ip_address" in str(e):
-					frappe.throw(
-						f"Login with {user}'s credentials is IP restricted. Please remove the same and try again.",
-						frappe.ValidationError,
-					)
-				elif f"User {user} does not exist" in str(e):
-					frappe.throw(f"User {user} does not exist in the site", frappe.ValidationError)
-				raise e
-			except AgentRequestSkippedException:
-				frappe.throw(
-					"Server is unresponsive. Please try again in some time.",
-					frappe.ValidationError,
-				)
+		if not sid or sid == "Guest":
+			sid = self.get_sid_from_agent(user)
 		if not sid or sid == "Guest":
 			frappe.throw(f"Could not login as {user}", frappe.ValidationError)
 		return sid
@@ -1640,9 +1688,10 @@ class Site(Document, TagHelpers):
 
 	def create_sync_user_webhook(self):
 		"""
-		Create 2 webhook records in the site to sync the user with press
+		Create 3 webhook records in the site to sync the user with press
 		- One for user record creation
 		- One for user record update
+		- One for user record deletion
 		"""
 		conn = self.get_connection_as_admin()
 		doctype_data = {
@@ -1660,29 +1709,28 @@ class Site(Document, TagHelpers):
 			],
 		}
 
-		conn.insert(
+		webhook_data = [
 			{
-				**doctype_data,
 				"name": "Sync User records with Frappe Cloud on create",
 				"webhook_docevent": "after_insert",
-			}
-		)
-		conn.insert(
+			},
 			{
-				**doctype_data,
 				"name": "Sync User records with Frappe Cloud on update",
 				"webhook_docevent": "on_update",
 				"condition": """doc.has_value_changed("enabled")""",
-			}
-		)
-
-		conn.insert(
+			},
 			{
-				**doctype_data,
 				"name": "Sync User records with Frappe Cloud on delete",
 				"webhook_docevent": "on_trash",
-			}
-		)
+			},
+		]
+
+		for webhook in webhook_data:
+			try:
+				conn.insert({**doctype_data, **webhook})
+			except FrappeException as ex:
+				if "frappe.exceptions.DuplicateEntryError" not in str(ex):
+					raise ex
 
 	def sync_users_to_product_site(self, analytics=None):
 		from press.press.doctype.site_user.site_user import create_user_for_product_site
@@ -1994,15 +2042,6 @@ class Site(Document, TagHelpers):
 		self.can_change_plan(ignore_card_setup)
 		plan_config = self.get_plan_config(plan)
 
-		if (
-			frappe.db.exists(
-				"Subscription",
-				{"enabled": 1, "site": self.name, "document_type": "Marketplace App"},
-			)
-			and self.trial_end_date
-		):
-			plan_config["app_include_js"] = []
-
 		self._update_configuration(plan_config)
 		ret = frappe.get_doc(
 			{
@@ -2112,6 +2151,11 @@ class Site(Document, TagHelpers):
 		self.update_site_status_on_proxy("suspended", skip_reload=skip_reload)
 		self.deactivate_app_subscriptions()
 
+		if self.standby_for_product:
+			from press.saas.doctype.product_trial.product_trial import send_suspend_mail
+
+			send_suspend_mail(self.name, self.standby_for_product)
+
 	def deactivate_app_subscriptions(self):
 		frappe.db.set_value(
 			"Marketplace App Subscription",
@@ -2128,11 +2172,11 @@ class Site(Document, TagHelpers):
 
 	@frappe.whitelist()
 	@site_action(["Suspended"])
-	def unsuspend(self, reason=None):
+	def unsuspend(self, reason=None, skip_reload=False):
 		log_site_activity(self.name, "Unsuspend Site", reason)
 		self.status = "Active"
 		self.update_site_config({"maintenance_mode": 0})
-		self.update_site_status_on_proxy("activated")
+		self.update_site_status_on_proxy("activated", skip_reload=skip_reload)
 		self.reactivate_app_subscriptions()
 
 	@frappe.whitelist()
@@ -2452,6 +2496,10 @@ class Site(Document, TagHelpers):
 			for key, value in query.items():
 				if isinstance(value, float):
 					query[key] = int(value)
+
+		# Sort by duration
+		slow_queries.sort(key=lambda x: x["duration"], reverse=True)
+
 		is_performance_schema_enabled = False
 		if database_server := frappe.db.get_value("Server", self.server, "database_server"):
 			is_performance_schema_enabled = frappe.db.get_value(
@@ -2663,6 +2711,10 @@ class Site(Document, TagHelpers):
 					"domain": domain,
 					"status": ("!=", "Archived"),
 				},
+			)
+			or frappe.db.exists(
+				"Site Domain",
+				f"{subdomain}.{domain}",
 			)
 		)
 
@@ -3008,6 +3060,12 @@ class Site(Document, TagHelpers):
 			"job_name": job.name,
 		}
 
+	@dashboard_whitelist()
+	@site_action(["Active"])
+	def fetch_certificate(self, domain: str):
+		tls_certificate = frappe.get_last_doc("TLS Certificate", {"domain": domain})
+		tls_certificate.obtain_certificate()
+
 
 def site_cleanup_after_archive(site):
 	delete_site_domains(site)
@@ -3191,9 +3249,42 @@ def process_complete_setup_wizard_job_update(job):
 	product_trial_request = frappe.get_doc("Product Trial Request", records[0].name, for_update=True)
 	if job.status == "Success":
 		frappe.db.set_value("Site", job.site, "additional_system_user_created", True)
-		product_trial_request.status = "Site Created"
-		product_trial_request.site_creation_completed_on = now_datetime()
+		if frappe.get_all("Site Domain", filters={"site": job.site, "status": ["!=", "Active"]}):
+			product_trial_request.status = "Adding Domain"
+		else:
+			product_trial_request.status = "Site Created"
+			product_trial_request.site_creation_completed_on = now_datetime()
 		product_trial_request.save(ignore_permissions=True)
+	elif job.status in ("Failure", "Delivery Failure"):
+		product_trial_request.status = "Error"
+		product_trial_request.save(ignore_permissions=True)
+
+
+def process_add_domain_job_update(job):
+	records = frappe.get_list("Product Trial Request", filters={"site": job.site}, fields=["name"])
+	if not records:
+		return
+
+	product_trial_request = frappe.get_doc("Product Trial Request", records[0].name, for_update=True)
+	if job.status == "Success":
+		if frappe.get_all(
+			"Agent Job",
+			filters={"site": job.site, "job_type": "Complete Setup Wizard", "status": ["!=", "Success"]},
+		):
+			product_trial_request.status = "Completing Setup Wizard"
+		else:
+			product_trial_request.status = "Site Created"
+			product_trial_request.site_creation_completed_on = now_datetime()
+
+		product_trial_request.save(ignore_permissions=True)
+
+		site_domain = json.loads(job.request_data).get("domain")
+		site = frappe.get_doc("Site", job.site)
+		auto_generated_domain = site.host_name
+		site.host_name = site_domain
+		site.save()
+		site.set_redirect(auto_generated_domain)
+
 	elif job.status in ("Failure", "Delivery Failure"):
 		product_trial_request.status = "Error"
 		product_trial_request.save(ignore_permissions=True)
@@ -3306,9 +3397,8 @@ def process_uninstall_app_site_job_update(job):
 
 def process_marketplace_hooks_for_backup_restore(apps_from_backup: set[str], site: Site):
 	site_apps = set([app.app for app in site.apps])
-	apps_to_install = apps_from_backup - site_apps
 	apps_to_uninstall = site_apps - apps_from_backup
-	for app in apps_to_install:
+	for app in apps_from_backup:
 		if (
 			frappe.get_cached_value("Marketplace App", app, "subscription_type") == "Free"
 		):  # like india_compliance; no need to check subscription
@@ -3426,9 +3516,6 @@ def process_rename_site_job_update(job):  # noqa: C901
 		# update job obj with new name
 		job.reload()
 		updated_status = "Active"
-		from press.press.doctype.site.pool import create as create_pooled_sites
-
-		create_pooled_sites()
 
 	elif "Failure" in (first, second):
 		updated_status = "Broken"

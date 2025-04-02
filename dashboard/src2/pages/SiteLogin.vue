@@ -3,8 +3,56 @@
 		<LoginBox title="Log in to your site on Frappe Cloud" :subtitle="subtitle">
 			<template v-slot:default>
 				<div>
+					<div v-if="sitePrePicked">
+						<div v-if="loginError">
+							<div class="flex items-center justify-center space-x-2 text-base">
+								<FeatherIcon name="alert-triangle" class="mr-2 h-4 w-4" />
+								<p>
+									Something went wrong while attempting to log in to your site
+								</p>
+							</div>
+							<div class="mx-4 mt-4 space-x-4">
+								<Button
+									label="Try again"
+									icon-left="refresh-cw"
+									:loading="login.loading"
+									@click="loginToSite(pickedSite)"
+								/>
+								<Button
+									label="View your sites"
+									icon-left="list"
+									:route="{
+										name: 'Site Login',
+									}"
+								/>
+							</div>
+						</div>
+						<div
+							v-else-if="isPickedSiteValid"
+							class="mt-8 flex flex-col items-center justify-center space-x-2 text-base"
+						>
+							<div class="flex items-center justify-center space-x-2 text-base">
+								<FeatherIcon name="alert-circle" class="mr-2 h-4 w-4" />
+								<div>
+									<p>You are about to log in to your site</p>
+									<span class="font-semibold">{{ pickedSiteDomain }}</span>
+								</div>
+							</div>
+							<div class="mx-4 mt-8 space-x-4">
+								<Button
+									label="Log in"
+									icon-left="log-in"
+									variant="solid"
+									:loading="login.loading"
+									@click="loginToSite(pickedSite)"
+								/>
+							</div>
+						</div>
+					</div>
 					<div
-						v-if="$session.loading || isCookieValid.loading || sites.loading"
+						v-else-if="
+							$session.loading || isCookieValid.loading || sites.loading
+						"
 						class="mx-auto flex items-center justify-center space-x-2 text-base"
 					>
 						<LoadingText />
@@ -12,6 +60,7 @@
 					<form v-else-if="!sites.fetched">
 						<FormControl
 							label="Email"
+							:disabled="showOTPField"
 							class="w-full"
 							v-model="email"
 							placeholder="johndoe@mail.com"
@@ -20,6 +69,7 @@
 							v-if="showOTPField"
 							label="Verification Code"
 							v-model="otp"
+							placeholder="123456"
 							class="mt-2"
 						/>
 						<div v-if="showOTPField">
@@ -36,12 +86,19 @@
 								@click="verifyOTP"
 							/>
 							<Button
-								label="Resend Verification Code"
 								variant="outline"
 								class="mt-2 w-full"
+								:disabled="otpResendCountdown > 0"
 								@click="sendOTP()"
 								:loading="sendOTPMethod.loading"
-							/>
+							>
+								Resend verification code
+								{{
+									otpResendCountdown > 0
+										? `in ${otpResendCountdown} seconds`
+										: ''
+								}}
+							</Button>
 						</div>
 						<Button
 							v-else
@@ -57,6 +114,32 @@
 							@click="sendOTP"
 						/>
 					</form>
+					<div v-else-if="pickedSite">
+						<div
+							class="mt-8 flex items-center justify-center space-x-2 text-base"
+						>
+							<FeatherIcon name="alert-triangle" class="mr-2 h-4 w-4" />
+							<div class="flex flex-col gap-2">
+								<p>
+									{{ email || session.user }} is not a user of the site
+									<span class="font-semibold">{{ pickedSite }}</span>
+								</p>
+							</div>
+						</div>
+						<div class="mt-8 flex w-full justify-center space-x-4">
+							<Button
+								label="View your sites"
+								icon-left="list"
+								@click="
+									() => {
+										$router.push({
+											name: 'Site Login',
+										});
+									}
+								"
+							/>
+						</div>
+					</div>
 					<div v-else class="mt-10">
 						<div v-if="sites.data.length === 0">
 							<div class="text-center text-base leading-6 text-gray-700">
@@ -77,10 +160,7 @@
 								>
 									<div class="space-y-2">
 										<div class="text-base text-gray-800">
-											{{ site.label || site.name }}
-										</div>
-										<div v-if="site.label" class="text-sm text-gray-600">
-											{{ site.name }}
+											{{ site.host_name || site.name }}
 										</div>
 									</div>
 									<FeatherIcon name="external-link" class="h-4 w-4" />
@@ -102,7 +182,14 @@
 					class="flex w-full flex-col items-center justify-center space-y-2 pb-8"
 				>
 					<Button
-						v-if="$session.user && !sites.fetched"
+						v-if="sites.fetched"
+						class="mt-4"
+						@click="goBack"
+						icon-right="log-out"
+						variant="ghost"
+						label="Log out"
+					/>
+					<Button
 						class="mt-4"
 						@click="
 							$router.push({
@@ -113,14 +200,6 @@
 						variant="ghost"
 						label="Go to Frappe Cloud dashboard"
 					/>
-					<Button
-						v-if="sites.fetched"
-						class="mt-4"
-						@click="goBack"
-						icon-right="arrow-left"
-						variant="ghost"
-						label="Login from another account"
-					/>
 				</div>
 			</template>
 		</LoginBox>
@@ -130,26 +209,31 @@
 <script setup>
 import { computed, inject, ref } from 'vue';
 import { toast } from 'vue-sonner';
-import { get, set } from 'idb-keyval';
 import { createResource } from 'frappe-ui';
 import LoginBox from '../components/auth/LoginBox.vue';
 import { getToastErrorMessage } from '../utils/toast';
 import { trialDays } from '../utils/site';
 import { userCurrency } from '../utils/format';
+import { useRoute } from 'vue-router';
 
 const team = inject('team');
 const session = inject('session');
 
-const email = ref('');
+const route = useRoute();
+const pickedSite = computed(() => route.query.site);
+const isPickedSiteValid = ref(false);
+
+const email = ref(localStorage.getItem('product_site_user') || '');
 const otp = ref('');
 const showOTPField = ref(false);
-const selectedSite = ref(null);
+const loginError = ref(false);
+const otpResendCountdown = ref(0);
 
-get('product_site_user').then((e) => {
-	if (e) {
-		email.value = e;
+setInterval(() => {
+	if (otpResendCountdown.value > 0) {
+		otpResendCountdown.value -= 1;
 	}
-});
+}, 1000);
 
 const goBack = () => {
 	sites.reset();
@@ -158,7 +242,7 @@ const goBack = () => {
 
 const isCookieValid = createResource({
 	url: 'press.api.site_login.check_session_id',
-	auto: true,
+	auto: !session.user,
 	onSuccess: (session_user_email) => {
 		if (session_user_email) {
 			email.value = session_user_email;
@@ -176,12 +260,23 @@ const sites = createResource({
 	params: {
 		user: email.value || session.user,
 	},
+	onSuccess: (data) => {
+		if (pickedSite.value) {
+			if (
+				data.find((site) => site.name === pickedSite.value) ||
+				data.find((site) => site.host_name === pickedSite.value)
+			) {
+				isPickedSiteValid.value = true;
+			}
+		}
+	},
 });
 
 const login = createResource({
 	url: 'press.api.site_login.login_to_site',
 	onSuccess: (url) => {
-		window.open(url, '_blank');
+		const newTab = pickedSite.value ? '_self' : '_blank';
+		window.open(url, newTab);
 	},
 });
 
@@ -191,24 +286,35 @@ function loginToSite(siteName) {
 		return;
 	}
 
-	toast.promise(
+	// avoid toast if user is coming from their site to login
+	if (pickedSite.value)
 		login.submit({
-			email: email.value,
+			email: email.value || session.user,
 			site: siteName,
-		}),
-		{
-			loading: 'Logging in ...',
-			success: 'Logged in',
-			error: (e) => getToastErrorMessage(e),
-		},
-	);
+		});
+	else
+		toast.promise(
+			login.submit({
+				email: email.value || session.user,
+				site: siteName,
+			}),
+			{
+				loading: 'Logging in ...',
+				success: 'Logged in',
+				error: (e) => {
+					loginError.value = true;
+					getToastErrorMessage(e);
+				},
+			},
+		);
 }
 
 const sendOTPMethod = createResource({
 	url: 'press.api.site_login.send_otp',
 	onSuccess: () => {
 		showOTPField.value = true;
-		if (email.value) set('product_site_user', email.value);
+		otpResendCountdown.value = 30;
+		if (email.value) localStorage.setItem('site_login_email', email.value);
 	},
 });
 
@@ -233,12 +339,11 @@ function sendOTP() {
 const verifyOTPMethod = createResource({
 	url: 'press.api.site_login.verify_otp',
 	onSuccess: () => {
-		// showOTPField.value = false;
 		sites.submit({
 			user: email.value,
 		});
-		// loginToSite(selectedSite.value.name);
 		otp.value = '';
+		sendOTPMethod.error = '';
 	},
 });
 
@@ -274,11 +379,31 @@ function planTitle(site) {
 	return site.plan_title;
 }
 
-const subtitle = ref(
-	sites.fetched && sites.data.length !== 0
-		? `Pick a site to log in to as ${email || session.user}`
-		: !sites.fetched
-			? 'Enter your email and verification code to access your site'
-			: '',
-);
+const subtitle = computed(() => {
+	if (pickedSite.value && sites.fetched && sites.data.length !== 0) return '';
+	else if (sites.fetched && sites.data.length !== 0)
+		return `Pick a site to log in to as ${email.value || session.user}`;
+	else if (
+		!sites.fetched &&
+		!(sites.loading || isCookieValid.loading || session.loading)
+	)
+		return 'Enter your email to access your site';
+	else return '';
+});
+
+const sitePrePicked = computed(() => {
+	if (pickedSite.value && sites.fetched && sites.data.length !== 0) {
+		return sites.data.find(
+			(site) =>
+				site.name === pickedSite.value || site.host_name === pickedSite.value,
+		);
+	}
+	return false;
+});
+
+const pickedSiteDomain = computed(() => {
+	if (sitePrePicked.value)
+		return sitePrePicked.value.host_name || sitePrePicked.value.name;
+	return '';
+});
 </script>

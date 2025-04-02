@@ -974,7 +974,7 @@ class ReleaseGroup(Document, TagHelpers):
 
 			next_hash = app.hash
 
-			update_available = not current_hash or current_hash != next_hash
+			update_available = not current_hash or current_hash != next_hash or will_branch_change
 			if not app.releases:
 				update_available = False
 
@@ -982,7 +982,7 @@ class ReleaseGroup(Document, TagHelpers):
 				frappe._dict(
 					{
 						"title": app.title,
-						"app": app.app,  # remove this line once dashboard1 is removed
+						"app": app.app,
 						"name": app.app,
 						"source": source.name,
 						"repository": source.repository,
@@ -1397,7 +1397,7 @@ def new_release_group(title, version, apps, team=None, cluster=None, saas_app=""
 				},
 				distinct=True,
 			)
-			server = frappe.get_all(
+			servers = frappe.get_all(
 				"Server",
 				{
 					"status": "Active",
@@ -1407,7 +1407,13 @@ def new_release_group(title, version, apps, team=None, cluster=None, saas_app=""
 				},
 				pluck="name",
 				limit=1,
-			)[0]
+			)
+
+			if not servers:
+				frappe.throw("No servers found for new benches!")
+			else:
+				server = servers[0]
+
 		servers = [{"server": server}]
 	elif server:
 		servers = [{"server": server}]
