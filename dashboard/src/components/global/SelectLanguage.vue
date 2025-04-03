@@ -18,7 +18,7 @@
 
 <script setup>
 import Autocomplete from '../frappe-ui/Autocomplete.vue';
-import { watch, ref, onMounted } from 'vue';
+import { watch, ref, onMounted, computed } from 'vue';
 import { translate, setLocaleI18n } from '@/utils/index';
 import {
 	defaultLanguage,
@@ -31,7 +31,7 @@ const router = useRouter();
 const route = useRoute();
 
 const langSelected = ref();
-const optionsLanguage = [
+const optionsLanguage = computed(() => [
 	{
 		label: translate('Vietnamese'),
 		value: 'vi',
@@ -42,11 +42,20 @@ const optionsLanguage = [
 		value: 'en',
 		image: '/assets/press/images/icon_flag_en.svg'
 	}
-];
+]);
+
+const getCookie = name => {
+	const cookies = document.cookie.split('; ');
+	const cookie = cookies.find(row => row.startsWith(name + '='));
+	return cookie ? cookie.split('=')[1] : null;
+};
+
+const isLoggedIn = computed(() => {
+	return getCookie('user_id') && getCookie('user_id') !== 'Guest';
+});
 
 onMounted(() => {
-	let currentTeam = localStorage.getItem('current_team');
-	if (currentTeam) {
+	if (isLoggedIn.value) {
 		fetchLanguage.fetch();
 	} else {
 		let lang = getLanguageParams();
@@ -60,7 +69,9 @@ watch(
 	defaultLanguage,
 	val => {
 		if (val) {
-			langSelected.value = optionsLanguage.find(item => item.value === val);
+			langSelected.value = optionsLanguage.value.find(
+				item => item.value === val
+			);
 		}
 	},
 	{
@@ -70,8 +81,7 @@ watch(
 
 watch(langSelected, val => {
 	setDefaultLanguage(val.value);
-	let currentTeam = localStorage.getItem('current_team');
-	if (currentTeam) {
+	if (isLoggedIn.value) {
 		changeLanguage.submit({ lang: val.value });
 	}
 });
