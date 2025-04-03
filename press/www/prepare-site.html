@@ -70,7 +70,8 @@
 	function get_site_url_and_sid() {
 		return frappe.call('press.api.saas.get_site_url_and_sid', {
 			key,
-			app
+			app,
+			lang: "{{lang}}"
 		})
 			.then(r => r.message);
 	}
