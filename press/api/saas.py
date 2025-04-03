@@ -509,13 +509,13 @@ def get_site_status(key, app=None, lang="vi"):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_site_url_and_sid(key, app=None):
+def get_site_url_and_sid(key, app=None,lang="vi"):
     """
     return: Site url and session id for login-redirect
     """
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw(_("Invalid or Expired Key", 'vi'))
+        frappe.throw(_("Invalid or Expired Key", lang))
 
     domain = get_saas_domain(app) if app else get_erpnext_domain()
 
