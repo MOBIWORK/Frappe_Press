@@ -484,13 +484,13 @@ def create_team(account_request, get_stripe_id=False):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_site_status(key, app=None):
+def get_site_status(key, app=None, lang="vi"):
     """
     return: Site status
     """
     account_request = get_account_request_from_key(key)
     if not account_request:
-        frappe.throw(_("Invalid or Expired Key", 'vi'))
+        frappe.throw(_("Invalid or Expired Key", lang))
 
     domain = get_saas_domain(app) if app else get_erpnext_domain()
 

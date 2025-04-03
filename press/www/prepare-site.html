@@ -61,7 +61,8 @@
 	function get_site_status() {
 		return frappe.call('press.api.saas.get_site_status', {
 			key,
-			app
+			app,
+			lang: "{{lang}}"
 		})
 			.then(r => r.message);
 	}
