@@ -30,6 +30,7 @@ def get_language():
 
 @frappe.whitelist()
 def change_language(lang):
+    lang = lang or 'vi'
     language = frappe.db.get_value('Language', lang, 'name')
     if language:
         update_language(lang)
