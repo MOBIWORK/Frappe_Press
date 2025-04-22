@@ -114,6 +114,8 @@ import SwitchLangDialog from './SwitchLangDialog.vue';
 import FCLogo from '@/components/icons/FCLogo.vue';
 import CommandPalette from '@/components/CommandPalette.vue';
 import { unreadNotificationsCount } from '@/data/notifications';
+import { showLanguage, setShowLanguage } from '@/composables/language';
+import { watch } from 'vue';
 
 export default {
 	name: 'Sidebar',
@@ -122,6 +124,12 @@ export default {
 		SwitchTeamDialog,
 		CommandPalette,
 		SwitchLangDialog
+	},
+	created() {
+		// Watch biến ref ngoài component
+		watch(showLanguage, val => {
+			this.showLangSwitcher = val;
+		});
 	},
 	watch: {
 		'$i18n.locale'() {
@@ -132,7 +140,7 @@ export default {
 		return {
 			showCommandPalette: false,
 			showTeamSwitcher: false,
-			showLangSwitcher: false,
+			showLangSwitcher: showLanguage.value,
 			dropdownItems: this.getValueMenu()
 		};
 	},
@@ -257,7 +265,9 @@ export default {
 				{
 					label: this.$t('language'),
 					icon: 'globe',
-					onClick: () => (this.showLangSwitcher = true)
+					onClick: () => {
+						setShowLanguage(true);
+					}
 				},
 				{
 					label: this.$t('logout'),

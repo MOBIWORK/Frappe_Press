@@ -40,6 +40,7 @@
 		<NotificationToasts />
 		<UserPrompts v-if="$auth.isLoggedIn" />
 		<ConfirmDialogs />
+		<PageLoading />
 	</div>
 </template>
 <script>
@@ -48,6 +49,7 @@ import Navbar from '@/components/Navbar.vue';
 import UserPrompts from '@/views/onboarding/UserPrompts.vue';
 import ConfirmDialogs from '@/components/ConfirmDialogs.vue';
 import NotificationToasts from '@/components/NotificationToasts.vue';
+import PageLoading from '@/components/global/PageLoading.vue';
 
 export default {
 	name: 'App',

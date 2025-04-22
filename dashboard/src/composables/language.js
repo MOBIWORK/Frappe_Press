@@ -2,6 +2,7 @@ import { ref } from 'vue';
 import { createResource } from 'frappe-ui';
 
 export const defaultLanguage = ref(localStorage.getItem('lang') || 'vi');
+export const showLoading = ref(false);
 
 export const fetchLanguage = createResource({
 	url: 'press.api.language.get_language',
@@ -13,12 +14,13 @@ export const fetchLanguage = createResource({
 
 export const changeLanguage = createResource({
 	url: 'press.api.language.change_language',
-	onSuccess(data) {
-		window.location.reload();
-	},
 	onError(err) {
-		console.log('Language not found');
+		console.log(err);
 	}
 });
 
 export const showLanguage = ref(false);
+
+export const setShowLanguage = (value) => {
+	showLanguage.value = value;
+}

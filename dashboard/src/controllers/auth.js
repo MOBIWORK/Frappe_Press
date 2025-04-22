@@ -33,8 +33,8 @@ export default class Auth {
 				team = last_used_team;
 			}
 			localStorage.setItem('current_team', team);
-			this.isLoggedIn = true;
-			changeLanguage.submit({ lang: localStorage.getItem('lang') });
+			// this.isLoggedIn = true;
+			await changeLanguage.submit({ lang: localStorage.getItem('lang') });
 			window.location.reload();
 			return res;
 		}

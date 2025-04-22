@@ -23,9 +23,13 @@ import { translate, setLocaleI18n } from '@/utils/index';
 import {
 	defaultLanguage,
 	fetchLanguage,
-	changeLanguage
+	changeLanguage,
+	showLoading,
+	showLanguage
 } from '@/composables/language';
 import { useRouter, useRoute } from 'vue-router';
+import { inject } from 'vue';
+const $auth = inject('$auth');
 
 const router = useRouter();
 const route = useRoute();
@@ -50,12 +54,8 @@ const getCookie = name => {
 	return cookie ? cookie.split('=')[1] : null;
 };
 
-const isLoggedIn = computed(() => {
-	return getCookie('user_id') && getCookie('user_id') !== 'Guest';
-});
-
 onMounted(() => {
-	if (isLoggedIn.value) {
+	if ($auth.isLoggedIn) {
 		fetchLanguage.fetch();
 	} else {
 		let lang = getLanguageParams();
@@ -79,10 +79,22 @@ watch(
 	}
 );
 
-watch(langSelected, val => {
+watch(langSelected, (val, oldVal) => {
+	if (val.value == oldVal.value) return;
+
 	setDefaultLanguage(val.value);
-	if (isLoggedIn.value) {
-		changeLanguage.submit({ lang: val.value });
+	if ($auth.isLoggedIn) {
+		showLoading.value = true;
+		showLanguage.value = false;
+		changeLanguage.submit(
+			{ lang: val.value },
+			{
+				onSuccess(data) {
+					showLoading.value = false;
+					window.location.reload();
+				}
+			}
+		);
 	}
 });
 
