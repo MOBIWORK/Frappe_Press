@@ -970,13 +970,13 @@ class Site(Document):
                 
             if api_key and api_secret:
                 if isinstance(config, list):
-                    config['api_key'] = api_key
-                    config['api_secret'] = api_secret
-                else:
                     config.extend([
                         {"key": "api_key", "value": api_key, "type": "String"},
                         {"key": "api_secret", "value": api_secret, "type": "String"},
                     ])
+                else:
+                    config['api_key'] = api_key
+                    config['api_secret'] = api_secret
     
     @frappe.whitelist()
     def update_site_config(self, config=None):
