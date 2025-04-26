@@ -50,7 +50,7 @@ class DripEmail(Document):
         account_request = context.get("account_request", "")
         title = frappe.db.get_value("Marketplace App", self.saas_app, "title")
 
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + self.subject
         
         # add to queue

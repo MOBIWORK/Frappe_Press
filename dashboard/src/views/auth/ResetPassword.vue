@@ -106,7 +106,7 @@
 				{{ $t('ResetPassword_content_3') }} <strong>{{ requestKey }}</strong>
 				{{ $t('ResetPassword_content_4') }}
 				<router-link class="underline" to="/login"
-					><span class="font-[600] text-blue-600 hover:text-blue-700">{{
+					><span class="font-[600] text-red-600 hover:text-red-700">{{
 						$t('login')
 					}}</span></router-link
 				>.

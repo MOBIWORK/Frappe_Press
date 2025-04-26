@@ -250,6 +250,7 @@ scheduler_events = {
             "press.press.doctype.site_replication.site_replication.update_from_site",
             "press.press.doctype.virtual_disk_snapshot.virtual_disk_snapshot.sync_snapshots",
             # "press.api.ai_s3_client.run_handle_schedule_delete_bucket",
+            # "press.api.app_site.schedule_job.auto_configure_app_site",
         ],
         "* * * * *": [
             "press.press.doctype.deploy_candidate.deploy_candidate.run_scheduled_builds",
@@ -261,6 +262,7 @@ scheduler_events = {
         "*/30 * * * *": [
             "press.press.doctype.site_update.scheduled_auto_updates.trigger",
             # "press.press.doctype.app.app.poll_new_releases",
+            "press.api.app_site.schedule_job.auto_configure_app_site",
         ],
         "15,45 * * * *": [
             "press.press.doctype.site.site_usages.update_cpu_usages",

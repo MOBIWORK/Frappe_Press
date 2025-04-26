@@ -27,7 +27,7 @@ class PressNotification(Document):
         lang = frappe.db.get_value('User', user, 'language')
         lang = lang if lang in ['vi', 'en'] else 'vi'
         
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + _('Bench Deploy Failed - {0}', lang).format(rg_title)
         
         # get language template

@@ -159,7 +159,7 @@ def update_from_site_update():
                 lang = get_language_from_team(site.team)
                 lang = lang if lang in ['vi', 'en'] else 'vi'
                 
-                pre_subject = "[EOVCloud] - "
+                pre_subject = "[MBWCloud] - "
                 subject = pre_subject + _('Automatic version upgrade failed for {0}', lang).format(version_upgrade.site)
                 
                 # get language template

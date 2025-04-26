@@ -505,11 +505,11 @@ const routes = [
 				component: () =>
 					import('../views/billing/AccountBillingCreditBalance.vue')
 			},
-			{
-				name: 'AI Service Transaction History',
-				path: 'ai-service-usage-history',
-				component: () => import('../views/billing/AIServiceHistory.vue')
-			}
+			// {
+			// 	name: 'AI Service Transaction History',
+			// 	path: 'ai-service-usage-history',
+			// 	component: () => import('../views/billing/AIServiceHistory.vue')
+			// }
 		]
 	},
 	{

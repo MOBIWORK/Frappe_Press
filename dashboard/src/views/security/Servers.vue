@@ -95,7 +95,7 @@ export default {
 	},
 	pageMeta() {
 		return {
-			title: 'Security - EOVCloud'
+			title: 'Security - MBWCloud'
 		};
 	},
 	data() {

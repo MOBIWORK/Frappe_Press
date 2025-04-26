@@ -185,8 +185,8 @@ def send_login_link(email):
         print(link)
         print()
     
-    pre_subject = "[EOVCloud] - "
-    subject = pre_subject + _("Log in to EOVCloud using your email {0}", lang).format(email)
+    pre_subject = "[MBWCloud] - "
+    subject = pre_subject + _("Log in to MBWCloud using your email {0}", lang).format(email)
     
     # get language template
     template = 'one_time_login_link'
@@ -653,7 +653,7 @@ def send_reset_password_email(email, lang='vi'):
         })
 
         url = get_url("/dashboard/reset-password/" + key)
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + _('Reset password', lang)
         
         # get language template

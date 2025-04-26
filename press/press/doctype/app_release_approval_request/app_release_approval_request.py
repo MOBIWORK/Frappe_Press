@@ -122,7 +122,7 @@ class AppReleaseApprovalRequest(Document):
         lang = get_language_from_team(marketplace_app.team)
         lang = lang if lang in ['vi', 'en'] else 'vi'
         
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + _('Marketplace: {0}', lang).format(marketplace_app.title)
         
         # get language template

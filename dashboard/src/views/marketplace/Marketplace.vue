@@ -87,7 +87,7 @@ export default {
 	name: 'Marketplace',
 	pageMeta() {
 		return {
-			title: `${this.$t('Developer')} - EOVCloud`
+			title: `${this.$t('Developer')} - MBWCloud`
 		};
 	},
 	components: {

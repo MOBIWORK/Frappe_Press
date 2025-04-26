@@ -86,7 +86,7 @@ a {
 }
 
 .button-primary-custom {
-	@apply bg-blue-700 rounded-lg;
+	@apply bg-red-700 rounded-lg;
 }
 .button-primary-custom a {
 	@apply text-white block px-2 py-1 text-base leading-normal no-underline rounded-lg;
@@ -123,6 +123,12 @@ a {
 	padding-right: 1.25rem /* 20px */ !important;
 }
 
+.h-6 {
+    height: 1.5rem /* 24px */;
+}
+.h-7 {
+    height: 1.75rem /* 28px */;
+}
 .h-10 {
 	height: 2.5rem /* 40px */ !important;
 }

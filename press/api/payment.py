@@ -56,9 +56,9 @@ def send_email_confirm_money_into_account(balance_transaction):
                 '%H:%M:%S')
             transaction_date = balance_transaction.modified.strftime(
                 '%d/%m/%Y')
-            transaction_information = 'Nap tien TK EOVCloud tu PayOs'
+            transaction_information = 'Nap tien TK MBWCloud tu PayOs'
 
-            pre_subject = "[EOVCloud] - "
+            pre_subject = "[MBWCloud] - "
             subject = pre_subject + _("Top-up successful", lang)
             
             # get language template

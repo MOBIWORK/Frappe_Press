@@ -165,7 +165,7 @@ def send_email_handle_site(type_email, site_name, team):
         lang = frappe.db.get_value('User', team.user, 'language')
         lang = lang if lang in ['vi', 'en'] else 'vi'
         
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         args = {'site_name': site_name}
         
         if type_email == 'lock':

@@ -134,12 +134,12 @@ def sendmail_storage_capacity_overflows(**kwargs):
         max_storage_usage = frappe.db.get_value('Plan', plan_name, ['max_storage_usage']) or 0
         max_storage_usage = round(max_storage_usage / 1024)
         date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + _("Your website {0}'s storage is full!", lang).format(site_name) + f" - {date_time}"
         args = {
             'user_name': user.first_name if user else team.user,
             'site_name': site_name,
-            'link': f'https://cloud.eov.solutions/dashboard/sites/{site_name}/overview',
+            'link': f'https://admin.mbwnext.com/dashboard/sites/{site_name}/overview',
             'max_storage_usage': max_storage_usage
         }
         email_recipients = team.get_email_invoice()
@@ -182,7 +182,7 @@ def sendmail_invite_user(**kwargs):
 
         email_recipient = email_recipient.strip()
         date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + _("You are invited to join the {0} platform on {1}", lang).format(service_name,site_name) + f" - {date_time}"
         args = {
             'site_name': site_name,

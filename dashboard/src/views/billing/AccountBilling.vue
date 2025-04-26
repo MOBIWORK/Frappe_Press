@@ -19,7 +19,7 @@ export default {
 	name: 'BillingScreen',
 	pageMeta() {
 		return {
-			title: `${this.$t('billing')} - EOVCloud`
+			title: `${this.$t('billing')} - MBWCloud`
 		};
 	},
 	props: ['invoiceName'],
@@ -34,10 +34,10 @@ export default {
 				{ label: this.$t('invoices'), route: 'invoices' },
 				{ label: this.$t('invoice_information'), route: 'payment' },
 				{ label: this.$t('transaction_history'), route: 'transaction-history' },
-				{
-					label: this.$t('ai_service_usage_history'),
-					route: 'ai-service-usage-history'
-				}
+				// {
+				// 	label: this.$t('ai_service_usage_history'),
+				// 	route: 'ai-service-usage-history'
+				// }
 			];
 
 			return tabs.map(tab => {

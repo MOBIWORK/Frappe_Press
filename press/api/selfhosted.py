@@ -41,7 +41,7 @@ def new(server, lang='vi'):
 
 @frappe.whitelist()
 def sshkey():
-    key_doc = frappe.get_doc("SSH Key", "EOVCloud Production")
+    key_doc = frappe.get_doc("SSH Key", "MBWCloud Production")
     return key_doc.public_key
 
 

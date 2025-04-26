@@ -1137,7 +1137,7 @@ class Team(Document):
         email = self.get_email_invoice()
         date_time = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
 
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + _('Your sites have been reactivated - {0}', lang).format(date_time)
         
         # get language template
@@ -1225,8 +1225,8 @@ class Team(Document):
         lang = frappe.db.get_value('User', self.user, 'language')
         lang = lang if lang in ['vi', 'en'] else 'vi'
         
-        pre_subject = "[EOVCloud] - "
-        subject = pre_subject + _('Unsuccessful Invoice Payment During EOVCloud Registration', lang)
+        pre_subject = "[MBWCloud] - "
+        subject = pre_subject + _('Unsuccessful Invoice Payment During MBWCloud Registration', lang)
 
         # get language template
         template = "payment_failed_partner" if self.erpnext_partner else "payment_failed"
@@ -1426,7 +1426,7 @@ def unsuspend_sites_when_recharge(team_name):
     team = frappe.get_doc("Team", team_name)
     if team.available_balance() > 0:
         reset_used_and_noti_subscription(team_name)
-        team.unsuspend_sites('Nap tien vao TK EOVCloud')
+        team.unsuspend_sites('Nap tien vao TK MBWCloud')
 
 
 def get_permission_query_conditions(user):

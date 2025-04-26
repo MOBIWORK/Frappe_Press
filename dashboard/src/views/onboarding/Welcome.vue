@@ -5,8 +5,8 @@
 	>
 		<div class="mx-auto mb-10 lg:w-1/2">
 			<Card
-				title="Welcome to EOVCloud"
-				subtitle="To start using EOVCloud, complete the following steps to get your account up and running."
+				title="Welcome to MBWCloud"
+				subtitle="To start using MBWCloud, complete the following steps to get your account up and running."
 			>
 				<div class="relative mt-2">
 					<OnboardingStepCreateAccount />

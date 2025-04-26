@@ -16,7 +16,7 @@ from frappe.core.utils import find
 from frappe.frappeclient import FrappeClient
 from frappe.model.document import Document
 from frappe.model.naming import append_number_if_name_exists
-from frappe.utils import cint, cstr, get_datetime
+from frappe.utils import cint, cstr, get_datetime, get_url
 from press.utils import unique
 from press.marketplace.doctype.marketplace_app_plan.marketplace_app_plan import (
     MarketplaceAppPlan,
@@ -42,7 +42,7 @@ from press.press.doctype.site_activity.site_activity import log_site_activity
 from press.press.doctype.site_analytics.site_analytics import create_site_analytics
 from press.utils import convert, get_client_blacklisted_keys, guess_type, log_error
 from press.utils.dns import create_dns_record, _change_dns_record
-
+from press.api.app_site.app_ats import create_site
 
 class Site(Document):
     whitelisted_fields = ["ip", "status",
@@ -163,12 +163,19 @@ class Site(Document):
             frappe.throw(
                 "Day of the month must be between 1 and 31 (included)!")
 
+    def before_save(self):
+        if self.status == "Active":
+            self.create_api_key_for_site()
+    
     def on_update(self):
         if self.status == "Active" and self.has_value_changed("host_name"):
             self.update_site_config({"host_name": f"https://{self.host_name}"})
             self._update_redirects_for_all_site_domains()
             frappe.db.set_value("Site Domain", self.host_name,
                                 "redirect_to_primary", False)
+        
+        if self.status == "Active":
+            self.save_config_app_integration()
 
         self.update_subscription()
 
@@ -177,6 +184,73 @@ class Site(Document):
         ):
             self.rename(self._get_site_name(self.subdomain))
 
+
+    def save_config_app_integration(self):
+        if not self.api_key or not self.api_secret:
+            return
+        site_config = {}
+        
+        for app in self.apps:
+            linked_app = frappe.get_value("Linked Applications", {"app_b":app.app}, ["name", "app_a", "app_b"], as_dict=1)
+            if not linked_app:
+                continue
+            
+            app_integration = frappe.get_value("App Integration Settings", {"site_b": self.name, "app_a": linked_app.app_a, "app_b": app.app}, ["name", "configured", "site_a", "api_key_a", "api_key_b"], as_dict=1)
+            site_a = frappe.get_value("Site", app_integration.site_a, ["name", "status"], as_dict=1)
+            if not app_integration or app_integration.configured == 1:
+                continue
+            if not site_a or site_a.status not in ["Active","Suspended"]:
+                continue
+            
+            if not app_integration.api_key_b:
+                config = site_config.get(app_integration.site_a) or {}
+                config[f'{app.app}_site_name'] = 'https://' + self.name
+                config[f'{app.app}_api_key'] = self.api_key
+                config[f'{app.app}_api_secret'] = self.api_secret
+                site_config[app_integration.site_a] = config
+                
+                data_update = {
+                    'api_key_b': self.api_key,
+                    'api_secret_b': self.api_secret
+                    
+                }
+                if app_integration.api_key_a:
+                    data_update['configured'] = 1
+                frappe.db.set_value('App Integration Settings', app_integration.name, data_update)
+
+        for site, config in site_config.items():
+            site_doc = frappe.get_doc("Site", site)
+            site_doc.update_site_config(config)
+    
+    def create_api_key_for_site(self):
+        try:
+            if self.api_key:
+                return
+            
+            conn = self.get_connection_as_admin()
+            
+            user = conn.get_value('User', 'api_key', 'Administrator')
+            data_update = frappe._dict()
+            data_update.update({
+                'doctype': 'User',
+                'name': 'Administrator',
+            })
+            
+            # create new api_key
+            api_secret = frappe.generate_hash(length=15)
+            api_key = user.get('api_key')
+            if not api_key:
+                api_key = frappe.generate_hash(length=15)
+                data_update.api_key = api_key
+            data_update.api_secret = api_secret
+            
+            # update api_key for user
+            conn.update(data_update)
+            self.api_key = api_key
+            self.api_secret = api_secret
+        except Exception as ex:
+            frappe.log_error(frappe.get_traceback(), "Create api key for site")
+    
     def rename_upstream(self, new_name: str):
         proxy_server = frappe.db.get_value(
             "Server", self.server, "proxy_server")
@@ -954,6 +1028,15 @@ class Site(Document):
     def set_api_key(self, config):
         # update configuration
         keys = {x.key: i for i, x in enumerate(self.configuration)}
+
+        cloud_host = get_url() or cstr(frappe.local.site)
+        if isinstance(config, list):
+            config.extend([
+                {"key": "cloud_host", "value": cloud_host, "type": "String"},
+            ])
+        else:
+            config['cloud_host'] = cloud_host
+                
         if 'api_key' not in keys or 'api_secret' not in keys:
             team = frappe.get_value('Team', self.team,
                                     ["user", "api_key", "api_secret"], as_dict=True)
@@ -967,8 +1050,13 @@ class Site(Document):
                     'api_key': api_key,
                     'api_secret': api_secret
                 })
-                
-            if api_key and api_secret:
+
+            if isinstance(config, list):
+                config.extend([
+                    {"key": "api_key", "value": api_key, "type": "String"},
+                    {"key": "api_secret", "value": api_secret, "type": "String"},
+                ])
+            else:
                 config['api_key'] = api_key
                 config['api_secret'] = api_secret
     
@@ -1608,6 +1696,9 @@ def process_new_site_job_update(job):
             frappe.db.commit()
 
         frappe.db.set_value("Site", job.site, "status", updated_status)
+        if updated_status == "Active":
+            site = frappe.get_doc("Site", job.site)
+            site.save()
 
 
 def get_remove_step_status(job):
@@ -1626,6 +1717,7 @@ def get_remove_step_status(job):
 
 def process_archive_site_job_update(job):
     site_status = frappe.get_value("Site", job.site, "status", for_update=True)
+    subdomain = frappe.get_value("Site", job.site, "subdomain", for_update=True)
 
     other_job_type = {
         "Remove Site from Upstream": "Archive Site",
@@ -1659,6 +1751,21 @@ def process_archive_site_job_update(job):
         )
         if updated_status == "Archived":
             site_cleanup_after_archive(job.site)
+            
+            try:
+                app_a = 'mbw_ats'
+                app_name = 'go1_cms'
+                app_inte = frappe.get_value("App Integration Settings", {"site_b": job.site, "app_a": app_a, "app_b": app_name, 'reinstall': 1}, ['name', 'site_b', 'site_a'], as_dict=1)
+                if app_inte:
+                    create_site(team=None, site_name=app_inte.site_a, subdomain=subdomain)
+                    frappe.db.set_value("App Integration Settings", app_inte.name, {
+                        'reinstall': 0,
+                        'configured': 0,
+                        'api_key_b': '',
+                        'api_secret_b': ''
+                    })
+            except Exception as ex:
+                frappe.log_error(frappe.get_traceback(), "process_archive_site_job_update")
 
 
 def process_install_app_site_job_update(job):
@@ -2038,5 +2145,5 @@ def generate_keys(user):
 
         return api_key, api_secret
     except Exception as ex:
-        frappe.log_error(f"{str(ex)}", "Generate keys")
+        frappe.log_error(frappe.get_traceback(), "Generate keys")
         return None, None

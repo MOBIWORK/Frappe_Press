@@ -46,7 +46,7 @@ export default {
 	name: 'Security',
 	pageMeta() {
 		return {
-			title: `Security - ${this.serverName} - EOVCloud`
+			title: `Security - ${this.serverName} - MBWCloud`
 		};
 	},
 	props: ['serverName'],

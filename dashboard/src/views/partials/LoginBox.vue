@@ -3,8 +3,8 @@
 		<div class="grid min-h-screen grid-cols-1 md:grid-cols-2">
 			<div class="col-span-1 hidden h-screen md:flex">
 				<img
-					class="inline-block h-full w-full object-cover"
-					src="../../assets/left_content.svg"
+					class="inline-block h-full w-full object-contain"
+					src="../../assets/left_login.png"
 				/>
 			</div>
 			<div
@@ -16,7 +16,7 @@
 				>
 					<div class="flex justify-center">
 						<slot name="logo">
-							<img src="../../assets/logo_eov.png" />
+							<img src="../../assets/cropped-mbw.cloud_.10.png" />
 						</slot>
 					</div>
 					<div

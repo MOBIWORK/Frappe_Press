@@ -78,7 +78,11 @@ RUN --mount=type=cache,target=/var/cache/apt add-apt-repository ppa:deadsnakes/p
   python${PYTHON_VERSION} \
   python${PYTHON_VERSION}-dev \
   python${PYTHON_VERSION}-venv \
-  python${PYTHON_VERSION}-distutils \
+  python3-distutils \
+#    {% if not remove_distutils -%}
+#    python${PYTHON_VERSION}-distutils \
+#    {%- endif %}
+#    python${PYTHON_VERSION}-venv \
   && rm -rf /var/lib/apt/lists/* \
   `#stage-pre-python`
 
@@ -206,12 +210,24 @@ RUN git config --global --add safe.directory /home/frappe/context/apps/tldraw_wh
 RUN git config --global --add safe.directory /home/frappe/context/apps/meeting_management/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/frappe_better_list_view/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/desk_navbar_extended/.git
-RUN git config --global --add safe.directory /home/frappe/context/apps/satellite_demo/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/ecommerce_integrations/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/dht_co/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/project_control/.git
-RUN git config --global --add safe.directory /home/frappe/context/apps/roadai/.git
 RUN git config --global --add safe.directory /home/frappe/context/apps/waterai/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_sfa/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/roadai/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_ats/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/i_van/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_gridviewfull/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/frappe_whatsapp/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_pms/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/cargo_management/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbw_integration_dms/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/woocommerce_fusion/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbwd_nissin/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/mbwd_gobross/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/erpnext_telegram_integration/.git
+RUN git config --global --add safe.directory /home/frappe/context/apps/vas/.git
 
 ENV PYTHONUNBUFFERED 1
 
@@ -232,6 +248,8 @@ RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 /home/frappe
 COPY --chown=frappe:frappe redis /home/frappe/frappe-bench/redis
 
 COPY --chown=frappe:frappe common_site_config.json /home/frappe/frappe-bench/sites/common_site_config.json
+
+RUN --mount=type=cache,target=/home/frappe/.cache,uid=1000,gid=1000 /home/frappe/frappe-bench/env/bin/pip install wheel
 
 # Install other apps
 {% for app in doc.apps %}

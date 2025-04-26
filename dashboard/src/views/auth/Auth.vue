@@ -201,7 +201,7 @@
 							>
 							<span>&nbsp;&nbsp;</span>
 							<router-link
-								class="text-base font-semibold text-blue-500"
+								class="text-base font-semibold text-red-500"
 								:to="{
 									name: $route.name == 'Login' ? 'Signup' : 'Login',
 									query: { ...$route.query, forgot: undefined }
@@ -249,7 +249,7 @@
 							>
 							<span>&nbsp;&nbsp;</span>
 							<router-link
-								class="text-base font-semibold text-blue-500"
+								class="text-base font-semibold text-red-500"
 								:to="{
 									name: $route.name == 'Login' ? 'Signup' : 'Login',
 									query: { ...$route.query, forgot: undefined }

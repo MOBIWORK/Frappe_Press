@@ -76,7 +76,7 @@
 				<div class="form-group">
 					<input type="checkbox" name="agreed_to_partner_consent" id="agreed_to_partner_consent" />
 					<label class="d-inline" for="agreed_to_partner_consent">
-						{{_('I agree to share my information with EOVCloud', lang)}}
+						{{_('I agree to share my information with MBWCloud', lang)}}
 					</label>
 				</div>
 				<div class="mt-8 d-flex justify-content-between">
@@ -150,7 +150,7 @@
 		},
 		agreed_to_partner_consent: (value) => {
 			if (!value) {
-				return `{{_('You need to agree to share your information with EOVCloud', lang)}}`;
+				return `{{_('You need to agree to share your information with MBWCloud', lang)}}`;
 			}
 		},
 	};

@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-19 08:29:16.815757",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "app_a",
+  "column_break_hyduk",
+  "app_b",
+  "config_section",
+  "plan",
+  "domain",
+  "column_break_qylid",
+  "cluster",
+  "group"
+ ],
+ "fields": [
+  {
+   "fieldname": "app_a",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "App A",
+   "options": "App"
+  },
+  {
+   "fieldname": "app_b",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "App B",
+   "options": "App"
+  },
+  {
+   "fieldname": "column_break_hyduk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "config_section",
+   "fieldtype": "Section Break",
+   "label": "Config"
+  },
+  {
+   "fieldname": "plan",
+   "fieldtype": "Link",
+   "label": "Plan",
+   "options": "Plan",
+   "reqd": 1
+  },
+  {
+   "fieldname": "domain",
+   "fieldtype": "Link",
+   "label": "Domain",
+   "options": "Root Domain",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_qylid",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "cluster",
+   "fieldtype": "Link",
+   "label": "Cluster",
+   "options": "Cluster",
+   "reqd": 1
+  },
+  {
+   "fieldname": "group",
+   "fieldtype": "Link",
+   "label": "Group",
+   "options": "Release Group",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-04-19 11:03:40.678737",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "Linked Applications",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

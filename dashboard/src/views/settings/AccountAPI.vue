@@ -28,7 +28,7 @@
 				<div v-if="!$resources.createSecret.data">
 					<p class="text-base">
 						{{ $t('accountapi_content_2') }}
-						<a href="/docs/api" class="underline">EOVCloud API</a>.
+						<a href="/docs/api" class="underline">MBWCloud API</a>.
 					</p>
 				</div>
 				<div v-if="$resources.createSecret.data">

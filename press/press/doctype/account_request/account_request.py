@@ -65,7 +65,7 @@ class AccountRequest(Document):
         #     print()
         #     return
 
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         lang = self.language if self.language in ['vi', 'en'] else 'vi'
         
         free_credits_vnd = frappe.db.get_single_value("Press Settings", "free_credits_vnd") or 0
@@ -88,7 +88,7 @@ class AccountRequest(Document):
             template = "verify_account"
 
             if self.invited_by and self.role != "Press Admin":
-                subject = pre_subject + _('You are invited by {0} to join EOVCloud', lang).format(self.invited_by)
+                subject = pre_subject + _('You are invited by {0} to join MBWCloud', lang).format(self.invited_by)
                 template = "invite_team_member"
 
         # get language template
@@ -98,7 +98,7 @@ class AccountRequest(Document):
             {
                 "invited_by": self.invited_by,
                 "link": url,
-                "image_path": "https://cloud.eov.solutions/assets/press/images/EOV.png",
+                "image_path": "https://admin.mbwnext.com/assets/press/images/cropped-mbw.cloud_.10.png",
                 "read_pixel_path": get_url(
                     f"/api/method/press.utils.telemetry.capture_read_event?name={self.name}"
                 ),

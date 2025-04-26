@@ -49,8 +49,8 @@ def suspend_sites_and_send_email(team):
         lang = frappe.db.get_value('User', team.user, 'language')
         lang = lang if lang in ['vi', 'en'] else 'vi'
         
-        pre_subject = "[EOVCloud] - "
-        subject = pre_subject + _('Your sites have been temporarily suspended on EOVCloud', lang)
+        pre_subject = "[MBWCloud] - "
+        subject = pre_subject + _('Your sites have been temporarily suspended on MBWCloud', lang)
         
         # get language template
         template = "unpaid_invoices"

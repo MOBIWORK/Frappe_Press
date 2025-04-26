@@ -1,0 +1,120 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-18 16:49:50.019841",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "configured",
+  "column_break_nnu6s",
+  "reinstall",
+  "section_break_ozgc9",
+  "site_a",
+  "app_a",
+  "api_key_a",
+  "api_secret_a",
+  "column_break_1p80r",
+  "site_b",
+  "app_b",
+  "api_key_b",
+  "api_secret_b"
+ ],
+ "fields": [
+  {
+   "fieldname": "site_a",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Site A",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_b",
+   "fieldtype": "Data",
+   "label": "Site B"
+  },
+  {
+   "fieldname": "column_break_1p80r",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "app_a",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "App A",
+   "options": "App",
+   "reqd": 1
+  },
+  {
+   "fieldname": "app_b",
+   "fieldtype": "Link",
+   "label": "App B",
+   "options": "App"
+  },
+  {
+   "fieldname": "api_key_a",
+   "fieldtype": "Data",
+   "label": "Api Key A"
+  },
+  {
+   "fieldname": "api_secret_a",
+   "fieldtype": "Data",
+   "label": "Api Secret A"
+  },
+  {
+   "fieldname": "api_key_b",
+   "fieldtype": "Data",
+   "label": "Api Key B"
+  },
+  {
+   "fieldname": "api_secret_b",
+   "fieldtype": "Data",
+   "label": "Api Secret B"
+  },
+  {
+   "fieldname": "section_break_ozgc9",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "configured",
+   "fieldtype": "Check",
+   "label": "Configured"
+  },
+  {
+   "fieldname": "column_break_nnu6s",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "reinstall",
+   "fieldtype": "Check",
+   "label": "Reinstall"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-04-25 15:15:04.513684",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "App Integration Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -70,7 +70,7 @@
    "fieldname": "preferred_payout_method",
    "fieldtype": "Select",
    "label": "Preferred Payout Method",
-   "options": "EOVCloud Credits\nFrappe Cloud Credits\nBank Transfer\nPayPal"
+   "options": "MBWCloud Credits\nFrappe Cloud Credits\nBank Transfer\nPayPal"
   },
   {
    "depends_on": "eval:doc.preferred_payout_method==\"PayPal\"",
@@ -80,7 +80,7 @@
    "mandatory_depends_on": "eval:doc.preferred_payout_method==\"PayPal\""
   },
   {
-   "depends_on": "eval:doc.preferred_payout_method!=\"Frappe Cloud Credits\" && doc.preferred_payout_method!=\"EOVCloud Credits\"",
+   "depends_on": "eval:doc.preferred_payout_method!=\"Frappe Cloud Credits\" && doc.preferred_payout_method!=\"MBWCloud Credits\"",
    "fieldname": "gstin",
    "fieldtype": "Data",
    "label": "GSTIN (If Applicable)"

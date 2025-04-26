@@ -19,7 +19,7 @@ class SiteActivity(Document):
                 lang = get_language_from_team(d.team)
                 lang = lang if lang in ['vi', 'en'] else 'vi'
 
-                pre_subject = "[EOVCloud] - "
+                pre_subject = "[MBWCloud] - "
                 subject = pre_subject + _('Administrator login to your site', lang)
 
                 # get language template

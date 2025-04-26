@@ -173,7 +173,7 @@ export default {
 	name: 'Site',
 	pageMeta() {
 		return {
-			title: `${this.$t('sites')} - ${this.siteName} - EOVCloud`
+			title: `${this.$t('sites')} - ${this.siteName} - MBWCloud`
 		};
 	},
 	props: ['siteName'],
@@ -451,7 +451,7 @@ export default {
 				{ label: 'analytics', route: 'analytics' },
 				{ label: 'monitor', route: 'monitor' },
 				{ label: 'database', route: 'database' },
-				{ label: 'config', route: 'site-config' },
+				// { label: 'config', route: 'site-config' },
 				{ label: 'jobs', route: 'jobs', showRedDot: this.runningJob },
 				{ label: 'logs', route: 'logs' },
 				{ label: 'settings', route: 'settings' }

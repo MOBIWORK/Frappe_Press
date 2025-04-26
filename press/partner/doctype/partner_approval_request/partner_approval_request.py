@@ -25,7 +25,7 @@ class PartnerApprovalRequest(Document):
         link = get_url(
             f"/api/method/press.api.account.approve_partner_request?key={self.key}"
         )
-        pre_subject = "[EOVCloud] - "
+        pre_subject = "[MBWCloud] - "
         subject = pre_subject + _('Partner Approval Request', lang)
 
         # get language template

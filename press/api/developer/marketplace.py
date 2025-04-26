@@ -137,7 +137,7 @@ class DeveloperApiHandler:
             lang = get_language_from_team(self.app_subscription_doc.team)
             lang = lang if lang in ['vi', 'en'] else 'vi'
             
-            pre_subject = "[EOVCloud] - "
+            pre_subject = "[MBWCloud] - "
             subject = pre_subject + _('Login verification email', lang)
             
             # get language template

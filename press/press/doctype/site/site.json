@@ -18,6 +18,8 @@
   "bench",
   "group",
   "cluster",
+  "api_key",
+  "api_secret",
   "config_tab",
   "hide_config",
   "host_name",
@@ -577,6 +579,16 @@
    "fieldtype": "Link",
    "label": "Standby for Product",
    "options": "SaaS Product"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "Api Key"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Data",
+   "label": "Api Secret"
   }
  ],
  "links": [
@@ -641,7 +653,7 @@
    "link_fieldname": "site"
   }
  ],
- "modified": "2025-01-20 16:49:44.078189",
+ "modified": "2025-04-22 13:45:45.181492",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Site",
