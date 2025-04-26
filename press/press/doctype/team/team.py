@@ -984,6 +984,9 @@ class Team(Document):
         if self.free_account or self.payment_mode == "Partner Credits" or self.billing_team:
             return True
 
+        # bỏ điều kiện phải nạp tiền mới cho đổi plan
+        return True
+
         return bool(
             frappe.db.exists(
                 "Invoice", {"team": self.name,
