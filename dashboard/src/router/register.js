@@ -20,7 +20,15 @@ export default function registerRouter(app, auth, account) {
 			next({ name: 'Sites' });
 			return;
 		}
-
+		if (auth.isLoggedIn){
+			if (!account.user) {
+				await account.fetchAccount();
+			}
+			
+			if(!account.team?.benches_enabled && ['BenchesScreen', 'NewBench'].includes(to.name)){
+				next({ name: 'Home' });
+			}
+		}
 		if (to.matched.some(record => !record.meta.isLoginPage)) {
 			// this route requires auth, check if logged in
 			// if not, redirect to login page.

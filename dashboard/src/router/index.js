@@ -24,14 +24,14 @@ const routes = [
 			isLoginPage: true
 		}
 	},
-	{
-		path: '/signup',
-		name: 'Signup',
-		component: () => import('../views/auth/Auth.vue'),
-		meta: {
-			isLoginPage: true
-		}
-	},
+	// {
+	// 	path: '/signup',
+	// 	name: 'Signup',
+	// 	component: () => import('../views/auth/Auth.vue'),
+	// 	meta: {
+	// 		isLoginPage: true
+	// 	}
+	// },
 	{
 		path: '/setup-account/:requestKey/:joinRequest?',
 		name: 'Setup Account',

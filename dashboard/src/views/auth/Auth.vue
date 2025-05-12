@@ -185,7 +185,7 @@
 						<Button class="mt-7 h-9 text-base font-[700]" variant="solid">
 							{{ $t('login') }}
 						</Button>
-						<div class="mt-8 border-t text-center">
+						<!-- <div class="mt-8 border-t text-center">
 							<div class="-translate-y-1/2 transform">
 								<span
 									class="bg-white px-2 text-xs leading-8 tracking-wider text-gray-800"
@@ -193,8 +193,8 @@
 									{{ $t('Or') }}
 								</span>
 							</div>
-						</div>
-						<div class="flex items-center justify-center" v-if="!disableSignup">
+						</div> -->
+						<!-- <div class="flex items-center justify-center" v-if="!disableSignup">
 							<span
 								class="text-[14px] font-normal leading-[17px] text-[#171717]"
 								>{{ $t('no_account_yet') }}?</span
@@ -209,7 +209,7 @@
 							>
 								{{ $t('SIGN_UP') }}
 							</router-link>
-						</div>
+						</div> -->
 					</template>
 					<template v-else>
 						<label class="mb-2 text-base" for="email">Email</label>

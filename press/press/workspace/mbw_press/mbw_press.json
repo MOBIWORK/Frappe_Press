@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"B6XaaHHcIe\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\"><b>MBW Press</b></span>\",\"col\":12}},{\"id\":\"KTEVJ8nOkp\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span><span class=\\\"h4\\\"><b>Quick Link</b></span>\",\"col\":12}},{\"id\":\"ls1rijmzNs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Server\",\"col\":3}},{\"id\":\"7nV1sYtrMa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Database Server\",\"col\":3}},{\"id\":\"tm4ht10Bnw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Proxy Server\",\"col\":3}},{\"id\":\"4t_rpRElc4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bench\",\"col\":3}},{\"id\":\"E5BMvheB-t\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site\",\"col\":3}},{\"id\":\"Uo8A59hjiB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monitor Server\",\"col\":3}},{\"id\":\"9NDvRy9C0n\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Log Server\",\"col\":3}},{\"id\":\"F3nkqOytio\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Self Hosted Server\",\"col\":3}},{\"id\":\"EQWxEZgRvt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Invoice\",\"col\":3}},{\"id\":\"ZNgZ3tQJtn\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance Transaction\",\"col\":3}},{\"id\":\"M9hz8WKHjU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Rq Job\",\"col\":3}},{\"id\":\"RWVJDAVuZW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Rq Worker\",\"col\":3}},{\"id\":\"1rYWrmuWZk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Error Log\",\"col\":3}},{\"id\":\"wnnYjGyqcb\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Elements</b></span>\",\"col\":12}},{\"id\":\"-CGPqwUb0h\",\"type\":\"card\",\"data\":{\"card_name\":\"Site\",\"col\":4}},{\"id\":\"SitxAu69yT\",\"type\":\"card\",\"data\":{\"card_name\":\"Apps\",\"col\":4}},{\"id\":\"NWpMLgUgOv\",\"type\":\"card\",\"data\":{\"card_name\":\"Infrastructure\",\"col\":4}},{\"id\":\"K-vMKGB4IP\",\"type\":\"card\",\"data\":{\"card_name\":\"Payment\",\"col\":4}},{\"id\":\"eAtDEvOt9_\",\"type\":\"card\",\"data\":{\"card_name\":\"Setting\",\"col\":4}},{\"id\":\"k18w5NAoGa\",\"type\":\"card\",\"data\":{\"card_name\":\"Team\",\"col\":4}},{\"id\":\"iVgJ7YD33e\",\"type\":\"card\",\"data\":{\"card_name\":\"Updates\",\"col\":4}},{\"id\":\"DEWLVStc9-\",\"type\":\"card\",\"data\":{\"card_name\":\"Self Hosted Server\",\"col\":4}}]",
+ "content": "[{\"id\":\"B6XaaHHcIe\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\"><b>MBW Press</b></span>\",\"col\":12}},{\"id\":\"KTEVJ8nOkp\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b></b></span><span class=\\\"h4\\\"><b>Quick Link</b></span>\",\"col\":12}},{\"id\":\"ls1rijmzNs\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"App Server\",\"col\":3}},{\"id\":\"7nV1sYtrMa\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Database Server\",\"col\":3}},{\"id\":\"tm4ht10Bnw\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Proxy Server\",\"col\":3}},{\"id\":\"4t_rpRElc4\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Bench\",\"col\":3}},{\"id\":\"E5BMvheB-t\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Site\",\"col\":3}},{\"id\":\"Uo8A59hjiB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Monitor Server\",\"col\":3}},{\"id\":\"9NDvRy9C0n\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Log Server\",\"col\":3}},{\"id\":\"F3nkqOytio\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Self Hosted Server\",\"col\":3}},{\"id\":\"EQWxEZgRvt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Invoice\",\"col\":3}},{\"id\":\"ZNgZ3tQJtn\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Balance Transaction\",\"col\":3}},{\"id\":\"M9hz8WKHjU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Rq Job\",\"col\":3}},{\"id\":\"RWVJDAVuZW\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Rq Worker\",\"col\":3}},{\"id\":\"1rYWrmuWZk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Error Log\",\"col\":3}},{\"id\":\"SLziWGT2Pz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Scheduled Job Log\",\"col\":3}},{\"id\":\"wnnYjGyqcb\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Elements</b></span>\",\"col\":12}},{\"id\":\"-CGPqwUb0h\",\"type\":\"card\",\"data\":{\"card_name\":\"Site\",\"col\":4}},{\"id\":\"SitxAu69yT\",\"type\":\"card\",\"data\":{\"card_name\":\"Apps\",\"col\":4}},{\"id\":\"NWpMLgUgOv\",\"type\":\"card\",\"data\":{\"card_name\":\"Infrastructure\",\"col\":4}},{\"id\":\"K-vMKGB4IP\",\"type\":\"card\",\"data\":{\"card_name\":\"Payment\",\"col\":4}},{\"id\":\"eAtDEvOt9_\",\"type\":\"card\",\"data\":{\"card_name\":\"Setting\",\"col\":4}},{\"id\":\"k18w5NAoGa\",\"type\":\"card\",\"data\":{\"card_name\":\"Team\",\"col\":4}},{\"id\":\"iVgJ7YD33e\",\"type\":\"card\",\"data\":{\"card_name\":\"Updates\",\"col\":4}},{\"id\":\"DEWLVStc9-\",\"type\":\"card\",\"data\":{\"card_name\":\"Self Hosted Server\",\"col\":4}}]",
  "creation": "2023-11-24 11:39:11.235669",
  "custom_blocks": [],
  "docstatus": 0,
@@ -430,7 +430,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-04-18 10:07:20.537403",
+ "modified": "2025-05-09 15:31:04.508201",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "MBW Press",
@@ -447,6 +447,14 @@
    "doc_view": "List",
    "label": "Error Log",
    "link_to": "Error Log",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Scheduled Job Log",
+   "link_to": "Scheduled Job Log",
    "stats_filter": "[]",
    "type": "DocType"
   },
