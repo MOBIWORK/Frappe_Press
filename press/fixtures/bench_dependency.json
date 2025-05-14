@@ -118,35 +118,35 @@
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Version 14",
-    "version": "5.22.3"
+    "version": "5.25.1"
    },
    {
     "parent": "BENCH_VERSION",
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Version 13",
-    "version": "5.22.3"
+    "version": "5.25.1"
    },
    {
     "parent": "BENCH_VERSION",
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Version 12",
-    "version": "5.22.3"
+    "version": "5.25.1"
    },
    {
     "parent": "BENCH_VERSION",
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Nightly",
-    "version": "5.22.3"
+    "version": "5.25.1"
    },
    {
     "parent": "BENCH_VERSION",
     "parentfield": "supported_versions",
     "parenttype": "Bench Dependency",
     "supported_frappe_version": "Version 15",
-    "version": "5.23.0"
+    "version": "5.25.1"
    }
   ],
   "title": "Bench Version"
