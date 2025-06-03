@@ -1286,3 +1286,23 @@ STATE_PINCODE_MAPPING = {
 	"Andaman and Nicobar Islands": (744, 744),
 	"Andhra Pradesh": (500, 535),
 }
+
+@frappe.whitelist(allow_guest=True)
+def check_email_exists(email: str):
+	"""Check if email exists in User doctype"""
+	frappe.utils.validate_email_address(email, True)
+	email = email.strip().lower()
+	
+	# Check if user exists in User doctype
+	user_exists = frappe.db.exists("User", email)
+	
+	# Also check if team exists for this user
+	team_exists = frappe.db.exists("Team", {"user": email})
+	print(f"User exists: {user_exists}, Team exists: {team_exists}, Email: {email}")
+	return {
+		"user_exists": bool(user_exists),
+		"team_exists": bool(team_exists),
+		"email": email
+	}
+
+
