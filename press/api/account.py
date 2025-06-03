@@ -136,8 +136,22 @@ def resend_otp(account_request: str):
 def send_otp(email: str):
 	account_request = frappe.db.get_value("Account Request", {"email": email}, "name")
 
+	# If account request doesn't exist, create one for login purposes
 	if not account_request:
-		frappe.throw("Please sign up first")
+		# Check if user exists for login
+		if frappe.db.exists("User", email) and frappe.db.exists("Team", {"user": email}):
+			# Create temporary account request for login OTP
+			account_request_doc = frappe.get_doc(
+				{
+					"doctype": "Account Request",
+					"email": email,
+					"role": "Press Admin",
+					"send_email": False,  # Don't send signup email
+				}
+			).insert()
+			account_request = account_request_doc.name
+		else:
+			frappe.throw("Please sign up first")
 
 	account_request: "AccountRequest" = frappe.get_doc("Account Request", account_request)
 
@@ -536,7 +550,7 @@ def signup_settings(product=None, fetch_countries=False, timezone=None):
 		product_trial = frappe.db.get_value(
 			"Product Trial",
 			{"name": product, "published": 1},
-			["title", "logo"],
+			["title", "logo", "background"],
 			as_dict=1,
 		)
 
@@ -1298,7 +1312,6 @@ def check_email_exists(email: str):
 	
 	# Also check if team exists for this user
 	team_exists = frappe.db.exists("Team", {"user": email})
-	print(f"User exists: {user_exists}, Team exists: {team_exists}, Email: {email}")
 	return {
 		"user_exists": bool(user_exists),
 		"team_exists": bool(team_exists),
