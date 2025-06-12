@@ -23,7 +23,7 @@ def check_site_exists(subdomain, domain):
             )
         )
 
-def create_site(team, site_name, subdomain, lang='vi'):
+def create_site(team, site_name, subdomain, lang='vi', parent_host):
     if not team:
         team = get_current_team(get_doc=True)
 
@@ -39,6 +39,7 @@ def create_site(team, site_name, subdomain, lang='vi'):
     cluster = linked_app.cluster
     group = linked_app.group
     server = None
+    parent_host = parent_host
     
     files = {}
     apps = ['frappe', app_name]
@@ -50,6 +51,7 @@ def create_site(team, site_name, subdomain, lang='vi'):
             "subdomain": subdomain,
             "domain": domain,
             "group": group,
+            "parent_host": parent_host,
             "server": server,
             "cluster": cluster,
             "apps": [{"app": app} for app in apps],
@@ -93,6 +95,8 @@ def create_site_app(**kwargs):
 
         site_name = kwargs.get('site_name')
         subdomain = kwargs.get('subdomain')
+        parent_host = kwargs.get('parent_host')
+        
         if not site_name:
             frappe.throw(_("Site name is required", lang))
         if not app_name:
@@ -124,7 +128,7 @@ def create_site_app(**kwargs):
         if frappe.db.exists("App Integration Settings", {"site_a": site_name, "app_a": app_a, "app_b": app_name}):
             frappe.throw(_("Cannot recreate again", lang))
         
-        site = create_site(team=team, site_name=site_name, subdomain=subdomain, lang=lang)
+        site = create_site(team=team, site_name=site_name, subdomain=subdomain, lang=lang, parent_host=parent_host)
         
         doc_site_a = frappe.get_value("Site", site_name, ["name", "api_key", "api_secret"], as_dict=1)
         # add app integration
