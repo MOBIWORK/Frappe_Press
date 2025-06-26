@@ -269,6 +269,34 @@ let router = createRouter({
 					meta: { hideSidebar: true },
 				},
 				{
+					name: 'SignupPlanSelector',
+					path: ':productId/plan',
+					component: () => import('./pages/signup/PlanSelector.vue'),
+					props: true,
+					meta: { hideSidebar: true },
+				},
+				{
+					name: 'SignupPolicy',
+					path: ':productId/policy',
+					component: () => import('./pages/signup/Policy.vue'),
+					props: true,
+					meta: { hideSidebar: true },
+				},
+				{
+					name: 'SignupSetupSummary',
+					path: ':productId/summary',
+					component: () => import('./pages/signup/SetupSiteSummary.vue'),
+					props: true,
+					meta: { hideSidebar: true },
+				},
+				{
+					name: 'SetupInstallApp',
+					path: ':productId/install-app-setup',
+					component: () => import('./pages/signup/SetupInstallApp.vue'),
+					props: true,
+					meta: { hideSidebar: true },
+				},
+				{
 					name: 'SignupSetup',
 					path: ':productId/setup',
 					component: () => import('./pages/signup/SetupSite.vue'),
@@ -403,6 +431,7 @@ router.beforeEach(async (to, from, next) => {
 		}
 	} else {
 		if (goingToLoginPage) {
+			localStorage.setItem('product_id', to.query.product);
 			next();
 		} else {
 			if (to.name == 'Site Login') {

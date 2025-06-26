@@ -14,6 +14,7 @@ import * as Sentry from '@sentry/vue';
 import { session } from './data/session.js';
 import { unreadNotificationsCount } from './data/notifications.js';
 import './vendor/posthog.js';
+import translationPlugin, { fetchTranslations } from "./translation";
 
 const request = (options) => {
 	const _options = options || {};
@@ -36,11 +37,13 @@ setConfig('defaultDocDeleteUrl', 'press.api.client.delete');
 let app;
 let socket;
 
-getInitialData().then(() => {
+getInitialData().then(async () => {
+	await fetchTranslations();
 	app = createApp(App);
 	app.use(router);
 	app.use(resourcesPlugin);
 	app.use(pageMetaPlugin);
+	app.use(translationPlugin);
 
 	socket = initSocket();
 	app.config.globalProperties.$socket = socket;

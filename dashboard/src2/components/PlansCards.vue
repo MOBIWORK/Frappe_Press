@@ -4,7 +4,7 @@
 			<button
 				v-for="(plan, i) in plans"
 				:key="plan.name"
-				class="flex flex-col overflow-hidden rounded border text-left hover:bg-gray-50"
+				class="flex flex-col h-full overflow-hidden rounded border text-left hover:bg-gray-50"
 				:class="[
 					modelValue?.name === plan?.name
 						? 'border-gray-900 ring-1 ring-gray-900'
@@ -56,7 +56,7 @@
 						</template>
 					</div>
 				</div>
-				<div class="p-3 text-p-sm text-gray-800">
+				<div class="p-3 text-p-sm text-gray-800 flex-grow">
 					<div v-for="feature in plan.features">
 						<div v-if="feature.value" class="flex space-x-2">
 							<component
@@ -69,6 +69,10 @@
 							</span>
 						</div>
 					</div>
+				</div>
+				<!-- Thêm slot cho mỗi plan -->
+				<div class="p-3 pt-0 mt-auto">
+					<slot name="plan-footer" :plan="plan" />
 				</div>
 			</button>
 		</div>
@@ -88,5 +92,6 @@ export default {
 			return icon(iconName, classes);
 		},
 	},
+	
 };
 </script>

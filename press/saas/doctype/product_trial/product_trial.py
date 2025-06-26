@@ -22,11 +22,11 @@ class ProductTrial(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from press.saas.doctype.hybrid_pool_item.hybrid_pool_item import HybridPoolItem
 		from press.saas.doctype.product_trial_app.product_trial_app import ProductTrialApp
 
 		apps: DF.Table[ProductTrialApp]
+		background: DF.AttachImage | None
 		domain: DF.Link
 		email_account: DF.Link | None
 		email_full_logo: DF.AttachImage | None
@@ -44,6 +44,7 @@ class ProductTrial(Document):
 		suspension_email_content: DF.HTMLEditor | None
 		suspension_email_subject: DF.Data | None
 		title: DF.Data
+		title_en: DF.Data | None
 		trial_days: DF.Int
 		trial_plan: DF.Link
 	# end: auto-generated types
@@ -75,7 +76,7 @@ class ProductTrial(Document):
 			frappe.throw("Redirection route after login should start with /")
 
 	def setup_trial_site(
-		self, subdomain: str, team: str, cluster: str | None = None, account_request: str | None = None
+		self, subdomain: str, team: str, cluster: str | None = None, account_request: str | None = None, selected_app_plans: dict | None = None
 	):
 		from press.press.doctype.site.site import Site, get_plan_config
 
@@ -135,7 +136,48 @@ class ProductTrial(Document):
 			site.insert()
 			agent_job_name = site.flags.get("new_site_agent_job_name", None)
 
+		# Create subscriptions for selected app plans if provided
+		if selected_app_plans:
+			self.create_app_subscriptions(site, selected_app_plans)
+
 		return site, agent_job_name, bool(standby_site)
+
+	def create_app_subscriptions(self, site, selected_app_plans: dict):
+		"""Create subscriptions for selected app plans"""
+		from press.utils import get_current_team
+		
+		for app_name, plan_details in selected_app_plans.items():
+			if not plan_details or not isinstance(plan_details, dict):
+				continue
+				
+			plan_name = plan_details.get('name')
+			if not plan_name:
+				continue
+				
+			try:
+				# Create subscription for the selected app plan
+				subscription = frappe.get_doc({
+					"doctype": "Subscription",
+					"document_type": "Marketplace App",
+					"document_name": app_name,
+					"plan_type": "Marketplace App Plan", 
+					"plan": plan_name,
+					"site": site.name,
+					"enabled": 1,
+					"team": get_current_team() or site.team,
+				})
+				subscription.insert(ignore_permissions=True)
+				
+				# Update site config with app subscription
+				config = frappe.db.get_value("Marketplace App", app_name, "site_config")
+				if config:
+					import json
+					config = json.loads(config)
+					config.update({"sk_" + app_name: subscription.secret_key})
+					site._update_configuration(config, save=False)
+					
+			except Exception as e:
+				frappe.log_error(f"Failed to create subscription for app {app_name}: {str(e)}")
 
 	def get_proxy_servers_for_available_clusters(self):
 		clusters = self.get_available_clusters()

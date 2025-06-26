@@ -79,10 +79,10 @@ def verify_otp(account_request: str, otp: str):
 	# ensure no team has been created with this email
 	if frappe.db.exists("Team", {"user": account_request.email}) and not account_request.product_trial:
 		ip_tracker and ip_tracker.add_failure_attempt()
-		frappe.throw("Invalid OTP. Please try again.")
+		frappe.throw(_("Invalid OTP Please try again"))
 	if account_request.otp != otp:
 		ip_tracker and ip_tracker.add_failure_attempt()
-		frappe.throw("Invalid OTP. Please try again.")
+		frappe.throw(_("Invalid OTP Please try again"))
 
 	ip_tracker and ip_tracker.add_success_attempt()
 	account_request.reset_otp()
@@ -104,7 +104,7 @@ def verify_otp_and_login(email: str, otp: str):
 
 	if account_request.otp != otp:
 		ip_tracker and ip_tracker.add_failure_attempt()
-		frappe.throw("Invalid OTP. Please try again.")
+		frappe.throw(_("Invalid OTP Please try again"))
 
 	ip_tracker and ip_tracker.add_success_attempt()
 	account_request.reset_otp()
@@ -393,7 +393,7 @@ def validate_request_key(key, timezone=None):
 				"OAuth Domain Mapping", {"email_domain": account_request.email.split("@")[1]}
 			),
 			"product_trial": frappe.db.get_value(
-				"Product Trial", account_request.product_trial, ["logo", "name"], as_dict=1
+				"Product Trial", account_request.product_trial, ["logo", "name", "background"], as_dict=1
 			),
 		}
 
@@ -550,7 +550,7 @@ def signup_settings(product=None, fetch_countries=False, timezone=None):
 		product_trial = frappe.db.get_value(
 			"Product Trial",
 			{"name": product, "published": 1},
-			["title", "logo", "background"],
+			["title", "logo", "background", "title_en"],
 			as_dict=1,
 		)
 

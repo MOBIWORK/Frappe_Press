@@ -1,15 +1,11 @@
 <template>
 	<div
 		class="flex h-screen w-screen flex-col items-center justify-center bg-gray-600 bg-opacity-50"
-		v-if="$resources?.siteRequest?.doc?.status !== 'Error'"
+		v-if="$resources?.siteRequest?.doc?.status && !['Error', 'Site Created'].includes($resources?.siteRequest?.doc?.status)"
 	>
 		<SignupSpinner />
 		<p class="text-white">
-			{{
-				$resources?.siteRequest?.doc?.status === 'Site Created'
-					? 'Logging you in'
-					: 'Completing setup'
-			}}
+			{{ __('Completing setup') }}
 		</p>
 	</div>
 	<div class="flex h-screen overflow-hidden" v-else>
@@ -17,8 +13,7 @@
 			<LoginBox
 				v-if="$resources?.siteRequest?.doc?.status === 'Site Created'"
 				title="Site created successfully"
-				:subtitle="`Your trial site is ready ats
-					${$resources?.siteRequest?.doc?.domain || $resources?.siteRequest?.doc?.site}`"
+				:subtitle="`Your trial site is ready at ${$resources?.siteRequest?.doc?.domain || $resources?.siteRequest?.doc?.site}`"
 			>
 				<template v-slot:logo v-if="saasProduct">
 					<div class="flex space-x-2">
@@ -151,6 +146,7 @@ export default {
 				realtime: true,
 				auto: true,
 				onSuccess(doc) {
+					console.log('doc : >>>>>>>>>>>>>>>>>>>>>>>>>', doc);
 					if (doc.status == 'Site Created') this.loginToSite();
 					else if (
 						doc.status == 'Wait for Site' ||

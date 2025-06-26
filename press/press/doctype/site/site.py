@@ -501,10 +501,10 @@ class Site(Document, TagHelpers):
 			is_site_on_public_server = frappe.db.get_value("Server", self.server, "public")
 
 			# Don't allow free plan for non-system users
-			if not is_system_user():
-				is_plan_free = (plan.price_inr == 0 or plan.price_usd == 0) and not plan.dedicated_server_plan
-				if is_plan_free:
-					frappe.throw("You can't select a free plan!")
+			# if not is_system_user():
+			# 	is_plan_free = (plan.price_inr == 0 or plan.price_usd == 0) and not plan.dedicated_server_plan
+			# 	if is_plan_free:
+			# 		frappe.throw("You can't select a free plan!")
 
 			# If site is on public server, don't allow unlimited plans
 			if is_site_on_public_server and plan.dedicated_server_plan:
@@ -719,13 +719,14 @@ class Site(Document, TagHelpers):
 	def check_marketplace_app_installable(self, plan: str | None = None):
 		if not plan:
 			return
-		if (
-			not frappe.db.get_value("Marketplace App Plan", plan, "price_usd") <= 0
-			and not frappe.local.team().can_install_paid_apps()
-		):
-			frappe.throw(
-				"You cannot install a Paid app on Free Credits. Please buy credits before trying to install again."
-			)
+		
+		# if (
+		# 	not frappe.db.get_value("Marketplace App Plan", plan, "price_usd") <= 0
+		# 	and not frappe.local.team().can_install_paid_apps()
+		# ):
+		# 	frappe.throw(
+		# 		"You cannot install a Paid app on Free Credits. Please buy credits before trying to install again."
+		# 	)
 
 			# TODO: check if app is available and can be installed
 

@@ -8,8 +8,10 @@
  "engine": "InnoDB",
  "field_order": [
   "title",
+  "title_en",
   "column_break_bqrh",
   "logo",
+  "background",
   "published",
   "section_break_rvnt",
   "domain",
@@ -227,6 +229,17 @@
    "fieldname": "enable_hybrid_pooling",
    "fieldtype": "Check",
    "label": "Enable Hybrid Pooling"
+  },
+  {
+   "fieldname": "background",
+   "fieldtype": "Attach Image",
+   "label": "Background"
+  },
+  {
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Title EN"
   }
  ],
  "grid_page_length": 50,
@@ -242,7 +255,7 @@
    "link_fieldname": "product_trial"
   }
  ],
- "modified": "2025-05-22 12:29:52.256771",
+ "modified": "2025-06-10 10:35:31.429236",
  "modified_by": "Administrator",
  "module": "SaaS",
  "name": "Product Trial",

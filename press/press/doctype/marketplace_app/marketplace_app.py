@@ -507,21 +507,43 @@ class MarketplaceApp(WebsiteGenerator):
 			(self.app,),
 		)[0][0]
 
+	# def get_payout_amount(self, status: str = "", total_for: str = "net_amount"):
+	# 	"""Return the payout amount for this app"""
+	# 	filters = {"recipient": self.team}
+	# 	if status:
+	# 		filters["status"] = status
+	# 	payout_orders = frappe.get_all("Payout Order", filters=filters, pluck="name")
+	# 	payout = frappe.get_all(
+	# 		"Payout Order Item",
+	# 		filters={"parent": ("in", payout_orders), "document_name": self.name},
+	# 		fields=[
+	# 			f"SUM(CASE WHEN currency = 'USD' THEN {total_for} ELSE 0 END) AS usd_amount",
+	# 			f"SUM(CASE WHEN currency = 'INR' THEN {total_for} ELSE 0 END) AS inr_amount",
+	# 		],
+	# 	)
+	# 	return payout[0] if payout else {"usd_amount": 0, "inr_amount": 0}
 	def get_payout_amount(self, status: str = "", total_for: str = "net_amount"):
 		"""Return the payout amount for this app"""
-		filters = {"recipient": self.team}
+		filters = {"team": self.team}
 		if status:
 			filters["status"] = status
 		payout_orders = frappe.get_all("Payout Order", filters=filters, pluck="name")
-		payout = frappe.get_all(
-			"Payout Order Item",
-			filters={"parent": ("in", payout_orders), "document_name": self.name},
-			fields=[
-				f"SUM(CASE WHEN currency = 'USD' THEN {total_for} ELSE 0 END) AS usd_amount",
-				f"SUM(CASE WHEN currency = 'INR' THEN {total_for} ELSE 0 END) AS inr_amount",
-			],
-		)
-		return payout[0] if payout else {"usd_amount": 0, "inr_amount": 0}
+		if not payout_orders:
+			return {"usd_amount": 0, "inr_amount": 0}
+		query = f"""
+			SELECT
+				SUM(CASE WHEN currency = 'USD' THEN {total_for} ELSE 0 END) AS usd_amount,
+				SUM(CASE WHEN currency = 'INR' THEN {total_for} ELSE 0 END) AS inr_amount
+			FROM `tabPayout Order Item`
+			WHERE `parent` IN %(parents)s AND `document_name` = %(document_name)s
+		"""
+
+		result = frappe.db.sql(query, {
+			"parents": tuple(payout_orders),
+			"document_name": self.name
+		}, as_dict=True)
+
+		return result[0] if result else {"usd_amount": 0, "inr_amount": 0}
 
 	@dashboard_whitelist()
 	def site_installs(self):
@@ -625,6 +647,8 @@ def get_plans_for_app(
 			"enabled",
 			"price_inr",
 			"price_usd",
+			"price_vnd",
+			"title_en"
 		],
 	)
 

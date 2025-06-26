@@ -221,11 +221,14 @@ def get(doctype, name):
 		raise_not_permitted()
 
 	check_role_permissions(doctype, name)
+	
+	fields = list(default_fields)
 
-	fields = tuple(default_fields)
+	if doctype == "Product Trial":
+		fields.append("background")
+
 	if hasattr(doc, "dashboard_fields"):
-		fields += tuple(doc.dashboard_fields)
-
+		fields += list(doc.dashboard_fields)
 	_doc = frappe._dict()
 	for fieldname in fields:
 		_doc[fieldname] = doc.get(fieldname)

@@ -315,7 +315,7 @@ class Team(Document):
 
 		team.save(ignore_permissions=True)
 
-		team.create_stripe_customer()
+		# team.create_stripe_customer()
 
 		if account_request.referrer_id:
 			team.create_referral_bonus(account_request.referrer_id)

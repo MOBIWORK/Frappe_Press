@@ -23,6 +23,7 @@ def create_test_marketplace_app_plan(app: str = "frappe"):
 			"title": "Test Plan",
 			"price_inr": 1000,
 			"price_usd": 12,
+			"price_vnd": 23000,
 			"app": app,
 			"versions": [{"version": "Version 14"}],
 			"features": [{"description": "Feature 1"}],

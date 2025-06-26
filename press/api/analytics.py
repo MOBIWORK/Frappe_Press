@@ -955,7 +955,10 @@ def plausible_analytics(name):
 		"metrics": "visitors,pageviews",
 		"filters": f"visit:page==/marketplace/apps/{name}",
 	}
-	headers = {"Authorization": f"Bearer {settings.get_password('plausible_api_key')}"}
+
+	# tạm thời cmt
+	# headers = {"Authorization": f"Bearer {settings.get_password('plausible_api_key')}"}
+	headers = {}
 
 	for api_type, endpoint in api_endpoints.items():
 		res = requests.get(settings.plausible_url + endpoint, params=params, headers=headers)

@@ -202,8 +202,8 @@
    "default": "0",
    "fieldname": "use_for_new_benches",
    "fieldtype": "Check",
-   "label": "Use For New Benches",
-   "read_only": 1
+   "label": "Use For New Benchess",
+   "read_only": 0
   },
   {
    "fieldname": "hostname",

@@ -214,3 +214,8 @@ export function formatValue(value, type) {
 			return value;
 	}
 }
+
+export function formatVND(value) {
+	// Định dạng số theo kiểu Việt Nam (dấu chấm phân cách hàng nghìn)
+	return new Intl.NumberFormat('vi-VN').format(value);
+}

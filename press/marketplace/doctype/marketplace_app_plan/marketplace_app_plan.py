@@ -10,7 +10,33 @@ from press.press.doctype.site_plan.plan import Plan
 
 
 class MarketplaceAppPlan(Plan):
-	dashboard_fields = ["app", "name", "title", "price_inr", "price_usd", "enabled"]
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.core.doctype.has_role.has_role import HasRole
+		from frappe.types import DF
+		from press.marketplace.doctype.app_plan_version.app_plan_version import AppPlanVersion
+		from press.press.doctype.plan_feature.plan_feature import PlanFeature
+
+		app: DF.Link
+		available_on_versions: DF.Table[AppPlanVersion]
+		enabled: DF.Check
+		features: DF.Table[PlanFeature]
+		interval: DF.Literal["Daily", "Monthly", "Yearly"]
+		is_free: DF.Check
+		limit_features: DF.Table[PlanFeature]
+		plan: DF.Data | None
+		price_inr: DF.Currency
+		price_usd: DF.Currency
+		price_vnd: DF.Currency
+		roles: DF.Table[HasRole]
+		title: DF.Data | None
+		title_en: DF.Data | None
+	# end: auto-generated types
+	dashboard_fields = ["app", "name", "title", "price_inr", "price_usd","price_vnd", "enabled"]
 
 	@staticmethod
 	def get_list_query(query):

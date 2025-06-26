@@ -8,16 +8,21 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
+  "is_free",
   "title",
+  "title_en",
   "app",
   "interval",
+  "plan",
   "section_break_2",
   "price_inr",
   "column_break_3",
   "price_usd",
+  "price_vnd",
   "plan_features_section",
   "available_on_versions",
   "features",
+  "limit_features",
   "allowed_roles_section",
   "roles"
  ],
@@ -99,11 +104,38 @@
    "fieldtype": "Table",
    "label": "Roles",
    "options": "Has Role"
+  },
+  {
+   "fieldname": "plan",
+   "fieldtype": "Data",
+   "label": "Plan"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_free",
+   "fieldtype": "Check",
+   "label": "Is Free"
+  },
+  {
+   "fieldname": "price_vnd",
+   "fieldtype": "Currency",
+   "label": "Price (VND)"
+  },
+  {
+   "fieldname": "title_en",
+   "fieldtype": "Data",
+   "label": "Title EN"
+  },
+  {
+   "fieldname": "limit_features",
+   "fieldtype": "Table",
+   "label": "Limit Features",
+   "options": "Plan Feature"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-03-21 13:11:26.446979",
+ "modified": "2025-06-19 14:51:16.510024",
  "modified_by": "Administrator",
  "module": "Marketplace",
  "name": "Marketplace App Plan",
@@ -123,6 +155,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

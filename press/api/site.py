@@ -187,7 +187,6 @@ def _new(site, server: str | None = None, ignore_plan_validation: bool = False):
 	app_plans = site.get("selected_app_plans")
 	if not ignore_plan_validation:
 		validate_plan(bench.server, plan)
-
 	site = frappe.get_doc(
 		{
 			"doctype": "Site",
@@ -208,14 +207,12 @@ def _new(site, server: str | None = None, ignore_plan_validation: bool = False):
 			"skip_failing_patches": site.get("skip_failing_patches", False),
 		},
 	)
-
 	if app_plans and len(app_plans) > 0:
+		
 		subscription_docs = get_app_subscriptions(app_plans, team.name)
-
 		# Set the secret keys for subscription in config
 		secret_keys = {f"sk_{s.document_name}": s.secret_key for s in subscription_docs}
 		site._update_configuration(secret_keys, save=False)
-
 	site.insert(ignore_permissions=True)
 
 	if app_plans and len(app_plans) > 0:
@@ -223,7 +220,6 @@ def _new(site, server: str | None = None, ignore_plan_validation: bool = False):
 		for doc in subscription_docs:
 			doc.site = site.name
 			doc.save(ignore_permissions=True)
-
 	return {
 		"site": site.name,
 		"job": frappe.db.get_value(
@@ -274,7 +270,7 @@ def get_group_for_new_site_and_set_localisation_app(site, apps):
 
 def validate_plan(server, plan):
 	if (
-		frappe.db.get_value("Site Plan", plan, "price_usd") > 0
+		frappe.db.get_value("Site Plan", plan, "price_usd") >= 0
 		or frappe.db.get_value("Site Plan", plan, "dedicated_server_plan") == 1
 	):
 		return
@@ -295,30 +291,30 @@ def new(site):
 
 def get_app_subscriptions(app_plans, team: str):
 	subscriptions = []
-
+	
 	for app_name, plan_name in app_plans.items():
-		is_free = frappe.db.get_value("Marketplace App Plan", plan_name, "is_free")
-		if not is_free:
-			team = frappe.get_doc("Team", team)
-			if not team.can_install_paid_apps():
-				frappe.throw(
-					"You cannot install a Paid app on Free Credits. Please buy credits before trying to install again."
-				)
-
+		# tạm thời cmt check kiểm tra tiền tài khoản
+		# is_free = frappe.db.get_value("Marketplace App Plan", plan_name.get('name'), "is_free")
+		# if not is_free:
+		# 	team = frappe.get_doc("Team", team)
+		# 	if not team.can_install_paid_apps():
+		# 		frappe.throw(
+		# 			"You cannot install a Paid app on Free Credits. Please buy credits before trying to install again."
+		# 		)
+	
 		new_subscription = frappe.get_doc(
 			{
 				"doctype": "Subscription",
 				"document_type": "Marketplace App",
 				"document_name": app_name,
 				"plan_type": "Marketplace App Plan",
-				"plan": plan_name,
+				"plan": plan_name.get('name'),
 				"enabled": 1,
 				"team": team,
 			}
 		).insert(ignore_permissions=True)
 
 		subscriptions.append(new_subscription)
-
 	return subscriptions
 
 
@@ -1349,23 +1345,22 @@ def get_installed_apps(site, query_filters: dict | None = None):
 				["document_name as app", "plan", "name"],
 				as_dict=True,
 			)
-			app_source.subscription = subscription
 
+			app_source.subscription = subscription
+			
 			app_source.plan_info = frappe.db.get_value(
 				"Marketplace App Plan",
 				subscription.plan,
-				["price_usd", "price_inr", "name", "plan"],
+				["price_usd", "price_inr","price_vnd", "name", "plan"],
 				as_dict=True,
 			)
-
+			print("--------", app_source.plan_info)
 			app_source.plans = get_plans_for_app(app.app)
 
 			app_source.is_free = app_source.plan_info.price_usd <= 0
 		else:
 			app_source.subscription = {}
-
 		installed_apps.append(app_source)
-
 	return installed_apps
 
 
@@ -2421,3 +2416,68 @@ def fetch_sites_data_for_export():
 		site.tags = [tag.tag_name for tag in tags if tag.parent == site.name]
 
 	return sites
+
+@frappe.whitelist(allow_guest=True)
+def testapi():
+	return {
+		"user": "phong10040222@gmail.com",
+		"list_app": ['frappe', 'crm'],
+		"site": "testsite1.mbwcloud.com"
+	}
+
+@frappe.whitelist()
+def get_current_site_info():
+	return {
+		"app_title": "Frappe CRM",
+		"plan_title": "Basic",
+		"site_name": "testsite1.mbwcloud.com",
+		"price": "$100.00/VNĐ"
+	}
+
+@frappe.whitelist(allow_guest=True)
+def is_check_user(email=None):
+	if not email:
+		return {"site": "", "list_app": [], "user": "", "app_details": []}
+	else :
+		team = frappe.db.get_all("Team", filters={"user": email}, fields=["user", "name"])
+		user = team[0].get("user") if team else None
+		sites = frappe.db.get_all("Site", filters={"team": team[0].get("name")}, fields=["name"])
+	if not sites:
+		return {"site": "", "list_app": [], "user": user, "app_details": []}
+	site_name = sites[0].get("name")
+	# Get all apps for that site
+	site_doc = frappe.get_doc("Site", site_name)
+	installed_apps_details = get_installed_apps(site_doc)
+	app_details_list = []
+	for app_detail in installed_apps_details:
+		if app_detail.get("app") == "frappe":
+			continue
+
+		plan_info = app_detail.get("plan_info")
+		formatted_plan_info = None
+		if plan_info and plan_info.get("name"):
+			plan_name = plan_info.get("name")
+			plan_extra_info = frappe.db.get_value(
+				"Marketplace App Plan", plan_name, ["title", "title_en"], as_dict=True
+			)
+			formatted_plan_info = {
+				"price_vnd": plan_info.get("price_vnd"),
+				"name": plan_name,
+				"title": plan_extra_info.get("title") if plan_extra_info else None,
+				"title_en": plan_extra_info.get("title_en") if plan_extra_info else None,
+			}
+
+		app_details_list.append(
+			{
+				"app": app_detail.get("app"),
+				"app_title": app_detail.get("app_title"),
+				"title": app_detail.get("title"),
+				"plan_info": formatted_plan_info,
+			}
+		)
+	return {
+		"user": user,
+		"site": site_name,
+		"list_app": [app.get("app") for app in app_details_list],
+		"app_details": app_details_list,
+	}
