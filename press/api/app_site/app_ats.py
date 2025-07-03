@@ -164,7 +164,7 @@ def recreate_site_app(**kwargs):
     site_name = kwargs.get('site_name')
     
     try:        
-        app_inte = frappe.get_value("App Integration Settings", {"site_a": site_name, "app_a": app_a, "app_b": app_name}, ['name', 'site_b', 'reinstall'], as_dict=1)
+        app_inte = frappe.get_value("App Integration Settings", {"site_a": site_name, "app_a": app_a, "app_b": app_name, "webhook_base_url": site_name}, ['name', 'site_b', 'reinstall'], as_dict=1)
         if not app_inte:
             frappe.throw(_("App not integrated", lang))
 
