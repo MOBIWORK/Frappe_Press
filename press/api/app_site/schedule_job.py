@@ -18,6 +18,7 @@ def auto_configure_app_site():
                 config[f'{integration.app_a}_site_name'] = 'https://' + site_a.name
                 config[f'{integration.app_a}_api_key'] = site_a.api_key
                 config[f'{integration.app_a}_api_secret'] = site_a.api_secret
+                config[f'webhook_base_url'] = site_b.webhook_base_url
                 site_config[integration.site_b] = config
                 
                 data_update = {
