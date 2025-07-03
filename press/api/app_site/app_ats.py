@@ -71,6 +71,7 @@ def create_site(team, site_name, subdomain, parent_host, lang='vi'):
     config = {
         'lang': lang,
         f'{app_a}_site_name': 'https://' + site_name,
+        "webhook_base_url":'https://' + site_name
     }
     if doc_site_a.api_key:
         config[f'{app_a}_api_key'] = doc_site_a.api_key
