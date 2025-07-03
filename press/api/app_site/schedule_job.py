@@ -12,13 +12,15 @@ def auto_configure_app_site():
                 continue
             if not site_b or site_b.status not in ["Active","Suspended"]:
                 continue
+                
+            config = site_config.get(integration.site_b) or {}
+            config['webhook_base_url'] = 'https://' + site_a.name
             
             if not integration.api_key_a:
-                config = site_config.get(integration.site_b) or {}
+                # config = site_config.get(integration.site_b) or {}
                 config[f'{integration.app_a}_site_name'] = 'https://' + site_a.name
                 config[f'{integration.app_a}_api_key'] = site_a.api_key
                 config[f'{integration.app_a}_api_secret'] = site_a.api_secret
-                config[f'webhook_base_url'] = 'https://' + site_a.name
                 site_config[integration.site_b] = config
                 
                 data_update = {
