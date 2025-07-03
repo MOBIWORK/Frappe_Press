@@ -195,7 +195,7 @@ class Site(Document):
             if not linked_app:
                 continue
             
-            app_integration = frappe.get_value("App Integration Settings", {"site_b": self.name, "app_a": linked_app.app_a, "app_b": app.app}, ["name", "configured", "site_a", "api_key_a", "api_key_b"], as_dict=1)
+            app_integration = frappe.get_value("App Integration Settings", {"site_b": self.name, "app_a": linked_app.app_a, "app_b": app.app}, ["name", "configured", "site_a", "api_key_a", "api_key_b","webhook_base_url"], as_dict=1)
             site_a = frappe.get_value("Site", app_integration.site_a, ["name", "status"], as_dict=1)
             if not app_integration or app_integration.configured == 1:
                 continue
@@ -207,12 +207,13 @@ class Site(Document):
                 config[f'{app.app}_site_name'] = 'https://' + self.name
                 config[f'{app.app}_api_key'] = self.api_key
                 config[f'{app.app}_api_secret'] = self.api_secret
+                config[f'webhook_base_url']='https://' + self.name
                 site_config[app_integration.site_a] = config
                 
                 data_update = {
                     'api_key_b': self.api_key,
-                    'api_secret_b': self.api_secret
-                    
+                    'api_secret_b': self.api_secret,
+                    'webhook_base_url':'https://' + self.name
                 }
                 if app_integration.api_key_a:
                     data_update['configured'] = 1
@@ -1762,7 +1763,8 @@ def process_archive_site_job_update(job):
                         'reinstall': 0,
                         'configured': 0,
                         'api_key_b': '',
-                        'api_secret_b': ''
+                        'api_secret_b': '',
+                        'webhook_base_url':''
                     })
             except Exception as ex:
                 frappe.log_error(frappe.get_traceback(), "process_archive_site_job_update")

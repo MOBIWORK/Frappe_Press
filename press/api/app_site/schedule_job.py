@@ -26,6 +26,7 @@ def auto_configure_app_site():
                 data_update = {
                     'api_key_a': site_a.api_key,
                     'api_secret_a': site_a.api_secret,
+                    'webhook_base_url':'https://' + site_a.name
                 }
                 if integration.api_key_b:
                     data_update['configured'] = 1

@@ -139,6 +139,7 @@ def create_site_app(**kwargs):
         app_integration.api_secret_a = doc_site_a.api_secret
         app_integration.site_b = site.name
         app_integration.app_b = app_name
+        app_integration.webhook_base_url = site_name
         app_integration.save(ignore_permissions=True)
         
         frappe.db.commit()
