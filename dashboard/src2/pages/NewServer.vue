@@ -499,8 +499,14 @@ export default {
 			return this.$resources.options.data;
 		},
 		_totalPerMonth() {
-			let currencyField =
-				this.$team.doc.currency == 'INR' ? 'price_inr' : 'price_usd';
+			let currencyField;
+			if (this.$team.doc.currency == 'USD') {
+				currencyField = 'price_usd';
+			} else if (this.$team.doc.currency == 'INR') {
+				currencyField = 'price_inr';
+			} else {
+				currencyField = 'price_vnd'; // VND làm mặc định
+			}
 			if (this.serverType === 'dedicated') {
 				return (
 					this.appServerPlan[currencyField] + this.dbServerPlan[currencyField]

@@ -79,10 +79,13 @@ export default {
 						align: 'right',
 						format: (_, row) => {
 							let total = 0;
-							if (this.$team.doc.currency === 'INR') {
+							if (this.$team.doc.currency === 'USD') {
+								total = row.net_total_inr / 82 + row.net_total_usd;
+							} else if (this.$team.doc.currency === 'INR') {
 								total = row.net_total_inr + row.net_total_usd * 82;
 							} else {
-								total = row.net_total_inr / 82 + row.net_total_usd;
+								// VND conversion (assuming 1 USD = 24000 VND, 1 INR = 300 VND)
+								total = row.net_total_vnd || (row.net_total_inr * 300 + row.net_total_usd * 24000);
 							}
 
 							return this.$format.userCurrency(total);

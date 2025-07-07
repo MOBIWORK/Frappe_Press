@@ -13,7 +13,7 @@
 			>
 				<template #prefix>
 					<div class="grid w-4 place-items-center text-sm text-gray-700">
-						{{ team.doc.currency === 'INR' ? '₹' : '$' }}
+						{{ team.doc.currency === 'USD' ? '$' : team.doc.currency === 'INR' ? '₹' : '₫' }}
 					</div>
 				</template>
 			</FormControl>
@@ -30,7 +30,7 @@
 			>
 				<template #prefix>
 					<div class="grid w-4 place-items-center text-sm text-gray-700">
-						{{ team.doc.currency === 'INR' ? '₹' : '$' }}
+						{{ team.doc.currency === 'USD' ? '$' : team.doc.currency === 'INR' ? '₹' : '₫' }}
 					</div>
 				</template>
 			</FormControl>
@@ -102,10 +102,14 @@ const pressSettings = createDocumentResource({
 
 const maximumAmount = computed(() => {
 	if (!pressSettings.doc) return 0;
-	const feeAmount =
-		team.doc?.currency == 'INR'
-			? pressSettings.doc.partnership_fee_inr
-			: pressSettings.doc.partnership_fee_usd;
+	let feeAmount;
+	if (team.doc?.currency == 'USD') {
+		feeAmount = pressSettings.doc.partnership_fee_usd;
+	} else if (team.doc?.currency == 'INR') {
+		feeAmount = pressSettings.doc.partnership_fee_inr;
+	} else {
+		feeAmount = pressSettings.doc.partnership_fee_vnd || (pressSettings.doc.partnership_fee_usd * 24000); // VND mặc định
+	}
 	return Math.ceil(feeAmount);
 });
 

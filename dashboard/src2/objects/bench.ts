@@ -257,8 +257,11 @@ export function getSitesTab() {
 				'plan.plan_title as plan_title',
 				'plan.price_usd as price_usd',
 				'plan.price_inr as price_inr',
-				'cluster.image as cluster_image',
-				'cluster.title as cluster_title'
+				'plan.price_vnd as price_vnd',
+				'group.title as group_title',
+				'group.version as group_version',
+				'creation',
+				'trial_end_date'
 			],
 			orderBy: 'creation desc, bench desc',
 			pageLength: 99999,

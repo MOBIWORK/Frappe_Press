@@ -16,7 +16,12 @@ class Plan(Document):
 			return rounded(price_per_day * 30)
 
 	def get_price_per_day(self, currency):
-		price = self.price_inr if currency == "INR" else self.price_usd
+		if currency == "USD":
+			price = self.price_usd
+		elif currency == "INR":
+			price = self.price_inr
+		else:
+			price = self.price_vnd  # VND làm mặc định
 		price_per_day = rounded(price / self.period, 2)
 		return price_per_day
 

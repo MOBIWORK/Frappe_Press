@@ -23,6 +23,7 @@
   "invoicing_column",
   "gst_percentage",
   "npo_discount",
+  "vat_percentage",
   "column_break_qfwx",
   "print_format",
   "stripe_settings_section",
@@ -38,6 +39,16 @@
   "stripe_webhook_endpoint_id",
   "stripe_webhook_secret",
   "ngrok_auth_token",
+  "payos_settings_section",
+  "payos_client_id",
+  "payos_api_key",
+  "payos_checksum_key",
+  "payos_webhook_url",
+  "column_break_cdgy",
+  "config_webhook_payos",
+  "payos_webhook_url_current",
+  "payos_return_url",
+  "payos_cancel_url",
   "razorpay_settings_section",
   "razorpay_key_id",
   "razorpay_webhook_secret",
@@ -1451,11 +1462,65 @@
    "fieldname": "npo_discount",
    "fieldtype": "Float",
    "label": "NPO Discount"
+  },
+  {
+   "fieldname": "payos_settings_section",
+   "fieldtype": "Section Break",
+   "label": "PayOs Settings"
+  },
+  {
+   "fieldname": "payos_client_id",
+   "fieldtype": "Data",
+   "label": "Client Id"
+  },
+  {
+   "fieldname": "payos_api_key",
+   "fieldtype": "Data",
+   "label": "Api Key"
+  },
+  {
+   "fieldname": "payos_checksum_key",
+   "fieldtype": "Data",
+   "label": "Checksum Key"
+  },
+  {
+   "fieldname": "payos_webhook_url",
+   "fieldtype": "Data",
+   "label": "Webhook Url"
+  },
+  {
+   "fieldname": "config_webhook_payos",
+   "fieldtype": "Button",
+   "label": "Config Webhook PayOs"
+  },
+  {
+   "fieldname": "payos_webhook_url_current",
+   "fieldtype": "Data",
+   "label": "Webhook Url Current"
+  },
+  {
+   "fieldname": "payos_return_url",
+   "fieldtype": "Data",
+   "label": "Return Url"
+  },
+  {
+   "fieldname": "payos_cancel_url",
+   "fieldtype": "Data",
+   "label": "Cancel Url"
+  },
+  {
+   "fieldname": "column_break_cdgy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "vat_percentage",
+   "fieldtype": "Float",
+   "label": "VAT"
   }
  ],
  "issingle": 1,
  "links": [],
- "modified": "2025-05-20 13:05:30.783898",
+ "modified": "2025-07-01 09:06:59.248424",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

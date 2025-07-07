@@ -25,13 +25,15 @@ export default {
 		route: '/servers',
 		title: 'Servers',
 		fields: [
+			'name',
 			'title',
 			'database_server',
 			'plan.title as plan_title',
 			'plan.price_usd as price_usd',
 			'plan.price_inr as price_inr',
+			'plan.price_vnd as price_vnd',
 			'cluster.image as cluster_image',
-			'cluster.title as cluster_title',
+			'cluster.title as cluster_title'
 		],
 		searchField: 'title',
 		filterControls() {
@@ -232,6 +234,7 @@ export default {
 						'plan.plan_title as plan_title',
 						'plan.price_usd as price_usd',
 						'plan.price_inr as price_inr',
+						'plan.price_vnd as price_vnd',
 						'group.title as group_title',
 						'group.public as group_public',
 						'group.team as group_team',
@@ -301,11 +304,16 @@ export default {
 								}
 								let $team = getTeam();
 								if (row.price_usd > 0) {
-									let india = $team.doc.country == 'India';
-									let formattedValue = userCurrency(
-										india ? row.price_inr : row.price_usd,
-										0,
-									);
+									let teamCurrency = $team.doc.currency;
+									let price;
+									if (teamCurrency === 'USD') {
+										price = row.price_usd;
+									} else if (teamCurrency === 'INR') {
+										price = row.price_inr;
+									} else {
+										price = row.price_vnd; // VND làm mặc định
+									}
+									let formattedValue = userCurrency(price, 0);
 									return `${formattedValue}/mo`;
 								}
 								return row.plan_title;

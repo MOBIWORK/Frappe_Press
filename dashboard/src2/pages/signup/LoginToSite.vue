@@ -10,102 +10,184 @@
 	</div>
 	<div class="flex h-screen overflow-hidden" v-else>
 		<div class="w-full overflow-auto">
-			<LoginBox
+			<!-- Success State - Beautiful Login Screen -->
+			<div
 				v-if="$resources?.siteRequest?.doc?.status === 'Site Created'"
-				title="Site created successfully"
-				:subtitle="`Your trial site is ready at ${$resources?.siteRequest?.doc?.domain || $resources?.siteRequest?.doc?.site}`"
+				class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4"
 			>
-				<template v-slot:logo v-if="saasProduct">
-					<div class="flex space-x-2">
-						<img
-							class="inline-block h-[38px] w-[38px] rounded-sm"
-							:src="saasProduct?.logo"
-						/>
-					</div>
-				</template>
-				<div>
-					<div
-						class="mb-4 mt-16 flex flex-col items-center justify-center space-y-4"
-					>
-						<Button
-							variant="solid"
-							class="w-full"
-							icon-right="external-link"
-							@click="loginToSite"
-							:loading="this.$resources?.siteRequest?.getLoginSid.loading"
-						>
-							Log In
-						</Button>
-					</div>
-				</div>
-				<ErrorMessage
-					class="w-full text-center"
-					:message="this.$resources?.siteRequest?.getLoginSid.error"
-				/>
-			</LoginBox>
-			<LoginBox
-				v-else-if="$resources?.siteRequest?.doc?.status === 'Error'"
-				title="Site creation failed"
-				:subtitle="
-					$resources?.siteRequest?.doc?.domain ||
-					$resources?.siteRequest?.doc?.site
-				"
-			>
-				<template v-slot:logo v-if="saasProduct">
-					<div class="flex space-x-2">
-						<img
-							class="inline-block h-7 w-7 rounded-sm"
-							:src="saasProduct?.logo"
-						/>
-					</div>
-				</template>
-				<template v-slot:default>
-					<div class="flex h-40 flex-col justify-center">
-						<div class="text-base leading-5 text-gray-800">
-							<p>It looks like something went wrong</p>
-							<p>
-								Contact
-								<a href="mailto:support@frappe.io" class="underline"
-									>support@frappe.io</a
-								><br />
-								to resolve the issue
+				<div class="w-full max-w-md">
+					<!-- Logo and Title -->
+					<div class="text-center mb-8">
+						<div v-if="saasProduct" class="mb-6">
+							<img
+								class="mx-auto h-16 w-16 rounded-xl shadow-lg"
+								:src="saasProduct?.logo"
+								:alt="saasProduct?.title"
+							/>
+							<h1 class="mt-4 text-2xl font-bold text-gray-900">
+								{{ saasProduct?.title }}
+							</h1>
+						</div>
+						<div class="space-y-2">
+							<h2 class="text-xl font-semibold text-gray-900">
+								{{ __('🎉 Site Created Successfully!') }}
+							</h2>
+							<p class="text-sm text-gray-600">
+								{{ __('Your trial site is ready at') }}
+							</p>
+							<p class="text-sm font-medium text-blue-600 break-all">
+								{{ $resources?.siteRequest?.doc?.domain || $resources?.siteRequest?.doc?.site }}
 							</p>
 						</div>
 					</div>
-				</template>
-			</LoginBox>
-			<LoginBox
-				v-else
-				title="Creating your site"
-				:subtitle="
-					this.$resources?.siteRequest?.doc?.domain ||
-					this.$resources?.siteRequest?.doc?.site
-				"
+
+					<!-- Login Card -->
+					<div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+						<div class="space-y-6">
+							<!-- Success Icon -->
+							<div class="text-center">
+								<div class="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+									<svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+									</svg>
+								</div>
+								<h3 class="text-lg font-medium text-gray-900 mb-2">
+									{{ __('Ready to Login') }}
+								</h3>
+								<p class="text-sm text-gray-500">
+									{{ __('Click below to access your new site') }}
+								</p>
+							</div>
+
+							<!-- Login Button -->
+							<Button
+								variant="solid"
+								class="w-full py-3 text-base font-medium bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 transform hover:scale-[1.02] shadow-lg"
+								@click="loginToSite"
+								:loading="this.$resources?.siteRequest?.getLoginSid.loading"
+							>
+								<span class="flex items-center justify-center">
+									<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+									</svg>
+									{{ __('Access Your Site') }}
+								</span>
+							</Button>
+
+							<!-- Error Message -->
+							<div v-if="this.$resources?.siteRequest?.getLoginSid.error" 
+								class="p-4 bg-red-50 border border-red-200 rounded-xl">
+								<p class="text-sm text-red-600 text-center">
+									{{ this.$resources?.siteRequest?.getLoginSid.error }}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Error State -->
+			<div
+				v-else-if="$resources?.siteRequest?.doc?.status === 'Error'"
+				class="min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50 flex items-center justify-center p-4"
 			>
-				<template v-slot:logo v-if="saasProduct">
-					<div class="mx-auto flex items-center space-x-2">
-						<img
-							class="inline-block h-7 w-7 rounded-sm"
-							:src="saasProduct?.logo"
-						/>
-						<span
-							class="select-none text-xl font-semibold tracking-tight text-gray-900"
-						>
-							{{ saasProduct?.title }}
-						</span>
+				<div class="w-full max-w-md">
+					<div class="text-center mb-8">
+						<div v-if="saasProduct" class="mb-6">
+							<img
+								class="mx-auto h-16 w-16 rounded-xl shadow-lg opacity-75"
+								:src="saasProduct?.logo"
+								:alt="saasProduct?.title"
+							/>
+							<h1 class="mt-4 text-2xl font-bold text-gray-900">
+								{{ saasProduct?.title }}
+							</h1>
+						</div>
 					</div>
-				</template>
-				<template v-slot:default>
-					<div class="flex h-40 items-center justify-center">
-						<Progress
-							class="px-10"
-							size="md"
-							:value="progressCount"
-							:label="currentBuildStep"
-						/>
+
+					<div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+						<div class="text-center space-y-6">
+							<!-- Error Icon -->
+							<div class="mx-auto w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+								<svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+								</svg>
+							</div>
+
+							<div class="space-y-3">
+								<h3 class="text-lg font-medium text-gray-900">
+									{{ __('Site Creation Failed') }}
+								</h3>
+								<p class="text-sm text-gray-600">
+									{{ $resources?.siteRequest?.doc?.domain || $resources?.siteRequest?.doc?.site }}
+								</p>
+							</div>
+						</div>
 					</div>
-				</template>
-			</LoginBox>
+				</div>
+			</div>
+
+			<!-- Progress State -->
+			<div
+				v-else
+				class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4"
+			>
+				<div class="w-full max-w-md">
+					<div class="text-center mb-8">
+						<div v-if="saasProduct" class="mb-6">
+							<img
+								class="mx-auto h-16 w-16 rounded-xl shadow-lg"
+								:src="saasProduct?.logo"
+								:alt="saasProduct?.title"
+							/>
+							<h1 class="mt-4 text-2xl font-bold text-gray-900">
+								{{ saasProduct?.title }}
+							</h1>
+						</div>
+						<div class="space-y-2">
+							<h2 class="text-xl font-semibold text-gray-900">
+								{{ __('Creating Your Site') }}
+							</h2>
+							<p class="text-sm text-gray-600 break-all">
+								{{ this.$resources?.siteRequest?.doc?.domain || this.$resources?.siteRequest?.doc?.site }}
+							</p>
+						</div>
+					</div>
+
+					<div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+						<div class="space-y-6">
+							<!-- Progress Animation -->
+							<div class="flex justify-center">
+								<div class="relative">
+									<div class="w-16 h-16 border-4 border-blue-200 rounded-full animate-pulse"></div>
+									<div class="absolute top-0 left-0 w-16 h-16 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+								</div>
+							</div>
+
+							<!-- Progress Bar -->
+							<div class="space-y-3">
+								<div class="flex justify-between text-sm">
+									<span class="text-gray-600">{{ currentBuildStep }}</span>
+									<span class="text-gray-500">{{ Math.round(progressCount) }}%</span>
+								</div>
+								<div class="w-full bg-gray-200 rounded-full h-2">
+									<div 
+										class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+										:style="{ width: progressCount + '%' }"
+									></div>
+								</div>
+							</div>
+
+							<!-- Status Message -->
+							<div class="text-center">
+								<p class="text-sm text-gray-600">
+									{{ __('Please wait while we prepare your site...') }}
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </template>
@@ -127,7 +209,22 @@ export default {
 			product_trial_request: this.$route.query.product_trial_request,
 			progressCount: 0,
 			currentBuildStep: 'Preparing for build',
+			timeoutWarning: null,
+			showTimeoutWarning: false,
 		};
+	},
+	mounted() {
+		// Set timeout warning after 2 minutes
+		this.timeoutWarning = setTimeout(() => {
+			if (!['Error', 'Site Created'].includes(this.$resources?.siteRequest?.doc?.status)) {
+				this.showTimeoutWarning = true;
+			}
+		}, 120000); // 2 minutes
+	},
+	beforeUnmount() {
+		if (this.timeoutWarning) {
+			clearTimeout(this.timeoutWarning);
+		}
 	},
 	resources: {
 		saasProduct() {
@@ -147,8 +244,10 @@ export default {
 				auto: true,
 				onSuccess(doc) {
 					console.log('doc : >>>>>>>>>>>>>>>>>>>>>>>>>', doc);
-					if (doc.status == 'Site Created') this.loginToSite();
-					else if (
+					if (doc.status == 'Site Created') {
+						this.showTimeoutWarning = false;
+						this.loginToSite();
+					} else if (
 						doc.status == 'Wait for Site' ||
 						doc.status == 'Prefilling Setup Wizard'
 					) {
@@ -166,6 +265,7 @@ export default {
 						},
 						onSuccess: (data) => {
 							if (data.status === 'Site Created') {
+								this.showTimeoutWarning = false;
 								return this.loginToSite();
 							}
 
@@ -204,6 +304,11 @@ export default {
 								}, 2000);
 							}
 						},
+						onError: (error) => {
+							console.error('Progress check error:', error);
+							// Still continue checking but show warning
+							this.showTimeoutWarning = true;
+						},
 					},
 					getLoginSid: {
 						method: 'get_login_sid',
@@ -223,6 +328,21 @@ export default {
 	methods: {
 		loginToSite() {
 			this.$resources.siteRequest.getLoginSid.submit();
+		},
+		checkStatus() {
+			// Force reload the siteRequest to check current status
+			this.$resources.siteRequest.reload();
+			this.showTimeoutWarning = false;
+			
+			// Reset timeout
+			if (this.timeoutWarning) {
+				clearTimeout(this.timeoutWarning);
+			}
+			this.timeoutWarning = setTimeout(() => {
+				if (!['Error', 'Site Created'].includes(this.$resources?.siteRequest?.doc?.status)) {
+					this.showTimeoutWarning = true;
+				}
+			}, 120000);
 		},
 	},
 };

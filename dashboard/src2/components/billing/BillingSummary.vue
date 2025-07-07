@@ -17,7 +17,7 @@
 						<div>
 							<span>Current billing amount so far is </span>
 							<span class="font-medium text-gray-900">
-								{{ currency }} {{ currentBillingAmount?.toFixed(2) || '0.00' }}
+								{{ formatCurrency(currentBillingAmount || 0) }}
 							</span>
 						</div>
 					</div>
@@ -34,7 +34,7 @@
 					<i-lucide-receipt class="h-4 w-4" />
 					<div>
 						<span>Unpaid amount is </span>
-						<span>{{ currency }} {{ unpaidAmount.data?.toFixed(2) }}</span>
+						<span>{{ formatCurrency(unpaidAmount.data || 0) }}</span>
 					</div>
 				</div>
 				<div>
@@ -65,7 +65,11 @@ const { currentBillingAmount, upcomingInvoice, unpaidInvoices } =
 const showAddPrepaidCreditsDialog = ref(false);
 const showInvoiceDialog = ref(false);
 
-const currency = computed(() => (team.doc.currency == 'INR' ? '₹' : '$'));
+const currency = computed(() => {
+	if (team.doc.currency == 'USD') return '$';
+	if (team.doc.currency == 'INR') return '₹';
+	return '₫'; // VND làm mặc định
+});
 
 const unpaidAmount = createResource({
 	url: 'press.api.billing.total_unpaid_amount',
@@ -81,6 +85,26 @@ const currentMonthEnd = () => {
 		month: 'short',
 		year: 'numeric'
 	});
+};
+
+const formatCurrency = (amount) => {
+	const currencyType = team.doc.currency;
+	
+	if (currencyType === 'VND') {
+		// VND: hiển thị số nguyên với dấu phân cách hàng nghìn
+		const roundedAmount = Math.round(amount);
+		return `₫ ${roundedAmount.toLocaleString('vi-VN')}`;
+	} else if (currencyType === 'USD') {
+		// USD: hiển thị với 2 chữ số thập phân
+		return `$ ${amount.toFixed(2)}`;
+	} else if (currencyType === 'INR') {
+		// INR: hiển thị với 2 chữ số thập phân
+		return `₹ ${amount.toFixed(2)}`;
+	} else {
+		// Mặc định cho VND
+		const roundedAmount = Math.round(amount);
+		return `₫ ${roundedAmount.toLocaleString('vi-VN')}`;
+	}
 };
 
 function payNow() {

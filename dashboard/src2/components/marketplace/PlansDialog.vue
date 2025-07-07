@@ -22,7 +22,7 @@
 				</div>
 				<div class="mb-8">
 					<h3 class="mb-4 text-lg font-semibold">Subscription Price</h3>
-					<div class="grid grid-cols-2 gap-2">
+					<div class="grid grid-cols-3 gap-2">
 						<FormControl
 							label="Price INR"
 							v-model="currentEditingPlan.price_inr"
@@ -30,6 +30,10 @@
 						<FormControl
 							label="Price USD"
 							v-model="currentEditingPlan.price_usd"
+						></FormControl>
+						<FormControl
+							label="Price VND"
+							v-model="currentEditingPlan.price_vnd"
 						></FormControl>
 					</div>
 				</div>
@@ -109,6 +113,7 @@ export default {
 			currentEditingPlan: {
 				price_inr: 0,
 				price_usd: 0,
+				price_vnd: 0,
 				features: [''],
 				title: '',
 				enabled: true
@@ -209,6 +214,7 @@ export default {
 			Object.assign(this.currentEditingPlan, {
 				price_inr: 0,
 				price_usd: 0,
+				price_vnd: 0,
 				features: [''],
 				title: '',
 				enabled: true

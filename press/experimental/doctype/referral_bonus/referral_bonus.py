@@ -20,7 +20,12 @@ class ReferralBonus(Document):
 			return
 
 		team = frappe.get_doc("Team", self.referred_by)
-		credits_field = "free_credits_inr" if team.currency == "INR" else "free_credits_usd"
+		if team.currency == "USD":
+			credits_field = "free_credits_usd"
+		elif team.currency == "INR":
+			credits_field = "free_credits_inr"
+		else:
+			credits_field = "free_credits_vnd"  # VND làm mặc định
 		credit_amount = frappe.db.get_single_value("Press Settings", credits_field)
 		if not credit_amount:
 			return

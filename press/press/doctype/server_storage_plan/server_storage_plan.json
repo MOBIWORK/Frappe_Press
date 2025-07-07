@@ -11,7 +11,8 @@
   "pricing_section",
   "price_inr",
   "column_break_xauk",
-  "price_usd"
+  "price_usd",
+  "price_vnd"
  ],
  "fields": [
   {
@@ -42,7 +43,12 @@
   {
    "fieldname": "price_usd",
    "fieldtype": "Currency",
-   "label": "Price per GB (INR)"
+   "label": "Price per GB (USD)"
+  },
+  {
+   "fieldname": "price_vnd",
+   "fieldtype": "Currency",
+   "label": "Price per GB (VND)"
   }
  ],
  "index_web_pages_for_search": 1,

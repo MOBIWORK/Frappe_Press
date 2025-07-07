@@ -219,39 +219,51 @@ function calculateTierProgress(next_tier_value) {
 }
 
 function calculateNextTier(tier) {
-	const target_inr = {
-		Gold: 575000,
-		Silver: 230000,
-		Bronze: 57500,
-	};
 	const target_usd = {
 		Gold: 6900,
 		Silver: 2875,
 		Bronze: 690,
 	};
+	const target_inr = {
+		Gold: 575000,
+		Silver: 230000,
+		Bronze: 57500,
+	};
+	const target_vnd = {
+		Gold: 165600000, // 6900 * 24000
+		Silver: 69000000, // 2875 * 24000  
+		Bronze: 16560000, // 690 * 24000
+	};
 
 	const current_tier = partnerDetails.data?.partner_type;
 	let next_tier = '';
+	let targetValue;
+	
+	// Chọn target dựa trên currency
+	if (team.doc.currency === 'USD') {
+		targetValue = target_usd;
+	} else if (team.doc.currency === 'INR') {
+		targetValue = target_inr;
+	} else {
+		targetValue = target_vnd; // VND mặc định
+	}
+
 	switch (current_tier) {
 		case 'Entry':
 			next_tier = 'Bronze';
-			nextTierTarget.value =
-				team.doc.currency === 'INR' ? target_inr.Bronze : target_usd.Bronze;
+			nextTierTarget.value = targetValue.Bronze;
 			break;
 		case 'Bronze':
 			next_tier = 'Silver';
-			nextTierTarget.value =
-				team.doc.currency === 'INR' ? target_inr.Silver : target_usd.Silver;
+			nextTierTarget.value = targetValue.Silver;
 			break;
 		case 'Silver':
 			next_tier = 'Gold';
-			nextTierTarget.value =
-				team.doc.currency === 'INR' ? target_inr.Gold : target_usd.Gold;
+			nextTierTarget.value = targetValue.Gold;
 			break;
 		default:
 			next_tier = 'Gold';
-			nextTierTarget.value =
-				team.doc.currency === 'INR' ? target_inr.Gold : target_usd.Gold;
+			nextTierTarget.value = targetValue.Gold;
 	}
 	nextTier.value = next_tier;
 	tierProgressValue.value = calculateTierProgress(nextTierTarget.value);

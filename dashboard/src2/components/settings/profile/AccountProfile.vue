@@ -314,7 +314,14 @@ export default {
 		},
 		deactivateAccount(disableAccount2FACode) {
 			const currency = this.$team.doc.currency;
-			const minAmount = currency === 'INR' ? 410 : 5;
+			let minAmount;
+			if (currency === 'USD') {
+				minAmount = 5;
+			} else if (currency === 'INR') {
+				minAmount = 410;
+			} else {
+				minAmount = 100000; // VND mặc định (khoảng 4 USD)
+			}
 			if (this.draftInvoice && this.draftInvoice.amount_due > minAmount) {
 				const finalizeInvoicesDialog = defineAsyncComponent(
 					() => import('../../billing/FinalizeInvoicesDialog.vue'),
@@ -347,7 +354,7 @@ export default {
 						confirmDialog({
 							title: 'Clear Unpaid Invoice',
 							message: `You have an unpaid invoice of ${
-								invoice.currency === 'INR' ? '₹' : '$'
+								invoice.currency === 'USD' ? '$' : invoice.currency === 'INR' ? '₹' : '₫'
 							} ${
 								invoice.amount_due
 							}. Please clear it before disabling the account.`,

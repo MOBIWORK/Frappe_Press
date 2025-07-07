@@ -161,8 +161,14 @@ export default {
 			let additionalStorage = diskSize - (currentPlan?.disk || 0);
 			let price = 0;
 			// not using $format.planTitle cuz of manual calculation of add-on storage plan
-			let priceField =
-				this.$team.doc.currency === 'INR' ? 'price_inr' : 'price_usd';
+			let priceField;
+			if (this.$team.doc.currency === 'USD') {
+				priceField = 'price_usd';
+			} else if (this.$team.doc.currency === 'INR') {
+				priceField = 'price_inr';
+			} else {
+				priceField = 'price_vnd'; // VND làm mặc định
+			}
 
 			let planDescription = '';
 			if (!currentPlan?.name) {

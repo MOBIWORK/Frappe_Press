@@ -29,10 +29,7 @@ class Invoice(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
-		from press.press.doctype.invoice_credit_allocation.invoice_credit_allocation import (
-			InvoiceCreditAllocation,
-		)
+		from press.press.doctype.invoice_credit_allocation.invoice_credit_allocation import InvoiceCreditAllocation
 		from press.press.doctype.invoice_discount.invoice_discount import InvoiceDiscount
 		from press.press.doctype.invoice_item.invoice_item import InvoiceItem
 		from press.press.doctype.invoice_transaction_fee.invoice_transaction_fee import InvoiceTransactionFee
@@ -71,7 +68,14 @@ class Invoice(Document):
 		payment_attempt_count: DF.Int
 		payment_attempt_date: DF.Date | None
 		payment_date: DF.Date | None
-		payment_mode: DF.Literal["", "Card", "Prepaid Credits", "NEFT", "Partner Credits", "Paid By Partner"]
+		payment_mode: DF.Literal["", "Card", "Prepaid Credits", "NEFT", "Partner Credits", "Paid By Partner", "PayOS"]
+		payos_checkout_url: DF.Text | None
+		payos_order_code: DF.Data | None
+		payos_payment_link_id: DF.Data | None
+		payos_qr_code: DF.Text | None
+		payos_status: DF.Data | None
+		payos_transaction_datetime: DF.Datetime | None
+		payos_transaction_ref: DF.Data | None
 		period_end: DF.Date | None
 		period_start: DF.Date | None
 		razorpay_order_id: DF.Data | None
@@ -79,9 +83,7 @@ class Invoice(Document):
 		razorpay_payment_method: DF.Data | None
 		razorpay_payment_record: DF.Link | None
 		refund_reason: DF.Data | None
-		status: DF.Literal[
-			"Draft", "Invoice Created", "Unpaid", "Paid", "Refunded", "Uncollectible", "Collected", "Empty"
-		]
+		status: DF.Literal["Draft", "Invoice Created", "Unpaid", "Paid", "Refunded", "Uncollectible", "Collected", "Empty"]
 		stripe_invoice_id: DF.Data | None
 		stripe_invoice_url: DF.Text | None
 		stripe_payment_intent_id: DF.Data | None
@@ -95,6 +97,7 @@ class Invoice(Document):
 		transaction_fee_details: DF.Table[InvoiceTransactionFee]
 		transaction_net: DF.Currency
 		type: DF.Literal["Subscription", "Prepaid Credits", "Service", "Summary", "Partnership Fees"]
+		vat_percentage: DF.Float
 		write_off_amount: DF.Float
 	# end: auto-generated types
 
@@ -173,8 +176,15 @@ class Invoice(Document):
 	def get_doc(self, doc):
 		doc.invoice_pdf = self.invoice_pdf or (self.currency == "USD" and self.get_pdf())
 		currency = frappe.get_value("Team", self.team, "currency")
-		price_field = "price_inr" if currency == "INR" else "price_usd"
-		currency_symbol = "₹" if currency == "INR" else "$"
+		if currency == "USD":
+			price_field = "price_usd"
+			currency_symbol = "$"
+		elif currency == "INR":
+			price_field = "price_inr"
+			currency_symbol = "₹"
+		else:
+			price_field = "price_vnd"  # VND làm mặc định
+			currency_symbol = "₫"
 
 		for item in doc["items"]:
 			if item.document_type in ("Server", "Database Server"):
@@ -209,12 +219,20 @@ class Invoice(Document):
 		return url
 
 	def validate(self):
+		self.set_default_vat_percentage()
 		self.validate_team()
 		self.validate_dates()
 		self.validate_duplicate()
 		self.validate_items()
 		self.calculate_values()
 		self.compute_free_credits()
+
+	def set_default_vat_percentage(self):
+		"""Set default VAT percentage from Press Settings if not already set"""
+		if not self.vat_percentage:
+			default_vat = frappe.db.get_single_value("Press Settings", "vat_percentage")
+			if default_vat:
+				self.vat_percentage = default_vat
 
 	def before_submit(self):
 		if self.total > 0 and self.status != "Paid":
@@ -234,75 +252,85 @@ class Invoice(Document):
 		if self.type == "Prepaid Credits":
 			return
 
-		self.calculate_values()
+		# SET FLAG để chặn PayOS tạo trùng lặp trong quá trình finalize
+		self._is_finalizing = True
+		self._skip_payos_update = True
 
-		if self.total == 0:
-			self.status = "Empty"
-			self.submit()
-			return
+		try:
+			self.calculate_values()
 
-		team = frappe.get_doc("Team", self.team)
-		if not team.enabled:
-			self.add_comment("Info", "Skipping finalize invoice because team is disabled")
-			self.save()
-			return
-
-		if self.stripe_invoice_id:
-			# if stripe invoice is already created and paid,
-			# then update status and return early
-			stripe = get_stripe()
-			invoice = stripe.Invoice.retrieve(self.stripe_invoice_id)
-			if invoice.status == "paid":
-				self.status = "Paid"
-				self.update_transaction_details(invoice.charge)
+			if self.total == 0:
+				self.status = "Empty"
 				self.submit()
-				self.unsuspend_sites_if_applicable()
 				return
 
-		# set as unpaid by default
-		self.status = "Unpaid"
-		self.update_item_descriptions()
+			team = frappe.get_doc("Team", self.team)
+			if not team.enabled:
+				self.add_comment("Info", "Skipping finalize invoice because team is disabled")
+				self.save()
+				return
 
-		if self.amount_due > 0:
-			self.apply_credit_balance()
+			if self.stripe_invoice_id:
+				# if stripe invoice is already created and paid,
+				# then update status and return early
+				stripe = get_stripe()
+				invoice = stripe.Invoice.retrieve(self.stripe_invoice_id)
+				if invoice.status == "paid":
+					self.status = "Paid"
+					self.update_transaction_details(invoice.charge)
+					self.submit()
+					self.unsuspend_sites_if_applicable()
+					return
 
-		if self.amount_due == 0:
-			self.status = "Paid"
+			# set as unpaid by default
+			self.status = "Unpaid"
+			self.update_item_descriptions()
 
-		if self.status == "Paid" and self.stripe_invoice_id and self.amount_paid == 0:
-			stripe = get_stripe()
-			invoice = stripe.Invoice.retrieve(self.stripe_invoice_id)
-			payment_intent = stripe.PaymentIntent.retrieve(invoice.payment_intent)
-			if payment_intent.status == "processing":
-				# mark the fc invoice as Paid
-				# if the payment intent is processing, it means the invoice cannot be voided yet
-				# wait for invoice to be updated and then mark it as void if payment failed
-				# or issue a refund if succeeded
-				self.save()  # status is already Paid, so no need to set again
-			else:
-				self.change_stripe_invoice_status("Void")
-				self.add_comment(
-					text=(
-						f"Stripe Invoice {self.stripe_invoice_id} voided because payment is done via credits."
+			if self.amount_due > 0:
+				self.apply_credit_balance()
+
+			if self.amount_due == 0:
+				self.status = "Paid"
+
+			if self.status == "Paid" and self.stripe_invoice_id and self.amount_paid == 0:
+				stripe = get_stripe()
+				invoice = stripe.Invoice.retrieve(self.stripe_invoice_id)
+				payment_intent = stripe.PaymentIntent.retrieve(invoice.payment_intent)
+				if payment_intent.status == "processing":
+					# mark the fc invoice as Paid
+					# if the payment intent is processing, it means the invoice cannot be voided yet
+					# wait for invoice to be updated and then mark it as void if payment failed
+					# or issue a refund if succeeded
+					self.save()  # status is already Paid, so no need to set again
+				else:
+					self.change_stripe_invoice_status("Void")
+					self.add_comment(
+						text=(
+							f"Stripe Invoice {self.stripe_invoice_id} voided because payment is done via credits."
+						)
 					)
-				)
 
-		self.save()
+			self.save()
 
-		if self.amount_due > 0:
-			if self.payment_mode == "Prepaid Credits":
-				self.add_comment(
-					"Comment",
-					"Not enough credits for this invoice. Change payment mode to Card to pay using Stripe.",
-				)
-			# we shouldn't depend on payment_mode to decide whether to create stripe invoice or not
-			# there should be a separate field in team to decide whether to create automatic invoices or not
-			if self.payment_mode == "Card":
-				self.create_stripe_invoice()
+			if self.amount_due > 0:
+				if self.payment_mode == "Prepaid Credits":
+					self.add_comment(
+						"Comment",
+						"Not enough credits for this invoice. Change payment mode to Card to pay using Stripe.",
+					)
+				# we shouldn't depend on payment_mode to decide whether to create stripe invoice or not
+				# there should be a separate field in team to decide whether to create automatic invoices or not
+				if self.payment_mode == "Card":
+					self.create_stripe_invoice()
 
-		if self.status == "Paid":
-			self.submit()
-			self.unsuspend_sites_if_applicable()
+			if self.status == "Paid":
+				self.submit()
+				self.unsuspend_sites_if_applicable()
+
+		finally:
+			# Reset flags sau khi finalize xong
+			self._is_finalizing = False
+			self._skip_payos_update = False
 
 	def unsuspend_sites_if_applicable(self):
 		if (
@@ -334,10 +362,28 @@ class Invoice(Document):
 		if self.payment_mode == "Prepaid Credits":
 			return
 
+		# SỬA LOGIC VAT ĐỂ HỖ TRỢ VND VÀ SỬ DỤNG VAT_PERCENTAGE
 		if self.currency == "INR" and self.type == "Subscription":
 			gst_rate = frappe.db.get_single_value("Press Settings", "gst_percentage")
 			self.gst = flt(self.amount_due * gst_rate, 2)
 			self.amount_due_with_tax = flt(self.amount_due + self.gst, 2)
+		elif self.currency == "VND" and self.type == "Subscription":
+			# SỬ DỤNG VAT_PERCENTAGE CHO VND
+			vat_rate = float(self.get('vat_percentage', 0) or 0) / 100  # Chuyển % thành decimal
+			if vat_rate > 0:
+				self.gst = flt(self.amount_due * vat_rate, 2)
+				self.amount_due_with_tax = flt(self.amount_due + self.gst, 2)
+				print(f"💰 VAT calculation for {self.name}: {self.amount_due:,.0f} + VAT {self.vat_percentage}% = {self.amount_due_with_tax:,.0f} VND")
+			else:
+				print(f"💰 No VAT for {self.name}: {self.amount_due:,.0f} VND")
+		elif self.vat_percentage and self.vat_percentage > 0:
+			# FALLBACK: Áp dụng VAT cho các currency khác nếu có vat_percentage
+			vat_rate = float(self.vat_percentage) / 100
+			self.gst = flt(self.amount_due * vat_rate, 2)
+			self.amount_due_with_tax = flt(self.amount_due + self.gst, 2)
+			print(f"💰 VAT calculation for {self.name} ({self.currency}): {self.amount_due:,.2f} + VAT {self.vat_percentage}% = {self.amount_due_with_tax:,.2f}")
+		else:
+			print(f"💰 No VAT applicable for {self.name} ({self.currency}): {self.amount_due:,.2f}")
 
 	def calculate_amount_due(self):
 		self.amount_due = flt(self.total - self.applied_credits, 2)
@@ -379,6 +425,33 @@ class Invoice(Document):
 				""",
 				values=values,
 			)
+
+		# --- Tự động tạo PayOS payment link khi tạo mới invoice ---
+		# CHẶN VIỆC TẠO TRÙNG LẶP
+		try:
+			# Chỉ tạo PayOS link nếu:
+			# 1. Chưa có PayOS order code
+			# 2. Invoice có giá trị > 0
+			# 3. Không phải Prepaid Credits type
+			# 4. Không phải trong quá trình finalize
+			if (not self.get('payos_order_code') and 
+				self.get('total', 0) > 0 and 
+				self.get('type') != 'Prepaid Credits' and
+				not getattr(self, '_skip_payos_creation', False)):
+				
+				from press.api.app_admin import create_payment_link_internal
+				print(f"🎯 Creating initial PayOS link for {self.name} - Amount: {self.total:,.0f} VND")
+				result = create_payment_link_internal(self.name)
+				if result.get('success') and result.get('data'):
+					self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
+					self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
+					self.db_set('payos_order_code', result['data'].get('order_code', ''))
+					self.db_set('payos_status', 'PENDING')
+					print(f"✅ PayOS link created: {result['data'].get('order_code')}")
+				else:
+					frappe.log_error(result.get('message', 'Unknown error'), 'PayOS Auto Payment Link Error')
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), 'PayOS Auto Payment Link Exception')
 
 	def create_stripe_invoice(self):
 		if self.stripe_invoice_id:
@@ -1007,6 +1080,204 @@ class Invoice(Document):
 		stripe = get_stripe()
 		return stripe.Invoice.retrieve(self.stripe_invoice_id)
 
+	@frappe.whitelist()
+	def create_payos_payment_link(self):
+		"""
+		Tạo PayOS payment link cho invoice hiện có
+		"""
+		try:
+			if self.get('payos_order_code'):
+				return {
+					"success": False,
+					"message": "PayOS payment link already exists",
+					"data": {
+						"order_code": self.payos_order_code,
+						"checkout_url": self.payos_checkout_url,
+						"qr_code": self.payos_qr_code
+					}
+				}
+			
+			from press.api.app_admin import create_payment_link_internal
+			result = create_payment_link_internal(self.name)
+			
+			if result.get('success') and result.get('data'):
+				self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
+				self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
+				self.db_set('payos_order_code', result['data'].get('order_code', ''))
+				self.db_set('payos_status', 'PENDING')
+				
+				frappe.log_error(f"PayOS payment link created for Invoice {self.name}", 'PayOS Payment Link Success')
+				
+				return {
+					"success": True,
+					"message": "PayOS payment link created successfully",
+					"data": result.get('data')
+				}
+			else:
+				frappe.log_error(result.get('message', 'Unknown error'), 'PayOS Payment Link Error')
+				return result
+				
+		except Exception as e:
+			frappe.log_error(frappe.get_traceback(), 'PayOS Payment Link Exception')
+			return {
+				"success": False,
+				"message": f"An error occurred: {str(e)}",
+				"error_code": "INTERNAL_ERROR"
+			}
+
+	def on_update(self):
+		"""
+		Hook được gọi mỗi khi Invoice được cập nhật
+		Kiểm tra và cập nhật PayOS payment link nếu số tiền thay đổi
+		"""
+		# CHỈ XỬ LÝ PAYOS NẾU KHÔNG TRONG QUÁ TRÌNH FINALIZE
+		if not getattr(self, '_skip_payos_update', False):
+			self.update_payos_payment_link_if_amount_changed()
+
+	def update_payos_payment_link_if_amount_changed(self):
+		"""
+		Cập nhật PayOS payment link nếu số tiền invoice thay đổi
+		"""
+		try:
+			# CHẶN XỬ LÝ TRONG CÁC TRƯỜNG HỢP SAU:
+			# 1. Chưa có PayOS order code (chưa từng tạo payment link)
+			# 2. Invoice đã thanh toán 
+			# 3. PayOS status không phải PENDING
+			# 4. Invoice type là Prepaid Credits
+			# 5. Đang trong quá trình finalize/create
+			if (not self.get('payos_order_code') or 
+				self.get('status') == 'Paid' or 
+				self.get('payos_status') not in ['PENDING', None, ''] or
+				self.get('type') == 'Prepaid Credits' or
+				getattr(self, '_skip_payos_update', False) or
+				getattr(self, '_is_finalizing', False)):
+				
+				print(f"⏭️ Skip PayOS update for {self.name}: "
+					f"order_code={bool(self.get('payos_order_code'))}, "
+					f"status={self.get('status')}, "
+					f"payos_status={self.get('payos_status')}, "
+					f"type={self.get('type')}, "
+					f"skip_flag={getattr(self, '_skip_payos_update', False)}")
+				return
+
+			# Lấy số tiền hiện tại
+			current_amount = float(self.get('total', 0) or 0)
+			
+			# Nếu số tiền = 0, không cần PayOS
+			if current_amount <= 0:
+				print(f"⏭️ Skip PayOS update for {self.name}: amount is 0")
+				return
+
+			# KIỂM TRA THAY ĐỔI THỰC SỰ
+			if self.has_value_changed('total'):
+				# Lấy giá trị cũ từ _doc_before_save nếu có
+				old_amount = 0
+				if hasattr(self, '_doc_before_save') and self._doc_before_save:
+					old_amount = float(self._doc_before_save.get('total', 0) or 0)
+				else:
+					# Fallback: lấy từ database
+					old_doc_data = frappe.db.get_value("Invoice", self.name, "total")
+					old_amount = float(old_doc_data or 0)
+				
+				# So sánh số tiền (với tolerance 1 VND để tránh floating point issues)
+				if abs(current_amount - old_amount) > 1:
+					print(f"📊 Invoice {self.name}: Phát hiện thay đổi số tiền từ {old_amount:,.0f} VND → {current_amount:,.0f} VND")
+					
+					# SET FLAG để tránh infinite loop
+					self._skip_payos_update = True
+					
+					# Hủy PayOS payment link cũ
+					self.cancel_old_payos_payment_link()
+					
+					# Tạo PayOS payment link mới với số tiền mới
+					self.create_new_payos_payment_link()
+					
+					# Reset flag
+					self._skip_payos_update = False
+				else:
+					print(f"📊 Invoice {self.name}: Thay đổi nhỏ, bỏ qua ({old_amount:,.0f} → {current_amount:,.0f} VND)")
+			else:
+				print(f"📊 Invoice {self.name}: Không có thay đổi total field")
+
+		except Exception as e:
+			frappe.log_error(
+				f"Error updating PayOS payment link for Invoice {self.name}: {str(e)}\n{frappe.get_traceback()}", 
+				"PayOS Payment Link Update Error"
+			)
+			print(f"❌ Error updating PayOS for {self.name}: {str(e)}")
+			# Reset flag nếu có lỗi
+			if hasattr(self, '_skip_payos_update'):
+				self._skip_payos_update = False
+
+	def cancel_old_payos_payment_link(self):
+		"""
+		Hủy PayOS payment link cũ
+		"""
+		try:
+			if not self.get('payos_order_code'):
+				return
+
+			from press.api.payos_connect import cancel_payos_payment
+			result = cancel_payos_payment(
+				self.payos_order_code, 
+				f"Amount changed for Invoice {self.name}"
+			)
+			
+			if result.get('success'):
+				print(f"✅ Đã hủy PayOS payment link cũ: {self.payos_order_code}")
+				# Reset PayOS fields
+				self.db_set('payos_status', 'CANCELLED')
+				self.add_comment("Info", f"PayOS payment link cancelled due to amount change - Old Order: {self.payos_order_code}")
+			else:
+				print(f"❌ Không thể hủy PayOS payment link: {result.get('message')}")
+				# Vẫn tiếp tục tạo mới nếu không hủy được
+				
+		except Exception as e:
+			frappe.log_error(f"Error cancelling old PayOS payment link: {str(e)}", "PayOS Cancel Error")
+			print(f"❌ Error cancelling PayOS: {str(e)}")
+
+	def create_new_payos_payment_link(self):
+		"""
+		Tạo PayOS payment link mới với số tiền cập nhật
+		"""
+		try:
+			# Reset PayOS fields trước khi tạo mới
+			old_order_code = self.get('payos_order_code')
+			self.db_set('payos_order_code', '')
+			self.db_set('payos_checkout_url', '')
+			self.db_set('payos_qr_code', '')
+			self.db_set('payos_payment_link_id', '')
+			self.db_set('payos_status', '')
+			
+			# Tạo payment link mới
+			from press.api.app_admin import create_payment_link_internal
+			print(f"🔄 Đang tạo PayOS payment link mới cho {self.name} với số tiền {self.total:,.0f} VND...")
+			result = create_payment_link_internal(self.name)
+			
+			if result.get('success') and result.get('data'):
+				new_order_code = result['data'].get('order_code', '')
+				self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
+				self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
+				self.db_set('payos_order_code', new_order_code)
+				self.db_set('payos_status', 'PENDING')
+				
+				print(f"✅ Tạo PayOS payment link mới: {new_order_code} - {self.total:,.0f} VND")
+				self.add_comment(
+					"Info", 
+					f"PayOS payment link updated: {old_order_code} → {new_order_code} | Amount: {self.total:,.0f} VND"
+				)
+				
+				frappe.log_error(
+					f"PayOS payment link updated for Invoice {self.name} - Old: {old_order_code}, New: {new_order_code}, Amount: {self.total:,.0f} VND", 
+					'PayOS Payment Link Updated'
+				)
+			else:
+				print(f"❌ Lỗi tạo PayOS payment link mới: {result.get('message', 'Unknown error')}")
+				frappe.log_error(result.get('message', 'Unknown error'), 'PayOS Auto Update Error')
+				
+		except Exception as e:
+			frappe.log_error(f"Error creating new PayOS payment link: {str(e)}", "PayOS Create Error")
+			print(f"❌ Error creating new PayOS: {str(e)}")
 
 def finalize_draft_invoices():
 	"""
@@ -1097,7 +1368,7 @@ def calculate_gst(amount):
 
 
 def get_permission_query_conditions(user):
-	from press.utils import get_current_team
+	from press.utils import get_current_team, get_current_team_v2
 
 	if not user:
 		user = frappe.session.user
@@ -1106,13 +1377,13 @@ def get_permission_query_conditions(user):
 	if user_type == "System User":
 		return ""
 
-	team = get_current_team()
+	team = get_current_team_v2()
 
 	return f"(`tabInvoice`.`team` = {frappe.db.escape(team)})"
 
 
 def has_permission(doc, ptype, user):
-	from press.utils import get_current_team, has_role
+	from press.utils import get_current_team, has_role, get_current_team_v2
 
 	if not user:
 		user = frappe.session.user
@@ -1127,7 +1398,7 @@ def has_permission(doc, ptype, user):
 	if has_role("Press Support Agent", user) and ptype == "read":
 		return True
 
-	team = get_current_team(True)
+	team = get_current_team_v2(True)
 	team_members = [
 		d.user for d in frappe.db.get_all("Team Member", {"parenttype": "Team", "parent": doc.team}, ["user"])
 	]

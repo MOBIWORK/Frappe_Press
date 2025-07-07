@@ -12,6 +12,7 @@
   "price_inr",
   "column_break_sjmg",
   "price_usd",
+  "price_vnd",
   "section_break_nifk",
   "premium",
   "server_type",
@@ -95,7 +96,15 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Price (USD)",
-   "options": "INR",
+   "options": "USD",
+   "reqd": 1
+  },
+  {
+   "fieldname": "price_vnd",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Price (VND)",
+   "options": "VND",
    "reqd": 1
   },
   {

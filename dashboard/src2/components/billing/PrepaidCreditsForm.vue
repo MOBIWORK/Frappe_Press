@@ -12,7 +12,7 @@
 			>
 				<template #prefix>
 					<div class="grid w-4 place-items-center text-sm text-gray-700">
-						{{ team.doc.currency === 'INR' ? '₹' : '$' }}
+						{{ team.doc.currency === 'USD' ? '$' : team.doc.currency === 'INR' ? '₹' : '₫' }}
 					</div>
 				</template>
 			</FormControl>
@@ -28,7 +28,7 @@
 			>
 				<template #prefix>
 					<div class="grid w-4 place-items-center text-sm text-gray-700">
-						{{ team.doc.currency === 'INR' ? '₹' : '$' }}
+						{{ team.doc.currency === 'USD' ? '$' : team.doc.currency === 'INR' ? '₹' : '₫' }}
 					</div>
 				</template>
 			</FormControl>
@@ -147,7 +147,14 @@ const minimumAmount = computed(() => {
 	if (props.minimumAmount) return props.minimumAmount;
 	if (!team.doc) return 0;
 	const unpaidAmount = totalUnpaidAmount.data || 0;
-	const minimumDefault = team.doc?.currency == 'INR' ? 410 : 5;
+	let minimumDefault;
+	if (team.doc?.currency == 'USD') {
+		minimumDefault = 5;
+	} else if (team.doc?.currency == 'INR') {
+		minimumDefault = 410;
+	} else {
+		minimumDefault = 100000; // VND làm mặc định (khoảng 4 USD)
+	}
 
 	return Math.ceil(
 		unpaidAmount && unpaidAmount > 0 ? unpaidAmount : minimumDefault,

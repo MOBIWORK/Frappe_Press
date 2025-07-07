@@ -186,16 +186,30 @@ def get_current_team_v2(get_doc=False):
 
 	user_is_press_admin = frappe.db.exists("Has Role", {"parent": frappe.session.user, "role": "Press Admin"})
 
+	# If team is not passed via header, prioritize team from user's first site
+	team_from_first_site = None
+	if not team:
+		team_from_first_site = get_team_from_first_site(frappe.session.user)
+		team = team_from_first_site
+	
+	# If we got team from first site, use it directly (skip membership checks)
+	if team_from_first_site:
+		if get_doc:
+			return frappe.get_doc("Team", team_from_first_site)
+		return team_from_first_site
+	
+	# If no team from first site and user is Press Admin, use their own team
 	if not team and user_is_press_admin and frappe.db.exists("Team", {"user": frappe.session.user}):
-		# If user has_role of Press Admin then just return current user as default team
+		admin_team = frappe.get_value("Team", {"user": frappe.session.user, "enabled": 1}, "name")
 		return (
 			frappe.get_doc("Team", {"user": frappe.session.user, "enabled": 1})
 			if get_doc
-			else frappe.get_value("Team", {"user": frappe.session.user, "enabled": 1}, "name")
+			else admin_team
 		)
-
-	# If team is not passed via header, get the default team for user
-	team = team if team else get_default_team_for_user(frappe.session.user)
+	
+	# If still no team, get the default team for user
+	if not team:
+		team = get_default_team_for_user(frappe.session.user)
 
 	if not system_user and not is_user_part_of_team(frappe.session.user, team):
 		# If user is not part of the team, get the default team for user
@@ -256,6 +270,38 @@ def get_default_team_for_user(user):
 		# if user is part of multiple teams, send the first enabled one
 		if frappe.db.exists("Team", {"name": team, "enabled": 1}):
 			return team
+	return None
+
+
+def get_team_from_first_site(user):
+	"""Returns the team that belongs to the user of the latest site's team in the system"""
+	try:
+		# Get the latest site created in the system
+		latest_site_data = frappe.db.get_all(
+			"Site",
+			fields=["name", "team"],
+			order_by="creation desc",
+			limit=1
+		)
+		
+		if latest_site_data:
+			site_info = latest_site_data[0]
+			team_name = site_info.get("team")
+			
+			if team_name and frappe.db.exists("Team", {"name": team_name, "enabled": 1}):
+				# Get the user of this team
+				team_user = frappe.db.get_value("Team", team_name, "user")
+				
+				if team_user:
+					# Now get the team that belongs to this user
+					user_team = frappe.db.get_value("Team", {"user": team_user, "enabled": 1}, "name")
+					
+					if user_team:
+						return user_team
+				
+	except Exception:
+		pass
+	
 	return None
 
 

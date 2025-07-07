@@ -147,6 +147,7 @@ class SaasAppSubscription(Document):
 		usage_record = frappe.get_doc(
 			doctype="Usage Record",
 			team=team.name,
+			currency=team.currency,
 			document_type="Saas App",
 			document_name=self.app,
 			plan=self.plan,

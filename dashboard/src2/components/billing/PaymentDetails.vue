@@ -187,7 +187,11 @@ const showAddPrepaidCreditsDialog = ref(false);
 const showAddCardDialog = ref(false);
 const showChangeCardDialog = ref(false);
 
-const currency = computed(() => (team.doc.currency == 'INR' ? '₹' : '$'));
+const currency = computed(() => {
+	if (team.doc.currency == 'USD') return '$';
+	if (team.doc.currency == 'INR') return '₹';
+	return '₫'; // VND làm mặc định
+});
 
 const billingDetails = createResource({
 	url: 'press.api.account.get_billing_information',

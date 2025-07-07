@@ -24,6 +24,7 @@ class ServerPlan(Plan):
 		premium: DF.Check
 		price_inr: DF.Currency
 		price_usd: DF.Currency
+		price_vnd: DF.Currency
 		roles: DF.Table[HasRole]
 		server_type: DF.Literal["Server", "Database Server", "Proxy Server", "Self Hosted Server"]
 		title: DF.Data | None
@@ -34,6 +35,7 @@ class ServerPlan(Plan):
 		"title",
 		"price_inr",
 		"price_usd",
+		"price_vnd",
 		"vcpu",
 		"memory",
 		"disk",
@@ -44,4 +46,5 @@ class ServerPlan(Plan):
 	def get_doc(self, doc):
 		doc["price_per_day_inr"] = self.get_price_per_day("INR")
 		doc["price_per_day_usd"] = self.get_price_per_day("USD")
+		doc["price_per_day_vnd"] = self.get_price_per_day("VND")
 		return doc

@@ -43,13 +43,15 @@
 						<template v-if="plan.sublabel">
 							{{ plan.sublabel }}
 						</template>
-						<template v-else-if="plan.price_inr || plan.price_usd">
+						<template v-else-if="plan.price_inr || plan.price_usd || plan.price_vnd">
 							{{
 								$format.userCurrency(
 									$format.pricePerDay(
-										$team.doc.currency === 'INR'
-											? plan.price_inr
-											: plan.price_usd,
+										$team.doc.currency === 'USD'
+											? plan.price_usd
+											: $team.doc.currency === 'INR'
+												? plan.price_inr
+												: plan.price_vnd,
 									),
 								)
 							}}/day

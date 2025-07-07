@@ -9,6 +9,7 @@
   "status",
   "server_type",
   "server",
+  "app_name",
   "column_break_5",
   "bench",
   "site",
@@ -252,11 +253,17 @@
   {
    "fieldname": "column_break_ayyq",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "app_name",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "App"
   }
  ],
  "in_create": 1,
  "links": [],
- "modified": "2025-04-16 12:11:23.204689",
+ "modified": "2025-06-26 18:27:07.523503",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Agent Job",
@@ -292,6 +299,7 @@
   }
  ],
  "quick_entry": 1,
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

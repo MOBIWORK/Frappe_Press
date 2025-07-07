@@ -37,6 +37,7 @@
   "next_payment_attempt_date",
   "payment_mode",
   "write_off_amount",
+  "vat_percentage",
   "column_break_15",
   "total",
   "total_before_tax",
@@ -67,6 +68,15 @@
   "column_break_44",
   "razorpay_payment_id",
   "razorpay_payment_method",
+  "payos_billing_section",
+  "payos_order_code",
+  "payos_checkout_url",
+  "payos_qr_code",
+  "column_break_plie",
+  "payos_status",
+  "payos_payment_link_id",
+  "payos_transaction_ref",
+  "payos_transaction_datetime",
   "mpesa_billing_section",
   "mpesa_payment_record",
   "mpesa_receipt_number",
@@ -329,7 +339,7 @@
    "fieldname": "payment_mode",
    "fieldtype": "Select",
    "label": "Payment Mode",
-   "options": "\nCard\nPrepaid Credits\nNEFT\nPartner Credits\nPaid By Partner"
+   "options": "\nCard\nPrepaid Credits\nNEFT\nPartner Credits\nPaid By Partner\nPayOS"
   },
   {
    "fieldname": "frappe_partner_order",
@@ -517,6 +527,55 @@
    "fieldname": "mpesa_invoice_pdf",
    "fieldtype": "Attach",
    "label": "Mpesa Invoice PDF"
+  },
+  {
+   "fieldname": "vat_percentage",
+   "fieldtype": "Float",
+   "label": "VAT"
+  },
+  {
+   "fieldname": "payos_billing_section",
+   "fieldtype": "Section Break",
+   "label": "PayOs Billing"
+  },
+  {
+   "fieldname": "payos_order_code",
+   "fieldtype": "Data",
+   "label": "Payos Order Code"
+  },
+  {
+   "fieldname": "payos_checkout_url",
+   "fieldtype": "Text",
+   "label": "Payos Checkout Url"
+  },
+  {
+   "fieldname": "payos_qr_code",
+   "fieldtype": "Text",
+   "label": "Payos Qr Code"
+  },
+  {
+   "fieldname": "column_break_plie",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payos_status",
+   "fieldtype": "Data",
+   "label": "Payos Status"
+  },
+  {
+   "fieldname": "payos_payment_link_id",
+   "fieldtype": "Data",
+   "label": "Payos Payment Link Id"
+  },
+  {
+   "fieldname": "payos_transaction_ref",
+   "fieldtype": "Data",
+   "label": "Payos Transaction Ref"
+  },
+  {
+   "fieldname": "payos_transaction_datetime",
+   "fieldtype": "Datetime",
+   "label": "Payos Transaction Datetime"
   }
  ],
  "is_submittable": 1,
@@ -542,7 +601,7 @@
    "link_fieldname": "invoice"
   }
  ],
- "modified": "2025-02-02 19:05:05.300386",
+ "modified": "2025-07-07 11:24:32.918831",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Invoice",
@@ -584,6 +643,7 @@
    "role": "Site Manager"
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

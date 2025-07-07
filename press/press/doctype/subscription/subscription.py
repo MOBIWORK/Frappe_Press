@@ -50,7 +50,13 @@ class Subscription(Document):
 		Subscription = frappe.qb.DocType("Subscription")
 		UsageRecord = frappe.qb.DocType("Usage Record")
 		Plan = frappe.qb.DocType("Marketplace App Plan")
-		price_field = Plan.price_inr if frappe.local.team().currency == "INR" else Plan.price_usd
+		team_currency = frappe.local.team().currency
+		if team_currency == "USD":
+			price_field = Plan.price_usd
+		elif team_currency == "INR":
+			price_field = Plan.price_inr
+		else:
+			price_field = Plan.price_vnd  # VND làm mặc định
 		filters = list_args.get("filters", {})
 
 		query = (
@@ -150,7 +156,12 @@ class Subscription(Document):
 		plan = frappe.get_cached_doc(self.plan_type, self.plan)
 
 		if self.additional_storage:
-			price = plan.price_inr if team.currency == "INR" else plan.price_usd
+			if team.currency == "USD":
+				price = plan.price_usd
+			elif team.currency == "INR":
+				price = plan.price_inr
+			else:
+				price = plan.price_vnd  # VND làm mặc định
 			price_per_day = price / plan.period  # no rounding off to avoid discrepancies
 			amount = flt((price_per_day * cint(self.additional_storage)), 2)
 		else:
@@ -159,6 +170,7 @@ class Subscription(Document):
 		usage_record = frappe.get_doc(
 			doctype="Usage Record",
 			team=team.name,
+			currency=team.currency,
 			document_type=self.document_type,
 			document_name=self.document_name,
 			plan_type=self.plan_type,
@@ -289,10 +301,11 @@ def create_usage_records():
 
 def paid_plans():
 	paid_plans = []
-	filter = {
-		"price_inr": (">", 0),
-		"enabled": 1,
-	}
+	filters = [
+		{"price_inr": (">", 0), "enabled": 1},
+		{"price_usd": (">", 0), "enabled": 1},
+		{"price_vnd": (">", 0), "enabled": 1},
+	]
 	doctypes = [
 		"Site Plan",
 		"Marketplace App Plan",
@@ -301,7 +314,8 @@ def paid_plans():
 		"Cluster Plan",
 	]
 	for doctype in doctypes:
-		paid_plans += frappe.get_all(doctype, filter, pluck="name", ignore_ifnull=True)
+		for filter in filters:
+			paid_plans += frappe.get_all(doctype, filter, pluck="name", ignore_ifnull=True)
 
 	return list(set(paid_plans))
 

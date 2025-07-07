@@ -194,10 +194,15 @@ export default {
 		formatPlan(plan) {
 			let planDoc = getPlans().find((p) => p.name === plan);
 			if (planDoc) {
-				let india = this.$team.doc.currency === 'INR';
-				return this.$format.userCurrency(
-					india ? planDoc.price_inr : planDoc.price_usd,
-				);
+				let price;
+				if (this.$team.doc.currency === 'USD') {
+					price = planDoc.price_usd;
+				} else if (this.$team.doc.currency === 'INR') {
+					price = planDoc.price_inr;
+				} else {
+					price = planDoc.price_vnd || (planDoc.price_usd * 24000); // VND mặc định
+				}
+				return this.$format.userCurrency(price);
 			}
 			return plan;
 		},

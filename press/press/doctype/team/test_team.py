@@ -78,6 +78,13 @@ class TestTeam(unittest.TestCase):
 		account_request2 = create_test_account_request("testsubdomain2")
 		with patch.object(Team, "create_stripe_customer"):
 			team2 = Team.create_new(
-				account_request2, "John", "Meyer", "jonmeyer@gmail.com", country="Pakistan"
+				account_request2, "John", "Meyer", "jonmeyer@gmail.com", country="United States"
 			)
 		self.assertEqual(team2.currency, "USD")
+
+		account_request3 = create_test_account_request("testsubdomain3")
+		with patch.object(Team, "create_stripe_customer"):
+			team3 = Team.create_new(
+				account_request3, "Nguyen", "Van A", "nguyenvana@gmail.com", country="Vietnam"
+			)
+		self.assertEqual(team3.currency, "VND")

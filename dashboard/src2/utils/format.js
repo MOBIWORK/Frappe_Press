@@ -50,8 +50,17 @@ export function plural(number, singular, plural) {
 export function planTitle(plan) {
 	if (plan === undefined) return;
 	const $team = getTeam();
-	const india = $team.doc?.currency === 'INR';
-	const priceField = india ? 'price_inr' : 'price_usd';
+	const teamCurrency = $team.doc?.currency;
+	let priceField;
+	
+	if (teamCurrency === 'USD') {
+		priceField = 'price_usd';
+	} else if (teamCurrency === 'INR') {
+		priceField = 'price_inr';
+	} else {
+		priceField = 'price_vnd'; // VND làm mặc định
+	}
+	
 	const price =
 		plan?.block_monthly == 1 ? plan[priceField] * 12 : plan[priceField];
 	return price > 0 ? `${userCurrency(price, 0)}` : plan.plan_title;

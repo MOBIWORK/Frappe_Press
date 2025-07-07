@@ -193,17 +193,24 @@ export default {
 			return {};
 		},
 		totalEarnings() {
-			if (!this.installAnalytics.total_payout.inr_amount) return 0;
+			if (!this.installAnalytics.total_payout?.inr_amount) return 0;
 
-			if (this.$team.doc.currency === 'INR') {
+			if (this.$team.doc.currency === 'USD') {
+				return (
+					this.installAnalytics.total_payout.inr_amount / 82 +
+					this.installAnalytics.total_payout.usd_amount
+				);
+			} else if (this.$team.doc.currency === 'INR') {
 				return (
 					this.installAnalytics.total_payout.inr_amount +
 					this.installAnalytics.total_payout.usd_amount * 82
 				);
 			} else {
+				// VND mặc định (1 USD = 24000 VND, 1 INR = 300 VND)
 				return (
-					this.installAnalytics.total_payout.inr_amount / 82 +
-					this.installAnalytics.total_payout.usd_amount
+					this.installAnalytics.total_payout.inr_amount * 300 +
+					this.installAnalytics.total_payout.usd_amount * 24000 +
+					(this.installAnalytics.total_payout.vnd_amount || 0)
 				);
 			}
 		}

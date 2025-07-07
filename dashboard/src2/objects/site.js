@@ -71,6 +71,7 @@ export default {
 			'plan.plan_title as plan_title',
 			'plan.price_usd as price_usd',
 			'plan.price_inr as price_inr',
+			'plan.price_vnd as price_vnd',
 			'group.title as group_title',
 			'group.public as group_public',
 			'group.team as group_team',
@@ -78,7 +79,7 @@ export default {
 			'cluster.image as cluster_image',
 			'cluster.title as cluster_title',
 			'trial_end_date',
-			'creation',
+			'creation'
 		],
 		orderBy: 'creation desc',
 		searchField: 'host_name',
@@ -153,11 +154,16 @@ export default {
 					}
 					const $team = getTeam();
 					if (row.price_usd > 0) {
-						const india = $team.doc?.currency === 'INR';
-						const formattedValue = userCurrency(
-							india ? row.price_inr : row.price_usd,
-							0,
-						);
+						const teamCurrency = $team.doc?.currency;
+						let price;
+						if (teamCurrency === 'USD') {
+							price = row.price_usd;
+						} else if (teamCurrency === 'INR') {
+							price = row.price_inr;
+						} else {
+							price = row.price_vnd; // VND làm mặc định
+						}
+						const formattedValue = userCurrency(price, 0);
 						return `${formattedValue}/mo`;
 					}
 					return row.plan_title;

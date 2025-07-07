@@ -146,7 +146,7 @@ def get_install_app_options(marketplace_app: str) -> dict:
 
 	app_plans = get_plans_for_app(marketplace_app)
 
-	if not [plan for plan in app_plans if plan["price_inr"] > 0 or plan["price_usd"] > 0]:
+	if not [plan for plan in app_plans if plan["price_inr"] > 0 or plan["price_usd"] > 0 or plan["price_vnd"] > 0]:
 		app_plans = []
 
 	return {

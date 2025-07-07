@@ -311,7 +311,7 @@ export default {
 					filters: app => {
 						return { app: app.doc.name };
 					},
-					fields: ['name', 'title', 'price_inr', 'price_usd', 'enabled'],
+					fields: ['name', 'title', 'price_inr', 'price_usd', 'price_vnd', 'enabled'],
 					columns: [
 						{
 							label: 'Title',
@@ -337,6 +337,13 @@ export default {
 							fieldname: 'price_usd',
 							format: value => {
 								return currency(value, 'USD');
+							}
+						},
+						{
+							label: 'Price (VND)',
+							fieldname: 'price_vnd',
+							format: value => {
+								return currency(value, 'VND');
 							}
 						}
 					],

@@ -53,7 +53,7 @@ class MarketplaceAppPlan(Plan):
 		self.update_marketplace_app_subscription_type()
 
 	def update_marketplace_app_subscription_type(self):
-		if cint(self.price_inr) > 0 or cint(self.price_usd) > 0:
+		if cint(self.price_inr) > 0 or cint(self.price_usd) > 0 or cint(self.price_vnd) > 0:
 			frappe.db.set_value(
 				"Marketplace App",
 				self.app,

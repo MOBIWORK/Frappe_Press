@@ -46,9 +46,12 @@ def get_free_credits_left(team):
 	invoices = frappe.db.get_all("Invoice", {"team": team.name, "status": ("!=", "Draft")})
 
 	settings = frappe.get_doc("Press Settings")
-	total_free_credits = (
-		settings.free_credits_inr if team.currency == "INR" else settings.free_credits_usd
-	)
+	if team.currency == "USD":
+		total_free_credits = settings.free_credits_usd
+	elif team.currency == "INR":
+		total_free_credits = settings.free_credits_inr
+	else:
+		total_free_credits = settings.free_credits_vnd  # VND làm mặc định
 
 	if not invoices:
 		return total_free_credits

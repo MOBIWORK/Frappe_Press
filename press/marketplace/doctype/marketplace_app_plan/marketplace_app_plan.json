@@ -119,7 +119,8 @@
   {
    "fieldname": "price_vnd",
    "fieldtype": "Currency",
-   "label": "Price (VND)"
+   "label": "Price (VND)",
+   "reqd": 1
   },
   {
    "fieldname": "title_en",
@@ -135,7 +136,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-19 14:51:16.510024",
+ "modified": "2025-06-28 08:28:42.853415",
  "modified_by": "Administrator",
  "module": "Marketplace",
  "name": "Marketplace App Plan",

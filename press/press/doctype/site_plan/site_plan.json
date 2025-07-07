@@ -15,6 +15,7 @@
   "column_break_5",
   "price_inr",
   "price_usd",
+  "price_vnd",
   "allow_downgrading_from_other_plan",
   "features_section",
   "cpu_time_per_day",
@@ -89,6 +90,14 @@
    "in_list_view": 1,
    "label": "Price (USD)",
    "options": "USD",
+   "reqd": 1
+  },
+  {
+   "fieldname": "price_vnd",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Price (VND)",
+   "options": "VND",
    "reqd": 1
   },
   {

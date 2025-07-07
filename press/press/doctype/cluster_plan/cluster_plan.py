@@ -18,6 +18,7 @@ class ClusterPlan(Plan):
 		enabled: DF.Check
 		price_inr: DF.Currency
 		price_usd: DF.Currency
+		price_vnd: DF.Currency
 		roles: DF.Table[HasRole]
 		title: DF.Data | None
 	# end: auto-generated types

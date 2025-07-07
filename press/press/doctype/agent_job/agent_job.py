@@ -44,6 +44,7 @@ class AgentJob(Document):
 	if TYPE_CHECKING:
 		from frappe.types import DF
 
+		app_name: DF.Data | None
 		bench: DF.Link | None
 		callback_failure_count: DF.Int
 		code_server: DF.Link | None
@@ -254,6 +255,7 @@ class AgentJob(Document):
 				"job_type": self.job_type,
 				"server_type": self.server_type,
 				"server": self.server,
+				"app_name": self.app_name,
 				"bench": self.bench,
 				"site": self.site,
 				"upstream": self.upstream,

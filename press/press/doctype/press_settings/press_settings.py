@@ -12,6 +12,7 @@ from twilio.rest import Client
 from press.api.billing import get_stripe
 from press.press.doctype.telegram_message.telegram_message import TelegramMessage
 from press.telegram_utils import Telegram
+from payos import PayOS
 
 
 class PressSettings(Document):
@@ -22,7 +23,6 @@ class PressSettings(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from press.press.doctype.app_group.app_group import AppGroup
 		from press.press.doctype.erpnext_app.erpnext_app import ERPNextApp
 
@@ -116,6 +116,13 @@ class PressSettings(Document):
 		offsite_backups_secret_access_key: DF.Password | None
 		partnership_fee_inr: DF.Int
 		partnership_fee_usd: DF.Int
+		payos_api_key: DF.Data | None
+		payos_cancel_url: DF.Data | None
+		payos_checksum_key: DF.Data | None
+		payos_client_id: DF.Data | None
+		payos_return_url: DF.Data | None
+		payos_webhook_url: DF.Data | None
+		payos_webhook_url_current: DF.Data | None
 		plausible_api_key: DF.Password | None
 		plausible_site_id: DF.Data | None
 		plausible_url: DF.Data | None
@@ -171,6 +178,7 @@ class PressSettings(Document):
 		use_app_cache: DF.Check
 		use_delta_builds: DF.Check
 		use_staging_ca: DF.Check
+		vat_percentage: DF.Float
 		verify_cards_with_micro_charge: DF.Literal["No", "Only INR", "Only USD", "Both INR and USD"]
 		webroot_directory: DF.Data | None
 	# end: auto-generated types
@@ -196,6 +204,35 @@ class PressSettings(Document):
 
 		if self.minimum_rebuild_memory < 2:
 			frappe.throw("Minimum rebuild memory needs to be 2 GB or more.")
+
+	@frappe.whitelist()
+	def config_webhook_payos(self):
+		client_id = self.payos_client_id
+		api_key = self.payos_api_key
+		checksum_key = self.payos_checksum_key
+		payos_webhook_url = self.payos_webhook_url
+
+		if not client_id or not api_key or not checksum_key:
+			frappe.throw(
+				'Vui lòng cấu hình đầy đủ thông tin Client Id, Api Key, Checksum Key để thực hiện thiết lập Webhook PayOs.')
+
+		try:
+			print('====')
+			print(client_id)
+			print(api_key)
+			print(checksum_key)
+			payOS = PayOS(client_id=client_id, api_key=api_key,checksum_key=checksum_key)
+			print(payOS)
+			if not payos_webhook_url:
+				frappe.throw(
+					'Vui lòng thêm đầy đủ thông tin Webhook Url để thực hiện thiết lập Webhook PayOs.')
+			payos_webhook_url_current = payOS.confirmWebhook(payos_webhook_url)
+			self.payos_webhook_url_current = payos_webhook_url_current
+			self.save()
+			self.reload()
+			frappe.msgprint('Thiết lập Webhook PayOs thành công.')
+		except Exception as ex:
+			frappe.throw('Webhook Url không hợp lệ')
 
 	@frappe.whitelist()
 	def create_stripe_webhook(self):

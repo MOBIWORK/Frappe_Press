@@ -12,6 +12,7 @@
   "price_inr",
   "column_break_wnze",
   "price_usd",
+  "price_vnd",
   "allowed_roles_section",
   "roles"
  ],
@@ -48,6 +49,14 @@
    "fieldtype": "Currency",
    "in_list_view": 1,
    "label": "Price (USD)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "price_vnd",
+   "fieldtype": "Currency",
+   "in_list_view": 1,
+   "label": "Price (VND)",
+   "options": "VND",
    "reqd": 1
   },
   {

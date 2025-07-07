@@ -341,6 +341,11 @@ fixtures = [
 	"Bench Dependency",
 	"Server Storage Plan",
 	"Press Webhook Event",
+	"Currency",
+]
+
+patches = [
+	"press.patches.v0_0_1.add_vnd_price_fields",
 ]
 # Testing
 # -------
