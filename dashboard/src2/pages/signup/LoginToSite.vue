@@ -36,37 +36,30 @@
 						</div>
 					</div>
 
-					<!-- Status Message -->
+					<!-- Status Message with Real Progress from Job Steps -->
 					<div class="text-center space-y-3">
 						<h3 class="text-lg font-medium text-gray-900">
-							{{ currentBuildStep || __('Completing setup') }}
+							{{ currentDisplayStep || __('Completing setup') }}
 						</h3>
 						<p class="text-sm text-gray-600">
 							{{ __('We are preparing your site. This usually takes a few moments...') }}
 						</p>
 						
-						<!-- Real Progress Bar - Only show when we have real progress data -->
-						<div v-if="progressCount > 0" class="space-y-3 mt-6">
+						<!-- Real Progress Bar from Job Steps -->
+						<div class="space-y-3 mt-6">
 							<div class="flex justify-between text-sm">
-								<span class="text-gray-600">{{ currentBuildStep }}</span>
-								<span class="text-gray-500">{{ Math.round(progressCount) }}%</span>
+								<span class="text-gray-600">{{ currentDisplayStep }}</span>
+								<span class="text-gray-500 font-semibold">{{ displayPercentage }}%</span>
 							</div>
-							<div class="w-full bg-gray-200 rounded-full h-2">
+							<div class="w-full bg-gray-200 rounded-full h-3">
 								<div 
-									class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-									:style="{ width: progressCount + '%' }"
+									class="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500 ease-out shadow-sm"
+									:style="{ width: displayPercentage + '%' }"
 								></div>
 							</div>
 							<div class="text-xs text-gray-500">
-								Progress from server: {{ Math.round(progressCount) }}%
+								{{ progressSummary }}
 							</div>
-						</div>
-
-						<!-- Simple Loading Indicator when no progress data -->
-						<div v-else class="flex justify-center space-x-1 mt-4">
-							<div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>
-							<div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-							<div class="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
 						</div>
 					</div>
 
@@ -356,8 +349,9 @@ export default {
 			currentBuildStep: 'Preparing for build',
 			timeoutWarning: null,
 			showTimeoutWarning: false,
-			subdomain: this.$route.query.subdomain || null, // Lấy subdomain từ query params
-			// Job progress tracking
+			subdomain: this.$route.query.subdomain || null,
+			lastLoaded: 0,
+			// Enhanced job progress tracking like JobPage.vue
 			jobProgress: {
 				percentage: 0,
 				currentStep: 'Initializing...',
@@ -365,54 +359,47 @@ export default {
 				totalSteps: 0,
 				steps: []
 			},
+			// Add debug flags
+			debugMode: process.env.NODE_ENV === 'development',
+			// Job tracking state
+			isJobTrackingActive: false,
+			jobCheckInterval: null,
 		};
 	},
 	mounted() {
-		console.log('=== LoginToSite Debug Info ===');
-		console.log('Route query:', this.$route.query);
-		console.log('product_trial_request:', this.product_trial_request);
-		console.log('productId:', this.productId);
-		console.log('subdomain:', this.subdomain);
+		this.log('=== LoginToSite Debug Info ===');
+		this.log('Route query:', this.$route.query);
+		this.log('product_trial_request:', this.product_trial_request);
+		this.log('productId:', this.productId);
+		this.log('subdomain:', this.subdomain);
 		
-		// Set timeout warning after 2 minutes
+		// Start immediate status check
+		this.startStatusMonitoring();
+		
+		// Set timeout warning after 3 minutes (increased from 2)
 		this.timeoutWarning = setTimeout(() => {
-			if (!['Error', 'Site Created'].includes(this.$resources?.siteRequest?.doc?.status)) {
+			const status = this.$resources?.siteRequest?.doc?.status;
+			this.log('Timeout check - current status:', status);
+			if (!status || !['Error', 'Site Created'].includes(status)) {
+				this.log('Showing timeout warning');
 				this.showTimeoutWarning = true;
 			}
-		}, 120000); // 2 minutes
+		}, 180000); // 3 minutes
 
-		// Subscribe to job updates via socket (like JobPage.vue)
-		this.$socket.on('agent_job_update', this.handleJobUpdate);
+		// Subscribe to socket updates early
+		this.setupSocketListeners();
 		
-		// Reload every minute as fallback (like JobPage.vue)
-		this.reloadInterval = setInterval(() => {
-			this.reloadProgress();
-		}, 1000 * 60);
+		// Start aggressive polling for status updates
+		this.startPolling();
 		
-		// Check resources after mount
 		this.$nextTick(() => {
-			console.log('Resources after mount:', this.$resources);
-			console.log('siteRequest resource:', this.$resources?.siteRequest);
+			this.log('Resources after mount:', this.$resources);
+			this.checkInitialStatus();
 		});
 	},
 	beforeUnmount() {
-		if (this.timeoutWarning) {
-			clearTimeout(this.timeoutWarning);
-		}
-		
-		// Cleanup progress interval
-		if (this.progressInterval) {
-			clearInterval(this.progressInterval);
-		}
-		
-		// Cleanup reload interval (like JobPage.vue)
-		if (this.reloadInterval) {
-			clearInterval(this.reloadInterval);
-		}
-		
-		// Cleanup socket listeners (like JobPage.vue)
-		this.$socket.emit('doc_unsubscribe', 'Agent Job', this.currentJobId);
-		this.$socket.off('agent_job_update');
+		this.log('Cleanup on unmount');
+		this.cleanup();
 	},
 	resources: {
 		saasProduct() {
@@ -421,99 +408,62 @@ export default {
 				doctype: 'Product Trial',
 				name: this.productId,
 				auto: true,
-				onSuccess(doc) {
-					console.log('saasProduct loaded:', doc);
+				onSuccess: (doc) => {
+					this.log('saasProduct loaded:', doc);
 				},
-				onError(error) {
-					console.error('saasProduct error:', error);
+				onError: (error) => {
+					this.log('saasProduct error:', error);
 				}
 			};
 		},
 		siteRequest() {
-			console.log('Setting up siteRequest resource with name:', this.product_trial_request);
+			this.log('Setting up siteRequest resource with name:', this.product_trial_request);
 			return {
 				type: 'document',
 				doctype: 'Product Trial Request',
 				name: this.product_trial_request,
 				realtime: true,
-				auto: this.product_trial_request ? true : false, // Only auto if we have a name
-				onSuccess(doc) {
-					console.log('siteRequest loaded successfully:', doc);
-					if (doc.status == 'Site Created') {
-						this.showTimeoutWarning = false;
-						this.loginToSite();
-					} else if (
-						doc.status == 'Wait for Site' ||
-						doc.status == 'Prefilling Setup Wizard'
-					) {
-						this.$resources.siteRequest.getProgress.reload();
-					}
+				auto: this.product_trial_request ? true : false,
+				onSuccess: (doc) => {
+					this.log('siteRequest loaded successfully:', doc);
+					this.lastLoaded = Date.now();
+					this.handleStatusChange(doc.status);
 				},
-				onError(error) {
-					console.error('siteRequest error:', error);
-					console.error('Failed to load Product Trial Request:', this.product_trial_request);
+				onError: (error) => {
+					this.log('siteRequest error:', error);
+					// Don't give up on error, keep trying
+					setTimeout(() => {
+						this.log('Retrying siteRequest after error...');
+						this.$resources.siteRequest.reload();
+					}, 5000);
 				},
 				whitelistedMethods: {
 					getProgress: {
 						method: 'get_progress',
 						makeParams() {
 							return {
-								current_progress:
-									this.$resources.siteRequest.getProgress.data?.progress || 0,
+								current_progress: this.progressCount || 0,
 							};
 						},
 						onSuccess: (data) => {
-							if (data.status === 'Site Created') {
-								this.showTimeoutWarning = false;
-								return this.loginToSite();
-							}
-
-							const currentStepMap = {
-								'Wait for Site': 'Creating your site',
-								'New Site': 'Creating your site',
-								'Prefilling Setup Wizard': 'Setting up your site',
-								'Update Site Configuration': 'Setting up your site',
-								'Enable Scheduler': 'Setting up your site',
-								'Bench Setup NGINX': 'Setting up your site',
-								'Reload NGINX': 'Setting up your site',
-							};
-
-							this.currentBuildStep =
-								currentStepMap[data.current_step] ||
-								data.current_step ||
-								this.currentBuildStep;
-							this.progressCount += 1;
-
-							if (
-								!(
-									this.$resources.siteRequest.getProgress.error &&
-									this.progressCount <= 10
-								)
-							) {
-								this.progressCount = Math.round(data.progress * 10) / 10;
-								setTimeout(() => {
-									if (
-										['Site Created', 'Error'].includes(
-											this.$resources.siteRequest.doc.status,
-										)
-									)
-										return;
-
-									this.$resources.siteRequest.getProgress.reload();
-								}, 2000);
-							}
+							this.log('Progress data received:', data);
+							this.handleProgressUpdate(data);
 						},
 						onError: (error) => {
-							console.error('Progress check error:', error);
-							// Still continue checking but show warning
-							this.showTimeoutWarning = true;
+							this.log('Progress check error:', error);
+							// Continue checking even on error
+							this.scheduleNextProgressCheck();
 						},
 					},
 					getLoginSid: {
 						method: 'get_login_sid',
-						onSuccess(loginURL) {
+						onSuccess: (loginURL) => {
+							this.log('Login URL received:', loginURL);
 							window.open(loginURL, '_self');
 						},
+						onError: (error) => {
+							this.log('Login error:', error);
+						}
 					},
 				},
 			};
@@ -523,7 +473,7 @@ export default {
 				url: 'press.api.site.add_domain',
 				makeParams: () => {
 					const siteName = this.$resources?.siteRequest?.doc?.site;
-					console.log('Adding domain with params:', siteName, `${this.subdomain}.nhansu360.com`);
+					this.log('Adding domain with params:', siteName, `${this.subdomain}.nhansu360.com`);
 					return {
 						name: siteName,
 						domain: `${this.subdomain}.nhansu360.com`,
@@ -531,52 +481,51 @@ export default {
 				},
 				auto: false,
 				onSuccess: () => {
-					console.log('Domain added successfully, proceeding to login');
-					// Proceed to actual login after domain is added
+					this.log('Domain added successfully, proceeding to login');
 					this.$resources.siteRequest.getLoginSid.submit();
 				},
 				onError: (error) => {
-					console.error('Error adding domain:', error);
+					this.log('Error adding domain:', error);
 					// Still proceed to login even if domain addition fails
 					this.$resources.siteRequest.getLoginSid.submit();
 				},
 			};
 		},
+		// Simplified job tracking like JobPage.vue
 		siteCreationJob() {
 			return {
 				type: 'document',
 				doctype: 'Agent Job',
 				name: () => this.currentJobId,
-				auto: false,
+				auto: false, // Don't auto load until we have valid job ID
 				realtime: true,
-				transform(job) {
+				transform: (job) => {
 					if (!job) return null;
 					
-					// Calculate progress percentage based on completed steps
-					const completedSteps = job.steps?.filter(step => step.status === 'Success').length || 0;
-					const totalSteps = job.steps?.length || 1;
-					const percentage = Math.round((completedSteps / totalSteps) * 100);
-					
-					// Find current running step
-					const runningStep = job.steps?.find(step => step.status === 'Running');
-					const currentStepName = runningStep?.step_name || 
-						(job.status === 'Success' ? 'Completed' : 'Processing...');
-					
-					return {
-						...job,
-						progress: {
-							percentage,
-							currentStep: currentStepName,
-							completedSteps,
-							totalSteps,
-							status: job.status
+					// Transform steps like JobPage.vue
+					if (job.steps) {
+						for (let step of job.steps) {
+							step.title = step.step_name;
+							step.duration = this.$format?.duration?.(step.duration) || step.duration;
+							step.isOpen = this.jobProgress.steps.find(s => s.name === step.name)?.isOpen || false;
 						}
-					};
-				},
-				onSuccess(job) {
-					if (job && job.progress) {
-						this.jobProgress = job.progress;
 					}
+
+					// Handle delivery failure like JobPage.vue
+					if (job.status === 'Delivery Failure' && job.steps && job.steps[0]) {
+						job.steps[0].output = job.output;
+					}
+
+					return job;
+				},
+				onSuccess: (job) => {
+					this.log('Job data loaded:', job);
+					if (job) {
+						this.updateJobProgress(job);
+					}
+				},
+				onError: (error) => {
+					this.log('Job loading error:', error);
 				}
 			};
 		},
@@ -586,134 +535,314 @@ export default {
 			return this.$resources?.saasProduct?.doc;
 		},
 		currentJobId() {
-			// Get job ID from site request document with safe access
-			const jobId = this.$resources?.siteRequest?.doc?.job || null;
-			console.log('Current Job ID:', jobId);
-			console.log('Site Request Doc:', this.$resources?.siteRequest?.doc);
+			const doc = this.$resources?.siteRequest?.doc;
+			const jobId = doc?.job || null;
+			this.log('Current Job ID computed:', jobId, 'from doc:', doc);
 			return jobId;
 		},
+		hasValidJobId() {
+			return this.currentJobId && this.currentJobId.trim() !== '';
+		},
+		// Current job data like JobPage.vue
+		currentJob() {
+			return this.$resources?.siteCreationJob?.doc || null;
+		},
+		// Check if we have job steps to display like JobPage.vue
+		hasJobSteps() {
+			return this.currentJob && this.currentJob.steps && this.currentJob.steps.length > 0;
+		},
+		// Display properties for the template
+		currentDisplayStep() {
+			if (this.hasJobSteps) {
+				return this.jobProgress.currentStep;
+			}
+			return this.currentBuildStep;
+		},
+		displayPercentage() {
+			if (this.hasJobSteps) {
+				return Math.round(this.jobProgress.percentage);
+			}
+			return Math.round(this.progressCount);
+		},
+		progressSummary() {
+			if (this.hasJobSteps) {
+				return `${this.jobProgress.completedSteps} / ${this.jobProgress.totalSteps} steps completed`;
+			}
+			return 'Setting up your site...';
+		},
 		showProgressBar() {
-			// Show progress bar when site is being created (more lenient condition)
 			const status = this.$resources?.siteRequest?.doc?.status;
 			const shouldShow = status && !['Error', 'Site Created'].includes(status);
-			console.log('Show Progress Bar:', shouldShow, 'Status:', status, 'Job ID:', this.currentJobId);
-			
-			// Force show progress bar if we're in creating state regardless of status
-			const isCreating = this.product_trial_request && !status; // If we have a request but no status yet
-			const forceShow = isCreating || shouldShow;
-			
-			console.log('Force Show Progress Bar:', forceShow, 'Is Creating:', isCreating, 'Should Show:', shouldShow);
-			return forceShow;
+			this.log('Show Progress Bar:', shouldShow, 'Status:', status);
+			return shouldShow || this.product_trial_request; // Show if we have a request regardless
 		},
-		// Safe access to site request status
 		siteRequestStatus() {
 			return this.$resources?.siteRequest?.doc?.status || null;
 		},
-		// Add computed to check if we should show the main loading state
 		shouldShowMainLoading() {
 			const hasRequest = !!this.product_trial_request;
-			const hasDoc = !!this.$resources?.siteRequest?.doc;
-			const status = this.$resources?.siteRequest?.doc?.status;
-			const isInProgress = hasRequest && (!hasDoc || (status && !['Error', 'Site Created'].includes(status)));
+			const status = this.siteRequestStatus;
+			const isInProgress = hasRequest && (!status || !['Error', 'Site Created'].includes(status));
 			
-			console.log('Should Show Main Loading:', isInProgress, 'Has Request:', hasRequest, 'Has Doc:', hasDoc, 'Status:', status);
+			this.log('Should Show Main Loading:', isInProgress, 'Status:', status);
 			return isInProgress;
 		},
 	},
 	methods: {
-		loginToSite() {
-			console.log('LoginToSite called with subdomain:', this.subdomain);
-			console.log('Site info:', this.$resources?.siteRequest?.doc?.site);
-			console.log('Full siteRequest doc:', this.$resources?.siteRequest?.doc);
-			
-			// Safe access to resources
-			if (!this.$resources || !this.$resources.siteRequest) {
-				console.error('Resources not available yet');
-				return;
-			}
-			
-			// Check if we have subdomain and should add domain
-			if (this.subdomain && this.$resources.siteRequest.doc?.site) {
-				console.log('Calling add_domain before login');
-				console.log('addDomain resource status:', this.$resources.addDomain);
-				if (this.$resources.addDomain) {
-					this.$resources.addDomain.submit();
-				}
-			} else {
-				// Proceed directly to login if no subdomain
-				console.log('No subdomain found, proceeding directly to login. Subdomain:', this.subdomain, 'Site:', this.$resources.siteRequest.doc?.site);
-				if (this.$resources.siteRequest.getLoginSid) {
-					this.$resources.siteRequest.getLoginSid.submit();
-				}
-			}
+		log(...args) {
+			// Always log on production for debugging - you can disable this later
+			console.log('[LoginToSite]', ...args);
 		},
-		checkStatus() {
-			// Safe access check
-			if (!this.$resources || !this.$resources.siteRequest) {
-				console.error('Resources not available for status check');
-				return;
-			}
-			
-			// Force reload the siteRequest to check current status
-			this.$resources.siteRequest.reload();
-			this.showTimeoutWarning = false;
-			
-			// Reset timeout
-			if (this.timeoutWarning) {
-				clearTimeout(this.timeoutWarning);
-			}
-			this.timeoutWarning = setTimeout(() => {
-				const status = this.$resources?.siteRequest?.doc?.status;
-				if (status && !['Error', 'Site Created'].includes(status)) {
-					this.showTimeoutWarning = true;
+		
+		startStatusMonitoring() {
+			this.log('Starting status monitoring...');
+			// Immediate check
+			this.$nextTick(() => {
+				if (this.$resources.siteRequest && this.product_trial_request) {
+					this.$resources.siteRequest.reload();
 				}
-			}, 120000);
+			});
 		},
-		handleJobUpdate(data) {
+		
+		setupSocketListeners() {
+			this.log('Setting up socket listeners...');
 			// Follow JobPage.vue pattern exactly
-			if (data.id === this.currentJobId) {
-				console.log('Job update received via socket:', data);
+			this.$socket.on('agent_job_update', this.handleJobUpdate);
+		},
+		
+		startPolling() {
+			this.log('Starting polling...');
+			// More aggressive polling for production
+			this.pollingInterval = setInterval(() => {
+				this.pollForUpdates();
+			}, 10000); // Every 10 seconds
+			
+			// Fallback reload like JobPage.vue
+			this.reloadInterval = setInterval(() => {
+				this.reloadIfNeeded();
+			}, 30000); // Every 30 seconds
+		},
+		
+		pollForUpdates() {
+			const status = this.siteRequestStatus;
+			this.log('Polling update - current status:', status);
+			
+			if (!status || !['Error', 'Site Created'].includes(status)) {
+				// Reload site request
+				if (!this.$resources.siteRequest?.loading) {
+					this.$resources.siteRequest.reload();
+				}
 				
-				// Transform steps data like JobPage.vue
+				// Check progress
+				if (this.$resources.siteRequest?.getProgress && !this.$resources.siteRequest.getProgress.loading) {
+					this.$resources.siteRequest.getProgress.reload();
+				}
+			}
+		},
+		
+		reloadIfNeeded() {
+			// Follow JobPage.vue reload pattern
+			if (
+				!this.$resources.siteRequest?.loading &&
+				Date.now() - this.lastLoaded > 5000
+			) {
+				this.log('Fallback reload...');
+				this.$resources.siteRequest.reload();
+				this.lastLoaded = Date.now();
+			}
+		},
+		
+		checkInitialStatus() {
+			this.log('Checking initial status...');
+			const doc = this.$resources?.siteRequest?.doc;
+			if (doc) {
+				this.log('Initial doc found:', doc);
+				this.handleStatusChange(doc.status);
+			} else if (this.product_trial_request) {
+				this.log('No doc yet, forcing reload...');
+				this.$resources.siteRequest.reload();
+			}
+		},
+		
+		handleStatusChange(status) {
+			this.log('Status changed to:', status);
+			
+			switch (status) {
+				case 'Site Created':
+					this.log('Site created successfully!');
+					this.showTimeoutWarning = false;
+					this.jobProgress.percentage = 100;
+					this.jobProgress.currentStep = 'Site ready!';
+					this.loginToSite();
+					break;
+					
+				case 'Error':
+					this.log('Site creation failed');
+					this.showTimeoutWarning = false;
+					break;
+					
+				case 'Wait for Site':
+				case 'New Site':
+				case 'Prefilling Setup Wizard':
+					this.log('Site creation in progress, starting progress tracking...');
+					this.showTimeoutWarning = false;
+					this.startProgressTracking();
+					break;
+					
+				default:
+					if (status) {
+						this.log('Unknown status, continuing monitoring:', status);
+						this.startProgressTracking();
+					}
+					break;
+			}
+		},
+		
+		startProgressTracking() {
+			this.log('Starting progress tracking...');
+			
+			// Start job ID checking first
+			this.startJobIdChecking();
+			
+			// Start progress API polling
+			if (this.$resources.siteRequest?.getProgress) {
+				this.$resources.siteRequest.getProgress.reload();
+			}
+		},
+		
+		startJobIdChecking() {
+			this.log('Starting job ID checking...');
+			
+			// Check immediately if we have job ID
+			if (this.hasValidJobId) {
+				this.log('Job ID available immediately, starting tracking');
+				this.startJobTracking();
+			} else {
+				this.log('No job ID yet, setting up periodic check');
+				// Check for job ID every 5 seconds
+				this.jobCheckInterval = setInterval(() => {
+					this.checkForJobId();
+				}, 5000);
+			}
+		},
+		
+		checkForJobId() {
+			this.log('Checking for job ID...');
+			
+			if (this.hasValidJobId && !this.isJobTrackingActive) {
+				this.log('Job ID found, starting tracking:', this.currentJobId);
+				this.startJobTracking();
+				
+				// Clear the checking interval
+				if (this.jobCheckInterval) {
+					clearInterval(this.jobCheckInterval);
+					this.jobCheckInterval = null;
+				}
+			} else if (!this.hasValidJobId) {
+				this.log('Still no job ID, will check again...');
+				// Force reload site request to get latest data
+				if (!this.$resources.siteRequest?.loading) {
+					this.$resources.siteRequest.reload();
+				}
+			}
+		},
+		
+		startJobTracking() {
+			// Safety check - only proceed if we have valid job ID
+			if (!this.hasValidJobId) {
+				this.log('Cannot start job tracking - no valid job ID');
+				return;
+			}
+			
+			if (this.isJobTrackingActive) {
+				this.log('Job tracking already active');
+				return;
+			}
+			
+			this.log('Starting job tracking for valid ID:', this.currentJobId);
+			this.isJobTrackingActive = true;
+			
+			// Subscribe to job updates like JobPage.vue - ONLY with valid ID
+			this.$socket.emit('doc_subscribe', 'Agent Job', this.currentJobId);
+			
+			// Load initial job data - ONLY with valid ID
+			if (this.$resources.siteCreationJob) {
+				this.$resources.siteCreationJob.reload();
+			}
+		},
+		
+		stopJobTracking() {
+			if (!this.isJobTrackingActive) {
+				return;
+			}
+			
+			this.log('Stopping job tracking');
+			this.isJobTrackingActive = false;
+			
+			// Unsubscribe from current job if we have valid ID
+			if (this.hasValidJobId) {
+				this.$socket.emit('doc_unsubscribe', 'Agent Job', this.currentJobId);
+			}
+		},
+		
+		handleJobUpdate(data) {
+			// Follow JobPage.vue pattern exactly - with safety check
+			if (!this.hasValidJobId || data.id !== this.currentJobId) {
+				return;
+			}
+			
+			this.log('Job update received via socket:', data);
+			
+			// Transform steps data like JobPage.vue
+			if (data.steps) {
 				data.steps = data.steps.map((step) => {
 					step.title = step.step_name;
 					step.duration = this.$format?.duration?.(step.duration) || step.duration;
+					step.isOpen = this.jobProgress.steps.find(s => s.name === step.name)?.isOpen || false;
 					return step;
 				});
+			}
 
-				// Update resource doc directly like JobPage.vue
-				if (this.$resources.siteCreationJob.doc) {
-					this.$resources.siteCreationJob.doc = {
-						...this.$resources.siteCreationJob.doc,
-						...data,
-					};
-				}
-				
-				// Calculate progress based on completed steps
-				const completedSteps = data.steps?.filter(step => step.status === 'Success').length || 0;
-				const totalSteps = data.steps?.length || 1;
-				const percentage = Math.min(Math.round((completedSteps / totalSteps) * 100), 95);
-				
-				// Find current running step
-				const runningStep = data.steps?.find(step => step.status === 'Running');
-				const pendingStep = data.steps?.find(step => step.status === 'Pending');
-				const currentStepName = runningStep?.step_name || 
-					pendingStep?.step_name || 
-					(data.status === 'Success' ? 'Completed' : 'Processing...');
-				
-				// Update job progress
-				this.jobProgress = {
-					percentage: data.status === 'Success' ? 100 : percentage,
-					currentStep: this.translateStepName(currentStepName),
-					completedSteps,
-					totalSteps,
-					status: data.status,
-					steps: data.steps || []
+			// Update resource doc directly like JobPage.vue
+			if (this.$resources.siteCreationJob?.doc) {
+				this.$resources.siteCreationJob.doc = {
+					...this.$resources.siteCreationJob.doc,
+					...data,
 				};
 			}
+			
+			this.updateJobProgress(data);
 		},
+		
+		updateJobProgress(job) {
+			if (!job || !job.steps) return;
+			
+			// Calculate progress like JobPage.vue
+			const completedSteps = job.steps.filter(step => step.status === 'Success').length;
+			const totalSteps = job.steps.length;
+			const percentage = totalSteps > 0 ? Math.min(Math.round((completedSteps / totalSteps) * 100), 95) : 0;
+			
+			// Find current step
+			const runningStep = job.steps.find(step => step.status === 'Running');
+			const pendingStep = job.steps.find(step => step.status === 'Pending');
+			const currentStepName = runningStep?.step_name || 
+				pendingStep?.step_name || 
+				(job.status === 'Success' ? 'Completed' : 'Processing...');
+			
+			// Update job progress
+			this.jobProgress = {
+				percentage: job.status === 'Success' ? 100 : percentage,
+				currentStep: this.translateStepName(currentStepName),
+				completedSteps,
+				totalSteps,
+				status: job.status,
+				steps: job.steps || []
+			};
+			
+			this.log('Job progress updated:', this.jobProgress);
+		},
+		
 		translateStepName(stepName) {
-			// Translate technical step names to user-friendly messages
 			const stepTranslations = {
 				'New Site': 'Creating site structure',
 				'Setup Environment': 'Setting up environment',
@@ -732,69 +861,110 @@ export default {
 			
 			return stepTranslations[stepName] || stepName || 'Processing...';
 		},
-		startJobTracking() {
-			if (this.currentJobId) {
-				console.log('Starting job tracking for:', this.currentJobId);
-				// Subscribe to job updates
-				this.$socket.emit('doc_subscribe', 'Agent Job', this.currentJobId);
-				// Load initial job data
-				this.$resources.siteCreationJob.reload();
-			}
-		},
-		startRealProgressTracking() {
-			console.log('Starting real progress tracking...');
+		
+		loginToSite() {
+			this.log('LoginToSite called with subdomain:', this.subdomain);
 			
-			// Only use real progress from getProgress API
-			if (this.$resources?.siteRequest?.getProgress) {
-				// Initial load
-				this.$resources.siteRequest.getProgress.reload();
-				
-				// Poll every 3 seconds for real progress
-				this.progressInterval = setInterval(() => {
-					if (!this.$resources.siteRequest.getProgress.loading && 
-						!['Error', 'Site Created'].includes(this.siteRequestStatus)) {
-						console.log('Polling real progress...');
-						this.$resources.siteRequest.getProgress.reload();
-					}
-				}, 3000);
+			if (!this.$resources?.siteRequest) {
+				this.log('Resources not available yet');
+				return;
+			}
+			
+			if (this.subdomain && this.$resources.siteRequest.doc?.site) {
+				this.log('Adding domain before login');
+				if (this.$resources.addDomain) {
+					this.$resources.addDomain.submit();
+				}
+			} else {
+				this.log('Proceeding directly to login');
+				if (this.$resources.siteRequest.getLoginSid) {
+					this.$resources.siteRequest.getLoginSid.submit();
+				}
 			}
 		},
-		reloadProgress() {
-			// Follow JobPage.vue reload pattern
-			if (
-				!this.$resources.siteRequest?.loading &&
-				!this.$resources.siteRequest?.getProgress?.loading &&
-				// reload if last loaded more than 5 seconds ago
-				Date.now() - (this.lastLoaded || 0) > 5000
-			) {
-				console.log('Fallback reload progress and site request...');
-				this.$resources.siteRequest.reload();
-				this.$resources.siteRequest.getProgress?.reload();
-				this.lastLoaded = Date.now();
+		
+		checkStatus() {
+			this.log('Manual status check triggered');
+			
+			if (!this.$resources?.siteRequest) {
+				this.log('Resources not available for status check');
+				return;
 			}
-		}
+			
+			// Force reload
+			this.$resources.siteRequest.reload();
+			this.showTimeoutWarning = false;
+			
+			// Reset timeout
+			if (this.timeoutWarning) {
+				clearTimeout(this.timeoutWarning);
+			}
+			this.timeoutWarning = setTimeout(() => {
+				const status = this.siteRequestStatus;
+				if (!status || !['Error', 'Site Created'].includes(status)) {
+					this.showTimeoutWarning = true;
+				}
+			}, 180000); // 3 minutes
+		},
+		
+		cleanup() {
+			this.log('Starting cleanup...');
+			
+			// Clear all timers
+			if (this.timeoutWarning) {
+				clearTimeout(this.timeoutWarning);
+				this.timeoutWarning = null;
+			}
+			if (this.pollingInterval) {
+				clearInterval(this.pollingInterval);
+				this.pollingInterval = null;
+			}
+			if (this.reloadInterval) {
+				clearInterval(this.reloadInterval);
+				this.reloadInterval = null;
+			}
+			if (this.jobCheckInterval) {
+				clearInterval(this.jobCheckInterval);
+				this.jobCheckInterval = null;
+			}
+			
+			// Stop job tracking safely
+			this.stopJobTracking();
+			
+			// Cleanup socket listeners like JobPage.vue
+			this.$socket.off('agent_job_update', this.handleJobUpdate);
+			
+			this.log('Cleanup completed');
+		},
 	},
 	watch: {
-		// Watch for job ID changes to start tracking
+		// Watch for job ID changes - with safety check
 		currentJobId: {
 			handler(newJobId, oldJobId) {
-				if (oldJobId && oldJobId !== newJobId) {
-					// Unsubscribe from old job
+				this.log('Job ID changed from', oldJobId, 'to', newJobId);
+				
+				// Stop tracking old job if it was active
+				if (oldJobId && oldJobId !== newJobId && this.isJobTrackingActive) {
+					this.log('Unsubscribing from old job:', oldJobId);
 					this.$socket.emit('doc_unsubscribe', 'Agent Job', oldJobId);
+					this.isJobTrackingActive = false;
 				}
-				if (newJobId) {
+				
+				// Start tracking new job if we have valid ID
+				if (newJobId && newJobId !== oldJobId && newJobId.trim() !== '') {
+					this.log('New valid job ID detected, starting tracking');
 					this.startJobTracking();
 				}
 			},
-			immediate: true
+			// Remove immediate: true to avoid calling with undefined
 		},
-		// Watch for site request status changes with safe access
+		
+		// Watch for status changes
 		siteRequestStatus: {
-			handler(newStatus) {
-				if (newStatus === 'Site Created') {
-					this.jobProgress.percentage = 100;
-					this.jobProgress.currentStep = 'Site ready!';
-					this.showTimeoutWarning = false;
+			handler(newStatus, oldStatus) {
+				if (newStatus !== oldStatus) {
+					this.log('Site status changed from', oldStatus, 'to', newStatus);
+					this.handleStatusChange(newStatus);
 				}
 			}
 		}
