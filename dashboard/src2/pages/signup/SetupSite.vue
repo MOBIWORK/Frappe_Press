@@ -47,7 +47,8 @@
 								v-model="subdomain" />
 							<div
 								class="flex cursor-default items-center rounded-r border-y border-r border-outline-gray-2 bg-gray-50 px-3 text-base">
-								.{{ domain }}
+								<!-- .{{ domain }} -->
+								 .nhansu360.com
 							</div>
 						</div>
 						<div class="mt-2">
@@ -65,7 +66,8 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
 											d="M5 13l4 4L19 7" />
 									</svg>
-									{{ subdomain }}.{{ domain }} {{ __('is available') }}
+									<!-- {{ subdomain }}.{{ domain }} {{ __('is available') }} -->
+									{{ subdomain }}.nhansu360.com {{ __('is available') }}
 								</div>
 								<div v-else class="text-sm text-red-600 flex items-center gap-1">
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -73,7 +75,8 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
 											d="M6 18L18 6M6 6l12 12" />
 									</svg>
-									{{ subdomain }}.{{ domain }} {{ __('is not available') }}
+									<!-- {{ subdomain }}.{{ domain }} {{ __('is not available') }} -->
+									{{ subdomain }}.nhansu360.com {{ __('is not available') }}
 								</div>
 							</template>
 
@@ -244,12 +247,13 @@ export default {
 						throw new DashboardError('Please enter a subdomain');
 					}
 				},
-				onSuccess: () => {
+				onSuccess: (data) => {
 					this.$router.push({
 						name: 'SignupLoginToSite',
 						params: { productId: this.productId },
 						query: {
 							product_trial_request: this.$resources.siteRequest.data.name,
+							subdomain: this.subdomain,
 						},
 					});
 				},
@@ -294,7 +298,8 @@ export default {
 				},
 				{
 					label: __('Site name'),
-					value: `${this.subdomain}.${this.saasProduct?.domain}`,
+					// value: `${this.subdomain}.${this.saasProduct?.domain}`,
+					value: `${this.subdomain}.nhansu360.com`,
 				},
 				{
 					label: __('Plan name'),
@@ -348,10 +353,6 @@ export default {
 				name: 'Login',
 			});
 		},
-		// TestClick() {
-		// 	<Button @click="TestClick()">helo</Button>
-		// 	console.log("this", this.options);
-		// }
 	},
 };
 </script>

@@ -310,6 +310,13 @@ let router = createRouter({
 					props: true,
 					meta: { hideSidebar: true },
 				},
+				{
+					path: ':productId/template',
+					name: 'TemplateSelector',
+					component: () => import('./pages/signup/TemplateSelector.vue'),
+					props: true,
+					meta: { hideSidebar: true },
+				},
 			],
 		},
 		{
@@ -380,6 +387,18 @@ router.beforeEach(async (to, from, next) => {
 		let onboardingComplete = $team.doc.onboarding.complete;
 		let defaultRoute = 'Site List';
 		let onboardingRoute = 'Welcome';
+		
+		const productId = localStorage.getItem('product_id');
+		const helloPath = `/create-site/${productId}/template`;
+		if (
+			productId === 'go1_cms' &&
+			!to.path.endsWith(helloPath) &&
+			!sessionStorage.getItem('hello_redirected')
+		) {
+			sessionStorage.setItem('hello_redirected', '1');
+			next({ path: helloPath, query: { ...to.query } });
+			return;
+		}
 
 		// identify user in posthog
 		if (window.posthog?.__loaded) {

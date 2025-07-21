@@ -331,6 +331,45 @@ class Invoice(Document):
 			# Reset flags sau khi finalize xong
 			self._is_finalizing = False
 			self._skip_payos_update = False
+			
+			# ✅ THÊM: Tự động tạo PayOS link sau khi finalize nếu chưa có
+			try:
+				# Chỉ tạo PayOS link nếu:
+				# 1. Invoice đã finalize thành công
+				# 2. Chưa có PayOS order code
+				# 3. Invoice có giá trị > 0
+				# 4. Không phải Prepaid Credits type
+				# 5. Status là Unpaid (cần thanh toán)
+				if (self.status == "Unpaid" and 
+					not self.get('payos_order_code') and 
+					self.get('total', 0) > 0 and 
+					self.get('type') != 'Prepaid Credits'):
+					
+					from press.api.app_admin import create_payment_link_internal
+					print(f"🔄 Creating PayOS link after finalize for {self.name} - Amount: {self.total:,.0f} VND")
+					
+					result = create_payment_link_internal(self.name)
+					if result.get('success') and result.get('data'):
+						self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
+						self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
+						self.db_set('payos_order_code', result['data'].get('order_code', ''))
+						self.db_set('payos_status', 'PENDING')
+						print(f"✅ PayOS link created after finalize: {result['data'].get('order_code')}")
+						
+						# Log thành công
+						frappe.log_error(
+							f"PayOS payment link created after finalize for Invoice {self.name} - Order: {result['data'].get('order_code')}", 
+							'PayOS Finalize Creation Success'
+						)
+					else:
+						print(f"❌ Failed to create PayOS link after finalize: {result.get('message')}")
+						frappe.log_error(f"Failed to create PayOS link after finalize for Invoice {self.name}: {result.get('message', 'Unknown error')}", 'PayOS Finalize Creation Error')
+				else:
+					print(f"⏭️ Skip PayOS creation after finalize for {self.name}: status={self.status}, order_code={bool(self.get('payos_order_code'))}, total={self.get('total', 0)}, type={self.get('type')}")
+					
+			except Exception as e:
+				frappe.log_error(f"Error creating PayOS link after finalize for Invoice {self.name}: {str(e)}\n{frappe.get_traceback()}", 'PayOS Finalize Creation Exception')
+				print(f"❌ Exception creating PayOS after finalize: {str(e)}")
 
 	def unsuspend_sites_if_applicable(self):
 		if (
@@ -668,6 +707,46 @@ class Invoice(Document):
 
 		self.save()
 		usage_record.db_set("invoice", self.name)
+		
+		# ✅ THÊM: Tự động tạo PayOS payment link sau khi thêm usage record
+		try:
+			# Chỉ tạo PayOS link nếu:
+			# 1. Chưa có PayOS order code
+			# 2. Invoice có giá trị > 0 sau khi thêm usage record
+			# 3. Không phải Prepaid Credits type
+			# 4. Không đang trong quá trình finalize
+			if (not self.get('payos_order_code') and 
+				self.get('total', 0) > 0 and 
+				self.get('type') == 'Subscription' and
+				not getattr(self, '_skip_payos_creation', False) and
+				not getattr(self, '_is_finalizing', False)):
+				
+				from press.api.app_admin import create_payment_link_internal
+				
+				result = create_payment_link_internal(self.name)
+				if result.get('success') and result.get('data'):
+					self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
+					self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
+					self.db_set('payos_order_code', result['data'].get('order_code', ''))
+					self.db_set('payos_status', 'PENDING')
+					
+					# Log thành công
+					frappe.log_error(
+						f"PayOS payment link created after adding usage record for Invoice {self.name} - Order: {result['data'].get('order_code')}", 
+						'PayOS Usage Record Creation Success'
+					)
+				else:
+
+					frappe.log_error(f"Failed to create PayOS link after usage record for Invoice {self.name}: {result.get('message', 'Unknown error')}", 'PayOS Usage Record Creation Error')
+			else:
+				print(f"⏭️ Skip PayOS creation after usage record for {self.name}: "
+					f"order_code={bool(self.get('payos_order_code'))}, "
+					f"total={self.get('total', 0)}, "
+					f"type={self.get('type')}, "
+					f"skip_creation={getattr(self, '_skip_payos_creation', False)}")
+				
+		except Exception as e:
+			frappe.log_error(f"Error creating PayOS link after usage record for Invoice {self.name}: {str(e)}\n{frappe.get_traceback()}", 'PayOS Usage Record Exception')
 
 	def remove_usage_record(self, usage_record):
 		if self.type != "Subscription":
@@ -827,303 +906,50 @@ class Invoice(Document):
 		if already_exists:
 			return None
 
-		return frappe.get_doc(doctype="Invoice", team=self.team, period_start=next_start).insert()
-
-	def get_pdf(self):
-		print_format = self.meta.default_print_format
-		return frappe.utils.get_url(
-			f"/api/method/frappe.utils.print_format.download_pdf?doctype=Invoice&name={self.name}&format={print_format}&no_letterhead=0"
-		)
-
-	@frappe.whitelist()
-	def create_invoice_on_frappeio(self):  # noqa: C901
-		if self.flags.skip_frappe_invoice:
-			return None
-		if self.status != "Paid":
-			return None
-		if self.amount_paid == 0:
-			return None
-		if self.frappe_invoice or self.frappe_partner_order or self.mpesa_receipt_number:
-			return None
-
-		if is_frappe_auth_disabled():
-			return None
-
+		# ✅ SỬA LỖI CHÍNH: Tạo invoice mới và đảm bảo PayOS link được tạo
+		new_invoice = frappe.get_doc(doctype="Invoice", team=self.team, period_start=next_start)
+		
+		# Đảm bảo không có flag chặn PayOS creation
+		new_invoice._skip_payos_creation = False
+		new_invoice._skip_payos_update = False
+		
+		# Insert invoice mới
+		new_invoice.insert()
+		
+		# ✅ THÊM: Tự động tạo PayOS payment link nếu chưa có
 		try:
-			team = frappe.get_doc("Team", self.team)
-			address = frappe.get_doc("Address", team.billing_address) if team.billing_address else None
-			if not address:
-				# don't create invoice if address is not set
-				return None
-			client = self.get_frappeio_connection()
-			response = client.session.post(
-				f"{client.url}/api/method/create-fc-invoice",
-				headers=client.headers,
-				data={
-					"team": team.as_json(),
-					"address": address.as_json() if address else '""',
-					"invoice": self.as_json(),
-				},
-			)
-			if response.ok:
-				res = response.json()
-				invoice = res.get("message")
-
-				if invoice:
-					self.frappe_invoice = invoice
-					self.fetch_invoice_pdf()
-					self.save()
-					return invoice
-			else:
-				from bs4 import BeautifulSoup
-
-				soup = BeautifulSoup(response.text, "html.parser")
-				self.add_comment(
-					text="Failed to create invoice on frappe.io" + "<br><br>" + str(soup.find("pre"))
-				)
-
-				log_error(
-					"Frappe.io Invoice Creation Error",
-					data={"invoice": self.name, "frappe_io_response": response.text},
-				)
-		except Exception:
-			traceback = "<pre><code>" + frappe.get_traceback() + "</pre></code>"
-			self.add_comment(text="Failed to create invoice on frappe.io" + "<br><br>" + traceback)
-
-			log_error(
-				"Frappe.io Invoice Creation Error",
-				data={"invoice": self.name, "traceback": traceback},
-			)
-
-	@frappe.whitelist()
-	def fetch_invoice_pdf(self):
-		if self.frappe_invoice:
-			from urllib.parse import urlencode
-
-			if is_frappe_auth_disabled():
-				return
-
-			client = self.get_frappeio_connection()
-			print_format = frappe.db.get_single_value("Press Settings", "print_format")
-			params = urlencode(
-				{
-					"doctype": "Sales Invoice",
-					"name": self.frappe_invoice,
-					"format": print_format,
-					"no_letterhead": 0,
-				}
-			)
-			url = client.url + "/api/method/frappe.utils.print_format.download_pdf?" + params
-
-			with client.session.get(url, headers=client.headers, stream=True) as r:
-				r.raise_for_status()
-				ret = frappe.get_doc(
-					{
-						"doctype": "File",
-						"attached_to_doctype": "Invoice",
-						"attached_to_name": self.name,
-						"attached_to_field": "invoice_pdf",
-						"folder": "Home/Attachments",
-						"file_name": self.frappe_invoice + ".pdf",
-						"is_private": 1,
-						"content": r.content,
-					}
-				)
-				ret.save(ignore_permissions=True)
-				self.invoice_pdf = ret.file_url
-
-	def get_frappeio_connection(self):
-		if not hasattr(self, "frappeio_connection"):
-			self.frappeio_connection = get_frappe_io_connection()
-
-		return self.frappeio_connection
-
-	def update_transaction_details(self, stripe_charge=None):
-		if not stripe_charge:
-			return
-		stripe = get_stripe()
-		charge = stripe.Charge.retrieve(stripe_charge)
-		if charge.balance_transaction:
-			balance_transaction = stripe.BalanceTransaction.retrieve(charge.balance_transaction)
-			self.exchange_rate = balance_transaction.exchange_rate
-			self.transaction_amount = convert_stripe_money(balance_transaction.amount)
-			self.transaction_net = convert_stripe_money(balance_transaction.net)
-			self.transaction_fee = convert_stripe_money(balance_transaction.fee)
-			self.transaction_fee_details = []
-			for row in balance_transaction.fee_details:
-				self.append(
-					"transaction_fee_details",
-					{
-						"description": row.description,
-						"amount": convert_stripe_money(row.amount),
-						"currency": row.currency.upper(),
-					},
-				)
-			self.save()
-
-	def update_razorpay_transaction_details(self, payment):
-		if not (payment["fee"] or payment["tax"]):
-			return
-
-		self.transaction_amount = convert_stripe_money(payment["amount"])
-		self.transaction_net = convert_stripe_money(payment["amount"] - payment["fee"])
-		self.transaction_fee = convert_stripe_money(payment["fee"])
-
-		charges = [
-			{
-				"description": "GST",
-				"amount": convert_stripe_money(payment["tax"]),
-				"currency": payment["currency"],
-			},
-			{
-				"description": "Razorpay Fee",
-				"amount": convert_stripe_money(payment["fee"] - payment["tax"]),
-				"currency": payment["currency"],
-			},
-		]
-
-		for row in charges:
-			self.append(
-				"transaction_fee_details",
-				{
-					"description": row["description"],
-					"amount": row["amount"],
-					"currency": row["currency"].upper(),
-				},
-			)
-
-		self.save()
-
-	def fetch_mpesa_invoice_pdf(self):
-		if not (self.mpesa_payment_record and self.mpesa_invoice):
-			return
-		gateway_info = get_gateway_details(self.mpesa_payment_record)
-		client = get_partner_external_connection(gateway_info[0])
-		try:
-			print_format = gateway_info[1]
-			from urllib.parse import urlencode
-
-			params = urlencode(
-				{
-					"doctype": "Sales Invoice",
-					"name": self.mpesa_invoice,
-					"format": print_format,
-					"no_letterhead": 0,
-				}
-			)
-			url = f"{client.url}/api/method/frappe.utils.print_format.download_pdf?{params}"
-
-			with client.session.get(url, headers=client.headers, stream=True) as r:
-				r.raise_for_status()
-				file_doc = frappe.get_doc(
-					{
-						"doctype": "File",
-						"attached_to_doctype": "Invoice",
-						"attached_to_name": self.name,
-						"attached_to_field": "mpesa_invoice_pdf",
-						"folder": "Home/Attachments",
-						"file_name": self.mpesa_invoice + ".pdf",
-						"is_private": 1,
-						"content": r.content,
-					}
-				)
-				file_doc.save(ignore_permissions=True)
-				self.mpesa_invoice_pdf = file_doc.file_url
-				self.save(ignore_permissions=True)
-
-		except Exception as e:
-			frappe.log_error(str(e), "Error fetching Sales Invoice PDF on external site")
-
-	@frappe.whitelist()
-	def refund(self, reason):
-		stripe = get_stripe()
-		charge = None
-		if self.type in ["Subscription", "Service"]:
-			stripe_invoice = stripe.Invoice.retrieve(self.stripe_invoice_id)
-			charge = stripe_invoice.charge
-		elif self.type == "Prepaid Credits":
-			payment_intent = stripe.PaymentIntent.retrieve(self.stripe_payment_intent_id)
-			charge = payment_intent["charges"]["data"][0]["id"]
-
-		if not charge:
-			frappe.throw("Cannot refund payment because Stripe Charge not found for this invoice")
-
-		stripe.Refund.create(charge=charge)
-		self.status = "Refunded"
-		self.refund_reason = reason
-		self.save()
-		self.add_comment(text=f"Refund reason: {reason}")
-
-	@frappe.whitelist()
-	def change_stripe_invoice_status(self, status):
-		stripe = get_stripe()
-		if status == "Paid":
-			stripe.Invoice.modify(self.stripe_invoice_id, paid=True)
-		elif status == "Uncollectible":
-			stripe.Invoice.mark_uncollectible(self.stripe_invoice_id)
-		elif status == "Void":
-			stripe.Invoice.void_invoice(self.stripe_invoice_id)
-
-	@frappe.whitelist()
-	def refresh_stripe_payment_link(self):
-		stripe = get_stripe()
-		stripe_invoice = stripe.Invoice.retrieve(self.stripe_invoice_id)
-		self.stripe_invoice_url = stripe_invoice.hosted_invoice_url
-		self.save()
-
-		# Also send back the updated payment link
-		return self.stripe_invoice_url
-
-	def get_stripe_invoice(self):
-		if not self.stripe_invoice_id:
-			return None
-		stripe = get_stripe()
-		return stripe.Invoice.retrieve(self.stripe_invoice_id)
-
-	@frappe.whitelist()
-	def create_payos_payment_link(self):
-		"""
-		Tạo PayOS payment link cho invoice hiện có
-		"""
-		try:
-			if self.get('payos_order_code'):
-				return {
-					"success": False,
-					"message": "PayOS payment link already exists",
-					"data": {
-						"order_code": self.payos_order_code,
-						"checkout_url": self.payos_checkout_url,
-						"qr_code": self.payos_qr_code
-					}
-				}
-			
-			from press.api.app_admin import create_payment_link_internal
-			result = create_payment_link_internal(self.name)
-			
-			if result.get('success') and result.get('data'):
-				self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
-				self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
-				self.db_set('payos_order_code', result['data'].get('order_code', ''))
-				self.db_set('payos_status', 'PENDING')
+			# Kiểm tra sau khi insert xem đã có PayOS link chưa
+			new_invoice.reload()
+			if (not new_invoice.get('payos_order_code') and 
+				new_invoice.get('total', 0) > 0 and 
+				new_invoice.get('type') != 'Prepaid Credits'):
 				
-				frappe.log_error(f"PayOS payment link created for Invoice {self.name}", 'PayOS Payment Link Success')
+				from press.api.app_admin import create_payment_link_internal
+
 				
-				return {
-					"success": True,
-					"message": "PayOS payment link created successfully",
-					"data": result.get('data')
-				}
+				result = create_payment_link_internal(new_invoice.name)
+				if result.get('success') and result.get('data'):
+					new_invoice.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
+					new_invoice.db_set('payos_qr_code', result['data'].get('qr_code', ''))
+					new_invoice.db_set('payos_order_code', result['data'].get('order_code', ''))
+					new_invoice.db_set('payos_status', 'PENDING')
+
+					
+					# Log thành công
+					frappe.log_error(
+						f"PayOS payment link created for next invoice {new_invoice.name} - Order: {result['data'].get('order_code')}", 
+						'PayOS Auto Creation Success'
+					)
+				else:
+
+					frappe.log_error(f"Failed to create PayOS link for next invoice {new_invoice.name}: {result.get('message', 'Unknown error')}", 'PayOS Next Invoice Error')
 			else:
-				frappe.log_error(result.get('message', 'Unknown error'), 'PayOS Payment Link Error')
-				return result
+				print(f"⏭️ Skip PayOS creation for next invoice {new_invoice.name}: order_code={bool(new_invoice.get('payos_order_code'))}, total={new_invoice.get('total', 0)}, type={new_invoice.get('type')}")
 				
 		except Exception as e:
-			frappe.log_error(frappe.get_traceback(), 'PayOS Payment Link Exception')
-			return {
-				"success": False,
-				"message": f"An error occurred: {str(e)}",
-				"error_code": "INTERNAL_ERROR"
-			}
+			frappe.log_error(f"Error creating PayOS link for next invoice {new_invoice.name}: {str(e)}\n{frappe.get_traceback()}", 'PayOS Next Invoice Exception')
+
+		return new_invoice
 
 	def on_update(self):
 		"""
@@ -1152,62 +978,51 @@ class Invoice(Document):
 				getattr(self, '_skip_payos_update', False) or
 				getattr(self, '_is_finalizing', False)):
 				
-				print(f"⏭️ Skip PayOS update for {self.name}: "
-					f"order_code={bool(self.get('payos_order_code'))}, "
-					f"status={self.get('status')}, "
-					f"payos_status={self.get('payos_status')}, "
-					f"type={self.get('type')}, "
-					f"skip_flag={getattr(self, '_skip_payos_update', False)}")
-				return
-
-			# Lấy số tiền hiện tại
-			current_amount = float(self.get('total', 0) or 0)
-			
-			# Nếu số tiền = 0, không cần PayOS
-			if current_amount <= 0:
-				print(f"⏭️ Skip PayOS update for {self.name}: amount is 0")
-				return
-
-			# KIỂM TRA THAY ĐỔI THỰC SỰ
-			if self.has_value_changed('total'):
-				# Lấy giá trị cũ từ _doc_before_save nếu có
-				old_amount = 0
-				if hasattr(self, '_doc_before_save') and self._doc_before_save:
-					old_amount = float(self._doc_before_save.get('total', 0) or 0)
-				else:
-					# Fallback: lấy từ database
-					old_doc_data = frappe.db.get_value("Invoice", self.name, "total")
-					old_amount = float(old_doc_data or 0)
 				
-				# So sánh số tiền (với tolerance 1 VND để tránh floating point issues)
-				if abs(current_amount - old_amount) > 1:
-					print(f"📊 Invoice {self.name}: Phát hiện thay đổi số tiền từ {old_amount:,.0f} VND → {current_amount:,.0f} VND")
+				# ✅ THÊM LOGIC MỚI: Tạo PayOS link cho invoice chưa có link và có total > 0
+				if (not self.get('payos_order_code') and 
+					self.get('total', 0) > 0 and 
+					self.get('type') != 'Prepaid Credits' and
+					not getattr(self, '_skip_payos_update', False)):
 					
-					# SET FLAG để tránh infinite loop
-					self._skip_payos_update = True
+					from press.api.app_admin import create_payment_link_internal
+
 					
-					# Hủy PayOS payment link cũ
-					self.cancel_old_payos_payment_link()
+					result = create_payment_link_internal(self.name)
+					if result.get('success') and result.get('data'):
+						self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
+						self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
+						self.db_set('payos_order_code', result['data'].get('order_code', ''))
+						self.db_set('payos_status', 'PENDING')
+
+						
+						# Log thành công
+						frappe.log_error(
+							f"PayOS payment link created for updated Invoice {self.name} - Order: {result['data'].get('order_code')}", 
+							'PayOS Update Creation Success'
+						)
+					else:
+						frappe.log_error(f"Failed to create PayOS link for updated Invoice {self.name}: {result.get('message', 'Unknown error')}", 'PayOS Update Creation Error')
+				
+				return
+			
+			# Kiểm tra xem số tiền có thay đổi không
+			if hasattr(self, '_doc_before_save'):
+				old_total = self._doc_before_save.get('total', 0) or 0
+				new_total = self.get('total', 0) or 0
+				
+				# Nếu số tiền thay đổi đáng kể (> 1000 VND)
+				if abs(new_total - old_total) > 1000:
+					print(f"💰 Invoice {self.name} amount changed: {old_total:,.0f} → {new_total:,.0f} VND")
 					
-					# Tạo PayOS payment link mới với số tiền mới
-					self.create_new_payos_payment_link()
-					
-					# Reset flag
-					self._skip_payos_update = False
-				else:
-					print(f"📊 Invoice {self.name}: Thay đổi nhỏ, bỏ qua ({old_amount:,.0f} → {current_amount:,.0f} VND)")
-			else:
-				print(f"📊 Invoice {self.name}: Không có thay đổi total field")
+					# Hủy payment link cũ và tạo mới
+					if self.get('payos_order_code'):
+						self.cancel_old_payos_payment_link()
+						self.create_new_payos_payment_link()
 
 		except Exception as e:
-			frappe.log_error(
-				f"Error updating PayOS payment link for Invoice {self.name}: {str(e)}\n{frappe.get_traceback()}", 
-				"PayOS Payment Link Update Error"
-			)
-			print(f"❌ Error updating PayOS for {self.name}: {str(e)}")
-			# Reset flag nếu có lỗi
-			if hasattr(self, '_skip_payos_update'):
-				self._skip_payos_update = False
+			frappe.log_error(f"Error updating PayOS payment link for Invoice {self.name}: {str(e)}\n{frappe.get_traceback()}", 'PayOS Update Exception')
+
 
 	def cancel_old_payos_payment_link(self):
 		"""
@@ -1216,68 +1031,52 @@ class Invoice(Document):
 		try:
 			if not self.get('payos_order_code'):
 				return
-
+				
 			from press.api.payos_connect import cancel_payos_payment
-			result = cancel_payos_payment(
-				self.payos_order_code, 
-				f"Amount changed for Invoice {self.name}"
-			)
+			result = cancel_payos_payment(self.get('payos_order_code'), "Amount changed")
 			
 			if result.get('success'):
-				print(f"✅ Đã hủy PayOS payment link cũ: {self.payos_order_code}")
-				# Reset PayOS fields
-				self.db_set('payos_status', 'CANCELLED')
-				self.add_comment("Info", f"PayOS payment link cancelled due to amount change - Old Order: {self.payos_order_code}")
+				print(f"✅ Cancelled old PayOS link: {self.get('payos_order_code')}")
 			else:
-				print(f"❌ Không thể hủy PayOS payment link: {result.get('message')}")
-				# Vẫn tiếp tục tạo mới nếu không hủy được
+				print(f"⚠️ Failed to cancel old PayOS link: {result.get('message')}")
 				
 		except Exception as e:
-			frappe.log_error(f"Error cancelling old PayOS payment link: {str(e)}", "PayOS Cancel Error")
-			print(f"❌ Error cancelling PayOS: {str(e)}")
+			frappe.log_error(f"Error cancelling old PayOS link: {str(e)}", 'PayOS Cancel Error')
 
 	def create_new_payos_payment_link(self):
 		"""
 		Tạo PayOS payment link mới với số tiền cập nhật
 		"""
 		try:
-			# Reset PayOS fields trước khi tạo mới
-			old_order_code = self.get('payos_order_code')
+			# Reset PayOS fields
 			self.db_set('payos_order_code', '')
 			self.db_set('payos_checkout_url', '')
 			self.db_set('payos_qr_code', '')
-			self.db_set('payos_payment_link_id', '')
 			self.db_set('payos_status', '')
 			
 			# Tạo payment link mới
 			from press.api.app_admin import create_payment_link_internal
-			print(f"🔄 Đang tạo PayOS payment link mới cho {self.name} với số tiền {self.total:,.0f} VND...")
-			result = create_payment_link_internal(self.name)
+			print(f"🔄 Creating new PayOS link for {self.name} - Amount: {self.total:,.0f} VND")
 			
+			result = create_payment_link_internal(self.name)
 			if result.get('success') and result.get('data'):
-				new_order_code = result['data'].get('order_code', '')
 				self.db_set('payos_checkout_url', result['data'].get('checkout_url', ''))
 				self.db_set('payos_qr_code', result['data'].get('qr_code', ''))
-				self.db_set('payos_order_code', new_order_code)
+				self.db_set('payos_order_code', result['data'].get('order_code', ''))
 				self.db_set('payos_status', 'PENDING')
+				print(f"✅ New PayOS link created: {result['data'].get('order_code')}")
 				
-				print(f"✅ Tạo PayOS payment link mới: {new_order_code} - {self.total:,.0f} VND")
-				self.add_comment(
-					"Info", 
-					f"PayOS payment link updated: {old_order_code} → {new_order_code} | Amount: {self.total:,.0f} VND"
-				)
-				
+				# Log thành công
 				frappe.log_error(
-					f"PayOS payment link updated for Invoice {self.name} - Old: {old_order_code}, New: {new_order_code}, Amount: {self.total:,.0f} VND", 
-					'PayOS Payment Link Updated'
+					f"New PayOS payment link created for Invoice {self.name} - Order: {result['data'].get('order_code')}", 
+					'PayOS Recreate Success'
 				)
 			else:
-				print(f"❌ Lỗi tạo PayOS payment link mới: {result.get('message', 'Unknown error')}")
-				frappe.log_error(result.get('message', 'Unknown error'), 'PayOS Auto Update Error')
+				print(f"❌ Failed to create new PayOS link: {result.get('message')}")
+				frappe.log_error(f"Failed to create new PayOS link for Invoice {self.name}: {result.get('message', 'Unknown error')}", 'PayOS Recreate Error')
 				
 		except Exception as e:
-			frappe.log_error(f"Error creating new PayOS payment link: {str(e)}", "PayOS Create Error")
-			print(f"❌ Error creating new PayOS: {str(e)}")
+			frappe.log_error(f"Error creating new PayOS link: {str(e)}", 'PayOS Recreate Exception')
 
 def finalize_draft_invoices():
 	"""
@@ -1368,8 +1167,7 @@ def calculate_gst(amount):
 
 
 def get_permission_query_conditions(user):
-	from press.utils import get_current_team, get_current_team_v2
-
+	from press.utils import get_current_team
 	if not user:
 		user = frappe.session.user
 
@@ -1377,14 +1175,13 @@ def get_permission_query_conditions(user):
 	if user_type == "System User":
 		return ""
 
-	team = get_current_team_v2()
+	team = get_current_team()
 
 	return f"(`tabInvoice`.`team` = {frappe.db.escape(team)})"
 
 
 def has_permission(doc, ptype, user):
-	from press.utils import get_current_team, has_role, get_current_team_v2
-
+	from press.utils import get_current_team, has_role
 	if not user:
 		user = frappe.session.user
 
@@ -1398,7 +1195,7 @@ def has_permission(doc, ptype, user):
 	if has_role("Press Support Agent", user) and ptype == "read":
 		return True
 
-	team = get_current_team_v2(True)
+	team = get_current_team(True)
 	team_members = [
 		d.user for d in frappe.db.get_all("Team Member", {"parenttype": "Team", "parent": doc.team}, ["user"])
 	]

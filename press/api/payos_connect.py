@@ -41,83 +41,83 @@ def check_payos_settings():
     return settings_dict
 
 
-def get_current_team_v2(get_doc=False):
-    if frappe.session.user == "Guest":
-        frappe.throw("Not Permitted", frappe.PermissionError)
+# def get_current_team_v2(get_doc=False):
+#     if frappe.session.user == "Guest":
+#         frappe.throw("Not Permitted", frappe.PermissionError)
 
-    if not hasattr(frappe.local, "request"):
-        # if this is not a request, send the current user as default team
-        # always use parent_team for background jobs
-        team_filters = {"user": frappe.session.user, "enabled": 1, "parent_team": ("is", "not set")}
-        if get_doc:
-            try:
-                team_name = frappe.get_value("Team", team_filters, "name")
-                if team_name and isinstance(team_name, str):
-                    return frappe.get_doc("Team", team_name)
-                else:
-                    frappe.throw("No team found for user", frappe.PermissionError)
-            except frappe.DoesNotExistError:
-                frappe.throw("No team found for user", frappe.PermissionError)
-        else:
-            return frappe.get_value("Team", team_filters, "name")
+#     if not hasattr(frappe.local, "request"):
+#         # if this is not a request, send the current user as default team
+#         # always use parent_team for background jobs
+#         team_filters = {"user": frappe.session.user, "enabled": 1, "parent_team": ("is", "not set")}
+#         if get_doc:
+#             try:
+#                 team_name = frappe.get_value("Team", team_filters, "name")
+#                 if team_name and isinstance(team_name, str):
+#                     return frappe.get_doc("Team", team_name)
+#                 else:
+#                     frappe.throw("No team found for user", frappe.PermissionError)
+#             except frappe.DoesNotExistError:
+#                 frappe.throw("No team found for user", frappe.PermissionError)
+#         else:
+#             return frappe.get_value("Team", team_filters, "name")
 
-    user_is_system_user = getattr(frappe.session.data, 'user_type', None) == "System User"
-    # get team passed via request header
-    team = frappe.get_request_header("X-Press-Team")
-    user_is_press_admin = frappe.db.exists(
-        "Has Role", {"parent": frappe.session.user, "role": "Press Admin"}
-    )
+#     user_is_system_user = getattr(frappe.session.data, 'user_type', None) == "System User"
+#     # get team passed via request header
+#     team = frappe.get_request_header("X-Press-Team")
+#     user_is_press_admin = frappe.db.exists(
+#         "Has Role", {"parent": frappe.session.user, "role": "Press Admin"}
+#     )
 
-    if (
-        not team
-        and user_is_press_admin
-        and frappe.db.exists("Team", {"user": frappe.session.user})
-    ):
-        # if user has_role of Press Admin then just return current user as default team
-        team_filters = {"user": frappe.session.user, "enabled": 1}
-        if get_doc:
-            team_name = frappe.get_value("Team", team_filters, "name")
-            if team_name and isinstance(team_name, str):
-                return frappe.get_doc("Team", team_name)
-            else:
-                frappe.throw("No team found for user", frappe.PermissionError)
-        else:
-            return frappe.get_value("Team", team_filters, "name")
+#     if (
+#         not team
+#         and user_is_press_admin
+#         and frappe.db.exists("Team", {"user": frappe.session.user})
+#     ):
+#         # if user has_role of Press Admin then just return current user as default team
+#         team_filters = {"user": frappe.session.user, "enabled": 1}
+#         if get_doc:
+#             team_name = frappe.get_value("Team", team_filters, "name")
+#             if team_name and isinstance(team_name, str):
+#                 return frappe.get_doc("Team", team_name)
+#             else:
+#                 frappe.throw("No team found for user", frappe.PermissionError)
+#         else:
+#             return frappe.get_value("Team", team_filters, "name")
 
-    if not team:
-        # if team is not passed via header, get the first team that this user is part of
-        team_list = frappe.db.sql(
-            """select t.name from `tabTeam` t
-            inner join `tabTeam Member` tm on tm.parent = t.name
-            where tm.user = %s and tm.parenttype = 'Team' and t.enabled = 1
-            order by t.creation asc
-            limit 1""",
-            (frappe.session.user,),
-            as_dict=True,
-        )
-        if team_list and len(team_list) > 0:
-            team = team_list[0]["name"]
-        else:
-            frappe.throw("No team found for user", frappe.PermissionError)
+#     if not team:
+#         # if team is not passed via header, get the first team that this user is part of
+#         team_list = frappe.db.sql(
+#             """select t.name from `tabTeam` t
+#             inner join `tabTeam Member` tm on tm.parent = t.name
+#             where tm.user = %s and tm.parenttype = 'Team' and t.enabled = 1
+#             order by t.creation asc
+#             limit 1""",
+#             (frappe.session.user,),
+#             as_dict=True,
+#         )
+#         if team_list and len(team_list) > 0:
+#             team = team_list[0]["name"]
+#         else:
+#             frappe.throw("No team found for user", frappe.PermissionError)
 
-    if not frappe.db.exists("Team", team):
-        frappe.throw("Invalid Team", frappe.PermissionError)
+#     if not frappe.db.exists("Team", team):
+#         frappe.throw("Invalid Team", frappe.PermissionError)
 
-    valid_team = frappe.db.exists(
-        "Team Member", {"parenttype": "Team",
-                        "parent": team, "user": frappe.session.user}
-    )
-    if not valid_team and not user_is_system_user:
-        frappe.throw(
-            "User {0} does not belong to Team {1}".format(
-                frappe.session.user, team),
-            frappe.PermissionError,
-        )
+#     valid_team = frappe.db.exists(
+#         "Team Member", {"parenttype": "Team",
+#                         "parent": team, "user": frappe.session.user}
+#     )
+#     if not valid_team and not user_is_system_user:
+#         frappe.throw(
+#             "User {0} does not belong to Team {1}".format(
+#                 frappe.session.user, team),
+#             frappe.PermissionError,
+#         )
 
-    if get_doc and isinstance(team, str):
-        return frappe.get_doc("Team", team)
+#     if get_doc and isinstance(team, str):
+#         return frappe.get_doc("Team", team)
 
-    return team
+#     return team
 
 
 def generate_payos_signature(data_dict, checksum_key):
@@ -126,8 +126,6 @@ def generate_payos_signature(data_dict, checksum_key):
     Data được sắp xếp theo alphabet
     """
     try:
-        # ✅ SỬA LỖI: Xử lý đúng format dữ liệu cho PayOS signature
-        # PayOS yêu cầu format: key=value&key=value (không có space, không encode URL)
         
         # Loại bỏ các field empty hoặc None
         filtered_data = {k: v for k, v in data_dict.items() if v != "" and v is not None}
@@ -137,9 +135,7 @@ def generate_payos_signature(data_dict, checksum_key):
         
         # Tạo query string theo format PayOS: key=value&key=value
         query_string = "&".join([f"{key}={value}" for key, value in sorted_data])
-        
-        # ✅ SỬA LỖI CHÍNH: Tối ưu logging để tránh lỗi 140 ký tự
-        # Chỉ log query string ngắn hoặc cắt bớt để fit trong 140 ký tự
+
         if len(query_string) > 100:
             # Log query string đã cắt bớt
             short_query = query_string[:100] + "..."

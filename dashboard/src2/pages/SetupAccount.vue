@@ -243,10 +243,12 @@ export default {
 					oauth_domain: this.oauthDomain,
 				},
 				onSuccess() {
-					// let path = '/dashboard/create-site/plan'
+					
 					let path = '/dashboard/create-site/app-selector';
 					//Đăng ký account xong -> 
-					if (this.saasProduct) {
+					if (this.saasProduct && this.saasProduct.name === 'go1_cms') {
+						path = `/dashboard/create-site/${this.saasProduct.name}/template`;
+					} else if (this.saasProduct) {
 						path = `/dashboard/create-site/${this.saasProduct.name}/plan`;
 					}
 					if (this.isInvitation) {

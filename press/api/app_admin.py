@@ -8,16 +8,15 @@ from pypika.queries import QueryBuilder
 from frappe.handler import run_doc_method as _run_doc_method
 from frappe.model import default_fields
 from frappe.model.base_document import get_controller
-from press.utils import get_current_team_v2,get_current_team
+from press.utils import get_current_team,get_current_team_v2
 from press.api.client import check_permissions, validate_fields, has_role,apply_custom_filters, validate_filters,get_list_query, check_document_access,fix_args,check_dashboard_actions,get,raise_not_permitted
 from press.press.doctype.marketplace_app.marketplace_app import get_plans_for_app
 from press.api.site import is_marketplace_app_source, is_prepaid_marketplace_app
 
 # Import PayOS helper functions
 from press.api.payos_connect import (
-    check_payos_settings, get_current_team_v2 as get_current_team_payos, 
-    create_payos_payment_link, get_payos_payment_info, cancel_payos_payment,
-    update_invoice_payment_status, verify_payos_signature, 
+    check_payos_settings,
+    create_payos_payment_link, get_payos_payment_info, cancel_payos_payment, verify_payos_signature, 
     get_payment_status_display, calculate_transaction_summary
 )
 
@@ -222,7 +221,7 @@ def _check_rate_limit(rate_limit_config):
     api_key_required=False,  
     rate_limit={"limit": 50, "window": 3600} 
 )
-def create_payment_link(invoice_name):
+def create_payment_link(arg_email=None,invoice_name=None):
     """
     API để tạo PayOS payment link từ Invoice
     """
@@ -235,7 +234,7 @@ def create_payment_link(invoice_name):
             }
 
         # Kiểm tra Invoice có tồn tại và thuộc team hiện tại
-        team = get_current_team_payos()
+        team = get_current_team_v2(arg_email, get_doc=False)
         invoice_exists = frappe.db.exists("Invoice", {
             "name": invoice_name,
             "team": team
@@ -267,7 +266,7 @@ def create_payment_link(invoice_name):
     api_key_required=False,  
     rate_limit={"limit": 100, "window": 3600} 
 )
-def get_payment_status(order_code):
+def get_payment_status(arg_email=None,order_code=None):
     """
     API để lấy trạng thái thanh toán từ PayOS
     """
@@ -280,7 +279,7 @@ def get_payment_status(order_code):
             }
 
         # Kiểm tra order_code có thuộc team hiện tại
-        team = get_current_team_payos()
+        team = get_current_team_v2(arg_email, get_doc=False)
         invoice_exists = frappe.db.exists("Invoice", {
             "payos_order_code": order_code,
             "team": team
@@ -536,7 +535,7 @@ def payos_webhook(**webhook_body):
     api_key_required=False,  
     rate_limit={"limit": 50, "window": 3600} 
 )
-def cancel_payment(order_code, reason="Cancelled by user"):
+def cancel_payment(arg_email=None,order_code=None, reason="Cancelled by user"):
     """
     API để hủy PayOS payment
     """
@@ -549,7 +548,7 @@ def cancel_payment(order_code, reason="Cancelled by user"):
             }
 
         # Kiểm tra order_code có thuộc team hiện tại
-        team = get_current_team_payos()
+        team = get_current_team_v2(arg_email, get_doc=False)
         invoice_exists = frappe.db.exists("Invoice", {
             "payos_order_code": order_code,
             "team": team
@@ -573,85 +572,6 @@ def cancel_payment(order_code, reason="Cancelled by user"):
 
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Error in cancel_payment API")
-        return {
-            "success": False,
-            "message": f"An error occurred: {str(e)}",
-            "error_code": "API_ERROR"
-        }
-
-
-@frappe.whitelist()
-@validate_api_request(
-    required_headers=['User-Agent'],
-    api_key_required=False,  
-    rate_limit={"limit": 50, "window": 3600} 
-)
-def get_invoice_payment_details(invoice_name):
-    """
-    API để lấy thông tin chi tiết Invoice và PayOS payment link nếu có
-    """
-    try:
-        if not invoice_name:
-            return {
-                "success": False,
-                "message": "Invoice name is required",
-                "error_code": "MISSING_INVOICE_NAME"
-            }
-
-        # Kiểm tra Invoice có tồn tại và thuộc team hiện tại
-        team = get_current_team_payos()
-        invoice_doc = frappe.get_doc("Invoice", invoice_name)
-        
-        if invoice_doc.get("team") != team:
-            return {
-                "success": False,
-                "message": "Invoice not found or access denied",
-                "error_code": "INVOICE_NOT_FOUND"
-            }
-
-        # Chuẩn bị thông tin Invoice
-        invoice_data = {
-            "name": invoice_doc.name,
-            "total": invoice_doc.get("total", 0),
-            "currency": invoice_doc.get("currency", "VND"),
-            "status": invoice_doc.get("status", ""),
-            "customer_name": invoice_doc.get("customer_name", ""),
-            "customer_email": invoice_doc.get("customer_email", ""),
-            "billing_email": invoice_doc.get("billing_email", ""),
-            "creation": invoice_doc.get("creation", ""),
-            "due_date": invoice_doc.get("due_date", ""),
-            "payos_order_code": invoice_doc.get("payos_order_code", ""),
-            "payos_payment_link_id": invoice_doc.get("payos_payment_link_id", ""),
-            "payos_checkout_url": invoice_doc.get("payos_checkout_url", ""),
-            "payos_qr_code": invoice_doc.get("payos_qr_code", ""),
-            "payos_status": invoice_doc.get("payos_status", ""),
-            "items": []
-        }
-
-        # Thêm items nếu có
-        if hasattr(invoice_doc, 'items') and getattr(invoice_doc, 'items', None):
-            for item in invoice_doc.items:
-                invoice_data["items"].append({
-                    "description": item.get("description", ""),
-                    "quantity": item.get("quantity", 0),
-                    "rate": item.get("rate", 0),
-                    "amount": item.get("amount", 0)
-                })
-
-        return {
-            "success": True,
-            "message": "Invoice details retrieved successfully",
-            "data": invoice_data
-        }
-
-    except frappe.DoesNotExistError:
-        return {
-            "success": False,
-            "message": "Invoice not found",
-            "error_code": "INVOICE_NOT_FOUND"
-        }
-    except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Error in get_invoice_payment_details API")
         return {
             "success": False,
             "message": f"An error occurred: {str(e)}",
@@ -1203,20 +1123,6 @@ def _resolve_team(arg_email, team_name):
             "data": transaction_details
         }
 
-    except frappe.DoesNotExistError:
-        return {
-            "success": False,
-            "message": "Transaction not found",
-            "error_code": "TRANSACTION_NOT_FOUND"
-        }
-    except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Error in get_transaction_details API")
-        return {
-            "success": False,
-            "message": f"An error occurred while fetching transaction details: {str(e)}",
-            "error_code": "API_ERROR"
-        }
-
 
 # ================================
 # EXISTING API ENDPOINTS
@@ -1263,8 +1169,8 @@ def get_marketplace_app_plans():
     api_key_required=False,  
     rate_limit={"limit": 100, "window": 3600} 
 )
-def get_emails():
-	team = get_current_team_v2(get_doc=True)
+def get_emails(arg_email=None):
+	team = get_current_team_v2(arg_email,get_doc=True)
 	return [
 		{
 			"type": "billing_email",
@@ -1283,7 +1189,7 @@ def get_emails():
     api_key_required=False,  
     rate_limit={"limit": 100, "window": 3600} 
 )
-def update_emails(data):
+def update_emails(arg_email=None, data=None):
     from frappe.utils import validate_email_address
     try:
         # Nếu data là chuỗi JSON, chuyển đổi sang dictionary
@@ -1303,7 +1209,7 @@ def update_emails(data):
             validate_email_address(value, throw=True)
 
         # Lấy team document và cập nhật email
-        team_doc = get_current_team_v2(get_doc=True)
+        team_doc = get_current_team_v2(arg_email,get_doc=True)
         team_doc.billing_email = data_dict["billing_email"]
         team_doc.notify_email = data_dict["notify_email"]
         team_doc.save()
@@ -1451,7 +1357,7 @@ def get_site_information(site_name):
     api_key_required=False,  
     rate_limit={"limit": 50, "window": 3600} 
 )
-def get_user_sites():
+def get_user_sites(arg_email=None):
     """
     REST API to fetch all sites belonging to current user's team.
     Returns list of sites with basic information.
@@ -1460,7 +1366,7 @@ def get_user_sites():
         dict: List of user's sites with success status
     """
     try:
-        team = get_current_team_v2()
+        team = get_current_team_v2(arg_email, get_doc=False)
         if not team:
             return {
                 "success": False,
@@ -1731,220 +1637,12 @@ def get(doctype, name):
 @validate_api_request(
     required_headers=['User-Agent'],
     api_key_required=False,  
-    rate_limit={"limit": 50, "window": 3600} 
-)
-def get_invoices_with_details(filters=None, order_by=None, limit=20, start=0):
-    """
-    REST API to fetch Invoice data with full details for current user's team.
-    Returns array of invoice objects with complete information including items.
-    
-    Args:
-        filters (dict): Optional filters to apply
-        order_by (str): Order by clause
-        limit (int): Number of records to return (default: 20)
-        start (int): Starting index for pagination (default: 0)
-    
-    Returns:
-        dict: Array of complete invoice objects with success status and pagination info
-    """
-    try:
-        # Get current team
-        team = get_current_team_v2()
-        print("team : >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", team)
-        if not team:
-            return {
-                "success": False,
-                "message": "No team found for current user",
-                "error_code": "NO_TEAM_FOUND"
-            }
-        
-        # Default filters
-        base_filters = {"team": team}
-        
-        # Convert filters to dict if it's a JSON string
-        if isinstance(filters, str):
-            try:
-                custom_filters = json.loads(filters)
-                if isinstance(custom_filters, dict):
-                    base_filters.update(custom_filters)
-            except (json.JSONDecodeError, ValueError):
-                return {
-                    "success": False,
-                    "message": "Invalid format for filters. Expected a JSON dictionary.",
-                    "error_code": "INVALID_FILTERS_FORMAT"
-                }
-        elif isinstance(filters, dict):
-            base_filters.update(filters)
-        
-        # Default order by
-        if not order_by:
-            order_by = "creation desc"
-        
-        # Validate limit and start
-        try:
-            limit = int(limit)
-            start = int(start)
-            if limit <= 0 or limit > 100:  # Max 100 records per request
-                limit = 20
-            if start < 0:
-                start = 0
-        except (ValueError, TypeError):
-            limit = 20
-            start = 0
-        
-        # Get invoice names first
-        invoice_names = frappe.get_all(
-            "Invoice",
-            filters=base_filters,
-            fields=["name"],
-            order_by=order_by,
-            limit=limit,
-            start=start,
-            pluck="name"
-        )
-        
-        # Get detailed information for each invoice
-        detailed_invoices = []
-        for invoice_name in invoice_names:
-            try:
-                # Get invoice document
-                invoice_doc = frappe.get_doc("Invoice", invoice_name)
-                
-                # Prepare complete invoice details
-                invoice_details = {
-                    "name": invoice_doc.name,
-                    "team": invoice_doc.team,
-                    "type": invoice_doc.get("type", ""),
-                    "status": invoice_doc.get("status", ""),
-                    "currency": invoice_doc.get("currency", ""),
-                    "total": invoice_doc.get("total", 0),
-                    "total_before_discount": invoice_doc.get("total_before_discount", 0),
-                    "total_before_tax": invoice_doc.get("total_before_tax", 0),
-                    "total_discount_amount": invoice_doc.get("total_discount_amount", 0),
-                    "amount_paid": invoice_doc.get("amount_paid", 0),
-                    "amount_due": invoice_doc.get("amount_due", 0),
-                    "amount_due_with_tax": invoice_doc.get("amount_due_with_tax", 0),
-                    "applied_credits": invoice_doc.get("applied_credits", 0),
-                    "free_credits": invoice_doc.get("free_credits", 0),
-                    "gst": invoice_doc.get("gst", 0),
-                    "vat_percentage": invoice_doc.get("vat_percentage", 0),
-                    "period_start": invoice_doc.get("period_start", ""),
-                    "period_end": invoice_doc.get("period_end", ""),
-                    "due_date": invoice_doc.get("due_date", ""),
-                    "payment_date": invoice_doc.get("payment_date", ""),
-                    "payment_mode": invoice_doc.get("payment_mode", ""),
-                    "invoice_pdf": invoice_doc.get("invoice_pdf", ""),
-                    "stripe_invoice_url": invoice_doc.get("stripe_invoice_url", ""),
-                    "stripe_invoice_id": invoice_doc.get("stripe_invoice_id", ""),
-                    "creation": invoice_doc.get("creation", ""),
-                    "modified": invoice_doc.get("modified", ""),
-                    "docstatus": invoice_doc.get("docstatus", 0),
-                    "customer_name": invoice_doc.get("customer_name", ""),
-                    "customer_email": invoice_doc.get("customer_email", ""),
-                    "billing_email": invoice_doc.get("billing_email", "")
-                }
-                
-                # Get invoice items
-                invoice_items = []
-                if hasattr(invoice_doc, 'items') and invoice_doc.items:
-                    for item in invoice_doc.items:
-                        invoice_items.append({
-                            "description": item.get("description", ""),
-                            "quantity": item.get("quantity", 0),
-                            "rate": item.get("rate", 0),
-                            "amount": item.get("amount", 0),
-                            "document_type": item.get("document_type", ""),
-                            "document_name": item.get("document_name", ""),
-                            "plan": item.get("plan", ""),
-                            "site": item.get("site", ""),
-                            "discount": item.get("discount", 0),
-                            "discount_percentage": item.get("discount_percentage", 0),
-                            "creation": item.get("creation", ""),
-                        })
-                
-                # Get credit allocations
-                credit_allocations = []
-                if hasattr(invoice_doc, 'credit_allocations') and invoice_doc.credit_allocations:
-                    for allocation in invoice_doc.credit_allocations:
-                        credit_allocations.append({
-                            "transaction": allocation.get("transaction", ""),
-                            "amount": allocation.get("amount", 0),
-                            "currency": allocation.get("currency", ""),
-                            "source": allocation.get("source", "")
-                        })
-                
-                # Get discounts
-                discounts = []
-                if hasattr(invoice_doc, 'discounts') and invoice_doc.discounts:
-                    for discount in invoice_doc.discounts:
-                        discounts.append({
-                            "description": discount.get("description", ""),
-                            "amount": discount.get("amount", 0),
-                            "percentage": discount.get("percentage", 0)
-                        })
-                
-                # Add items and other details to invoice
-                invoice_details["items"] = invoice_items
-                invoice_details["credit_allocations"] = credit_allocations
-                invoice_details["discounts"] = discounts
-                invoice_details["items_count"] = len(invoice_items)
-                
-                detailed_invoices.append(invoice_details)
-                
-            except Exception as e:
-                # Skip this invoice if there's an error but log it
-                frappe.log_error(f"Error fetching details for invoice {invoice_name}: {str(e)}", "Invoice Details Error")
-                continue
-        
-        # Get total count for pagination
-        total_count = frappe.db.count("Invoice", filters=base_filters)
-        
-        # Calculate pagination info
-        has_next = (start + limit) < total_count
-        has_prev = start > 0
-        
-        return {
-            "success": True,
-            "message": "Invoices with details fetched successfully",
-            "data": detailed_invoices,
-            "pagination": {
-                "current_page": (start // limit) + 1,
-                "total_pages": (total_count + limit - 1) // limit,
-                "total_count": total_count,
-                "limit": limit,
-                "start": start,
-                "has_next": has_next,
-                "has_prev": has_prev
-            },
-            "team": team,
-            "count": len(detailed_invoices)
-        }
-        
-    except frappe.PermissionError:
-        return {
-            "success": False,
-            "message": "Permission denied. You don't have access to invoice data",
-            "error_code": "PERMISSION_DENIED"
-        }
-    except Exception as e:
-        frappe.log_error(frappe.get_traceback(), "Error in get_invoices_with_details")
-        return {
-            "success": False,
-            "message": f"An error occurred while fetching invoices: {str(e)}",
-            "error_code": "FETCH_ERROR"
-        }
-
-
-@frappe.whitelist()
-@validate_api_request(
-    required_headers=['User-Agent'],
-    api_key_required=False,  
     rate_limit={"limit": 100, "window": 3600} 
 )
-def get_first_site_name():
+def get_first_site_name(arg_email=None):
     try:
         # Get current team
-        team = get_current_team_v2()
+        team = get_current_team_v2(arg_email, get_doc=False)
         if not team:
             return {
                 "success": False,
@@ -1960,14 +1658,12 @@ def get_first_site_name():
             order_by="creation asc",
             limit=1
         )
-        
         if not first_site:
             return {
                 "success": False,
                 "message": "No sites found for current team",
                 "error_code": "NO_SITES_FOUND"
             }
-        
         return {
             "success": True,
             "message": "First site name fetched successfully",
@@ -2029,3 +1725,245 @@ def create_payment_link_internal(invoice_name):
             "error_code": "API_ERROR"
         }
 
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 50, "window": 3600} 
+)
+def get_team_unpaid_invoices(arg_email=None):
+    """
+    API để lấy danh sách invoice chưa thanh toán của team và tính tổng tiền tạm tính
+    
+    Args:
+        arg_email (str): Email của user để tìm team
+        team_name (str): Tên team (tùy chọn)
+    
+    Returns:
+        dict: Danh sách invoice chưa thanh toán và tổng tiền tạm tính
+    """
+    try:
+        if arg_email:
+            target_team = get_current_team_v2(arg_email, get_doc=False)
+            if not target_team:
+                return {
+                    "success": False,
+                    "message": "Không tìm thấy team cho user này"
+                }
+        else:
+            return {
+                "success": False,
+                "message": "Cần cung cấp arg_email hoặc team_name"
+            }
+
+        # Lấy danh sách invoice chưa thanh toán với SQL tối ưu
+        unpaid_invoices = frappe.db.sql("""
+            SELECT 
+                name,
+                period_start,
+                period_end,
+                amount_due_with_tax,
+                payos_order_code,
+                payos_checkout_url,
+                payos_qr_code,
+                payos_transaction_datetime,
+                payos_status,
+                payos_payment_link_id,
+                payment_mode,
+                total,
+                vat_percentage,
+                creation,
+                status
+            FROM `tabInvoice`
+            WHERE team = %(team)s 
+            AND status NOT IN ('Paid', 'Cancelled')
+            AND docstatus != 2
+            ORDER BY creation DESC
+        """, {"team": target_team}, as_dict=True)
+
+        # Xử lý dữ liệu và tính tổng tiền tạm tính
+        processed_invoices = []
+        total_amount_due = 0.0
+
+        for invoice in unpaid_invoices:
+            amount_due = float(invoice.get("amount_due_with_tax", 0) or 0)
+            total_amount_due += amount_due
+            
+            processed_invoices.append({
+                "invoice_name": invoice.get("name"),
+                "period_start": str(invoice.get("period_start", "") or ""),
+                "period_end": str(invoice.get("period_end", "") or ""),
+                "amount_due_with_tax": amount_due,
+                "payos_order_code": invoice.get("payos_order_code", ""),
+                "payos_checkout_url": invoice.get("payos_checkout_url", ""),
+                "payos_qr_code": invoice.get("payos_qr_code", ""),
+                "payos_transaction_datetime": invoice.get("payos_transaction_datetime", ""),
+                "payos_status": invoice.get("payos_status", ""),
+                "payos_payment_link_id": invoice.get("payos_payment_link_id", ""),
+                "payment_mode": invoice.get("payment_mode", ""),
+                "total": float(invoice.get("total", 0) or 0),
+                "vat_percentage": float(invoice.get("vat_percentage", 0) or 0),
+                "creation": invoice.get("creation"),
+                "status": invoice.get("status", ""),
+                "has_payos_payment": bool(invoice.get("payos_order_code"))
+            })
+
+        return {
+            "success": True,
+            "message": f"Lấy thành công {len(processed_invoices)} invoice chưa thanh toán",
+            "data": processed_invoices,
+            "sum_total": round(total_amount_due, 2),
+            "invoice_count": len(processed_invoices),
+            "team": target_team
+        }
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Error in get_team_unpaid_invoices")
+        return {
+            "success": False,
+            "message": f"Lỗi khi lấy dữ liệu: {str(e)}"
+        }
+
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 100, "window": 3600} 
+)
+def get_team_invoice_history(arg_email=None):
+    try:
+        # Xác định team
+        if arg_email:
+            target_team = get_current_team_v2(arg_email, get_doc=False)
+            if not target_team:
+                return {
+                    "success": False,
+                    "message": "Không tìm thấy team cho user này"
+                }
+        else:
+            return {
+                "success": False,
+                "message": "Cần cung cấp arg_email hoặc team_name"
+            }
+
+        # Lấy danh sách invoice đã thanh toán hoặc đã hủy
+        invoices = frappe.db.sql("""
+            SELECT 
+                name,
+                amount_due_with_tax,
+                period_start,
+                period_end,
+                payos_order_code,
+                status,
+                payment_mode,
+                creation
+            FROM `tabInvoice`
+            WHERE team = %(team)s 
+            AND status IN ('Paid', 'Cancelled')
+            ORDER BY creation DESC
+        """, {"team": target_team}, as_dict=True)
+
+        # Xử lý dữ liệu trả về
+        result_invoices = []
+        for invoice in invoices:
+            result_invoices.append({
+                "invoice_name": invoice.get("name"),
+                "amount_due_with_tax": float(invoice.get("amount_due_with_tax", 0) or 0),
+                "period_start": str(invoice.get("period_start", "") or ""),
+                "period_end": str(invoice.get("period_end", "") or ""),
+                "payos_order_code": invoice.get("payos_order_code", ""),
+                "status": invoice.get("status", ""),
+                "payment_mode": invoice.get("payment_mode", ""),
+                "creation": invoice.get("creation")
+            })
+        return {
+            "success": True,
+            "message": f"Lấy thành công {len(result_invoices)} invoice",
+            "data": result_invoices,
+            "team": target_team
+        }
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Error in get_team_invoice_history")
+        return {
+            "success": False,
+            "message": f"Lỗi khi lấy dữ liệu: {str(e)}"
+        }
+
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 100, "window": 3600} 
+)
+def get_order_status(arg_email=None, invoice_id=None):
+    """
+    API để lấy trạng thái đơn hàng theo invoice ID
+    
+    Args:
+        arg_email (str): Email của user để xác thực team
+        invoice_id (str): ID của invoice cần kiểm tra trạng thái
+    
+    Returns:
+        dict: Thông tin trạng thái đơn hàng chi tiết với đồng bộ PayOS tự động
+    """
+    try:
+        if not invoice_id:
+            return {
+                "success": False,
+                "message": "Invoice ID is required",
+                "error_code": "MISSING_INVOICE_ID"
+            }
+
+        team = get_current_team_v2(arg_email, get_doc=False)
+        if not team:
+            return {
+                "success": False,
+                "message": "No team found for current user",
+                "error_code": "NO_TEAM_FOUND"
+            }
+
+        # Lấy thông tin invoice
+        invoice_data = frappe.db.get_value(
+            "Invoice",
+            {"name":invoice_id,"team": team},
+            [
+                "name", "status"
+            ],
+            as_dict=True
+        )
+
+        if not invoice_data:
+            return {
+                "success": False,
+                "message": "Invoice data not found",
+                "error_code": "INVOICE_DATA_NOT_FOUND"
+            }
+
+        # Chuẩn bị thông tin cơ bản về đơn hàng
+        order_status = {
+            "invoice_id": invoice_data["name"],
+            "invoice_status": invoice_data["status"],
+        }
+        return {
+            "success": True,
+            "message": "Order status retrieved successfully",
+            "data": order_status,
+        }
+
+    except frappe.PermissionError:
+        return {
+            "success": False,
+            "message": "Permission denied. You don't have access to this invoice",
+            "error_code": "PERMISSION_DENIED"
+        }
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Error in get_order_status API")
+        return {
+            "success": False,
+            "message": f"An error occurred while fetching order status: {str(e)}",
+            "error_code": "ORDER_STATUS_ERROR"
+        }

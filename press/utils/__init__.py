@@ -90,7 +90,7 @@ def log_error(title, **kwargs):
 		)
 
 
-def get_current_team(get_doc=False):
+def get_current_team(get_doc=False, ):
 	if frappe.session.user == "Guest":
 		frappe.throw("Not Permitted", frappe.AuthenticationError)
 
@@ -146,87 +146,36 @@ def get_current_team(get_doc=False):
 
 	if get_doc:
 		return frappe.get_doc("Team", team)
-
 	return team
 
-def get_current_team_v2(get_doc=False):
+def get_current_team_v2(user_email=None, get_doc=False):
 	"""
-	Get the current team for the user (Version 2).
+	Get the team ID for the specified user email.
 	Args:
-		get_doc (bool): If True, return the team document; otherwise, return the team name.
+		user_email (str): Email of the user to find team for
+		get_doc (bool): If True, return the team document; otherwise, return the team ID.
 	Returns:
-		str | frappe.Document: Team name or team document.
+		str | frappe.Document | dict: Team ID, team document, or error message.
 	"""
-	if frappe.session.user == "Guest":
-		frappe.throw("Not Permitted", frappe.AuthenticationError)
-
-	if not hasattr(frappe.local, "request"):
-		# If this is not a request, send the current user as default team
-		# Always use parent_team for background jobs
-		return (
-			frappe.get_doc(
-				"Team",
-				{"user": frappe.session.user, "enabled": 1, "parent_team": ("is", "not set")},
-			)
-			if get_doc
-			else frappe.get_value(
-				"Team",
-				{"user": frappe.session.user, "enabled": 1, "parent_team": ("is", "not set")},
-				"name",
-			)
-		)
-
-	system_user = frappe.session.data.user_type == "System User"
-
-	# Get team passed via request header
-	x_press_team = frappe.get_request_header("X-Press-Team")
-	# In case if X-Press-Team is not passed, check if `team_name` is available in frappe.local
-	# `team_name` getting injected by press.saas.api.whitelist_saas_api decorator
-	team = x_press_team if x_press_team else getattr(frappe.local, "team_name", "")
-
-	user_is_press_admin = frappe.db.exists("Has Role", {"parent": frappe.session.user, "role": "Press Admin"})
-
-	# If team is not passed via header, prioritize team from user's first site
-	team_from_first_site = None
-	if not team:
-		team_from_first_site = get_team_from_first_site(frappe.session.user)
-		team = team_from_first_site
 	
-	# If we got team from first site, use it directly (skip membership checks)
-	if team_from_first_site:
-		if get_doc:
-			return frappe.get_doc("Team", team_from_first_site)
-		return team_from_first_site
-	
-	# If no team from first site and user is Press Admin, use their own team
-	if not team and user_is_press_admin and frappe.db.exists("Team", {"user": frappe.session.user}):
-		admin_team = frappe.get_value("Team", {"user": frappe.session.user, "enabled": 1}, "name")
-		return (
-			frappe.get_doc("Team", {"user": frappe.session.user, "enabled": 1})
-			if get_doc
-			else admin_team
-		)
-	
-	# If still no team, get the default team for user
+	if not user_email:
+		return {"error": "User email is required"}
+
+	# Check if user exists
+	if not frappe.db.exists("User", user_email):
+		return {"error": f"User {user_email} not found"}
+
+	# Get the default team for user
+	team = get_default_team_for_user(user_email)
 	if not team:
-		team = get_default_team_for_user(frappe.session.user)
+		return {"error": f"Không tìm thấy team cho user {user_email}"}
 
-	if not system_user and not is_user_part_of_team(frappe.session.user, team):
-		# If user is not part of the team, get the default team for user
-		team = get_default_team_for_user(frappe.session.user)
-
-	if not team:
-		frappe.throw(
-			f"User {frappe.session.user} is not part of any team",
-			frappe.AuthenticationError,
-		)
-
+	# Verify team is enabled
 	if not frappe.db.exists("Team", {"name": team, "enabled": 1}):
-		frappe.throw("Invalid Team", frappe.AuthenticationError)
+		return {"error": f"Không tìm thấy team cho user {user_email}"}
 
 	if get_doc:
 		return frappe.get_doc("Team", team)
-
 	return team
 
 def _get_current_team():
