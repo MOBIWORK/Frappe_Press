@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corporate Plus - Preview</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f6fa; }
+    .header { background: #1e293b; color: #fff; padding: 16px 24px; font-size: 1.3rem; font-weight: bold; position: relative; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; }
+    .brand { font-size: 1.3rem; font-weight: bold; }
+    .nav { display: flex; gap: 28px; font-size: 1rem; }
+    .nav a { color: #fff; text-decoration: none; font-weight: 500; }
+    .menu-btn { display: none; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; }
+    .main { background: #e5eaf3; padding: 40px 16px 32px 16px; text-align: center; }
+    .main h1 { font-size: 2.2rem; margin-bottom: 18px; color: #1e293b; }
+    .main p { font-size: 1.1rem; color: #333; margin-bottom: 24px; }
+    .main button { background: #1e293b; color: #fff; border: none; padding: 12px 28px; border-radius: 6px; font-size: 1rem; cursor: pointer; font-weight: 600; }
+    .features { display: flex; justify-content: space-around; background: #fff; padding: 32px 0; margin-top: 24px; flex-wrap: wrap; }
+    .feature { text-align: center; width: 180px; margin: 12px; }
+    .feature-circle { width: 48px; height: 48px; background: #e5eaf3; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin: 0 auto 10px auto; font-weight: bold; color: #1e293b; }
+    .feature-title { font-weight: bold; font-size: 1.1rem; margin-top: 8px; color: #1e293b; }
+    @media (max-width: 600px) {
+      .header-inner { flex-direction: row; }
+      .nav { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1e293b; flex-direction: column; gap: 0; box-shadow: 0 2px 8px #0002; z-index: 10; }
+      .nav.show { display: flex; }
+      .nav a { padding: 16px 24px; border-bottom: 1px solid #ffffff22; }
+      .menu-btn { display: block; }
+      .features { flex-direction: column; align-items: center; }
+      .feature { width: 90%; }
+      .main h1 { font-size: 1.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-inner">
+      <span class="brand">Corporate Plus</span>
+      <button class="menu-btn" id="menuBtn" aria-label="Mở menu">&#9776;</button>
+      <nav class="nav" id="mainNav">
+        <a href="#">Trang chủ</a>
+        <a href="#">Giới thiệu</a>
+        <a href="#">Dịch vụ</a>
+        <a href="#">Liên hệ</a>
+      </nav>
+    </div>
+  </div>
+  <div class="main">
+    <h1>Chào mừng đến với Corporate Plus</h1>
+    <p>Đây là bản xem trước của mẫu website Corporate Plus. Trong phiên bản thực, nội dung này sẽ được tùy chỉnh theo nhu cầu của bạn.</p>
+    <button>Tìm hiểu thêm</button>
+  </div>
+  <div class="features">
+    <div class="feature">
+      <div class="feature-circle">1</div>
+      <div class="feature-title">Tính năng 1</div>
+    </div>
+    <div class="feature">
+      <div class="feature-circle">2</div>
+      <div class="feature-title">Tính năng 2</div>
+    </div>
+    <div class="feature">
+      <div class="feature-circle">3</div>
+      <div class="feature-title">Tính năng 3</div>
+    </div>
+  </div>
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const mainNav = document.getElementById('mainNav');
+    menuBtn.addEventListener('click', function(e) {
+      mainNav.classList.toggle('show');
+      e.stopPropagation();
+    });
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth <= 600 && mainNav.classList.contains('show')) {
+        if (!mainNav.contains(e.target) && e.target !== menuBtn) {
+          mainNav.classList.remove('show');
+        }
+      }
+    });
+    window.addEventListener('resize', function() {
+      if (window.innerWidth > 600) {
+        mainNav.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html> 

@@ -1017,36 +1017,107 @@ def get_transaction_details(transaction_id, transaction_type="invoice_name"):
     API để lấy chi tiết một giao dịch PayOS cụ thể
     """
     try:
-        if not transaction_id:
-            return {
-                "success": False,
-                "message": "Transaction ID is required",
-                "error_code": "MISSING_TRANSACTION_ID"
+        # Xác định team
+        target_team = _resolve_team(arg_email, team_name)
+        if isinstance(target_team, dict):  # Error response
+            return target_team
+        
+        # Validate và chuẩn hóa parameters
+        validated_params = _validate_transaction_params(limit, offset, date_from, date_to)
+        
+        # Build SQL query tối ưu - chỉ lấy các field cần thiết
+        base_query = """
+            SELECT 
+                name,
+                status,
+                amount_due_with_tax,
+                period_start,
+                period_end,
+                payos_order_code,
+                payos_status,
+                creation,
+                payment_date,
+                currency,
+                customer_name,
+                customer_email
+            FROM `tabInvoice`
+            WHERE team = %(team)s 
+            AND (status IN ('Paid', 'Cancelled') OR payos_status IN ('00', 'CANCELLED'))
+        """
+        
+        # Thêm date filter nếu có
+        date_conditions, date_params = _build_date_filter(validated_params['date_from'], validated_params['date_to'])
+        if date_conditions:
+            base_query += f" AND {date_conditions}"
+        
+        # Query chính với pagination
+        main_query = f"""
+            {base_query}
+            ORDER BY creation DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        """
+        
+        # Query đếm tổng số
+        count_query = f"""
+            SELECT COUNT(*) as total_count
+            FROM `tabInvoice`
+            WHERE team = %(team)s 
+            AND (status IN ('Paid', 'Cancelled') OR payos_status IN ('00', 'CANCELLED'))
+            {f"AND {date_conditions}" if date_conditions else ""}
+        """
+        
+        # Chuẩn bị parameters
+        query_params = {
+            "team": target_team,
+            "limit": validated_params['limit'],
+            "offset": validated_params['offset'],
+            **date_params
+        }
+        
+        # Thực hiện queries
+        invoices = frappe.db.sql(main_query, query_params, as_dict=True)
+        count_result = frappe.db.sql(count_query, {k: v for k, v in query_params.items() if k != 'limit' and k != 'offset'}, as_dict=True)
+        total_count = count_result[0]["total_count"] if count_result else 0
+        
+        # Xử lý dữ liệu trả về
+        processed_transactions = _process_transaction_data(invoices)
+        
+        # Tính toán pagination
+        pagination_info = _calculate_pagination(
+            total_count, 
+            validated_params['limit'], 
+            validated_params['offset']
+        )
+        
+        return {
+            "success": True,
+            "message": f"Lấy thành công {len(processed_transactions)} giao dịch",
+            "data": {
+                "transactions": processed_transactions,
+                "pagination": pagination_info,
+                "team_name": target_team,
+                "filters_applied": {
+                    "date_from": validated_params['date_from'],
+                    "date_to": validated_params['date_to']
+                }
             }
+        }
 
-        # Get current team
-        team = get_current_team_payos()
-        if not team:
-            return {
-                "success": False,
-                "message": "No team found for current user",
-                "error_code": "NO_TEAM_FOUND"
-            }
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Error in get_team_transaction_history")
+        return {
+            "success": False,
+            "message": f"Lỗi khi lấy lịch sử giao dịch: {str(e)}",
+            "error_code": "TRANSACTION_HISTORY_ERROR"
+        }
 
-        # Find invoice based on transaction type
-        if transaction_type == "order_code":
-            invoice_name = frappe.db.get_value("Invoice", {
-                "payos_order_code": transaction_id,
-                "team": team
-            }, "name")
-        else:  # invoice_name
-            invoice_name = transaction_id
-            # Verify it belongs to current team
-            team_check = frappe.db.get_value("Invoice", invoice_name, "team")
-            if team_check != team:
-                invoice_name = None
 
-        if not invoice_name:
+def _resolve_team(arg_email, team_name):
+    """
+    Xác định team từ email hoặc team_name
+    """
+    if team_name:
+        if not frappe.db.exists("Team", team_name):
             return {
                 "success": False,
                 "message": "Transaction not found or access denied",
