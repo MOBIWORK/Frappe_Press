@@ -161,6 +161,39 @@ def _get_existing_trial_request(product: str, team: str):
 	)
 
 
+@frappe.whitelist(allow_guest=True)
+def get_product_trial_details(product_id: str):
+	if not product_id:
+		frappe.throw("Product ID is required")
+	product_trial = frappe.get_value(
+		"Product Trial",
+		product_id,
+		[
+			"name",
+			"title",
+			"title_en",
+			"policy_app_vn",
+			"policy_app_en",
+			"logo",
+			"background",
+			"published",
+			"domain",
+			"trial_days",
+			"trial_plan",
+			"redirect_to_after_login",
+		],
+		as_dict=True,
+	)
+
+	if not product_trial:
+		frappe.throw("Product Trial not found")
+
+	if not product_trial.published:
+		frappe.throw("Product Trial is not published")
+
+	return product_trial
+
+
 @frappe.whitelist(methods=["POST"])
 def get_request(product: str, account_request: str | None = None):
 	team = frappe.local.team()

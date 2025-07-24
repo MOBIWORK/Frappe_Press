@@ -9,9 +9,11 @@
  "field_order": [
   "title",
   "title_en",
+  "policy_app_en",
   "column_break_bqrh",
   "logo",
   "background",
+  "policy_app_vn",
   "published",
   "section_break_rvnt",
   "domain",
@@ -240,6 +242,16 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Title EN"
+  },
+  {
+   "fieldname": "policy_app_vn",
+   "fieldtype": "Text Editor",
+   "label": "Policy App VN"
+  },
+  {
+   "fieldname": "policy_app_en",
+   "fieldtype": "Text Editor",
+   "label": "Policy App EN"
   }
  ],
  "grid_page_length": 50,
@@ -255,7 +267,7 @@
    "link_fieldname": "product_trial"
   }
  ],
- "modified": "2025-06-10 10:35:31.429236",
+ "modified": "2025-07-23 08:46:59.688695",
  "modified_by": "Administrator",
  "module": "SaaS",
  "name": "Product Trial",

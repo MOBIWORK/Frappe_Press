@@ -36,6 +36,8 @@ class ProductTrial(Document):
 		enable_pooling: DF.Check
 		hybrid_pool_rules: DF.Table[HybridPoolItem]
 		logo: DF.AttachImage | None
+		policy_app_en: DF.TextEditor | None
+		policy_app_vn: DF.TextEditor | None
 		published: DF.Check
 		redirect_to_after_login: DF.Data
 		release_group: DF.Link
