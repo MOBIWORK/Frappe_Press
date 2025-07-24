@@ -236,6 +236,7 @@ export default {
 					first_name: this.firstName,
 					last_name: this.lastName,
 					country: this.country,
+					language: localStorage.getItem('lang') || 'vi',
 					is_invitation: this.isInvitation,
 					user_exists: this.userExists,
 					invited_by_parent_team: this.invitedByParentTeam,

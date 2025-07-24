@@ -2481,3 +2481,24 @@ def is_check_user(email=None):
 		"list_app": [app.get("app") for app in app_details_list],
 		"app_details": app_details_list,
 	}
+
+@frappe.whitelist()
+def save_setup_wizard_language(lang_code):
+	"""
+	Save language preference for setup wizard.
+	Called from LoginToSite.vue before redirecting to site.
+	"""
+	if not frappe.session.user or frappe.session.user == "Guest":
+		frappe.throw(_("Please login to save language preference"))
+	
+	# Save to user's preferences
+	frappe.db.set_value("User", frappe.session.user, "language", lang_code)
+	
+	# Also save to cache for immediate use
+	cache_key = f"setup_wizard_lang:{frappe.session.user}"
+	frappe.cache().set_value(cache_key, lang_code, expires_in_sec=3600)  # 1 hour
+	
+	# Save to session for current request
+	frappe.local.session["setup_wizard_lang"] = lang_code
+	
+	return {"status": "success", "language": lang_code}

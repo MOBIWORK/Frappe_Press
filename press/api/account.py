@@ -167,69 +167,73 @@ def send_otp(email: str):
 
 
 @frappe.whitelist(allow_guest=True)
-def setup_account(  # noqa: C901
-	key,
-	first_name=None,
-	last_name=None,
-	password=None,
-	is_invitation=False,
-	country=None,
-	user_exists=False,
-	invited_by_parent_team=False,
-	oauth_signup=False,
-	oauth_domain=False,
-	site_domain=None,
+def setup_account(
+    key,
+    first_name=None,
+    last_name=None,
+    password=None,
+    is_invitation=False,
+    country=None,
+    user_exists=False,
+    invited_by_parent_team=False,
+    oauth_signup=False,
+    oauth_domain=False,
+    site_domain=None,
+    language='vi'  # Default to 'vi' if not provided
 ):
-	account_request = get_account_request_from_key(key)
-	if not account_request:
-		frappe.throw("Invalid or Expired Key")
+    account_request = get_account_request_from_key(key)
+    if not account_request:
+        frappe.throw("Invalid or Expired Key")
 
-	if not user_exists:
-		if not first_name:
-			frappe.throw("First Name is required")
+    if not user_exists:
+        if not first_name:
+            frappe.throw("First Name is required")
 
-		if not is_invitation and not country:
-			frappe.throw("Country is required")
+        if not is_invitation and not country:
+            frappe.throw("Country is required")
 
-		if not is_invitation and country:
-			all_countries = frappe.db.get_all("Country", pluck="name")
-			country = find(all_countries, lambda x: x.lower() == country.lower())
-			if not country:
-				frappe.throw("Please provide a valid country name")
+        if not is_invitation and country:
+            all_countries = frappe.db.get_all("Country", pluck="name")
+            country = find(all_countries, lambda x: x.lower() == country.lower())
+            if not country:
+                frappe.throw("Please provide a valid country name")
 
-	# if the request is authenticated, set the user to Administrator
-	frappe.set_user("Administrator")
+    # if the request is authenticated, set the user to Administrator
+    frappe.set_user("Administrator")
 
-	team = account_request.team
-	email = account_request.email
-	role = account_request.role
-	press_roles = account_request.press_roles
+    team = account_request.team
+    email = account_request.email
+    role = account_request.role
+    press_roles = account_request.press_roles
 
-	if is_invitation:
-		# if this is a request from an invitation
-		# then Team already exists and will be added to that team
-		doc = frappe.get_doc("Team", team)
-		doc.create_user_for_member(first_name, last_name, email, password, role, press_roles)
-	else:
-		# Team doesn't exist, create it
-		Team.create_new(
-			account_request=account_request,
-			first_name=first_name,
-			last_name=last_name,
-			password=password,
-			country=country,
-			user_exists=bool(user_exists),
-		)
-		if invited_by_parent_team:
-			doc = frappe.get_doc("Team", account_request.invited_by)
-			doc.append("child_team_members", {"child_team": team})
-			doc.save()
+    if is_invitation:
+        # if this is a request from an invitation
+        # then Team already exists and will be added to that team
+        doc = frappe.get_doc("Team", team)
+        doc.create_user_for_member(first_name, last_name, email, password, role, press_roles)
+    else:
+        # Team doesn't exist, create it
+        Team.create_new(
+            account_request=account_request,
+            first_name=first_name,
+            last_name=last_name,
+            password=password,
+            country=country,
+            user_exists=bool(user_exists),
+        )
+        if invited_by_parent_team:
+            doc = frappe.get_doc("Team", account_request.invited_by)
+            doc.append("child_team_members", {"child_team": team})
+            doc.save()
 
-	# Telemetry: Created account
-	capture("completed_signup", "fc_signup", account_request.email)
-	frappe.local.login_manager.login_as(email)
+    # Store language preference for setup wizard
+    store_user_preferences(key, language)
 
-	return account_request.name
+    # Telemetry: Created account
+    capture("completed_signup", "fc_signup", account_request.email)
+    frappe.local.login_manager.login_as(email)
+
+    return account_request.name
 
 
 @frappe.whitelist(allow_guest=True)
@@ -1317,5 +1321,22 @@ def check_email_exists(email: str):
 		"team_exists": bool(team_exists),
 		"email": email
 	}
+
+
+def store_user_preferences(key, language):
+    """
+    Store user language preference for use in setup wizard.
+    """
+    frappe.cache().set_value(f"setup_wizard_preferences:{key}", {
+        "language": language
+    })
+
+
+def get_user_preferences(key):
+    """
+    Retrieve user language preference for setup wizard.
+    """
+    preferences = frappe.cache().get_value(f"setup_wizard_preferences:{key}")
+    return preferences or {}
 
 
