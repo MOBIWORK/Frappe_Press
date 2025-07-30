@@ -15,6 +15,7 @@ from frappe.utils.telemetry import init_telemetry
 
 from press.api.client import dashboard_whitelist
 from press.utils import log_error
+from press.utils.domain import get_default_domain
 
 if TYPE_CHECKING:
 	from press.press.doctype.site.site import Site
@@ -109,6 +110,9 @@ class ProductTrialRequest(Document):
 					site: Site = frappe.get_doc("Site", self.site)
 					site.create_sync_user_webhook()
 
+					# Handle CMS site creation for go1_cms and mbw_cms apps
+					# self._handle_cms_site_creation()
+
 	@frappe.whitelist()
 	def get_setup_wizard_payload(self):
 		import json
@@ -177,7 +181,8 @@ class ProductTrialRequest(Document):
 			product: ProductTrial = frappe.get_doc("Product Trial", self.product_trial)
 			self.status = "Wait for Site"
 			self.site_creation_started_on = now_datetime()
-			self.domain = f"{subdomain}.{product.domain}"
+			# Sử dụng helper để xác định domain đúng cho mọi app
+			self.domain = get_default_domain(subdomain, self.product_trial, product.domain)
 			site, agent_job_name, is_standby_site = product.setup_trial_site(
 				subdomain=subdomain, team=self.team, cluster=cluster, account_request=self.account_request, selected_app_plans=selected_app_plans
 			)
@@ -292,6 +297,48 @@ class ProductTrialRequest(Document):
 		sid = site.get_login_sid()
 		return f"https://{self.domain}/desk?sid={sid}"
 
+
+
+	# def _handle_cms_site_creation(self):
+	# 	"""
+	# 	Handle CMS site creation for go1_cms and mbw_cms apps
+	# 	Call get_template API after site is successfully created
+	# 	"""
+	# 	try:
+	# 		# Check if this is a CMS product
+	# 		if self.product_trial not in ['go1_cms', 'mbw_cms']:
+	# 			return
+			
+	# 		# Get subdomain from domain (remove .nhansu360.com part)
+	# 		if not self.domain:
+	# 			return
+				
+	# 		subdomain = self.domain.replace('.nhansu360.com', '')
+			
+	# 		# Import and call the CMS handling function
+	# 		from press.api.app_cms import handle_cms_site_creation
+			
+	# 		# Call the CMS handling function in background to avoid blocking
+	# 		frappe.enqueue(
+	# 			handle_cms_site_creation,
+	# 			site_name=self.site,
+	# 			product_id=self.product_trial,
+	# 			subdomain=subdomain,
+	# 			queue='default',
+	# 			timeout=300,
+	# 			is_async=True
+	# 		)
+			
+	# 		frappe.log_error(
+	# 			f"CMS site creation handler enqueued for site: {self.site}, product: {self.product_trial}",
+	# 			"CMS Site Creation Enqueue"
+	# 		)
+			
+	# 	except Exception as e:
+	# 		frappe.log_error(
+	# 			f"Error handling CMS site creation for {self.site}: {str(e)}",
+	# 			"CMS Site Creation Error"
+	# 		)
 
 def get_app_trial_page_url():
 	referer = frappe.request.headers.get("referer", "")

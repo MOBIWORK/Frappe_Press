@@ -47,8 +47,12 @@
 								v-model="subdomain" />
 							<div
 								class="flex cursor-default items-center rounded-r border-y border-r border-outline-gray-2 bg-gray-50 px-3 text-base">
-								<!-- .{{ domain }} -->
-								 .nhansu360.com
+								<template v-if="productId === 'mbw_cms' || productId === 'go1_cms'">
+									.nhansu360.com
+								</template>
+								<template v-else>
+									.{{ domain }}
+								</template>
 							</div>
 						</div>
 						<div class="mt-2">
@@ -66,8 +70,12 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
 											d="M5 13l4 4L19 7" />
 									</svg>
-									<!-- {{ subdomain }}.{{ domain }} {{ __('is available') }} -->
-									{{ subdomain }}.nhansu360.com {{ __('is available') }}
+									<template v-if="productId === 'mbw_cms' || productId === 'go1_cms'">
+										{{ subdomain }}.nhansu360.com {{ __('is available') }}
+									</template>
+									<template v-else>
+										{{ subdomain }}.{{ domain }} {{ __('is available') }}
+									</template>
 								</div>
 								<div v-else class="text-sm text-red-600 flex items-center gap-1">
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
@@ -75,8 +83,12 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
 											d="M6 18L18 6M6 6l12 12" />
 									</svg>
-									<!-- {{ subdomain }}.{{ domain }} {{ __('is not available') }} -->
-									{{ subdomain }}.nhansu360.com {{ __('is not available') }}
+									<template v-if="productId === 'mbw_cms' || productId === 'go1_cms'">
+										{{ subdomain }}.nhansu360.com {{ __('is not available') }}
+									</template>
+									<template v-else>
+										{{ subdomain }}.{{ domain }} {{ __('is not available') }}
+									</template>
 								</div>
 							</template>
 
@@ -195,7 +207,6 @@ export default {
 			return {
 				url: 'press.api.site.options_for_new',
 				onSuccess(data) {
-					console.log("data", data);
 					if (data.versions && data.versions.length > 0) {
 						this.version = data.versions[0].name;
 					}
@@ -298,8 +309,9 @@ export default {
 				},
 				{
 					label: __('Site name'),
-					// value: `${this.subdomain}.${this.saasProduct?.domain}`,
-					value: `${this.subdomain}.nhansu360.com`,
+					value: (this.productId === 'mbw_cms' || this.productId === 'go1_cms') 
+						? `${this.subdomain}.nhansu360.com`
+						: `${this.subdomain}.${this.saasProduct?.domain}`,
 				},
 				{
 					label: __('Plan name'),
@@ -315,7 +327,19 @@ export default {
 	methods: {
 		async createSite() {
 			await this.getClosestCluster();
-			return this.$resources.createSite.submit();
+			const result = await this.$resources.createSite.submit();
+
+			// Nếu là mbw_cms hoặc go1_cms, sau khi tạo site xong, tự động gọi set_host_name và set_redirect
+			if (this.productId === 'mbw_cms' || this.productId === 'go1_cms') {
+				const domain = `${this.subdomain}.nhansu360.com`;
+				const siteName = this.$resources.siteRequest.data.name;
+				// Đặt host_name là domain mới
+				await this.$api.call('press.api.site.set_host_name', { name: siteName, domain });
+				// Chuyển hướng từ domain cũ sang domain mới
+				await this.$api.call('press.api.site.set_redirect', { name: siteName, domain });
+			}
+
+			return result;
 		},
 		async getClosestCluster() {
 			if (this.closestCluster) return this.closestCluster;

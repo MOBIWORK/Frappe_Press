@@ -159,7 +159,7 @@ export default {
             }
             const encodedPlan = encodeURIComponent(JSON.stringify(this.selectedPlan));
             const query = { selected_plan: encodedPlan };
-            if (this.productId === 'go1_cms' && this.selectedTemplate) {
+            if ((this.productId === 'go1_cms' || this.productId === 'mbw_cms') && this.selectedTemplate) {
                 query.selected_template = this.selectedTemplate;
             }
             
@@ -229,7 +229,7 @@ export default {
             return null;
         },
         selectedTemplate() {
-            if (this.productId === 'go1_cms') {
+            if (this.productId === 'go1_cms' || this.productId === 'mbw_cms') {
                 return this.$route.query.selected_template;
             }
             return null;

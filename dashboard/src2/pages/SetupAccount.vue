@@ -247,7 +247,7 @@ export default {
 					
 					let path = '/dashboard/create-site/app-selector';
 					//Đăng ký account xong -> 
-					if (this.saasProduct && this.saasProduct.name === 'go1_cms') {
+					if (this.saasProduct && (this.saasProduct.name === 'go1_cms' || this.saasProduct.name === 'mbw_cms')) {
 						path = `/dashboard/create-site/${this.saasProduct.name}/template`;
 					} else if (this.saasProduct) {
 						path = `/dashboard/create-site/${this.saasProduct.name}/plan`;

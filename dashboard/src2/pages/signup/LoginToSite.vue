@@ -324,7 +324,9 @@ export default {
 					const siteName = this.$resources?.siteRequest?.doc?.site;
 					return {
 						name: siteName,
-						domain: `${this.subdomain}.nhansu360.com`,
+						domain: this.productId === 'mbw_cms' || this.productId === 'go1_cms' 
+							? `${this.subdomain}.nhansu360.com`
+							: `${this.subdomain}.${this.saasProduct?.domain}`,
 					};
 				},
 				auto: false,

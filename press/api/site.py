@@ -44,6 +44,7 @@ from press.utils import (
 	log_error,
 	unique,
 )
+from press.utils.domain import get_default_domain
 
 if TYPE_CHECKING:
 	from frappe.types import DF
@@ -1750,7 +1751,23 @@ def domain_exists(domain):
 @frappe.whitelist()
 @protected("Site")
 def add_domain(name, domain):
-	frappe.get_doc("Site", name).add_domain(domain)
+	# Lấy subdomain từ site
+	site_doc = frappe.get_doc("Site", name)
+	subdomain = getattr(site_doc, "subdomain", None)
+	product_trial = None
+	# Thử lấy product_trial từ ProductTrialRequest nếu có
+	ptr = frappe.db.get_value("Product Trial Request", {"site": name}, "product_trial")
+	if ptr:
+		product_trial = ptr
+	else:
+		# Nếu không có, thử lấy từ site (nếu có custom field)
+		product_trial = getattr(site_doc, "product_trial", None)
+	# Nếu là app đặc biệt, sửa lại domain cho đúng
+	if product_trial and subdomain:
+		from press.saas.doctype.product_trial.product_trial import ProductTrial
+		product = frappe.get_doc("Product Trial", product_trial)
+		domain = get_default_domain(subdomain, product_trial, product.domain)
+	site_doc.add_domain(domain)
 
 
 @frappe.whitelist()
@@ -2483,22 +2500,27 @@ def is_check_user(email=None):
 	}
 
 @frappe.whitelist()
-def save_setup_wizard_language(lang_code):
-	"""
-	Save language preference for setup wizard.
-	Called from LoginToSite.vue before redirecting to site.
-	"""
-	if not frappe.session.user or frappe.session.user == "Guest":
-		frappe.throw(_("Please login to save language preference"))
-	
-	# Save to user's preferences
-	frappe.db.set_value("User", frappe.session.user, "language", lang_code)
-	
-	# Also save to cache for immediate use
-	cache_key = f"setup_wizard_lang:{frappe.session.user}"
-	frappe.cache().set_value(cache_key, lang_code, expires_in_sec=3600)  # 1 hour
-	
-	# Save to session for current request
-	frappe.local.session["setup_wizard_lang"] = lang_code
-	
-	return {"status": "success", "language": lang_code}
+def save_setup_wizard_language(lang_code=None):
+    if not lang_code:
+        lang_code = 'vi'  # Default to Vietnamese
+    
+    # Ghi log để debug
+    frappe.logger().info(f"Setting language in System Settings: {lang_code}")
+    
+    try:
+        # Cập nhật System Settings với ngôn ngữ đã chọn
+        system_settings = frappe.get_doc("System Settings", "System Settings")
+        system_settings.language = lang_code
+        system_settings.save(ignore_permissions=True)
+        
+        # Đảm bảo thay đổi được commit
+        frappe.db.commit()
+        
+        # Trả về kết quả thành công
+        return {
+            "status": "success", 
+            "message": f"Language {lang_code} saved to System Settings"
+        }
+    except Exception as e:
+        frappe.logger().error(f"Error saving language to System Settings: {str(e)}")
+        return {"status": "error", "message": str(e)}
