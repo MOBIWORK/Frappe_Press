@@ -30,13 +30,13 @@
             v-for="(template, idx) in templates"
             :key="template.key"
             class="bg-white border rounded-xl shadow hover:shadow-lg transition-all flex flex-col items-center p-4"
-            :class="{'ring-2 ring-blue-400': selectedTemplate === template.key}"
+            :class="{'ring-2 ring-blue-400': selectedTemplate === template.template_id}"
           >
             <img :src="template.img" alt="" class="w-full h-24 object-contain mb-3 rounded" />
             <div class="font-semibold text-base mb-2 text-center">{{ template.name }}</div>
             <div class="flex gap-2 mt-auto">
               <button class="border border-red-600 text-red-600 px-3 py-1 rounded hover:bg-red-50 text-sm" @click="previewTemplate(template)">Xem thử</button>
-              <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm" @click="selectTemplate(template.key)">Chọn</button>
+              <button class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm" @click="selectTemplate(template.template_id)">Chọn</button>
             </div>
           </div>
         </div>
@@ -53,9 +53,8 @@
       </div>
     </div>
 
-    <!-- Modal Preview -->
     <div v-if="previewingTemplate" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div class="bg-white rounded-lg shadow-lg w-full max-w-5xl relative flex flex-col" style="max-height: 90vh;">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl relative flex flex-col" style="max-height: 90vh;">
         <div class="flex items-center justify-between p-4 border-b">
           <span class="font-semibold">Xem trước mẫu: {{ previewingTemplate.name }}</span>
           <div class="flex items-center gap-2">
@@ -66,7 +65,7 @@
         </div>
         <div class="flex-1 overflow-auto flex justify-center items-center bg-gray-50 p-4">
           <iframe
-            :src="`/template/${previewingTemplate.key}.html`"
+            :src="`/assets/press/dashboard/template/${previewingTemplate.key}.html`"
             :style="previewMode==='desktop' 
               ? 'width: 1200px; height: 700px; border:1px solid #eee; background:white;' 
               : 'width: 375px; height: 700px; border:1px solid #eee; background:white;'"
@@ -96,24 +95,21 @@ export default {
       selectedTemplate: null,
       previewingTemplate: null,
       previewMode: 'desktop',
-      templates: [
-        { key: 'modern', name: 'Modern Business', img: '/public/1.png',template_name: 'WT-17235991837942781' },
-        { key: 'corporate', name: 'Corporate Plus', img: '/public/2.png', template_name: 'WT-2' },
-        { key: 'startup', name: 'Startup', img: '/public/3.png', template_name: 'WT-3' },
-        { key: 'portfolio', name: 'Portfolio Pro', img: '/public/4.png', template_name: 'WT-4' },
-        { key: 'recruitment', name: 'Recruitment Pro', img: '/public/5.png', template_name: 'WT-5' },
-        { key: 'landing', name: 'Landing Pro', img: '/public/6.png', template_name: 'WT-6' },
-        { key: 'ecommerce', name: 'E-commerce Plus', img: '/public/7.png', template_name: 'WT-7' },
-        { key: 'service', name: 'Service Pro', img: '/public/8.png', template_name: 'WT-8' },
-      ],
+      templates: [],
     };
   },
   computed: {
     saasProduct() {
       return this.$resources.saasProduct?.doc;
     },
+    templates() {
+      return this.$resources.templates?.data || [];
+    },
   },
   methods: {
+    removeVietnameseAccents(str) {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+    },
     previewTemplate(template) {
       this.previewingTemplate = template;
       this.previewMode = 'desktop';
@@ -125,7 +121,7 @@ export default {
       this.previewMode = mode;
     },
     choosePreviewedTemplate() {
-      this.selectedTemplate = this.previewingTemplate.key;
+      this.selectedTemplate = this.previewingTemplate.template_id;
       this.closePreview();
     },
     selectTemplate(key) {
@@ -134,9 +130,9 @@ export default {
     goNext() {
       if (this.selectedTemplate && this.saasProduct && this.saasProduct.name) {
         // Tìm template đang được chọn
-        const selected = this.templates.find(t => t.key === this.selectedTemplate);
-        // Nếu có trường template_name thì lấy template_name, không thì lấy key
-        const templateValue = selected?.template_name || this.selectedTemplate;
+        const selected = this.templates.find(t => t.template_id === this.selectedTemplate);
+        // Sử dụng template_id làm giá trị
+        const templateValue = selected?.template_id || this.selectedTemplate;
         this.$router.push({
           path: `/create-site/${this.saasProduct.name}/plan`,
           query: {
@@ -153,6 +149,24 @@ export default {
         doctype: 'Product Trial',
         name: this.productId,
         auto: true,
+      };
+    },
+    templates() {
+      return {
+        url: 'press.api.app_cms.get_cms_template_list',
+        auto: true,
+        cache: false,
+        transform(data) {
+          if (data && data.success && data.data) {
+            return data.data.map(template => ({
+              key: this.removeVietnameseAccents(template.template_name).replace(/[^a-zA-Z0-9]/g, '').toLowerCase(),
+              name: template.template_name,
+              img: template.image_template,
+              template_id: template.template_id
+            }));
+          }
+          return [];
+        }
       };
     },
   },

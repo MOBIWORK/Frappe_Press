@@ -1796,6 +1796,39 @@ def set_redirect(name, domain):
 
 @frappe.whitelist()
 @protected("Site")
+def get_domain_status(name, domain):
+	"""
+	Get the status of a specific domain for a site
+	Returns the Site Domain status: Pending, In Progress, Active, Broken
+	"""
+	try:
+		site_domain = frappe.get_doc("Site Domain", {"site": name, "domain": domain})
+		return {
+			"success": True,
+			"status": site_domain.status,
+			"domain": domain,
+			"site": name
+		}
+	except frappe.DoesNotExistError:
+		return {
+			"success": False,
+			"status": "Not Found",
+			"domain": domain,
+			"site": name,
+			"message": f"Domain {domain} not found for site {name}"
+		}
+	except Exception as e:
+		return {
+			"success": False,
+			"status": "Error",
+			"domain": domain,
+			"site": name,
+			"message": str(e)
+		}
+
+
+@frappe.whitelist()
+@protected("Site")
 def unset_redirect(name, domain):
 	frappe.get_doc("Site", name).unset_redirect(domain)
 
@@ -2501,26 +2534,42 @@ def is_check_user(email=None):
 
 @frappe.whitelist()
 def save_setup_wizard_language(lang_code=None):
+    """
+    API method để lưu ngôn ngữ cho setup wizard.
+    Tương thích với pattern mới - lưu trực tiếp vào System Settings.
+    """
     if not lang_code:
         lang_code = 'vi'  # Default to Vietnamese
     
     # Ghi log để debug
-    frappe.logger().info(f"Setting language in System Settings: {lang_code}")
+    frappe.logger().info(f"🔄 save_setup_wizard_language called with: {lang_code}")
     
     try:
+        # Convert language code to language name that setup wizard expects
+        language_name_mapping = {
+            'vi': 'Việt',           # Setup wizard expects 'Việt' for Vietnamese
+            'en': 'English',        # Setup wizard expects 'English' for English
+        }
+        
+        language_name = language_name_mapping.get(lang_code, lang_code)
+        frappe.logger().info(f"📝 Converting language code '{lang_code}' to name '{language_name}'")
+        
         # Cập nhật System Settings với ngôn ngữ đã chọn
         system_settings = frappe.get_doc("System Settings", "System Settings")
-        system_settings.language = lang_code
+        system_settings.language = language_name  # Use language name, not code
         system_settings.save(ignore_permissions=True)
         
         # Đảm bảo thay đổi được commit
         frappe.db.commit()
+        frappe.logger().info(f"✅ Successfully saved language '{language_name}' to System Settings")
         
         # Trả về kết quả thành công
         return {
             "status": "success", 
-            "message": f"Language {lang_code} saved to System Settings"
+            "message": f"Language {language_name} saved to System Settings",
+            "language_code": lang_code,
+            "language_name": language_name
         }
     except Exception as e:
-        frappe.logger().error(f"Error saving language to System Settings: {str(e)}")
+        frappe.logger().error(f"❌ Error saving language to System Settings: {str(e)}")
         return {"status": "error", "message": str(e)}

@@ -186,6 +186,7 @@ export default {
 							params: { productId: this.productId },
 							query: {
 								product_trial_request: data.name,
+								selected_template: this.$route.query.selected_template,
 							},
 						});
 					}
@@ -265,6 +266,7 @@ export default {
 						query: {
 							product_trial_request: this.$resources.siteRequest.data.name,
 							subdomain: this.subdomain,
+							selected_template: this.$route.query.selected_template,
 						},
 					});
 				},

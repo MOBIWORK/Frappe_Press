@@ -157,8 +157,10 @@ def get_current_team_v2(user_email=None, get_doc=False):
 	Returns:
 		str | frappe.Document | dict: Team ID, team document, or error message.
 	"""
-	
-	if not user_email:
+	# remove khoảng trắng cho user_email
+	if user_email:
+		user_email = user_email.strip()	
+	else:
 		return {"error": "User email is required"}
 
 	# Check if user exists

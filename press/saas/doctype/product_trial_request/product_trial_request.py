@@ -111,7 +111,7 @@ class ProductTrialRequest(Document):
 					site.create_sync_user_webhook()
 
 					# Handle CMS site creation for go1_cms and mbw_cms apps
-					# self._handle_cms_site_creation()
+					self._handle_cms_site_creation()
 
 	@frappe.whitelist()
 	def get_setup_wizard_payload(self):
@@ -134,7 +134,7 @@ class ProductTrialRequest(Document):
 					"Account Request", {"email": team_user.email}, "geo_location"
 				)
 
-			timezone = frappe.parse_json(account_request_geo_data or {}).get("timezone", "Asia/Kolkata")
+			timezone = frappe.parse_json(account_request_geo_data or {}).get("timezone", "Asia/Ho_Chi_Minh")
 
 			return json.dumps(
 				{
@@ -297,48 +297,74 @@ class ProductTrialRequest(Document):
 		sid = site.get_login_sid()
 		return f"https://{self.domain}/desk?sid={sid}"
 
+	@dashboard_whitelist()
+	def get_custom_login_sid(self):
+		"""
+		Custom login SID logic: Nếu product_trial là 'mbw_cms' hoặc 'go1_cms' thì trả về URL https://{subdomain}.nhansu360.com/desk?sid=<sid>,
+		còn lại thì dùng domain chuẩn như get_login_sid.
+		"""
+		
+		# Lấy subdomain từ domain
+		subdomain = None
+		if self.domain and self.domain.endswith('.nhansu360.com'):
+			subdomain = self.domain.replace('.nhansu360.com', '')
+		if self.product_trial in ['mbw_cms', 'go1_cms'] and subdomain:
+			site: Site = frappe.get_doc("Site", self.site)
+			redirect_to_after_login = frappe.db.get_value(
+				"Product Trial",
+				self.product_trial,
+				"redirect_to_after_login",
+			)
+			if site.additional_system_user_created and site.setup_wizard_complete:
+				email = frappe.db.get_value("Team", self.team, "user")
+				sid = site.get_custom_login_sid(user=email)
+				return f"https://{subdomain}.nhansu360.com{redirect_to_after_login}?sid={sid}"
 
+			sid = site.get_custom_login_sid()
+			return f"https://{subdomain}.nhansu360.com/desk?sid={sid}"
+		else:
+			return self.get_login_sid()
 
-	# def _handle_cms_site_creation(self):
-	# 	"""
-	# 	Handle CMS site creation for go1_cms and mbw_cms apps
-	# 	Call get_template API after site is successfully created
-	# 	"""
-	# 	try:
-	# 		# Check if this is a CMS product
-	# 		if self.product_trial not in ['go1_cms', 'mbw_cms']:
-	# 			return
+	def _handle_cms_site_creation(self):
+		"""
+		Handle CMS site creation for go1_cms and mbw_cms apps
+		Call get_template API after site is successfully created
+		"""
+		try:
+			# Check if this is a CMS product
+			if self.product_trial not in ['go1_cms', 'mbw_cms']:
+				return
 			
-	# 		# Get subdomain from domain (remove .nhansu360.com part)
-	# 		if not self.domain:
-	# 			return
+			# Get subdomain from domain (remove .nhansu360.com part)
+			if not self.domain:
+				return
 				
-	# 		subdomain = self.domain.replace('.nhansu360.com', '')
+			subdomain = self.domain.replace('.nhansu360.com', '')
 			
-	# 		# Import and call the CMS handling function
-	# 		from press.api.app_cms import handle_cms_site_creation
+			# Import and call the CMS handling function
+			from press.api.app_cms import handle_cms_site_creation
 			
-	# 		# Call the CMS handling function in background to avoid blocking
-	# 		frappe.enqueue(
-	# 			handle_cms_site_creation,
-	# 			site_name=self.site,
-	# 			product_id=self.product_trial,
-	# 			subdomain=subdomain,
-	# 			queue='default',
-	# 			timeout=300,
-	# 			is_async=True
-	# 		)
+			# Call the CMS handling function in background to avoid blocking
+			frappe.enqueue(
+				handle_cms_site_creation,
+				site_name=self.site,
+				product_id=self.product_trial,
+				subdomain=subdomain,
+				queue='default',
+				timeout=300,
+				is_async=True
+			)
 			
-	# 		frappe.log_error(
-	# 			f"CMS site creation handler enqueued for site: {self.site}, product: {self.product_trial}",
-	# 			"CMS Site Creation Enqueue"
-	# 		)
+			frappe.log_error(
+				f"CMS site creation handler enqueued for site: {self.site}, product: {self.product_trial}",
+				"CMS Site Creation Enqueue"
+			)
 			
-	# 	except Exception as e:
-	# 		frappe.log_error(
-	# 			f"Error handling CMS site creation for {self.site}: {str(e)}",
-	# 			"CMS Site Creation Error"
-	# 		)
+		except Exception as e:
+			frappe.log_error(
+				f"Error handling CMS site creation for {self.site}: {str(e)}",
+				"CMS Site Creation Error"
+			)
 
 def get_app_trial_page_url():
 	referer = frappe.request.headers.get("referer", "")

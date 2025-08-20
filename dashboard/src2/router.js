@@ -391,7 +391,7 @@ router.beforeEach(async (to, from, next) => {
 		const productId = localStorage.getItem('product_id');
 		const helloPath = `/create-site/${productId}/template`;
 		if (
-			productId === 'go1_cms' &&
+			(productId === 'go1_cms' || productId === 'mbw_cms')  &&
 			!to.path.endsWith(helloPath) &&
 			!sessionStorage.getItem('hello_redirected')
 		) {

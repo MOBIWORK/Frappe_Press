@@ -19,17 +19,6 @@
 								{{ saasProduct?.title }}
 							</h1>
 						</div>
-						<!-- <div class="space-y-2">
-							<h2 class="text-xl font-semibold text-gray-900">
-								{{ __('🎉 Site Created Successfully!') }}
-							</h2>
-							<p class="text-sm text-gray-600">
-								{{ __('Your trial site is ready at') }}
-							</p>
-							<p class="text-sm font-medium text-blue-600 break-all">
-								{{ $resources?.siteRequest?.doc?.domain || $resources?.siteRequest?.doc?.site }}
-							</p>
-						</div> -->
 					</div>
 
 					<!-- Login Card -->
@@ -52,6 +41,9 @@
 									<p class="text-sm text-gray-500">
 										{{ progressMessage }}
 									</p>
+									<p v-if="subdomain && subdomain.trim() !== ''" class="text-xs text-blue-600 mt-2">
+										Đang thiết lập và kiểm tra domain cho site của bạn...
+									</p>
 								</div>
 								
 								<!-- Progress Bar -->
@@ -68,7 +60,7 @@
 										</div>
 									</div>
 									<div class="text-xs text-gray-500 text-center">
-										{{ __('Redirecting to your site...') }}
+										{{ __('Chuyển hướng sang thiết lập thông tin ...') }}
 									</div>
 								</div>
 							</div>
@@ -184,9 +176,9 @@
 								<h3 class="text-lg font-medium text-gray-900">
 									{{ currentStep }}
 								</h3>
-								<p class="text-sm text-gray-600">
+								<!-- <p class="text-sm text-gray-600">
 									{{ __('We are preparing your site. This usually takes a few moments...') }}
-								</p>
+								</p> -->
 								
 								<!-- Progress Bar -->
 								<div class="mt-6 space-y-3">
@@ -224,6 +216,7 @@ export default {
 			timeoutWarning: null,
 			showTimeoutWarning: false,
 			subdomain: this.$route.query.subdomain || null,
+			selected_template: this.$route.query.selected_template || null,
 			lastLoaded: 0,
 			// Progress tracking
 			progressPercentage: 0,
@@ -232,19 +225,19 @@ export default {
 			progressInterval: null,
 			showCompletionAnimation: false,
 			progressSteps: [
-				{ name: 'Khởi tạo môi trường', duration: 8000, target: 15 },
-				{ name: 'Tạo cấu trúc site', duration: 40000, target: 35 },
-				{ name: 'Cài đặt ứng dụng', duration: 40000, target: 60 },
-				{ name: 'Cấu hình cơ sở dữ liệu', duration: 30000, target: 80 },
-				{ name: 'Thiết lập web server', duration: 20000, target: 93 },
-				{ name: 'Đang hoàn tất...', duration: 5000, target: 98 }
+				{ name: 'Khởi tạo môi trường', duration: 15000, target: 12 },
+				{ name: 'Tạo cấu trúc site', duration: 60000, target: 30 },
+				{ name: 'Cài đặt ứng dụng', duration: 60000, target: 55 },
+				{ name: 'Cấu hình cơ sở dữ liệu', duration: 45000, target: 75 },
+				{ name: 'Thiết lập web server', duration: 30000, target: 90 },
+				{ name: 'Đang hoàn tất...', duration: 8000, target: 98 }
 			],
 			currentStepIndex: 0,
 			stepStartTime: null,
+			loginInProgress: false, // Flag to prevent multiple login attempts
 		};
 	},
 	mounted() {
-		
 		// Start status monitoring
 		this.startStatusMonitoring();
 		
@@ -298,7 +291,7 @@ export default {
 					this.lastLoaded = Date.now();
 					this.handleStatusChange(doc.status);
 				},
-				onError: (error) => {
+				onError: () => {
 					// Retry after error
 					setTimeout(() => {
 						this.$resources.siteRequest.reload();
@@ -330,12 +323,14 @@ export default {
 					};
 				},
 				auto: false,
-				onSuccess: () => {
-					this.$resources.siteRequest.getLoginSid.submit();
+				onSuccess: (result) => {
+					console.log('[LoginToSite] Domain added successfully:', result);
+					// Don't call getLoginSid here, let addDomainAndWait handle the timing
 				},
 				onError: (error) => {
+					console.log('[LoginToSite] Domain addition failed:', error);
 					// Still proceed to login even if domain addition fails
-					this.$resources.siteRequest.getLoginSid.submit();
+					// The server will handle domain validation
 				},
 			};
 		},
@@ -345,6 +340,50 @@ export default {
 				makeParams: ({ lang_code }) => ({ lang_code }),
 			};
 		},
+		checkDomainStatus() {
+			return {
+				url: 'press.api.site.get_domain_status',
+				makeParams: () => {
+					const siteName = this.$resources?.siteRequest?.doc?.site;
+					const domain = this.productId === 'mbw_cms' || this.productId === 'go1_cms'
+						? `${this.subdomain}.nhansu360.com`
+						: `${this.subdomain}.${this.saasProduct?.domain}`;
+					return {
+						name: siteName,
+						domain: domain,
+					};
+				},
+				auto: false,
+				onSuccess: () => {
+					// Domain status check completed
+				},
+				onError: () => {
+					// Domain status check failed
+				},
+			};
+		},
+		handleCmsSiteCreation() {
+				return {
+					url: 'press.api.app_cms.handle_cms_site_creation',
+					makeParams: () => {
+						const siteName = this.$resources?.siteRequest?.doc?.site;
+
+						return {
+							site_name: siteName,
+							product_id: this.productId,
+							subdomain: this.subdomain,
+							template_name: this.selected_template
+						};
+					},
+					auto: false,
+					onSuccess: (data) => {
+						console.log('CMS site creation handled successfully:', data);
+					},
+					onError: (error) => {
+						console.error('Error handling CMS site creation:', error);
+					}
+				};
+			},
 	},
 	computed: {
 		saasProduct() {
@@ -399,8 +438,22 @@ export default {
 					this.showTimeoutWarning = false;
 					this.completeProgress();
 					this.showCompletionAnimation = true;
-					// Auto login after showing 100% for a moment
-					setTimeout(() => this.loginToSite(), 3000);
+
+					// Wait for domain setup if we have subdomain
+					if (this.subdomain && this.subdomain.trim() !== '') {
+						this.setupDomainAndWaitForReady();
+
+						// Emergency fallback after 6 minutes
+						setTimeout(() => {
+							if (!this.loginInProgress) {
+								this.proceedToLogin();
+							}
+						}, 360000);
+
+					} else {
+						// No custom domain needed, proceed directly
+						setTimeout(() => this.proceedToLogin(), 3000);
+					}
 					break;
 					
 				case 'Error':
@@ -429,18 +482,185 @@ export default {
 					break;
 			}
 		},
-		
-		loginToSite() {
-			// Save language preference for setup wizard before redirecting
-			this.saveLanguageForSetupWizard();
-			
-			// Check if we need to add custom domain first
-			if (this.subdomain && this.subdomain.trim() !== '') {
-				this.$resources.addDomain.submit();
-			} else {
-				// Direct login without custom domain
-				this.$resources.siteRequest.getLoginSid.submit();
+
+		setupDomainAndWaitForReady() {
+			// Update progress to show domain setup
+			this.currentStep = 'Đang thiết lập domain...';
+			this.progressMessage = 'Đang cấu hình domain cho site của bạn. Quá trình này có thể mất vài phút...';
+
+			// Add domain first
+			this.$resources.addDomain.submit();
+
+			// Maximum timeout fallback (5 minutes)
+			setTimeout(() => {
+				this.proceedToLogin();
+			}, 300000);
+
+			// Start checking domain status after delay
+			setTimeout(() => {
+				this.waitForDomainReady();
+			}, 10000);
+		},
+
+		waitForDomainReady() {
+			const maxAttempts = 30; // Maximum 30 attempts (about 5 minutes)
+			const checkInterval = 10000; // Check every 10 seconds
+			let attempts = 0;
+
+			const checkDomainStatus = () => {
+				attempts++;
+
+				// Update progress message
+				this.progressMessage = `Đang đợi domain sẵn sàng. Quá trình này có thể mất vài phút...`;
+
+				// Check domain status using the API
+				this.$resources.checkDomainStatus.submit();
+
+				// Wait for the API response
+				setTimeout(() => {
+					const result = this.$resources.checkDomainStatus.data;
+					const error = this.$resources.checkDomainStatus.error;
+
+					// If API call failed, try fallback after many failures
+					if (error || (result && !result.success)) {
+						if (attempts >= 10) {
+							this.fallbackPingDomain();
+							return;
+						}
+					}
+
+					// ONLY proceed when domain is truly Active
+					if (result && result.success && result.status === 'Active') {
+						this.proceedToLogin();
+						return;
+					}
+
+					// Check if we've exceeded max attempts
+					if (attempts >= maxAttempts) {
+						this.proceedToLogin();
+						return;
+					}
+
+					// Domain not ready yet, continue checking
+					setTimeout(checkDomainStatus, checkInterval);
+
+				}, 2000); // Wait 2 seconds for API response
+			};
+
+			// Start checking
+			checkDomainStatus();
+		},
+
+		proceedToLogin() {
+			// Prevent multiple login attempts
+			if (this.loginInProgress) {
+				return;
 			}
+
+			this.loginInProgress = true;
+
+			// Update progress to show we're ready
+			this.currentStep = '';
+			this.progressMessage = 'Đang chuyển hướng đến site của bạn...';
+			// Handle CMS if needed
+			if (this.productId === 'mbw_cms' && this.selected_template) {
+				const siteName = this.$resources?.siteRequest?.doc?.site;
+
+				if (!siteName) {
+					console.error('CMS Error: site_name is null/undefined');
+					return;
+				}
+
+				this.$resources.handleCmsSiteCreation.submit();
+			}
+			// Save language for setup wizard
+			this.saveLanguageForSetupWizard();
+
+			// Verify domain is ready before login if we have subdomain
+			if (this.subdomain && this.subdomain.trim() !== '') {
+				this.verifyDomainBeforeLogin();
+			} else {
+				this.performActualLogin();
+			}
+		},
+
+		fallbackPingDomain() {
+			const domain = this.productId === 'mbw_cms' || this.productId === 'go1_cms'
+				? `${this.subdomain}.nhansu360.com`
+				: `${this.subdomain}.${this.saasProduct?.domain}`;
+
+			// Try to load a small image from the domain to test connectivity
+			const testUrl = `https://${domain}/favicon.ico?t=${Date.now()}`;
+			const img = new Image();
+
+			img.onload = () => {
+				this.proceedToLogin();
+			};
+
+			img.onerror = () => {
+				// Even if ping fails, proceed to login after a short delay
+				setTimeout(() => {
+					this.proceedToLogin();
+				}, 5000);
+			};
+
+			// Set a timeout to prevent infinite waiting
+			setTimeout(() => {
+				if (!this.loginInProgress) {
+					this.proceedToLogin();
+				}
+			}, 15000);
+
+			img.src = testUrl;
+		},
+
+		verifyDomainBeforeLogin() {
+			// Check domain status one final time before login
+			this.$resources.checkDomainStatus.submit();
+
+			setTimeout(() => {
+				const result = this.$resources.checkDomainStatus.data;
+
+				if (result && result.success && result.status === 'Active') {
+					this.performActualLogin();
+				} else {
+					this.finalPingBeforeLogin();
+				}
+			}, 3000); // Wait 3 seconds for API response
+		},
+
+		finalPingBeforeLogin() {
+			const domain = this.productId === 'mbw_cms' || this.productId === 'go1_cms'
+				? `${this.subdomain}.nhansu360.com`
+				: `${this.subdomain}.${this.saasProduct?.domain}`;
+
+			const testUrl = `https://${domain}/favicon.ico?t=${Date.now()}`;
+			const img = new Image();
+
+			img.onload = () => {
+				this.performActualLogin();
+			};
+
+			img.onerror = () => {
+				this.performActualLogin();
+			};
+
+			// Timeout after 10 seconds
+			setTimeout(() => {
+				this.performActualLogin();
+			}, 10000);
+
+			img.src = testUrl;
+		},
+
+		performActualLogin() {
+			// This is the actual login that triggers navigation
+			this.$resources.siteRequest.getLoginSid.submit();
+		},
+
+		loginToSite() {
+			// This method is called when user manually clicks the login button
+			this.proceedToLogin();
 		},
 		
 		saveLanguageForSetupWizard() {
@@ -525,8 +745,7 @@ export default {
 		},
 
 		updateProgressMessage() {
-			const remainingSteps = this.progressSteps.length - this.currentStepIndex;
-			const estimatedTime = Math.max(30 - Math.floor(this.progressPercentage / 3), 5);
+			const estimatedTime = Math.max(90 - Math.floor(this.progressPercentage / 1.5), 10);
 			this.progressMessage = `Còn khoảng ${estimatedTime} giây nữa...`;
 		},
 

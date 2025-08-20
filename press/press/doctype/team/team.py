@@ -280,6 +280,7 @@ class Team(Document):
 		last_name: str,
 		password: str | None = None,
 		country: str | None = None,
+		language: str | None = None,  # Add language parameter
 		is_us_eu: bool = False,
 		via_erpnext: bool = False,
 		user_exists: bool = False,
@@ -319,6 +320,28 @@ class Team(Document):
 			team.is_saas_user = 1
 
 		team.save(ignore_permissions=True)
+
+		# Update System Settings with language immediately
+		if language:
+			try:
+				# Map language to proper format
+				language_mapping = {
+					'vi': 'Việt',
+					'Vietnamese': 'Việt', 
+					'vietnamese': 'Việt',
+					'Việt': 'Việt',
+					'en': 'English',
+					'English': 'English',
+					'english': 'English'
+				}
+				
+				language_name = language_mapping.get(language, 'Việt')
+				
+				# Update System Settings
+				frappe.db.set_value("System Settings", "System Settings", "language", language_name)
+				frappe.db.commit()
+			except Exception as e:
+				frappe.log_error(f"Error updating system language: {str(e)}", "Team Language Update")
 
 		# team.create_stripe_customer()
 

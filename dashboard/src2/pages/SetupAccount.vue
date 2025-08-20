@@ -236,7 +236,7 @@ export default {
 					first_name: this.firstName,
 					last_name: this.lastName,
 					country: this.country,
-					language: localStorage.getItem('lang') || 'vi',
+					language: this.getSelectedLanguage(),  // ← Use method instead of direct localStorage access
 					is_invitation: this.isInvitation,
 					user_exists: this.userExists,
 					invited_by_parent_team: this.invitedByParentTeam,
@@ -281,6 +281,25 @@ export default {
 		},
 	},
 	methods: {
+		getSelectedLanguage() {
+			// ✅ PRIORITY ORDER: SelectLanguage component > localStorage > default
+			// 1. Check if SelectLanguage component has set a value
+			const languageSelector = this.$children?.find(child => child.$options.name === 'SelectLanguage');
+			if (languageSelector && languageSelector.defaultLanguage) {
+				return languageSelector.defaultLanguage;
+			}
+			
+			// 2. Check localStorage
+			const storedLang = localStorage.getItem('lang');
+			if (storedLang) {
+				return storedLang;
+			}
+			
+			// 3. Default to Vietnamese
+			// Ensure localStorage is set for consistency
+			localStorage.setItem('lang', 'vi');
+			return 'vi';
+		},
 		submitForm() {
 			if (this.invitedBy) {
 				this.$resources.is2FAEnabled.submit(
@@ -307,6 +326,12 @@ export default {
 				this.$resources.setupAccount.submit();
 			}
 		},
+	},
+	mounted() {
+		// ✅ Ensure Vietnamese is set as default language immediately
+		if (!localStorage.getItem('lang')) {
+			localStorage.setItem('lang', 'vi');
+		}
 	},
 };
 </script>

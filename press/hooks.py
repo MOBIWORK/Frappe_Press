@@ -22,10 +22,6 @@ app_include_js = [
 	"press.bundle.js",
 ]
 
-# Setup wizard specific includes
-setup_wizard_requires = [
-    "assets/press/js/setup_wizard_override.js"
-]
 
 # include js, css files in header of web template
 # web_include_css = "/assets/press/css/press.css"

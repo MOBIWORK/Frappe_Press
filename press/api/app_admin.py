@@ -11,7 +11,7 @@ from frappe.model.base_document import get_controller
 from press.utils import get_current_team,get_current_team_v2
 from press.api.client import check_permissions, validate_fields, has_role,apply_custom_filters, validate_filters,get_list_query, check_document_access,fix_args,check_dashboard_actions,get,raise_not_permitted
 from press.press.doctype.marketplace_app.marketplace_app import get_plans_for_app
-from press.api.site import is_marketplace_app_source, is_prepaid_marketplace_app
+from press.api.site import is_marketplace_app_source, is_prepaid_marketplace_app,check_dns_cname_a
 
 # Import PayOS helper functions
 from press.api.payos_connect import (
@@ -19,6 +19,10 @@ from press.api.payos_connect import (
     create_payos_payment_link, get_payos_payment_info, cancel_payos_payment, verify_payos_signature, 
     get_payment_status_display, calculate_transaction_summary
 )
+
+VALID_REQUEST_TYPES = {'stop_site', 'delete_site'}
+EMAIL_PATTERN = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+ADMIN_USERS = ['Administrator', 'admin@mbwcloud.com']
 
 def validate_api_request(required_headers=None, api_key_required=False, rate_limit=None, token_auth=False):
     """
@@ -144,7 +148,7 @@ def _validate_token_auth(auth_header):
         # Có thể thêm logic kiểm tra trong database
         # return _check_api_credentials_in_db(api_key, api_secret)
         
-        return Truethô
+        return True
     except Exception:
         return False
 
@@ -1546,10 +1550,10 @@ def available_apps(name):
 	return sorted(available_sources, key=lambda x: bench_sources.index(x.name))
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 @validate_api_request(
     required_headers=['User-Agent'],
-    api_key_required=False,  
+    api_key_required=True,  
     rate_limit={"limit": 50, "window": 3600} 
 )
 def run_doc_method(dt: str, dn: str, method: str, args: dict | None = None):
@@ -1777,7 +1781,7 @@ def get_team_unpaid_invoices(arg_email=None):
                 status
             FROM `tabInvoice`
             WHERE team = %(team)s 
-            AND status NOT IN ('Paid', 'Cancelled')
+            AND status NOT IN ('Cancelled', 'Draft')
             AND docstatus != 2
             ORDER BY creation DESC
         """, {"team": target_team}, as_dict=True)
@@ -1832,8 +1836,30 @@ def get_team_unpaid_invoices(arg_email=None):
     api_key_required=False,  
     rate_limit={"limit": 100, "window": 3600} 
 )
-def get_team_invoice_history(arg_email=None):
+def get_team_invoice_history(arg_email=None, limit=None, offset=0, include_items=True):
+    """
+    API tối ưu để lấy lịch sử invoice với pagination và tùy chọn include items
+    
+    Args:
+        arg_email (str): Email của user để tìm team
+        limit (int): Số lượng invoice tối đa trả về (mặc định: không giới hạn)
+        offset (int): Số invoice bỏ qua (mặc định: 0)
+        include_items (bool): Có bao gồm items không (mặc định: True)
+    """
     try:
+        # Validate parameters
+        try:
+            if limit is not None:
+                limit = int(limit)
+                if limit <= 0 or limit > 1000:  # Max 1000 records per request
+                    limit = 100
+            offset = int(offset)
+            if offset < 0:
+                offset = 0
+        except (ValueError, TypeError):
+            limit = 100
+            offset = 0
+
         # Xác định team
         if arg_email:
             target_team = get_current_team_v2(arg_email, get_doc=False)
@@ -1845,44 +1871,216 @@ def get_team_invoice_history(arg_email=None):
         else:
             return {
                 "success": False,
-                "message": "Cần cung cấp arg_email hoặc team_name"
+                "message": "Cần cung cấp arg_email"
             }
 
-        # Lấy danh sách invoice đã thanh toán hoặc đã hủy
-        invoices = frappe.db.sql("""
-            SELECT 
-                name,
-                amount_due_with_tax,
-                period_start,
-                period_end,
-                payos_order_code,
-                status,
-                payment_mode,
-                creation
-            FROM `tabInvoice`
-            WHERE team = %(team)s 
-            AND status IN ('Paid', 'Cancelled')
-            ORDER BY creation DESC
-        """, {"team": target_team}, as_dict=True)
+        # Tối ưu: Sử dụng JOIN để lấy invoice và items trong một query duy nhất
+        if include_items:
+            # Query với JOIN để lấy cả invoice và items
+            query = """
+                SELECT 
+                    i.name,
+                    i.amount_due_with_tax,
+                    i.period_start,
+                    i.period_end,
+                    i.payos_order_code,
+                    i.status,
+                    i.payment_mode,
+                    i.payos_checkout_url,
+                    i.payos_qr_code,
+                    i.payos_status,
+                    i.payos_payment_link_id,
+                    i.payos_transaction_ref,
+                    i.payos_transaction_datetime,
+                    i.creation,
+                    i.modified,
+                    i.total,
+                    i.currency,
+                    i.customer_name,
+                    i.customer_email,
+                    i.billing_email,
+                    i.payment_date,
+                    i.due_date,
+                    ii.idx,
+                    ii.description,
+                    ii.quantity,
+                    ii.rate,
+                    ii.amount,
+                    ii.document_type,
+                    ii.document_name,
+                    ii.creation as item_creation,
+                    ii.modified as item_modified
+                FROM `tabInvoice` i
+                LEFT JOIN `tabInvoice Item` ii ON i.name = ii.parent
+                WHERE i.team = %(team)s 
+                ORDER BY i.creation DESC, ii.idx ASC
+            """
+            
+            if limit:
+                query += f" LIMIT {limit} OFFSET {offset}"
+            
+            results = frappe.db.sql(query, {"team": target_team}, as_dict=True)
+            
+            # Cache VAT percentage
+            default_vat = frappe.db.get_single_value("Press Settings", "vat_percentage") or 0
+            
+            # Process results efficiently
+            invoices = {}
+            total_amount = 0.0
+            total_items_count = 0
+            
+            for row in results:
+                invoice_name = row.get("name")
+                
+                if invoice_name not in invoices:
+                    # Initialize invoice data
+                    amount_due = float(row.get("amount_due_with_tax", 0) or 0)
+                    total_amount += amount_due
+                    
+                    invoices[invoice_name] = {
+                        "invoice_name": invoice_name,
+                        "amount_due_with_tax": amount_due,
+                        "total": float(row.get("total", 0) or 0),
+                        "currency": row.get("currency", "VND"),
+                        "period_start": str(row.get("period_start", "") or ""),
+                        "period_end": str(row.get("period_end", "") or ""),
+                        "due_date": row.get("due_date"),
+                        "payment_date": row.get("payment_date"),
+                        "customer_name": row.get("customer_name", ""),
+                        "customer_email": row.get("customer_email", ""),
+                        "billing_email": row.get("billing_email", ""),
+                        "payos_order_code": row.get("payos_order_code", ""),
+                        "status": row.get("status", ""),
+                        "payment_mode": row.get("payment_mode", ""),
+                        "payos_checkout_url": row.get("payos_checkout_url", ""),
+                        "payos_qr_code": row.get("payos_qr_code", ""),
+                        "payos_status": row.get("payos_status", ""),
+                        "payos_payment_link_id": row.get("payos_payment_link_id", ""),
+                        "payos_transaction_ref": row.get("payos_transaction_ref", ""),
+                        "payos_transaction_datetime": row.get("payos_transaction_datetime", ""),
+                        "creation": row.get("creation"),
+                        "modified": row.get("modified"),
+                        "items": [],
+                        "items_count": 0
+                    }
+                
+                # Add item if exists
+                if row.get("idx") is not None:
+                    item_data = {
+                        "idx": row.get("idx"),
+                        "description": row.get("description", ""),
+                        "quantity": float(row.get("quantity", 0) or 0),
+                        "rate": float(row.get("rate", 0) or 0),
+                        "amount": float(row.get("amount", 0) or 0),
+                        "document_type": row.get("document_type", ""),
+                        "document_name": row.get("document_name", ""),
+                        "creation": row.get("item_creation"),
+                        "modified": row.get("item_modified"),
+                        "vat_percentage": default_vat
+                    }
+                    invoices[invoice_name]["items"].append(item_data)
+                    invoices[invoice_name]["items_count"] += 1
+                    total_items_count += 1
+            
+            result_invoices = list(invoices.values())
+            
+        else:
+            # Query chỉ lấy invoice (không có items) - nhanh hơn nhiều
+            query = """
+                SELECT 
+                    name,
+                    amount_due_with_tax,
+                    period_start,
+                    period_end,
+                    payos_order_code,
+                    status,
+                    payment_mode,
+                    payos_checkout_url,
+                    payos_qr_code,
+                    payos_status,
+                    payos_payment_link_id,
+                    payos_transaction_ref,
+                    payos_transaction_datetime,
+                    creation,
+                    modified,
+                    total,
+                    currency,
+                    customer_name,
+                    customer_email,
+                    billing_email,
+                    payment_date,
+                    due_date
+                FROM `tabInvoice`
+                WHERE team = %(team)s 
+                ORDER BY creation DESC
+            """
+            
+            if limit:
+                query += f" LIMIT {limit} OFFSET {offset}"
+            
+            invoices = frappe.db.sql(query, {"team": target_team}, as_dict=True)
+            
+            # Process invoices without items
+            result_invoices = []
+            total_amount = 0.0
+            
+            for invoice in invoices:
+                amount_due = float(invoice.get("amount_due_with_tax", 0) or 0)
+                total_amount += amount_due
+                
+                result_invoices.append({
+                    "invoice_name": invoice.get("name"),
+                    "amount_due_with_tax": amount_due,
+                    "total": float(invoice.get("total", 0) or 0),
+                    "currency": invoice.get("currency", "VND"),
+                    "period_start": str(invoice.get("period_start", "") or ""),
+                    "period_end": str(invoice.get("period_end", "") or ""),
+                    "due_date": invoice.get("due_date"),
+                    "payment_date": invoice.get("payment_date"),
+                    "customer_name": invoice.get("customer_name", ""),
+                    "customer_email": invoice.get("customer_email", ""),
+                    "billing_email": invoice.get("billing_email", ""),
+                    "payos_order_code": invoice.get("payos_order_code", ""),
+                    "status": invoice.get("status", ""),
+                    "payment_mode": invoice.get("payment_mode", ""),
+                    "payos_checkout_url": invoice.get("payos_checkout_url", ""),
+                    "payos_qr_code": invoice.get("payos_qr_code", ""),
+                    "payos_status": invoice.get("payos_status", ""),
+                    "payos_payment_link_id": invoice.get("payos_payment_link_id", ""),
+                    "payos_transaction_ref": invoice.get("payos_transaction_ref", ""),
+                    "payos_transaction_datetime": invoice.get("payos_transaction_datetime", ""),
+                    "creation": invoice.get("creation"),
+                    "modified": invoice.get("modified"),
+                    "items": [],
+                    "items_count": 0
+                })
+            
+            total_items_count = 0
 
-        # Xử lý dữ liệu trả về
-        result_invoices = []
-        for invoice in invoices:
-            result_invoices.append({
-                "invoice_name": invoice.get("name"),
-                "amount_due_with_tax": float(invoice.get("amount_due_with_tax", 0) or 0),
-                "period_start": str(invoice.get("period_start", "") or ""),
-                "period_end": str(invoice.get("period_end", "") or ""),
-                "payos_order_code": invoice.get("payos_order_code", ""),
-                "status": invoice.get("status", ""),
-                "payment_mode": invoice.get("payment_mode", ""),
-                "creation": invoice.get("creation")
-            })
+        # Get total count for pagination
+        total_count = frappe.db.count("Invoice", filters={"team": target_team})
+        
         return {
             "success": True,
-            "message": f"Lấy thành công {len(result_invoices)} invoice",
+            "message": f"Lấy thành công {len(result_invoices)} invoice với {total_items_count} items",
             "data": result_invoices,
-            "team": target_team
+            "pagination": {
+                "current_page": (offset // (limit or 100)) + 1 if limit else 1,
+                "total_pages": (total_count + (limit or 100) - 1) // (limit or 100) if limit else 1,
+                "total_count": total_count,
+                "limit": limit,
+                "offset": offset,
+                "has_next": limit and (offset + limit) < total_count,
+                "has_prev": offset > 0
+            },
+            "summary": {
+                "total_invoices": len(result_invoices),
+                "total_items": total_items_count,
+                "total_amount": round(total_amount, 2),
+                "average_amount_per_invoice": round(total_amount / len(result_invoices), 2) if result_invoices else 0
+            },
+            "team": target_team,
+            "include_items": include_items
         }
 
     except Exception as e:
@@ -1967,3 +2165,1069 @@ def get_order_status(arg_email=None, invoice_id=None):
             "message": f"An error occurred while fetching order status: {str(e)}",
             "error_code": "ORDER_STATUS_ERROR"
         }
+
+
+def get_invoice_items_batch(invoice_names):
+    """
+    Lấy tất cả items của nhiều invoices cùng lúc để tránh N+1 queries
+    
+    Args:
+        invoice_names (list): Danh sách tên các invoices
+    
+    Returns:
+        dict: Dictionary với key là invoice name, value là list items
+    """
+    if not invoice_names:
+        return {}
+    
+    # Lấy tất cả items của các invoices trong một query duy nhất
+    all_items = frappe.get_all(
+        "Invoice Item",
+        filters={"parent": ["in", invoice_names]},
+        fields=[
+            "parent",  # Tên invoice
+            "description",
+            "quantity", 
+            "rate",
+            "amount",
+            "document_type",
+            "document_name"
+        ],
+        order_by="parent, idx"  
+    )
+    
+    # Nhóm items theo invoice
+    items_by_invoice = {}
+    for item in all_items:
+        invoice_name = item.get("parent")
+        if invoice_name not in items_by_invoice:
+            items_by_invoice[invoice_name] = []
+        
+        # Loại bỏ field 'parent' khỏi item data
+        item_data = {k: v for k, v in item.items() if k != "parent"}
+        items_by_invoice[invoice_name].append(item_data)
+    
+    # Đảm bảo mọi invoice đều có mảng items (rỗng nếu không có)
+    for invoice_name in invoice_names:
+        if invoice_name not in items_by_invoice:
+            items_by_invoice[invoice_name] = []
+    
+    return items_by_invoice
+
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 100, "window": 3600} 
+)
+def get_team_item_invoices(arg_email=None):
+    """
+    API để lấy tất cả items của các invoices có cùng team
+    
+    Args:
+        arg_email (str): Email của user để tìm team
+    
+    Returns:
+        dict: Mảng chứa tất cả items của các invoices có cùng team
+    """
+    try:
+        if arg_email:
+            target_team = get_current_team_v2(arg_email, get_doc=False)
+            if not target_team:
+                return {
+                    "success": False,
+                    "message": "Không tìm thấy team cho user này"
+                }
+        else:
+            return {
+                "success": False,
+                "message": "Cần cung cấp arg_email"
+            }
+
+        # Lấy danh sách tất cả invoices của team với thông tin cần thiết
+        all_invoices = frappe.get_all(
+            "Invoice",
+            filters={
+                "team": target_team,
+                "docstatus": ["!=", 2]  # Chỉ loại bỏ invoices đã bị xóa
+            },
+            fields=["name", "period_start", "period_end", "due_date"],
+            order_by="creation desc"
+        )
+        
+        if not all_invoices:
+            return {
+                "success": True,
+                "message": "Không có invoice nào được tìm thấy",
+                "data": [],
+                "total_items": 0,
+                "total_amount": 0.0,
+                "team": target_team
+            }
+        
+        # Tạo dictionary để map invoice name với thông tin invoice
+        invoice_info_map = {}
+        for invoice in all_invoices:
+            invoice_info_map[invoice.name] = {
+                "period_start": invoice.period_start,
+                "period_end": invoice.period_end,
+                "due_date": invoice.due_date,
+                "vat_percentage" : invoice.vat_percentage
+            }
+        
+        # Lấy tên các invoices
+        invoice_names = [invoice.name for invoice in all_invoices]
+        
+        # Lấy vat trong setting hệ thống 
+        default_vat = frappe.db.get_single_value("Press Settings", "vat_percentage")
+        # Lấy tất cả items của các invoices này
+        all_items = frappe.get_all(
+            "Invoice Item",
+            filters={"parent": ["in", invoice_names]},
+            fields=[
+                "parent as invoice_name",
+                "idx",
+                "description",
+                "quantity", 
+                "rate",
+                "amount",
+                "document_type",
+                "document_name",
+                "creation",
+                "modified"
+            ],
+            order_by="parent, idx"
+        )
+        
+        # Xử lý dữ liệu items và tính tổng tiền
+        processed_items = []
+        total_amount = 0.0
+        
+        for item in all_items:
+            invoice_name = item.get("invoice_name", "")
+            
+            # sum tổng tiền trước thuế
+            item_amount = float(item.get("amount", 0) or 0)
+            total_amount += item_amount
+            
+            # Lấy thông tin invoice từ map
+            invoice_info = invoice_info_map.get(invoice_name, {})
+            
+            processed_item = {
+                "invoice_name": invoice_name,
+                "item_index": item.get("idx", 0),
+                "description": item.get("description", ""),
+                "quantity": float(item.get("quantity", 0) or 0),
+                "rate": float(item.get("rate", 0) or 0),
+                "amount": item_amount,
+                "document_type": item.get("document_type", ""),
+                "document_name": item.get("document_name", ""),
+                "creation": item.get("creation"),
+                "modified": item.get("modified"),
+                # Thông tin từ invoice
+                "period_start": invoice_info.get("period_start"),
+                "period_end": invoice_info.get("period_end"),
+                "due_date": invoice_info.get("due_date"),
+            }
+            processed_items.append(processed_item)
+        
+        return {
+            "success": True,
+            "message": f"Lấy thành công {len(processed_items)} items từ {len(all_invoices)} invoices",
+            "data": processed_items,
+            "total_items": len(processed_items),
+            "total_invoices": len(all_invoices),
+            "total_amount": round(total_amount, 2),
+            "total_amount_due_with_tax": round(total_amount * (1 + (default_vat or 0) / 100), 2),
+            "team": target_team
+        }
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Error in get_team_item_invoices")
+        return {
+            "success": False,
+            "message": f"Lỗi khi lấy dữ liệu: {str(e)}"
+        }
+
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 100, "window": 3600} 
+)
+def check_dns_status(site_name=None, domain=None, arg_email=None):
+    """
+    REST API để check DNS status cho một domain
+    Sử dụng hàm check_dns có sẵn từ site.py để tối ưu code
+    
+    Args:
+        site_name (str): Tên site (subdomain)
+        domain (str): Domain cần check
+        arg_email (str): Email của user (optional, để validate quyền truy cập)
+    
+    Returns:
+        dict: Kết quả check DNS với các thông tin chi tiết
+    """
+    try:
+        # Validate input parameters
+        if not site_name or not domain:
+            return {
+                "success": False,
+                "message": "Missing required parameters: site_name and domain",
+                "error_code": "MISSING_PARAMETERS"
+            }
+        
+        # Validate email nếu được cung cấp
+        if arg_email:
+            team = get_current_team_v2(arg_email, get_doc=False)
+            if not team:
+                return {
+                    "success": False,
+                    "message": "Invalid email or user not found",
+                    "error_code": "INVALID_USER"
+                }
+        
+        # Log request để debug
+        frappe.logger().info(f"🔍 DNS Check Request - Site: {site_name}, Domain: {domain}, Email: {arg_email}")
+        # Thực hiện check DNS bằng hàm có sẵn từ site.py
+        dns_result = check_dns_cname_a(site_name, domain)
+        
+        # Format kết quả trả về - tối ưu: tính toán trực tiếp từ dns_result
+        cname = dns_result.get("CNAME", {})
+        a_record = dns_result.get("A", {})
+        
+        # Tính toán recommendations trực tiếp
+        recommendations = []
+        if not cname.get("exists"):
+            recommendations.append("CNAME record does not exist for this domain")
+        elif not cname.get("matched"):
+            recommendations.append("CNAME record exists but does not point to the correct site")
+        
+        if not a_record.get("exists"):
+            recommendations.append("A record does not exist for this domain")
+        elif not a_record.get("matched"):
+            recommendations.append("A record exists but does not point to the correct IP address")
+        
+        if cname.get("matched") and a_record.get("exists") and not a_record.get("matched"):
+            recommendations.append("Remove conflicting A record as CNAME is correctly configured")
+        
+        if a_record.get("matched") and cname.get("exists") and not cname.get("matched"):
+            recommendations.append("Remove conflicting CNAME record as A record is correctly configured")
+        
+        if not recommendations:
+            recommendations.append("DNS configuration looks good!")
+        
+        formatted_result = {
+            "success": True,
+            "site_name": site_name,
+            "domain": domain,
+            "dns_status": {
+                "overall_status": "valid" if dns_result.get("matched", False) else "invalid",
+                "cname_record": {
+                    "exists": cname.get("exists", False),
+                    "matched": cname.get("matched", False),
+                    "answer": cname.get("answer", ""),
+                    "type": cname.get("type", "CNAME")
+                },
+                "a_record": {
+                    "exists": a_record.get("exists", False),
+                    "matched": a_record.get("matched", False),
+                    "answer": a_record.get("answer", ""),
+                    "type": a_record.get("type", "A")
+                }
+            },
+            "recommendations": recommendations,
+            "timestamp": frappe.utils.now_datetime().isoformat()
+        }
+        
+        frappe.logger().info(f"✅ DNS Check Completed - Site: {site_name}, Domain: {domain}")
+        return formatted_result
+        
+    except Exception as e:
+        frappe.logger().error(f"❌ DNS Check Error - Site: {site_name}, Domain: {domain}, Error: {str(e)}")
+        return {
+            "success": False,
+            "message": f"DNS check failed: {str(e)}",
+            "error_code": "DNS_CHECK_ERROR",
+            "site_name": site_name,
+            "domain": domain
+        }
+
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 50, "window": 3600} 
+)
+def add_domain_to_site(site_name=None, domain=None, arg_email=None):
+    """
+    REST API để add domain vào site
+    Sử dụng hàm add_domain có sẵn từ site.py để tối ưu code
+    
+    Args:
+        site_name (str): Tên site (subdomain)
+        domain (str): Domain cần thêm vào site
+        arg_email (str): Email của user (optional, để validate quyền truy cập)
+    
+    Returns:
+        dict: Kết quả add domain
+    """
+    try:
+        # Validate input parameters
+        if not site_name or not domain:
+            return {
+                "success": False,
+                "message": "Missing required parameters: site_name and domain",
+                "error_code": "MISSING_PARAMETERS"
+            }
+        
+        # Validate email nếu được cung cấp
+        if arg_email:
+            team = frappe.db.get_all("Team", filters={"user": arg_email}, fields=["name"])
+            if not team:
+                return {
+                    "success": False,
+                    "message": "Invalid email or user not found",
+                    "error_code": "INVALID_USER"
+                }
+        
+        # Log request để debug
+        frappe.logger().info(f"🔗 Add Domain Request - Site: {site_name}, Domain: {domain}, Email: {arg_email}")
+        
+        # Kiểm tra site có tồn tại không
+        if not frappe.db.exists("Site", site_name):
+            return {
+                "success": False,
+                "message": f"Site {site_name} does not exist",
+                "error_code": "SITE_NOT_FOUND",
+                "site_name": site_name,
+                "domain": domain
+            }
+        
+        # Kiểm tra domain đã tồn tại chưa
+        if frappe.db.exists("Site Domain", domain.lower()):
+            return {
+                "success": False,
+                "message": f"Domain {domain} is already in use by another site",
+                "error_code": "DOMAIN_ALREADY_EXISTS",
+                "site_name": site_name,
+                "domain": domain
+            }
+        
+        # Import và gọi trực tiếp hàm add_domain logic từ site.py
+        # Tối ưu: Tái sử dụng logic có sẵn thay vì viết lại
+        # Bypass @protected decorator để cho phép public API access
+        
+        # Lấy site document
+        site_doc = frappe.get_doc("Site", site_name)
+        subdomain = getattr(site_doc, "subdomain", None)
+        product_trial = None
+        
+        # Thử lấy product_trial từ ProductTrialRequest nếu có
+        ptr = frappe.db.get_value("Product Trial Request", {"site": site_name}, "product_trial")
+        if ptr:
+            product_trial = ptr
+        else:
+            # Nếu không có, thử lấy từ site (nếu có custom field)
+            product_trial = getattr(site_doc, "product_trial", None)
+        
+        # Nếu là app đặc biệt, sửa lại domain cho đúng
+        if product_trial and subdomain:
+            from press.utils.domain import get_default_domain
+            product = frappe.get_doc("Product Trial", product_trial)
+            domain = get_default_domain(subdomain, product_trial, product.domain)
+        
+        # Thực hiện add domain bằng hàm có sẵn từ site document
+        site_doc.add_domain(domain)
+        
+        # Log success
+        frappe.logger().info(f"✅ Domain Added Successfully - Site: {site_name}, Domain: {domain}")
+        
+        return {
+            "success": True,
+            "message": f"Domain {domain} has been successfully added to site {site_name}",
+            "site_name": site_name,
+            "domain": domain,
+            "timestamp": frappe.utils.now_datetime().isoformat()
+        }
+        
+    except Exception as e:
+        frappe.logger().error(f"❌ Add Domain Error - Site: {site_name}, Domain: {domain}, Error: {str(e)}")
+        return {
+            "success": False,
+            "message": f"Failed to add domain: {str(e)}",
+            "error_code": "ADD_DOMAIN_ERROR",
+            "site_name": site_name,
+            "domain": domain
+        }
+
+
+@frappe.whitelist()
+def save_setup_wizard_language(lang_code=None):
+    """
+    API method để lưu ngôn ngữ cho setup wizard.
+    Tương thích với pattern mới - lưu trực tiếp vào System Settings.
+    """
+    if not lang_code:
+        lang_code = 'vi'  # Default to Vietnamese
+    
+    # Ghi log để debug
+    frappe.logger().info(f"🔄 save_setup_wizard_language called with: {lang_code}")
+    
+    try:
+        # Convert language code to language name that setup wizard expects
+        language_name_mapping = {
+            'vi': 'Việt',           # Setup wizard expects 'Việt' for Vietnamese
+            'en': 'English',        # Setup wizard expects 'English' for English
+        }
+        
+        language_name = language_name_mapping.get(lang_code, lang_code)
+        frappe.logger().info(f"📝 Converting language code '{lang_code}' to name '{language_name}'")
+        
+        # Cập nhật System Settings với ngôn ngữ đã chọn
+        system_settings = frappe.get_doc("System Settings", "System Settings")
+        system_settings.language = language_name  # Use language name, not code
+        system_settings.save(ignore_permissions=True)
+        
+        # Đảm bảo thay đổi được commit
+        frappe.db.commit()
+        frappe.logger().info(f"✅ Successfully saved language '{language_name}' to System Settings")
+        
+        # Trả về kết quả thành công
+        return {
+            "status": "success", 
+            "message": f"Language {language_name} saved to System Settings",
+            "language_code": lang_code,
+            "language_name": language_name
+        }
+    except Exception as e:
+        frappe.logger().error(f"❌ Error saving language to System Settings: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 100, "window": 3600} 
+)
+def get_site_domains(site_name=None, arg_email=None):
+    """
+    REST API để lấy danh sách domains của site
+    Trả về các bản ghi từ doctype Site Domain với filter theo site
+    
+    Args:
+        site_name (str): Tên site (bắt buộc)
+        arg_email (str): Email của user (optional, để validate quyền truy cập)
+        include_details (bool): Có bao gồm thông tin chi tiết không (optional, default: False)
+    
+    Returns:
+        dict: Danh sách domains của site
+    """
+    try:
+        # Validate input parameters
+        if not site_name:
+            return {
+                "success": False,
+                "message": "Missing required parameter: site_name",
+                "error_code": "MISSING_SITE_NAME"
+            }
+        
+        # Validate email nếu được cung cấp
+        if arg_email:
+            team = get_current_team_v2(arg_email, get_doc=False)
+            if not team:
+                return {
+                    "success": False,
+                    "message": "Invalid email or user not found",
+                    "error_code": "INVALID_USER"
+                }
+
+        # Kiểm tra site có tồn tại không
+        if not frappe.db.exists("Site", site_name):
+            return {
+                "success": False,
+                "message": f"Site '{site_name}' does not exist",
+                "error_code": "SITE_NOT_FOUND",
+                "site_name": site_name
+            }
+        
+        # Lấy thông tin host name của site
+        host_name = frappe.db.get_value("Site", site_name, "host_name")
+        
+        # Xác định fields cần lấy
+        fields = [ "name", "domain", "status", "dns_type", "redirect_to_primary" ]
+        
+        # Lấy danh sách domains của site
+        domains = frappe.get_all(
+            "Site Domain",
+            fields=fields,
+            filters={"site": site_name},
+            order_by="creation desc"
+        )
+        
+        # Thêm thông tin primary domain
+        for domain in domains:
+            domain["is_primary"] = domain["domain"] == host_name
+            domain["redirect_to"] = host_name if domain["redirect_to_primary"] else None
+        
+        # Sắp xếp lại: primary domain lên đầu
+        domains.sort(key=lambda x: not x["is_primary"])
+        
+        return {
+            "success": True,
+            "message": f"Retrieved domains for site '{site_name}'",
+            "domains": domains,
+        }
+        
+    except Exception as e:
+        return {
+            "success": False,
+            "message": f"Failed to get site domains: {str(e)}",
+            "error_code": "GET_SITE_DOMAINS_ERROR",
+            "site_name": site_name
+        }
+
+@frappe.whitelist()
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 50, "window": 3600} 
+)
+def check_unpaid_invoices_and_notify(arg_email=None, request_type=None, site_name=None):
+    """
+    REST API để kiểm tra hóa đơn chưa thanh toán và gửi thông báo cho admin
+    
+    Args:
+        arg_email (str): Email của user để kiểm tra hóa đơn
+        request_type (str): Loại yêu cầu - 'stop_site' hoặc 'delete_site' (optional)
+        site_name (str): Tên site liên quan đến yêu cầu (optional, required khi có request_type)
+        
+    Returns:
+        dict: Kết quả kiểm tra và thông báo
+    """
+    try:
+        # Validate input parameters
+        validation_result = _validate_input_parameters(arg_email, request_type, site_name)
+        if not validation_result['valid']:
+            return validation_result['response']
+        
+        # Log request để debug
+        frappe.logger().info(f"💰 Checking unpaid invoices for user: {arg_email}, request_type: {request_type}, site: {site_name}")
+        
+        # Lấy team từ email
+        team = get_current_team_v2(arg_email, get_doc=False)
+        if not team:
+            return {
+                "success": False,
+                "message": "User not found or not associated with any team",
+                "error_code": "USER_NOT_FOUND",
+                "email": arg_email
+            }
+        
+        # Kiểm tra hóa đơn chưa thanh toán
+        unpaid_invoices = _get_unpaid_invoices(team)
+        
+        # Nếu có hóa đơn chưa thanh toán
+        if unpaid_invoices:
+            return _create_unpaid_invoices_response(arg_email, team, unpaid_invoices)
+        
+        # Nếu không có hóa đơn chưa thanh toán, gửi thông báo cho admin
+        return _create_success_response_and_notify_admin(arg_email, team, request_type, site_name)
+        
+    except Exception as e:
+        frappe.logger().error(f"❌ Check unpaid invoices error for {arg_email}: {str(e)}")
+        return {
+            "success": False,
+            "message": f"Failed to check unpaid invoices: {str(e)}",
+            "error_code": "CHECK_INVOICES_ERROR",
+            "email": arg_email
+        }
+
+def _validate_input_parameters(arg_email, request_type, site_name):
+    """Validate input parameters"""
+    import re
+    
+    # Validate email
+    if not arg_email:
+        return {
+            'valid': False,
+            'response': {
+                "success": False,
+                "message": "Missing required parameter: arg_email",
+                "error_code": "MISSING_EMAIL"
+            }
+        }
+    
+    # Validate email format
+    if not re.match(EMAIL_PATTERN, arg_email):
+        return {
+            'valid': False,
+            'response': {
+                "success": False,
+                "message": "Invalid email format",
+                "error_code": "INVALID_EMAIL_FORMAT"
+            }
+        }
+    
+    # Validate request_type nếu được cung cấp
+    if request_type and request_type not in VALID_REQUEST_TYPES:
+        return {
+            'valid': False,
+            'response': {
+                "success": False,
+                "message": "Invalid request_type. Must be 'stop_site' or 'delete_site'",
+                "error_code": "INVALID_REQUEST_TYPE"
+            }
+        }
+    
+    # Validate site_name nếu có request_type
+    if request_type and not site_name:
+        return {
+            'valid': False,
+            'response': {
+                "success": False,
+                "message": "Missing required parameter: site_name when request_type is provided",
+                "error_code": "MISSING_SITE_NAME"
+            }
+        }
+    
+    return {'valid': True}
+
+def _get_unpaid_invoices(team):
+    """Get unpaid invoices for a team"""
+    return frappe.db.get_all(
+        "Invoice",
+        filters={
+            "team": team,
+            "status": ["in", ["Unpaid", "Invoice Created","Draft"]],
+            "amount_due": [">", 0]
+        },
+        fields=[
+            "name", 
+            "total", 
+            "amount_due", 
+            "due_date", 
+            "creation",
+            "type",
+            "status"
+        ],
+        order_by="due_date asc"
+    )
+
+def _create_unpaid_invoices_response(arg_email, team, unpaid_invoices):
+    """Create response for unpaid invoices case"""
+    total_unpaid_amount = sum(invoice.amount_due for invoice in unpaid_invoices)
+    oldest_due_date = min(invoice.due_date for invoice in unpaid_invoices if invoice.due_date)
+    
+    # Tạo thông báo cho user
+    user_message = f"Bạn còn {len(unpaid_invoices)} hóa đơn chưa thanh toán với tổng số tiền {frappe.utils.fmt_money(total_unpaid_amount)}. "
+    if oldest_due_date:
+        user_message += f"Hóa đơn cũ nhất đến hạn vào {frappe.utils.formatdate(oldest_due_date)}."
+    
+    frappe.logger().info(f"❌ Unpaid invoices found for {arg_email}: {len(unpaid_invoices)} invoices, total: {total_unpaid_amount}")
+    
+    return {
+        "success": False,
+        "message": user_message,
+        "error_code": "UNPAID_INVOICES_FOUND",
+        "email": arg_email,
+        "team": team,
+        "unpaid_invoices_count": len(unpaid_invoices),
+        "total_unpaid_amount": total_unpaid_amount,
+        "oldest_due_date": oldest_due_date.isoformat() if oldest_due_date else None,
+        "invoices": [
+            {
+                "name": invoice.name,
+                "total": invoice.total,
+                "amount_due": invoice.amount_due,
+                "due_date": invoice.due_date.isoformat() if invoice.due_date else None,
+                "type": invoice.type,
+                "status": invoice.status
+            }
+            for invoice in unpaid_invoices
+        ]
+    }
+
+def _create_success_response_and_notify_admin(arg_email, team, request_type, site_name):
+    """Create success response and notify admin"""
+    frappe.logger().info(f"✅ No unpaid invoices found for {arg_email}, sending notification to admin")
+    
+    # Lấy thông tin user/team để tạo thông báo chi tiết
+    team_doc = get_current_team_v2(arg_email, get_doc=True)
+    user_info = frappe.db.get_value("User", arg_email, ["full_name", "enabled"], as_dict=True)
+    
+    # Tạo thông báo cho admin dựa trên loại yêu cầu
+    notification_data = _create_notification_data(arg_email, team_doc, user_info, request_type, site_name)
+    
+    # Tạo Press Notification cho admin
+    notifications_created = _create_admin_notifications(notification_data,arg_email)
+    
+    return {
+        "success": True,
+        "message": "Payment status check completed successfully. No unpaid invoices found.",
+        "email": arg_email,
+        "team": team,
+        "request_type": request_type,
+        "site_name": site_name,
+        "unpaid_invoices_count": 0,
+        "total_unpaid_amount": 0,
+        "notifications_sent": len(notifications_created),
+        "admin_notified": notifications_created,
+        "timestamp": frappe.utils.now_datetime().isoformat()
+    }
+
+def _create_notification_data(arg_email, team_doc, user_info, request_type, site_name):
+    """Create notification data based on request type"""
+    if request_type == 'stop_site':
+        return {
+            'title': f"User Request: Stop Site - {site_name}",
+            'message': f"""
+            User {arg_email} ({user_info.get('full_name', 'N/A')}) has requested to STOP site: {site_name}
+            Team: {team_doc.name if team_doc else 'N/A'}
+            Team Country: {team_doc.country if team_doc else 'N/A'}
+            User Status: {'Active' if user_info.get('enabled') else 'Inactive'}
+            Site Name: {site_name}
+            ✅ No unpaid invoices found - User is eligible for site stop request.
+            Request Time: {frappe.utils.now_datetime().strftime('%Y-%m-%d %H:%M:%S')}
+            """.strip()
+        }
+    elif request_type == 'delete_site':
+        return {
+            'title': f"User Request: Delete Site - {site_name}",
+            'message': f"""
+            User {arg_email} ({user_info.get('full_name', 'N/A')}) has requested to DELETE site: {site_name}
+            Team: {team_doc.name if team_doc else 'N/A'}
+            Team Country: {team_doc.country if team_doc else 'N/A'}
+            User Status: {'Active' if user_info.get('enabled') else 'Inactive'}
+            Site Name: {site_name}
+            ✅ No unpaid invoices found - User is eligible for site deletion request.
+            Request Time: {frappe.utils.now_datetime().strftime('%Y-%m-%d %H:%M:%S')}
+            """.strip()
+        }
+    else:
+        # Thông báo mặc định cho payment status check
+        return {
+            'title': f"User Payment Status Check: {arg_email}",
+            'message': f"""
+            User {arg_email} ({user_info.get('full_name', 'N/A')}) has checked their payment status.
+            Team: {team_doc.name if team_doc else 'N/A'}
+            Team Country: {team_doc.country if team_doc else 'N/A'}
+            User Status: {'Active' if user_info.get('enabled') else 'Inactive'}
+            ✅ No unpaid invoices found - User is in good standing.
+            Check Time: {frappe.utils.now_datetime().strftime('%Y-%m-%d %H:%M:%S')}
+            """.strip()
+        }
+
+def _create_admin_notifications(notification_data,arg_email):
+    """Create notifications for admin users"""
+    notifications_created = []
+    
+    # Tìm admin users hoặc system administrators
+    admin_users = frappe.db.get_all(
+        "User",
+        filters={
+            "enabled": 1,
+            "name": ["in", ADMIN_USERS]
+        },
+        fields=["name"]
+    )
+    
+    for admin_user in admin_users:
+        try:
+            # Lấy team của admin
+            admin_team = get_current_team_v2(admin_user.name, get_doc=False)
+            if admin_team:
+                # Tạo notification
+                notification_doc = frappe.get_doc({
+                    "doctype": "Press Notification",
+                    "team": admin_team,
+                    "type": "Info",
+                    "title": notification_data['title'],
+                    "message": notification_data['message'],
+                    "read": 0,
+                    "is_addressed": 0,
+                    "is_actionable": 0,
+                    "document_type": "User",
+                    "document_name": arg_email
+                })
+                notification_doc.insert(ignore_permissions=True)
+                notifications_created.append(admin_user.name)
+                
+                frappe.logger().info(f"📢 Notification sent to admin: {admin_user.name}")
+        except Exception as e:
+            frappe.logger().error(f"❌ Failed to create notification for admin {admin_user.name}: {str(e)}")
+    
+    # Nếu không tìm thấy admin users, tạo notification cho system
+    if not notifications_created:
+        try:
+            # Tạo notification cho system team hoặc default team
+            system_team = frappe.db.get_value("Team", {"name": "Administrator"}, "name") or "Administrator"
+            
+            notification_doc = frappe.get_doc({
+                "doctype": "Press Notification",
+                "team": system_team,
+                "type": "Info",
+                "title": notification_data['title'],
+                "message": notification_data['message'],
+                "read": 0,
+                "is_addressed": 0,
+                "is_actionable": 0,
+                "document_type": "User",
+                "document_name": arg_email
+            })
+            notification_doc.insert(ignore_permissions=True)
+            notifications_created.append("System")
+            
+            frappe.logger().info(f"📢 System notification created for team: {system_team}")
+        except Exception as e:
+            frappe.logger().error(f"❌ Failed to create system notification: {str(e)}")
+
+            return notifications_created
+
+
+@frappe.whitelist(allow_guest=True)
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=False,  
+    rate_limit={"limit": 100, "window": 3600} 
+)
+def get_site_app_plan_limits(arg_email=None, arg_site=None):
+    """
+    REST API tối ưu để lấy thông tin giới hạn features của các app plans mà site đã đăng ký
+    
+    Tối ưu hiệu suất:
+    - Sử dụng 1 SQL query duy nhất thay vì multiple queries
+    - Batch processing cho limit features  
+    - Early return cho edge cases
+    
+    Args:
+        arg_email (str): Email của user để xác thực quyền truy cập
+        arg_site (str): Tên site cần lấy thông tin plan limits
+    
+    Returns:
+        dict: Thông tin limit features của các app plans đã đăng ký
+    """
+    try:
+        # Validate parameters with early return
+        validation_result = _validate_app_plan_params(arg_email, arg_site)
+        if not validation_result["valid"]:
+            return validation_result["response"]
+        
+        # Log request
+        frappe.logger().info(f"🎯 Getting app plan limits - Email: {arg_email}, Site: {arg_site}")
+        
+        # Get team and validate site access
+        team = get_current_team_v2(arg_email, get_doc=False)
+        if not team:
+            return _create_error_response("USER_NOT_FOUND", "User not found or not associated with any team", arg_email)
+        
+        site_access_result = _validate_site_access(arg_site, team)
+        if not site_access_result["valid"]:
+            return site_access_result["response"]
+        
+        # Tối ưu: Sử dụng 1 SQL query để lấy tất cả dữ liệu cần thiết
+        app_plan_data = _get_subscribed_app_plans_optimized(arg_site, team)
+        
+        if not app_plan_data:
+            return _create_success_response_empty(arg_site, team)
+        
+        # Batch process limit features
+        plan_names = [row["plan_name"] for row in app_plan_data]
+        limit_features_map = _get_limit_features_batch(plan_names)
+        
+        # Process results efficiently
+        app_plan_limits = _process_app_plan_data(app_plan_data, limit_features_map)
+        
+        frappe.logger().info(f"✅ App plan limits retrieved - Site: {arg_site}, Subscribed Plans: {len(app_plan_limits)}")
+        
+        return _create_success_response(arg_site, team, arg_email, app_plan_limits)
+        
+    except Exception as e:
+        frappe.logger().error(f"❌ Get app plan limits error - Email: {arg_email}, Site: {arg_site}, Error: {str(e)}")
+        return _create_error_response("GET_APP_PLAN_LIMITS_ERROR", f"Failed to get app plan limits: {str(e)}", arg_email, arg_site)
+
+
+def _validate_app_plan_params(arg_email, arg_site):
+    """Validate input parameters with optimized checks"""
+    if not arg_email:
+        return {
+            "valid": False,
+            "response": _create_error_response("MISSING_EMAIL", "Missing required parameter: arg_email")
+        }
+    
+    if not arg_site:
+        return {
+            "valid": False,
+            "response": _create_error_response("MISSING_SITE", "Missing required parameter: arg_site")
+        }
+    
+    # Import regex once and reuse
+    import re
+    if not re.match(EMAIL_PATTERN, arg_email):
+        return {
+            "valid": False,
+            "response": _create_error_response("INVALID_EMAIL_FORMAT", "Invalid email format")
+        }
+    
+    return {"valid": True}
+
+
+def _validate_site_access(arg_site, team):
+    """Validate site exists and belongs to team"""
+    site_info = frappe.db.get_value("Site", arg_site, ["name", "team"], as_dict=True)
+    
+    if not site_info:
+        return {
+            "valid": False,
+            "response": _create_error_response("SITE_NOT_FOUND", f"Site '{arg_site}' not found", site=arg_site)
+        }
+    
+    if site_info.team != team:
+        return {
+            "valid": False,
+            "response": _create_error_response(
+                "ACCESS_DENIED", 
+                f"Site '{arg_site}' does not belong to user's team",
+                site=arg_site, user_team=team, site_team=site_info.team
+            )
+        }
+    
+    return {"valid": True}
+
+
+def _get_subscribed_app_plans_optimized(arg_site, team):
+    query = """
+        SELECT DISTINCT
+            sa.app as app_name,
+            ma.name as marketplace_app_name,
+            ma.title as marketplace_app_title,
+            ma.team as marketplace_app_team,
+            map.name as plan_name,
+            map.title as plan_title,
+            map.price_inr,
+            map.price_usd,
+            map.price_vnd
+        FROM `tabSite App` sa
+        INNER JOIN `tabMarketplace App` ma ON sa.app = ma.app
+        INNER JOIN `tabMarketplace App Plan` map ON ma.name = map.app
+        INNER JOIN `tabSubscription` sub ON map.name = sub.plan
+        WHERE sa.parent = %(site)s
+        AND sub.team = %(team)s
+        AND sub.enabled = 1
+        AND map.enabled = 1
+        ORDER BY sa.creation ASC, map.creation ASC
+    """
+    
+    return frappe.db.sql(query, {"site": arg_site, "team": team}, as_dict=True)
+
+
+def _get_limit_features_batch(plan_names):
+    """Batch lấy limit features cho tất cả plans cùng lúc"""
+    if not plan_names:
+        return {}
+    
+    # Lấy tất cả features trong 1 query
+    all_features = frappe.get_all(
+        "Plan Feature",
+        filters={"parent": ["in", plan_names]},
+        fields=["parent", "description", "quantity"],
+        order_by="parent, idx asc"
+    )
+    
+    # Group features theo plan
+    features_map = {}
+    for feature in all_features:
+        plan_name = feature["parent"]
+        if plan_name not in features_map:
+            features_map[plan_name] = []
+        
+        features_map[plan_name].append({
+            "description": feature["description"],
+            "quantity": feature["quantity"]
+        })
+    
+    return features_map
+
+
+def _process_app_plan_data(app_plan_data, limit_features_map):
+    app_plan_limits = []
+
+    for row in app_plan_data:
+        plan_name = row["plan_name"]
+        limit_features = limit_features_map.get(plan_name, [])
+        
+        plan_info = {
+            "app_name": row["app_name"],
+            "marketplace_app": {
+                "name": row["marketplace_app_name"],
+                "title": row["marketplace_app_title"],
+                "team": row["marketplace_app_team"]
+            },
+            "plan": {
+                "name": plan_name,
+                "title": row["plan_title"],
+                "price_inr": row["price_inr"],
+                "price_usd": row["price_usd"],
+                "price_vnd": row["price_vnd"],
+                "is_subscribed": True
+            },
+            "limit_features": limit_features,
+            "features_count": len(limit_features)
+        }
+        
+        app_plan_limits.append(plan_info)
+    
+    return app_plan_limits
+
+
+def _create_error_response(error_code, message, email=None, site=None, **kwargs):
+    response = {
+        "success": False,
+        "message": message,
+        "error_code": error_code
+    }
+    
+    if email:
+        response["email"] = email
+    if site:
+        response["site"] = site
+    
+    response.update(kwargs)
+    return response
+
+
+def _create_success_response_empty(arg_site, team):
+    """Utility để tạo success response khi không có apps"""
+    return {
+        "success": True,
+        "message": f"No subscribed apps found on site '{arg_site}'",
+        "site": arg_site,
+        "team": team,
+        "data": {
+            "app_plan_limits": [],
+            "total_subscribed_plans": 0,
+            "total_apps_with_subscriptions": 0
+        },
+        "timestamp": frappe.utils.now_datetime().isoformat()
+    }
+
+
+def _create_success_response(arg_site, team, arg_email, app_plan_limits):
+    """Utility để tạo success response"""
+    return {
+        "success": True,
+        "message": f"App plan limits retrieved successfully for site '{arg_site}' - found {len(app_plan_limits)} subscribed plans",
+        "site": arg_site,
+        "team": team,
+        "email": arg_email,
+        "data": {
+            "app_plan_limits": app_plan_limits,
+            "total_subscribed_plans": len(app_plan_limits),
+            "total_apps_with_subscriptions": len(set(plan["app_name"] for plan in app_plan_limits))
+        },
+        "timestamp": frappe.utils.now_datetime().isoformat()
+    }
+

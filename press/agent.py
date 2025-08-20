@@ -135,6 +135,20 @@ class Agent:
 		if create_user:
 			data["create_user"] = create_user
 
+		# ✅ QUAN TRỌNG: Set ngôn ngữ cho user admin của site
+		# Setup wizard lấy ngôn ngữ từ user admin, không phải user đăng ký
+		system_language = frappe.db.get_single_value("System Settings", "language")
+		if system_language:
+			# Convert language name to match what admin user expects
+			admin_language = system_language
+			if system_language in ['Việt', 'Vietnamese', 'Tiếng Việt']:
+				admin_language = 'Việt'  # Setup wizard expects 'Việt'
+			elif system_language in ['English', 'en']:
+				admin_language = 'English'
+			
+			# Add admin language to site creation data
+			data["admin_language"] = admin_language
+
 		return self.create_agent_job(
 			"New Site", f"benches/{site.bench}/sites", data, bench=site.bench, site=site.name
 		)
