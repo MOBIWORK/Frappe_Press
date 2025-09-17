@@ -3230,4 +3230,753 @@ def _create_success_response(arg_site, team, arg_email, app_plan_limits):
         },
         "timestamp": frappe.utils.now_datetime().isoformat()
     }
+@frappe.whitelist(allow_guest=True)
+def get_key_template():
+    """
+    API để lấy template cho login_id và password
+    """
+    try:
+        site_config = frappe.get_site_config()
+        login_id_template = site_config.get("login_id_template")
+        password_template = site_config.get("password_template")
 
+        return {
+            "login_id_template": login_id_template,
+            "password_template": password_template
+        }
+    except Exception as e:
+        frappe.log_error(f"Error getting site config: {str(e)}")
+
+@frappe.whitelist(allow_guest=True, methods=['POST'])
+@validate_api_request(
+    required_headers=['User-Agent'],
+    api_key_required=True,  # Require API key for security
+    rate_limit={"limit": 100, "window": 3600} 
+)
+def create_notification_request(site=None, status=None, type=None, description=None):
+    """
+    Public API để tạo MBW Notification Request từ hệ thống bên ngoài
+
+    Args:
+        site (str): Tên site (bắt buộc)
+        status (str): Trạng thái request - "Ongoing" hoặc "Done" (mặc định: "Ongoing")
+        type (str): Loại request - "Restore", "Drop site", "Deactivate site" (bắt buộc)
+        description (str): Mô tả chi tiết request (tùy chọn)
+    
+    Returns:
+        dict: Kết quả tạo notification request
+    """
+    try:
+        # Validate required parameters
+        if not site:
+            return {
+                "success": False,
+                "message": "Missing required parameter: site",
+                "error_code": "MISSING_SITE_PARAMETER"
+            }
+        
+        if not type:
+            return {
+                "success": False,
+                "message": "Missing required parameter: type",
+                "error_code": "MISSING_TYPE_PARAMETER"
+            }
+        
+        # Set default values
+        if not status:
+            status = "Ongoing"
+
+        # Validate enum values
+        valid_statuses = ["Ongoing", "Done"]
+        valid_types = ["Restore", "Drop site", "Deactivate site"]
+        
+        if status not in valid_statuses:
+            return {
+                "success": False,
+                "message": f"Invalid status. Must be one of: {', '.join(valid_statuses)}",
+                "error_code": "INVALID_STATUS"
+            }
+        
+        if type not in valid_types:
+            return {
+                "success": False,
+                "message": f"Invalid type. Must be one of: {', '.join(valid_types)}",
+                "error_code": "INVALID_TYPE"
+            }
+        
+        # Validate site exists in the system
+        if not frappe.db.exists("Site", site):
+            return {
+                "success": False,
+                "message": f"Site '{site}' not found in the system",
+                "error_code": "SITE_NOT_FOUND"
+            }
+        
+        # Check if there's already an ongoing request for this site and type
+        existing_request = frappe.db.exists("MBW Notification Request", {
+            "site": site,
+            "type": type,
+            "status": "Ongoing"
+        })
+        
+        if existing_request:
+            return {
+                "success": False,
+                "message": f"An ongoing request of type '{type}' already exists for site '{site}'",
+                "error_code": "DUPLICATE_ONGOING_REQUEST",
+                "existing_request": existing_request
+            }
+        
+        # Create the notification request
+        notification_doc = frappe.get_doc({
+            "doctype": "MBW Notification Request",
+            "site": site,
+            "status": status,
+            "type": type,
+            "description": description or f"External system request for {type.lower()} on site {site}"
+        })
+
+        # Insert the document
+        notification_doc.insert(ignore_permissions=True)
+        frappe.db.commit()
+            
+        return {
+            "success": True,
+            "message": f"Notification request created successfully for site '{site}'",
+            "data": {
+                "request_id": notification_doc.name,
+                "site": site,
+                "status": status,
+                "type": type,
+                "description": notification_doc.description,
+                "creation": notification_doc.creation.isoformat() if notification_doc.creation else None
+            },
+            "timestamp": frappe.utils.now_datetime().isoformat()
+        }
+            
+    except frappe.ValidationError as e:
+        return {
+            "success": False,
+            "message": f"Validation error: {str(e)}",
+            "error_code": "VALIDATION_ERROR"
+        }
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Error in create_notification_request API")
+        return {
+            "success": False,
+            "message": f"Failed to create notification request: {str(e)}",
+            "error_code": "CREATE_REQUEST_ERROR"
+        }
+
+@frappe.whitelist()
+@validate_api_request(
+	required_headers=['User-Agent'],
+	api_key_required=True,  # Require API key for security
+	rate_limit={"limit": 200, "window": 3600} 
+)
+def get_site_backups(site=None, limit=20, start=0):
+	"""
+	Public API để lấy danh sách Site Backups theo tên site với phân trang
+	
+	Args:
+		site (str): Tên site cần lấy danh sách backup (bắt buộc)
+		limit (int): Số lượng bản ghi tối đa (mặc định: 20, tối đa: 100)
+		start (int): Vị trí bắt đầu (mặc định: 0)
+	
+	Returns:
+		dict: Danh sách site backups với thông tin phân trang
+	"""
+	try:
+		# Validate required parameter
+		if not site:
+			return {
+				"success": False,
+				"message": "Missing required parameter: site",
+				"error_code": "MISSING_SITE_PARAMETER"
+			}
+		
+		# Validate and sanitize pagination parameters
+		try:
+			limit = int(limit)
+			start = int(start)
+			if limit <= 0 or limit > 100:
+				limit = 20
+			if start < 0:
+				start = 0
+		except (ValueError, TypeError):
+			limit = 20
+			start = 0
+		
+		# Lấy tổng số backup để tính pagination
+		total_count = frappe.db.count("Site Backup", filters={"site": site})
+		
+		# Lấy danh sách backup theo site name với phân trang
+		backups = frappe.get_all(
+			"Site Backup",
+			filters={"site": site},
+			fields="*",  # Lấy tất cả các trường
+			order_by="creation desc",
+			limit=limit,
+			start=start
+		)
+		
+		# Tính toán thông tin phân trang
+		has_next = (start + limit) < total_count
+		has_prev = start > 0
+		current_page = (start // limit) + 1
+		total_pages = (total_count + limit - 1) // limit
+		
+		return {
+			"success": True,
+			"message": f"Retrieved {len(backups)} site backups for site '{site}' (page {current_page} of {total_pages})",
+			"data": backups,
+			"pagination": {
+				"total_count": total_count,
+				"current_page": current_page,
+				"total_pages": total_pages,
+				"limit": limit,
+				"start": start,
+				"has_next": has_next,
+				"has_prev": has_prev,
+				"count_on_page": len(backups)
+			},
+			"site": site,
+			"timestamp": frappe.utils.now_datetime().isoformat()
+		}
+		
+	except Exception as e:
+		frappe.log_error(frappe.get_traceback(), "Error in get_site_backups API")
+		return {
+			"success": False,
+			"message": f"Failed to get site backups: {str(e)}",
+			"error_code": "GET_SITE_BACKUPS_ERROR"
+		}
+
+@frappe.whitelist()
+@validate_api_request(
+	required_headers=['User-Agent'],
+	api_key_required=False,  
+	rate_limit={"limit": 10, "window": 3600} 
+)
+def generate_site_admin_login_url(site_name=None, arg_email=None, reason="Download backup files"):
+	"""
+	API để tạo URL login as admin cho site để có thể download backup
+	
+	Args:
+		site_name (str): Tên site cần login (bắt buộc)
+		arg_email (str): Email của user để validate quyền truy cập (tùy chọn)
+		reason (str): Lý do login (mặc định: "Download backup files")
+	
+	Returns:
+		dict: URL login as admin
+	"""
+	try:
+		# Validate required parameters
+		if not site_name:
+			return {
+				"success": False,
+				"message": "Missing required parameter: site_name",
+				"error_code": "MISSING_SITE_NAME"
+			}
+		
+		# Validate email nếu được cung cấp
+		if arg_email:
+			team = get_current_team_v2(arg_email, get_doc=False)
+			if not team:
+				return {
+					"success": False,
+					"message": "Invalid email or user not found",
+					"error_code": "INVALID_USER"
+				}
+		
+		# Lấy site document và tạo login URL
+		site_doc = frappe.get_doc("Site", site_name)
+		login_url = site_doc.login_as_admin(reason=reason)
+        
+		return {
+			"success": True,
+			"message": "Admin login URL generated successfully",
+			"data": {
+				"login_url": login_url,
+				"site_name": site_name
+			}
+		}
+		
+	except frappe.DoesNotExistError:
+		return {
+			"success": False,
+			"message": f"Site '{site_name}' not found",
+			"error_code": "SITE_NOT_FOUND"
+		}
+	except Exception as e:
+		frappe.log_error(frappe.get_traceback(), "Error in generate_site_admin_login_url API")
+		return {
+			"success": False,
+			"message": f"Failed to generate admin login URL: {str(e)}",
+			"error_code": "ADMIN_LOGIN_URL_ERROR"
+		}
+
+@frappe.whitelist(allow_guest=True, methods=['POST'])
+@validate_api_request(
+	required_headers=['Content-Type', 'User-Agent'],
+	api_key_required=True,
+	rate_limit={"limit": 100, "window": 3600}
+)
+def save_company_information(company_data=None):
+	"""
+	API upsert MBW Information Company theo tax_code.
+	- Nếu chưa có tax_code: tạo mới
+	- Nếu đã có tax_code: cập nhật các trường được gửi lên
+	"""
+	try:
+		if not company_data:
+			return {"success": False, "error": "company_data is required", "error_code": "MISSING_DATA"}
+
+		if isinstance(company_data, str):
+			company_data = frappe.parse_json(company_data)
+
+		if not company_data.get('tax_code'):
+			return {"success": False, "error": "tax_code is required", "error_code": "MISSING_TAX_CODE"}
+
+		# Optional email validation for company email field
+		email = (company_data.get('email_name') or '').strip()
+		if email and not frappe.utils.validate_email_address(email):
+			return {"success": False, "error": "Invalid email format", "error_code": "INVALID_EMAIL"}
+
+		# Resolve team: if company_data.team is an email, convert to team ID; fallback to arg_email
+		resolved_team_id = None
+		team_input = company_data.get('team')
+		if team_input:
+			try:
+				resolved_team_id = get_current_team_v2(team_input, get_doc=False)
+			except Exception as _e:
+				resolved_team_id = None
+		# Overwrite team with resolved team id if available
+		if resolved_team_id:
+			company_data['team'] = resolved_team_id
+
+		existing = frappe.get_all(
+			"MBW Information Company",
+			filters={"tax_code": company_data.get('tax_code')},
+			limit=1
+		)
+
+		if existing:
+			company_doc = frappe.get_doc("MBW Information Company", existing[0].name)
+			action = "updated"
+		else:
+			company_doc = frappe.get_doc({"doctype": "MBW Information Company"})
+			action = "created"
+
+		updatable_fields = [
+			'team', 'full_name', 'tax_code', 'adress_name', 'phone_number', 'email_name',
+			'representative_name', 'position_name'
+		]
+
+		for field in updatable_fields:
+			if field in company_data:
+				value = company_data[field]
+				setattr(company_doc, field, value.strip() if isinstance(value, str) else value)
+
+		if action == "created":
+			company_doc.insert(ignore_permissions=True)
+		else:
+			company_doc.save(ignore_permissions=True)
+
+		return {
+			"success": True,
+			"message": f"Company information {action} successfully",
+			"action": action,
+			"data": {
+				"name": company_doc.name,
+				"team": company_doc.team,
+				"full_name": company_doc.full_name,
+				"tax_code": company_doc.tax_code,
+				"adress_name": company_doc.adress_name,
+				"phone_number": company_doc.phone_number,
+				"email_name": company_doc.email_name,
+				"representative_name": getattr(company_doc, 'representative_name', None),
+				"position_name": getattr(company_doc, 'position_name', None),
+				"creation": company_doc.creation,
+				"modified": company_doc.modified
+			}
+		}
+
+	except frappe.ValidationError as e:
+		frappe.log_error(f"Validation error in save_company_information: {str(e)}", "Company Info Validation Error")
+		return {"success": False, "error": f"Validation error: {str(e)}", "error_code": "VALIDATION_ERROR"}
+
+	except Exception as e:
+		frappe.log_error(f"Error saving company information: {str(e)}", "Company Info Save Error")
+		return {"success": False, "error": "Internal server error occurred", "error_code": "INTERNAL_ERROR"}
+
+
+# ================================
+# BKAV INVOICE DATA CREATION HELPERS
+# ================================
+
+def _create_bkav_invoice_data_from_invoice(invoice_doc, company_info):
+	"""Tạo dữ liệu BKAV từ Invoice và Company Info"""
+	try:
+		timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+		
+		return {
+			"id": f"INV_{invoice_doc.name}_{timestamp}",
+			"guid": "",
+			"serial": frappe.db.get_value(
+				"MBW EInvoice Company", {"company": "Default Company", "is_active": 1}, "invoice_serial_bkav"
+			) or "C25TAA",
+			"invoiceNumber": invoice_doc.name,
+			"arisingDate": invoice_doc.creation.isoformat() if invoice_doc.creation else datetime.now().isoformat(),
+			"vatRate": 10,
+			"status": "New",
+			"paymentMethod": "Electronic",
+			"currencyType": invoice_doc.currency or "VND",
+			"exchangeRate": 1,
+			"eInvoiceItems": _create_einvoice_items_from_invoice(invoice_doc),
+			"invoiceCustomer": {
+				"id": f"CUST_{company_info.team}",
+				"customerNumber": company_info.team,
+				"taxNumber": company_info.tax_code or "",
+				"companyName": company_info.full_name or "",
+				"fullName": company_info.full_name or "",
+				"address": company_info.adress_name or "",
+				"phoneNumber": company_info.phone_number or "",
+				"email": company_info.email_name or "",
+				"representativeName": getattr(company_info, "representative_name", None) or "",
+				"positionName": getattr(company_info, "position_name", None) or "",
+				"bankAccountNumber": "",
+				"bankName": "",
+				"bankOwnerName": ""
+			},
+			"note": f"Auto-exported from Invoice {invoice_doc.name}",
+			"isUseCheckDiscount": False,
+			"rateCheckDiscount": 0,
+			"discountType": "NotDicount"
+		}
+		
+	except Exception as e:
+		frappe.log_error(f"Error creating BKAV data: {str(e)}", "BKAV Data Creation Error")
+		return {}
+
+
+def _create_einvoice_items_from_invoice(invoice_doc):
+	"""Tạo items cho BKAV từ Invoice items"""
+	try:
+		items = []
+		
+		if hasattr(invoice_doc, 'items') and invoice_doc.items:
+			for idx, item in enumerate(invoice_doc.items, 1):
+				amount = float(item.amount or 0)
+				vat_amount = amount * 0.1  # 10% VAT
+				
+				items.append({
+					"posNumber": idx,
+					"productNumber": f"PROD_{idx:03d}",
+					"productId": f"prod_{idx}",
+					"productName": item.description or f"Item {idx}",
+					"unit": "Service",
+					"quantity": float(item.quantity or 1),
+					"price": float(item.rate or 0),
+					"vatRate": 10,
+					"vatRateDisplay": 10,
+					"free": False,
+					"discount": False,
+					"currencyType": invoice_doc.currency or "VND",
+					"addAmount": 0,
+					"amount": amount,
+					"vatAmount": vat_amount,
+					"discountRate": 0,
+					"discountAmount": 0,
+					"totalAmount": amount + vat_amount,
+					"displayOrder": idx
+				})
+		else:
+			# Default item nếu không có items
+			total = float(invoice_doc.total or 0)
+			vat_amount = total * 0.1
+			
+			items.append({
+				"posNumber": 1,
+				"productNumber": "SERV_001",
+				"productId": "service_001",
+				"productName": f"Service for Invoice {invoice_doc.name}",
+				"unit": "Service",
+				"quantity": 1,
+				"price": total,
+				"vatRate": 10,
+				"vatRateDisplay": 10,
+				"free": False,
+				"discount": False,
+				"currencyType": invoice_doc.currency or "VND",
+				"addAmount": 0,
+				"amount": total,
+				"vatAmount": vat_amount,
+				"discountRate": 0,
+				"discountAmount": 0,
+				"totalAmount": total + vat_amount,
+				"displayOrder": 1
+			})
+		
+		return items
+		
+	except Exception as e:
+		frappe.log_error(f"Error creating EInvoice items: {str(e)}", "EInvoice Items Error")
+		return []
+
+def trigger_einvoice_export_on_payment_success(invoice_name):
+	"""
+	Kích hoạt xuất EInvoice khi thanh toán thành công
+	"""
+	try:
+		# Lấy thông tin invoice
+		invoice_doc = frappe.get_doc("Invoice", invoice_name)
+		
+		# Đẩy job vào queue
+		frappe.enqueue(
+			"press.api.app_admin.process_invoice_einvoice_export",
+			queue="default",
+			timeout=300,
+			invoice_name=invoice_name,
+			team=invoice_doc.team
+		)
+		
+		frappe.logger().info(f"EInvoice export job queued for {invoice_name}")
+		
+	except Exception as e:
+		frappe.log_error(f"Error triggering EInvoice export: {str(e)}", "EInvoice Trigger Error")
+
+def process_invoice_einvoice_export(invoice_name, team):
+	"""
+	Queue job để xử lý xuất EInvoice
+	"""
+	try:
+		frappe.logger().info(f"Processing EInvoice export for {invoice_name}")
+		
+		# Lấy thông tin invoice
+		invoice_doc = frappe.get_doc("Invoice", invoice_name)
+		
+		# Cập nhật trạng thái processing
+		invoice_doc.einvoice_status = "Processing"
+		invoice_doc.save(ignore_permissions=True)
+		
+		# Lấy thông tin company
+		company_info = frappe.get_all("MBW Information Company",
+			filters={"team": team},
+			fields=["*"],
+			limit=1
+		)
+		
+		if not company_info:
+			raise Exception(f"Không tìm thấy thông tin company cho team: {team}")
+		
+		# Tạo dữ liệu BKAV
+		bkav_data = _create_bkav_invoice_data_from_invoice(invoice_doc, company_info[0])
+		
+		# Gọi BKAV API
+		from press.api.bkav_api_helper import get_bkav_api_helper
+		
+		helper = get_bkav_api_helper(team)
+		if not helper:
+			raise Exception("Không thể khởi tạo BKAV API Helper")
+		
+		# Tạo hóa đơn trên BKAV
+		bkav_result = helper.create_invoice(bkav_data)
+		
+		# Cập nhật kết quả
+		if bkav_result.get("success"):
+			data = bkav_result.get("data", {})
+			invoice_doc.einvoice_status = "Exported"
+			invoice_doc.bkav_invoice_id = data.get("invoiceId")
+			invoice_doc.bkav_view_url = data.get("viewUrl")
+			invoice_doc.bkav_lookup_code = data.get("lookupCode")
+		else:
+			invoice_doc.einvoice_status = "Failed"
+		
+		invoice_doc.save(ignore_permissions=True)
+		
+		# Tạo tracking record
+		_create_einvoice_tracking_record(invoice_name, bkav_result, team)
+		
+		frappe.logger().info(f"EInvoice export completed for {invoice_name}")
+		
+	except Exception as e:
+		frappe.log_error(f"Error processing EInvoice export: {str(e)}", "EInvoice Process Error")
+		
+		# Cập nhật trạng thái lỗi
+		try:
+			invoice_doc = frappe.get_doc("Invoice", invoice_name)
+			invoice_doc.einvoice_status = "Failed"
+			invoice_doc.save(ignore_permissions=True)
+		except:
+			pass
+
+def _create_bkav_invoice_data_from_invoice(invoice_doc, company_info):
+	"""
+	Tạo dữ liệu BKAV từ Invoice doc
+	"""
+	try:
+		# Tạo items
+		items = _create_einvoice_items_from_invoice(invoice_doc)
+		
+		# Tạo customer info
+		customer_info = {
+			"id": invoice_doc.team,
+			"customerNumber": invoice_doc.team,
+			"taxNumber": company_info.get("tax_code", ""),
+			"companyName": company_info.get("company_name", ""),
+			"fullName": company_info.get("company_name", ""),
+			"address": company_info.get("address", ""),
+			"phoneNumber": company_info.get("phone", ""),
+			"email": company_info.get("email", ""),
+			"bankAccountNumber": "",
+			"bankName": "",
+			"bankOwnerName": ""
+		}
+		
+		# Tạo invoice data
+		invoice_data = {
+			"id": invoice_doc.name,
+			"guid": "",
+			"serial": "C25TAA",  # Từ workspace rules
+			"invoiceNumber": invoice_doc.name.replace("INV-", ""),
+			"arisingDate": invoice_doc.creation.isoformat() if invoice_doc.creation else "",
+			"vatRate": 10,  # Default VAT 10%
+			"status": "New",
+			"paymentMethod": "Cash",
+			"currencyType": "VND",
+			"exchangeRate": 1,
+			"eInvoiceItems": items,
+			"invoiceCustomer": customer_info,
+			"note": f"Hóa đơn {invoice_doc.name}",
+			"isUseCheckDiscount": False,
+			"rateCheckDiscount": 0,
+			"discountType": "NotDiscount"
+		}
+		
+		return invoice_data
+		
+	except Exception as e:
+		frappe.log_error(f"Error creating BKAV data: {str(e)}", "BKAV Data Error")
+		raise
+
+def _create_einvoice_tracking_record(invoice_name, bkav_result, team):
+	"""
+	Tạo bản ghi theo dõi EInvoice
+	"""
+	try:
+		# Lấy tên company theo team (fallback sử dụng team nếu không có)
+		# Lấy tên công ty của KH từ bảng MBW Information Company (luôn ưu tiên text khách hàng)
+		company_name = None
+		try:
+			company_name = frappe.get_value(
+				"MBW Information Company", {"team": team}, "company"
+			) or frappe.get_value(
+				"MBW Information Company", {"team": team}, "name"
+			)
+		except Exception:
+			company_name = None
+
+		# Xây dựng payload tracking, gán company nếu tìm thấy; nếu doctype yêu cầu company bắt buộc
+		# mà vẫn không xác định được, sẽ để trống và dựa vào validate của doctype
+		tracking_payload = {
+			"doctype": "MBW Detail EInvoice",
+			"invoice_name": invoice_name,
+			"team": team,
+			"bkav_response": frappe.as_json(bkav_result),
+			"status": "Success" if bkav_result.get("success") else "Failed",
+			"export_date": frappe.utils.now()
+		}
+		# Luôn lưu company theo thông tin khách hàng (text), không ép Link tới doctype Company
+		if company_name:
+			tracking_payload["company"] = company_name
+
+		tracking_doc = frappe.get_doc(tracking_payload)
+		tracking_doc.insert(ignore_permissions=True)
+		
+	except Exception as e:
+		frappe.log_error(f"Error creating tracking record: {str(e)}", "EInvoice Tracking Error")
+
+@frappe.whitelist()
+def manual_export_invoice_to_einvoice(invoice_name, arg_email):
+	"""
+	API để xuất hóa đơn thủ công lên BKAV
+	"""
+	try:
+		# Kiểm tra invoice tồn tại
+		if not frappe.db.exists("Invoice", invoice_name):
+			return {
+				"success": False,
+				"message": f"Invoice {invoice_name} không tồn tại"
+			}
+		
+		# Lấy thông tin invoice
+		invoice_doc = frappe.get_doc("Invoice", invoice_name)
+		
+		# Trigger export process
+		trigger_einvoice_export_on_payment_success(invoice_name)
+		
+		return {
+			"success": True,
+			"message": f"Đã kích hoạt xuất EInvoice cho {invoice_name}",
+			"invoice_status": invoice_doc.status,
+			"team": invoice_doc.team
+		}
+		
+	except Exception as e:
+		frappe.log_error(f"Error in manual export: {str(e)}", "Manual EInvoice Export Error")
+		return {
+			"success": False,
+			"message": f"Lỗi xuất EInvoice: {str(e)}"
+		}
+
+@frappe.whitelist()
+def get_invoice_einvoice_status(invoice_name, arg_email):
+	"""
+	API để lấy trạng thái EInvoice của hóa đơn
+	"""
+	try:
+		# Kiểm tra invoice tồn tại
+		if not frappe.db.exists("Invoice", invoice_name):
+			return {
+				"success": False,
+				"message": f"Invoice {invoice_name} không tồn tại"
+			}
+		
+		# Lấy thông tin invoice
+		invoice_doc = frappe.get_doc("Invoice", invoice_name)
+		
+		# Lấy thông tin EInvoice tracking
+		tracking_records = frappe.get_all("MBW Detail EInvoice",
+			filters={"invoice_name": invoice_name},
+			fields=["*"],
+			order_by="creation desc",
+			limit=1
+		)
+		
+		result = {
+			"success": True,
+			"invoice_name": invoice_name,
+			"invoice_status": invoice_doc.status,
+			"einvoice_status": getattr(invoice_doc, 'einvoice_status', 'Not Exported'),
+			"bkav_invoice_id": getattr(invoice_doc, 'bkav_invoice_id', None),
+			"bkav_view_url": getattr(invoice_doc, 'bkav_view_url', None),
+			"bkav_lookup_code": getattr(invoice_doc, 'bkav_lookup_code', None),
+		}
+		
+		if tracking_records:
+			tracking = tracking_records[0]
+			result["tracking_info"] = {
+				"bkav_response": tracking.get("bkav_response"),
+				"export_date": tracking.get("creation"),
+				"status": tracking.get("status")
+			}
+		
+		return result
+		
+	except Exception as e:
+		frappe.log_error(f"Error getting EInvoice status: {str(e)}", "EInvoice Status Error")
+		return {
+			"success": False,
+			"message": f"Lỗi lấy trạng thái EInvoice: {str(e)}"
+		}
