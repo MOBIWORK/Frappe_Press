@@ -304,6 +304,13 @@ let router = createRouter({
 					meta: { hideSidebar: true },
 				},
 				{
+					name: 'SignupResetSitePassword',
+					path: ':productId/reset-password',
+					component: () => import('./pages/signup/ResetSitePassword.vue'),
+					props: true,
+					meta: { hideSidebar: true },
+				},
+				{
 					name: 'SignupLoginToSite',
 					path: ':productId/login-to-site',
 					component: () => import('./pages/signup/LoginToSite.vue'),
@@ -365,6 +372,11 @@ let router = createRouter({
 			name: 'Log Browser',
 			component: () => import('./pages/devtools/log-browser/LogBrowser.vue'),
 			props: true,
+		},
+		{
+			path: '/request-system',
+			name: 'Request System',
+			component: () => import('./pages/RequestSystem.vue'),
 		},
 		...generateRoutes(),
 		{
