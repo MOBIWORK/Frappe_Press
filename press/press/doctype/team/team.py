@@ -33,7 +33,6 @@ class Team(Document):
 
 	if TYPE_CHECKING:
 		from frappe.types import DF
-
 		from press.press.doctype.child_team_member.child_team_member import ChildTeamMember
 		from press.press.doctype.communication_email.communication_email import CommunicationEmail
 		from press.press.doctype.invoice_discount.invoice_discount import InvoiceDiscount
@@ -95,6 +94,8 @@ class Team(Document):
 		team_members: DF.Table[TeamMember]
 		team_title: DF.Data | None
 		user: DF.Link | None
+		utm_campaign: DF.Data | None
+		utm_source: DF.Data | None
 		via_erpnext: DF.Check
 		website_link: DF.Data | None
 	# end: auto-generated types
@@ -280,10 +281,13 @@ class Team(Document):
 		last_name: str,
 		password: str | None = None,
 		country: str | None = None,
-		language: str | None = None,  # Add language parameter
+		language: str | None = None,
 		is_us_eu: bool = False,
 		via_erpnext: bool = False,
 		user_exists: bool = False,
+		phone: str | None = None,
+		utm_source: str | None = None,
+		utm_campaign: str | None = None,
 	):
 		"""Create new team along with user (user created first)."""
 		team: "Team" = frappe.get_doc(
@@ -295,6 +299,8 @@ class Team(Document):
 				"via_erpnext": via_erpnext,
 				"is_us_eu": is_us_eu,
 				"account_request": account_request.name,
+				"utm_source": utm_source,
+				"utm_campaign": utm_campaign,
 			}
 		)
 
@@ -302,6 +308,9 @@ class Team(Document):
 			user = team.create_user(
 				first_name, last_name, account_request.email, password, account_request.role
 			)
+			if phone:
+				user.phone = phone
+				user.save(ignore_permissions=True)
 		else:
 			user = frappe.get_doc("User", account_request.email)
 			user.append_roles(account_request.role)

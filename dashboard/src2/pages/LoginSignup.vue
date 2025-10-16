@@ -453,7 +453,21 @@ export default {
 					otp: this.otp,
 				},
 				onSuccess(key) {
-					window.open(`/dashboard/setup-account/${key}`, '_self');
+					const urlParams = new URLSearchParams(window.location.search);
+					const utm_source = urlParams.get('utm_source');
+					const utm_campaign = urlParams.get('utm_campaign');
+					
+					let setupUrl = `/dashboard/setup-account/${key}`;
+					const params = new URLSearchParams();
+					
+					if (utm_source) params.append('utm_source', utm_source);
+					if (utm_campaign) params.append('utm_campaign', utm_campaign);
+					
+					if (params.toString()) {
+						setupUrl += `?${params.toString()}`;
+					}
+					
+					window.open(setupUrl, '_self');
 				},
 			};
 		},
@@ -735,13 +749,10 @@ export default {
 		},
 		afterLogin(res) {
 			const productId = localStorage.getItem('product_id');
-			console.log("res============ >>>>>>>>>>>>>>>>>>>>>>>>>>>>", this.email);
 			localStorage.setItem('login_email', this.email);
-			console.log("vào đây");
 			// Gọi resource isCheckUser để lấy trạng thái user
 			this.$resources.isCheckUserCheck.submit({}, {
 				onSuccess: (data) => {
-					console.log("data============", data)
 					let path = '';
 					// Nếu chưa có tài khoản (user == null/undefined/falsey)
 					if (!data.user) {

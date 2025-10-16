@@ -171,6 +171,7 @@ def setup_account(
     key,
     first_name=None,
     last_name=None,
+    phone=None,
     password=None,
     is_invitation=False,
     country=None,
@@ -179,7 +180,9 @@ def setup_account(
     oauth_signup=False,
     oauth_domain=False,
     site_domain=None,
-    language='vi'  # Default to 'vi' if not provided
+    language='vi',
+    utm_source=None,
+    utm_campaign=None
 ):
     account_request = get_account_request_from_key(key)
     if not account_request:
@@ -220,6 +223,9 @@ def setup_account(
             password=password,
             country=country,
             user_exists=bool(user_exists),
+            phone=phone,
+            utm_source=utm_source,
+            utm_campaign=utm_campaign,
         )
         if invited_by_parent_team:
             doc = frappe.get_doc("Team", account_request.invited_by)

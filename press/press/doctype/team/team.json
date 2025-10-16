@@ -12,6 +12,8 @@
   "user",
   "account_request",
   "parent_team",
+  "utm_source",
+  "utm_campaign",
   "column_break_wejg",
   "is_developer",
   "is_saas_user",
@@ -573,6 +575,16 @@
    "fieldname": "apply_npo_discount",
    "fieldtype": "Check",
    "label": "Apply NPO Discount"
+  },
+  {
+   "fieldname": "utm_source",
+   "fieldtype": "Data",
+   "label": "Utm Source"
+  },
+  {
+   "fieldname": "utm_campaign",
+   "fieldtype": "Data",
+   "label": "Utm Campaign"
   }
  ],
  "grid_page_length": 50,
@@ -638,7 +650,7 @@
    "link_fieldname": "team"
   }
  ],
- "modified": "2025-05-20 12:56:19.719372",
+ "modified": "2025-10-16 09:33:01.241069",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Team",

@@ -113,6 +113,14 @@
 								class="w-full"
 							/>
 							<FormControl 
+								:label="__('Phone Number')" 
+								type="tel" 
+								v-model="phone" 
+								variant="outline" 
+								required
+								class="w-full focus-within:shadow-sm transition-all duration-300"
+							/>
+							<FormControl 
 								type="select" 
 								:options="countries" 
 								v-if="!isInvitation" 
@@ -195,6 +203,9 @@ export default {
 			countries: [],
 			saasProduct: null,
 			signupValues: {},
+			phone: '',
+			utm_source: '',
+			utm_campaign: '',
 		};
 	},
 	resources: {
@@ -235,13 +246,16 @@ export default {
 					key: this.requestKey,
 					first_name: this.firstName,
 					last_name: this.lastName,
+					phone: this.phone,
 					country: this.country,
-					language: this.getSelectedLanguage(),  // ← Use method instead of direct localStorage access
+					language: this.getSelectedLanguage(),  
 					is_invitation: this.isInvitation,
 					user_exists: this.userExists,
 					invited_by_parent_team: this.invitedByParentTeam,
 					oauth_signup: this.oauthSignup,
 					oauth_domain: this.oauthDomain,
+					utm_source: this.utm_source,
+					utm_campaign: this.utm_campaign,
 				},
 				onSuccess() {
 					
@@ -328,10 +342,13 @@ export default {
 		},
 	},
 	mounted() {
-		// ✅ Ensure Vietnamese is set as default language immediately
 		if (!localStorage.getItem('lang')) {
 			localStorage.setItem('lang', 'vi');
 		}
+		
+		const urlParams = new URLSearchParams(window.location.search);
+		this.utm_source = urlParams.get('utm_source') || '';
+		this.utm_campaign = urlParams.get('utm_campaign') || '';
 	},
 };
 </script>

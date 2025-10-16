@@ -159,7 +159,6 @@ export default {
         },
         selectedTemplate() {
             if (this.productId === 'go1_cms' || this.productId === 'mbw_cms') {
-                console.log("Test log templateValue 2: >>>>>>>>>>>>>>>>>>>>>>>>>>>>", this.$route.query.selected_template);
                 return this.$route.query.selected_template;
             }
             return null;
@@ -176,7 +175,6 @@ export default {
             const encodedPlan = encodeURIComponent(JSON.stringify(plan));
             const query = { selected_plan: encodedPlan };
             if ((this.productId === 'go1_cms' || this.productId === 'mbw_cms') && this.selectedTemplate) {
-                console.log("Test log templateValue 3: >>>>>>>>>>>>>>>>>>>>>>>>>>>>", this.selectedTemplate);
                 query.selected_template = this.selectedTemplate;
             }
             this.$router.push({ path, query });
