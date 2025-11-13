@@ -1,0 +1,156 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:code_voucher",
+ "creation": "2025-10-31 09:32:42.410875",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "code_voucher",
+  "name_voucher",
+  "image",
+  "description",
+  "deducted_amount",
+  "referral_amount",
+  "type_voucher",
+  "app",
+  "voucher_lead_source",
+  "voucher_campaign_source",
+  "day_start",
+  "day_end",
+  "expiry_voucher",
+  "max_number_voucher",
+  "issued_number_voucher",
+  "status",
+  "creator"
+ ],
+ "fields": [
+  {
+   "fieldname": "code_voucher",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Code Voucher",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "name_voucher",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name Voucher",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "deducted_amount",
+   "fieldtype": "Float",
+   "label": "Deducted Amount"
+  },
+  {
+   "fieldname": "app",
+   "fieldtype": "Table",
+   "label": "App",
+   "options": "MBW Voucher App"
+  },
+  {
+   "fieldname": "voucher_lead_source",
+   "fieldtype": "Table MultiSelect",
+   "label": "Lead Source",
+   "options": "MBW Voucher Lead Source"
+  },
+  {
+   "fieldname": "voucher_campaign_source",
+   "fieldtype": "Table MultiSelect",
+   "label": "Campaign Source",
+   "options": "MBW Voucher Campaign Source"
+  },
+  {
+   "fieldname": "image",
+   "fieldtype": "Attach Image",
+   "label": "Image"
+  },
+  {
+   "fieldname": "referral_amount",
+   "fieldtype": "Float",
+   "label": "Referral Amount"
+  },
+  {
+   "fieldname": "type_voucher",
+   "fieldtype": "Select",
+   "label": "Type Voucher",
+   "options": "Marketing Signup\nReferral  Signup"
+  },
+  {
+   "fieldname": "day_start",
+   "fieldtype": "Date",
+   "label": "Day Start",
+   "reqd": 1
+  },
+  {
+   "fieldname": "day_end",
+   "fieldtype": "Date",
+   "label": "Day End"
+  },
+  {
+   "fieldname": "expiry_voucher",
+   "fieldtype": "Float",
+   "label": "Expiry Voucher"
+  },
+  {
+   "default": "0",
+   "fieldname": "max_number_voucher",
+   "fieldtype": "Int",
+   "label": "Max Number Voucher"
+  },
+  {
+   "default": "0",
+   "fieldname": "issued_number_voucher",
+   "fieldtype": "Int",
+   "label": "Issued Number Voucher"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Active\nUnactive\nDisable"
+  },
+  {
+   "fieldname": "creator",
+   "fieldtype": "Link",
+   "label": "Creator",
+   "options": "User",
+   "read_only": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-05 15:23:41.577151",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW Voucher",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

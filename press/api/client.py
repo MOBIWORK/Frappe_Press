@@ -81,6 +81,7 @@ ALLOWED_DOCTYPES = [
 	"Partner Payment Payout",
 	"Deploy Candidate Build",
 	"Account Request",
+	"MBW Notification Request",
 ]
 
 ALLOWED_DOCTYPES_FOR_SUPPORT = [
