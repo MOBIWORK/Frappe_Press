@@ -1,0 +1,166 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-12 14:48:59.132527",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_0",
+  "company",
+  "tax_code",
+  "is_active",
+  "allow_send_email",
+  "language",
+  "recipient_email",
+  "sec_1",
+  "einvoice_provider",
+  "invoice_type",
+  "sec_2",
+  "environment_type",
+  "sec_3",
+  "partner_guid_bkav",
+  "partner_token_bkav",
+  "sec_4",
+  "invoice_form_bkav",
+  "invoice_serial_bkav",
+  "sec_5",
+  "api_url_production",
+  "api_url_development"
+ ],
+ "fields": [
+  {
+   "fieldname": "sec_0",
+   "fieldtype": "Section Break",
+   "label": "General configuration"
+  },
+  {
+   "default": "Kh\u00e1ch l\u1ebb",
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "tax_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Tax Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "fieldname": "sec_1",
+   "fieldtype": "Section Break",
+   "label": "EInvoice service configuration"
+  },
+  {
+   "default": "BKAV eHoadon",
+   "fieldname": "einvoice_provider",
+   "fieldtype": "Select",
+   "label": "EInvoice provider",
+   "options": "BKAV eHoadon"
+  },
+  {
+   "default": "Value-added tax invoice",
+   "fieldname": "invoice_type",
+   "fieldtype": "Select",
+   "label": "Invoice type",
+   "options": "Value-added tax invoice"
+  },
+  {
+   "fieldname": "sec_2",
+   "fieldtype": "Section Break",
+   "label": "Setting Environment"
+  },
+  {
+   "default": "Testing",
+   "fieldname": "environment_type",
+   "fieldtype": "Select",
+   "label": "Select environment",
+   "options": "Production\nTesting"
+  },
+  {
+   "fieldname": "sec_3",
+   "fieldtype": "Section Break",
+   "label": "Connection configuration: BKAV eHoadon"
+  },
+  {
+   "fieldname": "partner_guid_bkav",
+   "fieldtype": "Data",
+   "label": "PartnerGUID"
+  },
+  {
+   "fieldname": "partner_token_bkav",
+   "fieldtype": "Data",
+   "label": "Partner Token"
+  },
+  {
+   "default": "1",
+   "fieldname": "invoice_form_bkav",
+   "fieldtype": "Data",
+   "label": "Invoice Form",
+   "reqd": 1
+  },
+  {
+   "default": "C25TAA",
+   "fieldname": "invoice_serial_bkav",
+   "fieldtype": "Data",
+   "label": "Invoice Serial",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sec_5",
+   "fieldtype": "Section Break",
+   "label": "API Configuration"
+  },
+  {
+   "default": "https://van.ehoadon.vn",
+   "fieldname": "api_url_production",
+   "fieldtype": "Data",
+   "label": "API URL Production"
+  },
+  {
+   "default": "https://demo.ehoadon.vn",
+   "fieldname": "api_url_development",
+   "fieldtype": "Data",
+   "label": "API URL Development"
+  },
+  {
+   "fieldname": "sec_4",
+   "fieldtype": "Section Break",
+   "label": "Invoice Form"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-16 18:05:26.304897",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW EInvoice Company",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

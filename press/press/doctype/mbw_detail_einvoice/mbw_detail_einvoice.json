@@ -1,0 +1,192 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-12 17:16:43.851950",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "invoice_name",
+  "company",
+  "publisher",
+  "release_date",
+  "supplier",
+  "invoice_serial",
+  "invoice_form",
+  "invoice_no",
+  "invoice_guid",
+  "status_einvoice",
+  "tax_status_einvoice",
+  "action",
+  "status",
+  "cancel_and_redo",
+  "bkav_invoice_id",
+  "view_url",
+  "lookup_code",
+  "start_time",
+  "end_time",
+  "duration_seconds",
+  "is_retry",
+  "retry_num",
+  "attached_data",
+  "json_data",
+  "message_log"
+ ],
+ "fields": [
+  {
+   "fieldname": "invoice_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Invoice Name",
+   "reqd": 1
+  },
+  {
+   "default": "Kh\u00e1ch l\u1ebb",
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "publisher",
+   "fieldtype": "Link",
+   "label": "Publisher",
+   "options": "User"
+  },
+  {
+   "fieldname": "release_date",
+   "fieldtype": "Datetime",
+   "label": "Release Date"
+  },
+  {
+   "fieldname": "supplier",
+   "fieldtype": "Data",
+   "label": "Supplier"
+  },
+  {
+   "fieldname": "invoice_serial",
+   "fieldtype": "Data",
+   "label": "Invoice Serial"
+  },
+  {
+   "fieldname": "invoice_form",
+   "fieldtype": "Data",
+   "label": "Invoice Form"
+  },
+  {
+   "fieldname": "invoice_no",
+   "fieldtype": "Int",
+   "label": "Invoice No",
+   "description": "Số hóa đơn BKAV"
+  },
+  {
+   "fieldname": "invoice_guid",
+   "fieldtype": "Data",
+   "label": "Invoice GUID",
+   "description": "Mã tra cứu BKAV (InvoiceGUID)"
+  },
+  {
+   "fieldname": "status_einvoice",
+   "fieldtype": "Select",
+   "label": "EInvoice Status",
+   "options": "\nNewly created\nPending issuance\nPending revocation\nPending adjustment\nPending replacement\nReplacement\nReplaced\nIssued\nRevoked\nAdjustment\nAdjusted\nNot in use"
+  },
+  {
+   "fieldname": "tax_status_einvoice",
+   "fieldtype": "Select",
+   "label": "Tax Status",
+   "options": "\nPending approval\nSigned\nRejected\nSent\nError\nPending signature"
+  },
+  {
+   "fieldname": "action",
+   "fieldtype": "Select",
+   "label": "Action",
+   "options": "Create invoice\nSign invoice\nUpdate status\nRevoke invoice\nGet token"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Pending processing\nSuccessful\nFailed\nCancelled"
+  },
+  {
+   "depends_on": "eval: doc.status == \"Pending processing\"",
+   "fieldname": "cancel_and_redo",
+   "fieldtype": "Button",
+   "label": "Cancel and redo"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Datetime",
+   "label": "Start Time"
+  },
+  {
+   "fieldname": "end_time",
+   "fieldtype": "Datetime",
+   "label": "End Time"
+  },
+  {
+   "fieldname": "duration_seconds",
+   "fieldtype": "Float",
+   "label": "Duration (seconds)",
+   "description": "Thời gian xử lý (giây)",
+   "precision": "2"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_retry",
+   "fieldtype": "Check",
+   "label": "Is Retry"
+  },
+  {
+   "fieldname": "retry_num",
+   "fieldtype": "Int",
+   "label": "Retry Number"
+  },
+  {
+   "fieldname": "bkav_invoice_id",
+   "fieldtype": "Data",
+   "label": "BKAV Invoice ID"
+  },
+  {
+   "fieldname": "view_url",
+   "fieldtype": "Data",
+   "label": "View URL"
+  },
+  {
+   "fieldname": "lookup_code",
+   "fieldtype": "Data",
+   "label": "Lookup Code"
+  },
+  {
+   "fieldname": "attached_data",
+   "fieldtype": "JSON",
+   "label": "Attached data"
+  },
+  {
+   "fieldname": "json_data",
+   "fieldtype": "JSON",
+   "label": "Data from the supplier"
+  },
+  {
+   "fieldname": "message_log",
+   "fieldtype": "HTML Editor",
+   "label": "Message Log"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-18 14:06:29.010190",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW Detail EInvoice",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

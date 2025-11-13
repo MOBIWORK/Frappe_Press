@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-12 14:24:30.416276",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "sec_1",
+  "enable_einvoice",
+  "sec_2",
+  "api_url_bkav",
+  "link_web_bkav",
+  "sec_3",
+  "api_url_bkav_dev",
+  "link_web_dev"
+ ],
+ "fields": [
+  {
+   "default": "0",
+   "fieldname": "enable_einvoice",
+   "fieldtype": "Check",
+   "label": "Allow EInvoice creation"
+  },
+  {
+   "fieldname": "api_url_bkav",
+   "fieldtype": "Data",
+   "label": "Api Url Production"
+  },
+  {
+   "fieldname": "link_web_bkav",
+   "fieldtype": "Data",
+   "label": "Link Web Production"
+  },
+  {
+   "fieldname": "api_url_bkav_dev",
+   "fieldtype": "Data",
+   "label": "Api Url Dev"
+  },
+  {
+   "fieldname": "link_web_dev",
+   "fieldtype": "Data",
+   "label": "Link Web Dev"
+  },
+  {
+   "fieldname": "sec_1",
+   "fieldtype": "Section Break",
+   "label": "General configuration"
+  },
+  {
+   "fieldname": "sec_2",
+   "fieldtype": "Section Break",
+   "label": "Production environment"
+  },
+  {
+   "fieldname": "sec_3",
+   "fieldtype": "Section Break",
+   "label": "Testing environment"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-09-12 14:34:02.499488",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW EInvoice Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
