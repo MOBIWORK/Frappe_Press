@@ -28,6 +28,7 @@ import { confirmDialog, renderDialog } from '../utils/components';
 import { getToastErrorMessage } from '../utils/toast';
 import router from '../router';
 import { isLastSite } from '../data/team';
+import { call } from 'frappe-ui';
 
 const props = defineProps({
 	siteName: { type: String, required: true },
@@ -103,7 +104,9 @@ function onDeactivateSite() {
 			variant: 'solid',
 			theme: 'red',
 			onClick({ hide }) {
-				return site.deactivate.submit().then(hide);
+				return site.deactivate.submit().then(() => {
+					return updateNotificationRequestStatus(site.doc.name, 'Deactivate site');
+				}).then(hide);
 			},
 		},
 	});
@@ -163,6 +166,8 @@ function onDropSite() {
 				);
 
 				return site.archive.submit({ force: values.force }).then(() => {
+					return updateNotificationRequestStatus(site.doc.name, 'Drop site');
+				}).then(() => {
 					hide();
 					if (val) {
 						renderDialog(
@@ -288,6 +293,15 @@ function onClearCache() {
 				return site.clearSiteCache.submit().then(hide);
 			},
 		},
+	});
+}
+function updateNotificationRequestStatus(siteName, requestType) {
+	return call('press.api.mbw_notification_request.update_request_status', {
+		site: siteName,
+		request_type: requestType,
+		status: 'Done'
+	}).catch((error) => {
+		console.warn('Failed to update notification request status:', error);
 	});
 }
 </script>

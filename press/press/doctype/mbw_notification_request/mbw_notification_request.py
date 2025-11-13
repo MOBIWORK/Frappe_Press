@@ -6,6 +6,22 @@ from frappe.model.document import Document
 
 
 class MBWNotificationRequest(Document):
+	# begin: auto-generated types
+	# This code is auto-generated. Do not modify anything in this block.
+
+	from typing import TYPE_CHECKING
+
+	if TYPE_CHECKING:
+		from frappe.types import DF
+
+		description: DF.TextEditor | None
+		feedback: DF.TextEditor | None
+		name_sender: DF.Data | None
+		sender: DF.Link | None
+		site: DF.Link | None
+		status: DF.Literal["", "Ongoing", "Done"]
+		type: DF.Literal["", "Restore", "Drop site", "Deactivate site", "payment", "voucher"]
+	# end: auto-generated types
 
 	from typing import TYPE_CHECKING
 
@@ -31,16 +47,6 @@ class MBWNotificationRequest(Document):
 		# Validate site exists
 		if self.site and not frappe.db.exists("Site", self.site):
 			frappe.throw(f"Site '{self.site}' does not exist")
-		
-		# Validate enum values
-		valid_statuses = ["Ongoing", "Done"]
-		valid_types = ["Restore", "Drop site", "Deactivate site"]
-		
-		if self.status and self.status not in valid_statuses:
-			frappe.throw(f"Invalid status. Must be one of: {', '.join(valid_statuses)}")
-		
-		if self.type and self.type not in valid_types:
-			frappe.throw(f"Invalid type. Must be one of: {', '.join(valid_types)}")
 	
 	def before_insert(self):
 		"""Before insert hook"""
@@ -51,3 +57,7 @@ class MBWNotificationRequest(Document):
 		# Set default description if not provided
 		if not self.description:
 			self.description = f"Request for {self.type.lower()} on site {self.site}"
+			
+	def after_insert(self):
+		if not self.name_sender:
+			self.name_sender = frappe.db.get_value("User", self.sender, "full_name")

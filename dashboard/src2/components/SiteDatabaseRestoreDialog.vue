@@ -49,6 +49,7 @@
 </template>
 <script>
 import { DashboardError } from '../utils/error';
+import { call } from 'frappe-ui';
 
 export default {
 	name: 'SiteDatabaseRestoreDialog',
@@ -88,6 +89,7 @@ export default {
 				},
 				onSuccess() {
 					this.selectedFiles = {};
+					this.updateNotificationRequestStatus();
 					this.$router.push({
 						name: 'Site Jobs',
 						params: { name: this.site },
@@ -99,6 +101,17 @@ export default {
 	computed: {
 		filesUploaded() {
 			return this.selectedFiles.database;
+		},
+	},
+	methods: {
+		updateNotificationRequestStatus() {
+			call('press.api.mbw_notification_request.update_request_status', {
+				site: this.site,
+				request_type: 'Restore',
+				status: 'Done'
+			}).catch((error) => {
+				console.warn('Failed to update notification request status:', error);
+			});
 		},
 	},
 };

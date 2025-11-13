@@ -21,6 +21,7 @@ import Shield from '~icons/lucide/shield';
 import Notification from '~icons/lucide/inbox';
 import Code from '~icons/lucide/code';
 import FileSearch from '~icons/lucide/file-search';
+import MessageSquare from '~icons/lucide/message-square';
 import { unreadNotificationsCount } from '../data/notifications';
 
 export default {
@@ -66,6 +67,13 @@ export default {
 						}
 					},
 					disabled: enforce2FA,
+				},
+				{
+					name: 'Request System',
+					icon: () => h(MessageSquare),
+					route: '/request-system',
+					isActive: routeName === 'Request System',
+					condition: Boolean(this.$team.doc.is_desk_user),
 				},
 				{
 					name: 'Sites',
