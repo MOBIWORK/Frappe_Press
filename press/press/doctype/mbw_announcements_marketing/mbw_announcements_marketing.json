@@ -1,0 +1,126 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:name_announcement",
+ "creation": "2025-11-15 08:22:27.269187",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "name_announcement",
+  "type_announcement",
+  "type_show",
+  "column_break_dbqg",
+  "day_start",
+  "day_end",
+  "status",
+  "priority",
+  "section_break_irar",
+  "app",
+  "site",
+  "section_break_pamb",
+  "content"
+ ],
+ "fields": [
+  {
+   "fieldname": "name_announcement",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Name Announcement",
+   "unique": 1
+  },
+  {
+   "fieldname": "type_announcement",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type Announcement",
+   "options": "New Features\nMaintenance\nPromotions/Vouchers\nNews\nOther"
+  },
+  {
+   "fieldname": "type_show",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Type Show",
+   "options": "Marquee\nModal"
+  },
+  {
+   "fieldname": "day_start",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Day Start",
+   "reqd": 1
+  },
+  {
+   "fieldname": "day_end",
+   "fieldtype": "Datetime",
+   "label": "Day End"
+  },
+  {
+   "fieldname": "app",
+   "fieldtype": "Table",
+   "label": "App",
+   "options": "MBW Announcements Marketing App"
+  },
+  {
+   "fieldname": "column_break_dbqg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_irar",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_pamb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "content",
+   "fieldtype": "HTML Editor",
+   "label": "Content"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Running\nNot yet scheduled\nFinished\nHidden"
+  },
+  {
+   "fieldname": "site",
+   "fieldtype": "Table",
+   "label": "Site",
+   "options": "MBW Announcements Marketing Sites"
+  },
+  {
+   "fieldname": "priority",
+   "fieldtype": "Int",
+   "label": "Priority"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-17 10:58:57.563725",
+ "modified_by": "Administrator",
+ "module": "Press",
+ "name": "MBW Announcements Marketing",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
