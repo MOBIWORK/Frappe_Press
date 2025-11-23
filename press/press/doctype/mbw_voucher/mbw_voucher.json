@@ -58,13 +58,13 @@
   },
   {
    "fieldname": "voucher_lead_source",
-   "fieldtype": "Table MultiSelect",
+   "fieldtype": "Table",
    "label": "Lead Source",
    "options": "MBW Voucher Lead Source"
   },
   {
    "fieldname": "voucher_campaign_source",
-   "fieldtype": "Table MultiSelect",
+   "fieldtype": "Table",
    "label": "Campaign Source",
    "options": "MBW Voucher Campaign Source"
   },
@@ -129,7 +129,7 @@
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-05 15:23:41.577151",
+ "modified": "2025-11-21 00:46:37.257330",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "MBW Voucher",

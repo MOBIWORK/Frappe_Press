@@ -14,7 +14,7 @@
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "App",
-   "options": "Marketplace App",
+   "options": "App",
    "reqd": 1
   }
  ],
@@ -22,7 +22,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-10-31 09:45:22.306499",
+ "modified": "2025-11-19 08:59:37.220131",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "MBW Voucher App",

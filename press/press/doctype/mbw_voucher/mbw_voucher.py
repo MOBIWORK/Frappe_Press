@@ -32,8 +32,8 @@ class MBWVoucher(Document):
 		referral_amount: DF.Float
 		status: DF.Literal["Active", "Unactive", "Disable"]
 		type_voucher: DF.Literal["Marketing Signup", "Referral  Signup"]
-		voucher_campaign_source: DF.TableMultiSelect[MBWVoucherCampaignSource]
-		voucher_lead_source: DF.TableMultiSelect[MBWVoucherLeadSource]
+		voucher_campaign_source: DF.Table[MBWVoucherCampaignSource]
+		voucher_lead_source: DF.Table[MBWVoucherLeadSource]
 	# end: auto-generated types
 	def before_save(self):
 		if not self.creator :

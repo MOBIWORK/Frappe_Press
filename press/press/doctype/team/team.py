@@ -36,6 +36,7 @@ class Team(Document):
 		from press.press.doctype.child_team_member.child_team_member import ChildTeamMember
 		from press.press.doctype.communication_email.communication_email import CommunicationEmail
 		from press.press.doctype.invoice_discount.invoice_discount import InvoiceDiscount
+		from press.press.doctype.mbw_voucher_user.mbw_voucher_user import MBWVoucherUser
 		from press.press.doctype.team_member.team_member import TeamMember
 
 		account_request: DF.Link | None
@@ -94,9 +95,10 @@ class Team(Document):
 		team_members: DF.Table[TeamMember]
 		team_title: DF.Data | None
 		user: DF.Link | None
-		utm_campaign: DF.Data | None
-		utm_source: DF.Data | None
+		utm_campaign: DF.Link | None
+		utm_source: DF.Link | None
 		via_erpnext: DF.Check
+		vouchers: DF.Table[MBWVoucherUser]
 		website_link: DF.Data | None
 	# end: auto-generated types
 
