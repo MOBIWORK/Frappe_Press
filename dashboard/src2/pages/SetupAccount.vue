@@ -144,6 +144,42 @@
 					</template>
 				</form>
 				
+				<!-- Voucher Display -->
+				<template v-slot:voucher v-if="displayVouchers.length > 0">
+					<div class="mt-6 w-full overflow-y-scroll max-h-48">
+						<div
+							v-for="voucher in displayVouchers"
+							:key="voucher.code"
+							class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 shadow-sm mb-3"
+						>
+							<div class="flex items-start gap-3">
+								<div class="flex-1 min-w-0">
+									<h3 class="text-sm font-semibold text-gray-900">
+										{{ voucher.name }}
+									</h3>
+									<div v-if="voucher.description" class="text-xs text-gray-600 mt-2" v-html="voucher.description"></div>
+								</div>
+								<div class="flex-shrink-0">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-5 w-5 text-green-500"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+										/>
+									</svg>
+								</div>
+							</div>
+						</div>
+					</div>
+				</template>
+				
 				<!-- Language Selector -->
 				<template v-slot:footer>
 					<div class="flex items-center justify-center py-4 border-t border-gray-100 mt-6 w-full">
@@ -175,7 +211,8 @@ import Link from '@/components/Link.vue';
 import Form from '@/components/Form.vue';
 import { DashboardError } from '../utils/error';
 import SelectLanguage from '../components/SelectLanguage.vue';
-
+import { toast } from 'vue-sonner';
+import { getToastErrorMessage } from '../utils/toast';
 export default {
 	name: 'SetupAccount',
 	components: {
@@ -197,7 +234,7 @@ export default {
 			isInvitation: null,
 			oauthSignup: 0,
 			oauthDomain: false,
-			country: 'Vietnam', // Default value set to Vietnam
+			country: 'Vietnam',
 			invitedBy: null,
 			invitedByParentTeam: false,
 			countries: [],
@@ -206,6 +243,9 @@ export default {
 			phone: '',
 			utm_source: '',
 			utm_campaign: '',
+			displayVouchers: [],
+			voucherProduct: '',
+			teamName: '',
 		};
 	},
 	resources: {
@@ -224,7 +264,6 @@ export default {
 						this.email = res.email;
 						this.firstName = res.first_name;
 						this.lastName = res.last_name;
-						// Only override the default Vietnam value if response has a specific country
 						this.country = res.country || this.country; 
 						this.userExists = res.user_exists;
 						this.invitationToTeam = res.team;
@@ -257,10 +296,17 @@ export default {
 					utm_source: this.utm_source,
 					utm_campaign: this.utm_campaign,
 				},
-				onSuccess() {
-					
+				async onSuccess(response) {
+					if (this.displayVouchers.length > 0 && response && response.team) {
+						this.teamName = response.team;
+						localStorage.setItem('applied_vouchers', JSON.stringify({
+							vouchers: this.displayVouchers,
+							team: response.team
+						}));
+						
+						await this.$resources.applyVouchersResource.submit();
+					}
 					let path = '/dashboard/create-site/app-selector';
-					//Đăng ký account xong -> 
 					if (this.saasProduct && (this.saasProduct.name === 'go1_cms' || this.saasProduct.name === 'mbw_cms')) {
 						path = `/dashboard/create-site/${this.saasProduct.name}/template`;
 					} else if (this.saasProduct) {
@@ -271,6 +317,20 @@ export default {
 					}
 					window.location.href = path;
 				},
+				validate(){
+					const phone = this.phone.trim();
+					const digitsOnly = /^\d+$/;
+				
+					if (!digitsOnly.test(phone)) {
+						toast.error(__('Phone number can only contain digits'));
+						return false;
+					}
+					if (this.language === 'vi' && phone.length !== 10) {
+						toast.error(__('Phone number must be 10 digits'));
+						return false;
+					}
+					return true;
+				}
 			};
 		},
 		is2FAEnabled() {
@@ -286,6 +346,29 @@ export default {
 				},
 			};
 		},
+		applyVouchersResource() {
+			return {
+				url: 'press.api.voucher.validate_and_apply_vouchers',
+				makeParams() {
+					return {
+						team: this.teamName,
+						product: this.voucherProduct,
+						utm_source: this.utm_source,
+						utm_campaign: this.utm_campaign
+					};
+				},
+				auto: false,
+				onSuccess(response) {
+					if (response && response.success && response.applied_count > 0) {
+						toast.success(__(`Successfully applied ${response.applied_count} voucher(s) to your account!`));
+						localStorage.removeItem('eligible_vouchers');
+					}
+				},
+				onError(error) {
+					toast.error(getToastErrorMessage(error, 'Failed to apply vouchers'));
+				}
+			};
+		},
 	},
 	computed: {
 		is2FA() {
@@ -296,7 +379,6 @@ export default {
 	},
 	methods: {
 		getSelectedLanguage() {
-			// ✅ PRIORITY ORDER: SelectLanguage component > localStorage > default
 			// 1. Check if SelectLanguage component has set a value
 			const languageSelector = this.$children?.find(child => child.$options.name === 'SelectLanguage');
 			if (languageSelector && languageSelector.defaultLanguage) {
@@ -310,7 +392,6 @@ export default {
 			}
 			
 			// 3. Default to Vietnamese
-			// Ensure localStorage is set for consistency
 			localStorage.setItem('lang', 'vi');
 			return 'vi';
 		},
@@ -340,6 +421,39 @@ export default {
 				this.$resources.setupAccount.submit();
 			}
 		},
+		
+		loadVouchers() {
+			try {
+				const storedData = sessionStorage.getItem('eligible_vouchers');
+				if (storedData) {
+					const data = JSON.parse(storedData);
+					this.displayVouchers = data.vouchers || [];
+					this.voucherProduct = data.product || '';
+					// Update utm params if they exist in stored data
+					if (data.utm_source) this.utm_source = data.utm_source;
+					if (data.utm_campaign) this.utm_campaign = data.utm_campaign;
+				}
+			} catch (error) {
+			console.error('Error loading vouchers:', error);
+		}
+	},
+		
+		formatCurrency(amount) {
+			if (!amount) return '0đ';
+			return new Intl.NumberFormat('vi-VN', {
+				style: 'currency',
+				currency: 'VND'
+			}).format(amount);
+		},
+		
+		formatDate(date) {
+			if (!date) return '';
+			return new Date(date).toLocaleDateString('vi-VN', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit'
+			});
+		},
 	},
 	mounted() {
 		if (!localStorage.getItem('lang')) {
@@ -349,6 +463,9 @@ export default {
 		const urlParams = new URLSearchParams(window.location.search);
 		this.utm_source = urlParams.get('utm_source') || '';
 		this.utm_campaign = urlParams.get('utm_campaign') || '';
+		
+		// Load vouchers from sessionStorage
+		this.loadVouchers();
 	},
 };
 </script>

@@ -227,19 +227,24 @@ def setup_account(
             utm_source=utm_source,
             utm_campaign=utm_campaign,
         )
+        # Update team variable with the newly created team name
+        account_request.reload()
+        team = account_request.team
+        
         if invited_by_parent_team:
             doc = frappe.get_doc("Team", account_request.invited_by)
             doc.append("child_team_members", {"child_team": team})
             doc.save()
 
-    # Store language preference for setup wizard
     store_user_preferences(key, language)
-
-    # Telemetry: Created account
     capture("completed_signup", "fc_signup", account_request.email)
     frappe.local.login_manager.login_as(email)
 
-    return account_request.name
+    return {
+        "account_request": account_request.name,
+        "team": team,
+        "email": email
+    }
 
 
 @frappe.whitelist(allow_guest=True)

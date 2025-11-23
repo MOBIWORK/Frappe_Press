@@ -24,8 +24,12 @@
 					<!-- Login Card -->
 					<div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
 						<div class="space-y-6">
-							<!-- Success Icon -->
-
+							<div v-if="showVoucherNotification && appliedVouchers.length > 0" 
+								class="mb-4 text-center">
+								<p class="text-sm font-medium text-green-600">
+									🎉 {{ __('You have successfully received the voucher!') }}
+								</p>
+							</div>
 
 							<!-- Show progress when completing -->
 							<div v-if="showCompletionAnimation" class="space-y-4">
@@ -60,12 +64,11 @@
 										</div>
 									</div>
 									<div class="text-xs text-gray-500 text-center">
-										{{ __('Chuyển hướng sang thiết lập thông tin ...') }}
+										{{ __('Redirect to setup information...') }}
 									</div>
 								</div>
 							</div>
 
-							<!-- Login Button - Only show when not completing -->
 							<Button
 								v-else
 								variant="solid"
@@ -81,7 +84,6 @@
 								</span>
 							</Button>
 
-							<!-- Error Message -->
 							<div v-if="this.$resources?.siteRequest?.getLoginSid.error" 
 								class="p-4 bg-red-50 border border-red-200 rounded-xl">
 								<p class="text-sm text-red-600 text-center">
@@ -218,6 +220,8 @@ export default {
 			subdomain: this.$route.query.subdomain || null,
 			selected_template: this.$route.query.selected_template || null,
 			lastLoaded: 0,
+			appliedVouchers: [],
+			showVoucherNotification: false,
 			// Progress tracking
 			progressPercentage: 0,
 			currentStep: 'Đang khởi tạo...',
@@ -238,6 +242,9 @@ export default {
 		};
 	},
 	mounted() {
+		// Load applied vouchers from localStorage (will show notification if vouchers exist)
+		this.loadAppliedVouchers();
+		
 		// Start status monitoring
 		this.startStatusMonitoring();
 		
@@ -325,12 +332,9 @@ export default {
 				auto: false,
 				onSuccess: (result) => {
 					console.log('[LoginToSite] Domain added successfully:', result);
-					// Don't call getLoginSid here, let addDomainAndWait handle the timing
 				},
 				onError: (error) => {
 					console.log('[LoginToSite] Domain addition failed:', error);
-					// Still proceed to login even if domain addition fails
-					// The server will handle domain validation
 				},
 			};
 		},
@@ -421,7 +425,6 @@ export default {
 		},
 		
 		startPolling() {
-			// Poll for updates every 10 seconds
 			this.pollingInterval = setInterval(() => {
 				const status = this.siteRequestStatus;
 				if (!status || !['Error', 'Site Created'].includes(status)) {
@@ -439,19 +442,14 @@ export default {
 					this.completeProgress();
 					this.showCompletionAnimation = true;
 
-					// Wait for domain setup if we have subdomain
 					if (this.subdomain && this.subdomain.trim() !== '') {
 						this.setupDomainAndWaitForReady();
-
-						// Emergency fallback after 6 minutes
 						setTimeout(() => {
 							if (!this.loginInProgress) {
 								this.proceedToLogin();
 							}
 						}, 360000);
-
 					} else {
-						// No custom domain needed, proceed directly
 						setTimeout(() => this.proceedToLogin(), 3000);
 					}
 					break;
@@ -680,19 +678,14 @@ export default {
 				currentLang = 'vi';
 			}
 			
-			console.log('saveLanguageForSetupWizard - Language found:', currentLang);
-			
 			// Save to server-side using API
 			if (currentLang) {
 				this.$resources.saveLanguage.submit({
 					lang_code: currentLang
 				});
 				
-				// Also set cookies and localStorage as backup
 				document.cookie = `setup_wizard_lang=${currentLang}; path=/; max-age=3600; SameSite=Lax`;
 				localStorage.setItem('setup_wizard_lang', currentLang);
-				
-				console.log('saveLanguageForSetupWizard - Saved language:', currentLang);
 			}
 		},
 		
@@ -712,7 +705,7 @@ export default {
 
 			this.progressInterval = setInterval(() => {
 				this.updateProgress();
-			}, 200); // Update every 200ms for smooth animation
+			}, 200);
 		},
 
 		updateProgress() {
@@ -752,13 +745,11 @@ export default {
 		completeProgress() {
 			this.stopProgress();
 			
-			// Animate to 100% smoothly
 			const animateToComplete = () => {
 				if (this.progressPercentage < 100) {
 					this.progressPercentage = Math.min(this.progressPercentage + 2, 100);
 					setTimeout(animateToComplete, 50);
 				} else {
-					// Only show "Hoàn tất" when truly at 100%
 					this.currentStep = '🎉 Hoàn tất!';
 					this.progressMessage = 'Site của bạn đã sẵn sàng!';
 				}
@@ -774,9 +765,34 @@ export default {
 			}
 		},
 
-		// Easing function for smooth animation
 		easeOutCubic(t) {
 			return 1 - Math.pow(1 - t, 3);
+		},
+		
+		loadAppliedVouchers() {
+			try {
+				const voucherData = localStorage.getItem('applied_vouchers');
+				
+				if (voucherData) {
+					const data = JSON.parse(voucherData);
+					this.appliedVouchers = data.vouchers || [];
+				
+					if (this.appliedVouchers.length > 0) {
+						this.showVoucherNotification = true;
+						localStorage.removeItem('applied_vouchers');
+					}
+				}
+			} catch (error) {
+				console.error('Error loading applied vouchers:', error);
+			}
+		},
+		
+		formatCurrency(amount) {
+			if (!amount) return '0đ';
+			return new Intl.NumberFormat('vi-VN', {
+				style: 'currency',
+				currency: 'VND'
+			}).format(amount);
 		},
 	},
 };

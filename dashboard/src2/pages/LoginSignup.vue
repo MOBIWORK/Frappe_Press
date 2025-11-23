@@ -1,21 +1,15 @@
 <template>
 	<div class="grid min-h-screen grid-cols-1 md:grid-cols-2">
-		<!-- Left Column: Background and Logo -->
 		<div class="col-span-1 hidden h-screen bg-gray-50 md:flex">
 			<div v-if="saasProduct" class="relative h-screen w-full overflow-hidden">
-				<!-- Background Image - removed blur effect -->
 				<img
 					:src="saasProduct?.background"
 					alt="Background"
 					class="h-full w-full object-cover"
 				/>
-
-				<!-- Product Logo Overlay -->
-
 			</div>
 
 			<div v-else class="relative h-screen w-full overflow-hidden">
-				<!-- Background Image - removed blur effect -->
 				<img
 					src="/public/bg1.png"
 					alt="Background"
@@ -24,7 +18,6 @@
 			</div>
 		</div>
 
-		<!-- Right Column: Auth Forms - set to full width and height -->
 		<div class="relative col-span-1 flex h-full w-full items-center justify-center py-8 md:overflow-auto md:bg-white">
 			<LoginBox
 				:title="title"
@@ -339,6 +332,42 @@
 					</div>
 				</template>
 				
+				<!-- Voucher Display -->
+				<template v-slot:voucher v-if="eligibleVouchers.length > 0">
+					<div class="mt-6 w-full overflow-y-scroll max-h-48">
+						<div
+							v-for="voucher in eligibleVouchers"
+							:key="voucher.code"
+							class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300 mb-3"
+						>
+							<div class="flex items-start gap-3">
+								<div class="flex-1 min-w-0">
+									<h3 class="text-sm font-semibold text-gray-900">
+										{{ voucher.name }}
+									</h3>
+									<div v-if="voucher.description" class="text-xs text-gray-600 mt-2" v-html="voucher.description"></div>
+								</div>
+								<div class="flex-shrink-0">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-5 w-5 text-green-500"
+										fill="none"
+										viewBox="0 0 24 24"
+										stroke="currentColor"
+									>
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+										/>
+									</svg>
+								</div>
+							</div>
+						</div>
+					</div>
+				</template>
+
 				<!-- Language Selector - made full width -->
 				<template v-slot:footer>
 					<div class="flex items-center justify-center border-t border-gray-100 mt-6 w-full">
@@ -376,7 +405,6 @@ export default {
 			password: null,
 			otpResendCountdown: 0,
 			resetPasswordEmailSent: false,
-			// New states for unified flow
 			showEmailForm: true,
 			showLoginForm: false,
 			showSignupForm: false,
@@ -385,6 +413,7 @@ export default {
 			isCheckUser: false,
 			listApp: [],
 			isCheckSite: '',
+			eligibleVouchers: [],
 		};
 	},
 	mounted() {
@@ -394,6 +423,12 @@ export default {
 				this.otpResendCountdown -= 1;
 			}
 		}, 1000);
+		
+		// Fetch eligible vouchers if product param exists
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.get('product')) {
+			this.$resources.getEligibleVouchers.submit();
+		}
 	},
 	watch: {
 		email() {
@@ -428,13 +463,12 @@ export default {
 						localStorage.setItem('login_email', this.email);
 
 						if (this.$route.query?.product) {
-							console.log('Redirecting to create site setup',this.$route.query?.product);
 							this.$router.push({
-								name: 'Login',
-								query: {
-									redirect: `dashboard/signup?product=${this.$route.query.product}`,
-									// redirect: `/dashboard/create-site/${this.$route.query.product}/setup`,
-								},
+							 	name: 'Login',
+							 	query: {
+							 		redirect: `dashboard/signup?product=${this.$route.query.product}`,
+							 		// redirect: `/dashboard/create-site/${this.$route.query.product}/setup`,
+							 	},
 							});
 						} else {
 							this.$router.push({
@@ -515,11 +549,9 @@ export default {
 					otp: this.otp,
 				},
 				onSuccess(res) {
-					console.log('Login successful:', res);
 					this.afterLogin(res);
 				},
 				onError(err) {
-					console.error('Login failed:', err);
 					toast.error(
 						getToastErrorMessage(err, 'Failed to verify OTP and login'),
 					);
@@ -563,6 +595,36 @@ export default {
 					product: this.$route.query.product,
 				},
 				auto: true,
+			};
+		},
+		getEligibleVouchers() {
+			return {
+				url: 'press.api.voucher.get_eligible_vouchers',
+				makeParams() {
+					const urlParams = new URLSearchParams(window.location.search);
+					return {
+						product: urlParams.get('product'),
+						utm_source: urlParams.get('utm_source'),
+						utm_campaign: urlParams.get('utm_campaign')
+					};
+				},
+				auto: false,
+				onSuccess(response) {
+					if (response && response.length > 0) {
+						this.eligibleVouchers = response;
+						const urlParams = new URLSearchParams(window.location.search);
+						// Store in sessionStorage for SetupAccount page
+						sessionStorage.setItem('eligible_vouchers', JSON.stringify({
+							vouchers: response,
+							product: urlParams.get('product'),
+							utm_source: urlParams.get('utm_source'),
+							utm_campaign: urlParams.get('utm_campaign')
+						}));
+					}
+				},
+				onError(error) {
+					console.error('Error fetching vouchers:', error);
+				}
 			};
 		},
 		is2FAEnabled() {
@@ -630,7 +692,6 @@ export default {
 					};
 				},
 				onSuccess(data) {
-					console.log('isCheckUser', data);
 					this.isCheckUser = data.user;
 					this.listApp = data.list_app;
 					this.isCheckSite = data.site;
@@ -729,8 +790,6 @@ export default {
 				},
 				{
 					onSuccess: (res) => {
-						console.log("log in success");
-						
 						this.afterLogin(res);
 					},
 					onError: (err) => {
@@ -809,6 +868,23 @@ export default {
 			this.otpRequested = false;
 			this.otp = '';
 			this.account_request = '';
+		},
+		
+		formatCurrency(amount) {
+			if (!amount) return '0đ';
+			return new Intl.NumberFormat('vi-VN', {
+				style: 'currency',
+				currency: 'VND'
+			}).format(amount);
+		},
+		
+		formatDate(date) {
+			if (!date) return '';
+			return new Date(date).toLocaleDateString('vi-VN', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit'
+			});
 		},
 	},
 	computed: {

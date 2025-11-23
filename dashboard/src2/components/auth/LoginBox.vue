@@ -9,7 +9,6 @@
 					</div> -->
 				</slot>
 			</div>
-			<!-- Modified to accept custom width via props with proper responsive handling -->
 			<div class="mx-auto w-full bg-white px-4 py-6 sm:rounded-lg max-w-full" :class="[customWidth ? customWidth : 'sm:w-96']">
 				<div class="mb-2" v-if="title">
 					<span class="text-2xl font-bold leading-5 tracking-tight text-gray-900">
@@ -20,6 +19,7 @@
 					{{ subtitle }}
 				</p>
 				<slot></slot>
+				<slot name="voucher"></slot>
 			</div>
 			</div>
 
