@@ -91,3 +91,9 @@ Site URL,URL tổ chức,
 Invalid OTP,OTP không hợp lệ,
 Invalid OTP Please try again,"Mã OTP không hợp lệ, vui lòng thử lại."
 Phone Number, Số điện thoại,
+Invalid phone number format, Định dạng số điện thoại không hợp lệ
+Phone number can only contain digits, Số điện thoại chỉ có thể chứa chữ số
+Phone number must be 10 digits, Số điện thoại phải có 10 chữ số
+is not a valid Phone Number, là số điện thoại không hợp lệ
+You have successfully received the voucher!, Bạn đã nhận được phiếu giảm giá thành công!
+Redirect to setup information..., Chuyển hướng sang thông tin thiết lập ...
