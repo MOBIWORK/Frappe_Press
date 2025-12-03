@@ -203,12 +203,15 @@
 	<div v-else class="flex items-center justify-center min-h-screen">
 		<div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
 	</div>
+
+	<FloatingVoucher :vouchers="displayVouchers" />
 </template>
 
 <script>
 import LoginBox from '../components/auth/LoginBox.vue';
 import Link from '@/components/Link.vue';
 import Form from '@/components/Form.vue';
+import FloatingVoucher from '../components/FloatingVoucher.vue';
 import { DashboardError } from '../utils/error';
 import SelectLanguage from '../components/SelectLanguage.vue';
 import { toast } from 'vue-sonner';
@@ -219,7 +222,8 @@ export default {
 		LoginBox,
 		Link,
 		Form,
-		SelectLanguage
+		SelectLanguage,
+		FloatingVoucher
 	},
 	props: ['requestKey', 'joinRequest'],
 	data() {

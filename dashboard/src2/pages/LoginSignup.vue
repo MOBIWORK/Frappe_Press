@@ -18,10 +18,10 @@
 			</div>
 		</div>
 
-		<div class="relative col-span-1 flex h-full w-full items-center justify-center py-8 md:overflow-auto md:bg-white">
+		<div class="relative col-span-1 flex min-h-screen w-full items-center justify-center md:overflow-auto md:bg-white">
 			<LoginBox
 				:title="title"
-				class="w-full h-full md:h-auto md:max-w-md transition-all duration-300 shadow-xl rounded-xl"
+				class="w-full max-w-[95%] sm:max-w-md md:max-w-md h-auto transition-all duration-300 shadow-xl rounded-xl"
 				:class="{ 
 					'pointer-events-none': $resources.signup.loading || $resources.checkEmailExists.loading
 				}"
@@ -30,7 +30,7 @@
 					<!-- Unified Email Form - Initial Step -->
 					<div v-if="showEmailForm && !is2FA && !hasForgotPassword && !resetPasswordEmailSent" 
 						class="transition-all duration-300 w-full">
-						<form class="flex flex-col space-y-4 w-full" @submit.prevent="handleEmailSubmit">
+						<form class="flex flex-col space-y-3 sm:space-y-4 w-full" @submit.prevent="handleEmailSubmit">
 							<FormControl
 								label="Email"
 								type="email"
@@ -42,7 +42,7 @@
 								class="focus-within:shadow-sm transition-all duration-300 w-full"
 							/>
 							<Button
-								class="mt-4 transform transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 w-full"
+								class="mt-3 sm:mt-4 transform transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 w-full"
 								:loading="$resources.checkEmailExists.loading"
 								variant="solid"
 								type="submit"
@@ -55,7 +55,7 @@
 					<!-- Login Form - When user exists -->
 					<div v-else-if="showLoginForm && !is2FA && !hasForgotPassword && !resetPasswordEmailSent"
 						class="transition-all duration-300 w-full">
-						<form class="flex flex-col space-y-4 w-full">
+						<form class="flex flex-col space-y-3 sm:space-y-4 w-full">
 							<FormControl
 								label="Email"
 								placeholder="johndoe@mail.com"
@@ -78,7 +78,7 @@
 									required
 									class="focus-within:shadow-sm transition-all duration-300 w-full"
 								/>
-								<div class="space-y-3 w-full">
+								<div class="space-y-2 sm:space-y-3 w-full">
 									<Button
 										class="w-full transform transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
 										:loading="$resources.verifyOTPAndLogin.loading"
@@ -106,7 +106,7 @@
 
 							<!-- Loading state while sending OTP -->
 							<template v-else>
-								<div class="mt-4 w-full">
+								<div class="mt-3 sm:mt-4 w-full">
 									<Button
 										class="w-full"
 										:loading="$resources.sendOTP.loading"
@@ -121,7 +121,7 @@
 							</template>
 						</form>
 
-						<div class="mt-6 flex justify-start w-full">
+						<div class="mt-4 sm:mt-6 flex justify-start w-full">
 							<Button
 								variant="ghost"
 								@click="resetToEmailForm"
@@ -144,7 +144,7 @@
 					<!-- Signup Form - When user doesn't exist -->
 					<div v-else-if="showSignupForm && !otpRequested && !resetPasswordEmailSent" 
 						class="transition-all duration-300 w-full">
-						<form class="flex flex-col space-y-4">
+						<form class="flex flex-col space-y-3 sm:space-y-4">
 							<FormControl
 								label="Email"
 								type="email"
@@ -323,59 +323,27 @@
 				
 				<!-- Product Logo -->
 				<template v-slot:logo v-if="saasProduct">
-					<div class="flex mb-4 w-full justify-center">
+					<div class="flex mb-3 sm:mb-4 w-full justify-center">
 						<img
-							class="h-16 w-auto rounded-md shadow-md transition-all duration-300 hover:shadow-lg"
+							class="h-12 sm:h-14 md:h-16 w-auto rounded-md shadow-md transition-all duration-300 hover:shadow-lg"
 							:src="saasProduct?.logo"
 							alt="Product Logo"
 						/>
 					</div>
 				</template>
 				
-				<!-- Voucher Display -->
-				<template v-slot:voucher v-if="eligibleVouchers.length > 0">
-					<div class="mt-6 w-full overflow-y-scroll max-h-48">
-						<div
-							v-for="voucher in eligibleVouchers"
-							:key="voucher.code"
-							class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-all duration-300 mb-3"
-						>
-							<div class="flex items-start gap-3">
-								<div class="flex-1 min-w-0">
-									<h3 class="text-sm font-semibold text-gray-900">
-										{{ voucher.name }}
-									</h3>
-									<div v-if="voucher.description" class="text-xs text-gray-600 mt-2" v-html="voucher.description"></div>
-								</div>
-								<div class="flex-shrink-0">
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										class="h-5 w-5 text-green-500"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-										/>
-									</svg>
-								</div>
-							</div>
-						</div>
-					</div>
-				</template>
-
+				
 				<!-- Language Selector - made full width -->
 				<template v-slot:footer>
-					<div class="flex items-center justify-center border-t border-gray-100 mt-6 w-full">
+					<div class="flex items-center justify-center border-t border-gray-100 pt-3 w-full">
 						<SelectLanguage class="w-full opacity-80 hover:opacity-100 transition-opacity duration-300" />
 					</div>
 				</template>
 			</LoginBox>
+			
 		</div>
+
+		<FloatingVoucher :vouchers="eligibleVouchers" />
 	</div>
 </template>
 
@@ -383,6 +351,7 @@
 import LoginBox from '../components/auth/LoginBox.vue';
 import GoogleIconSolid from '@/components/icons/GoogleIconSolid.vue';
 import GoogleIcon from '@/components/icons/GoogleIcon.vue';
+import FloatingVoucher from '../components/FloatingVoucher.vue';
 import { toast } from 'vue-sonner';
 import { getToastErrorMessage } from '../utils/toast';
 import SelectLanguage from '../components/SelectLanguage.vue';
@@ -392,7 +361,8 @@ export default {
 	components: {
 		LoginBox,
 		GoogleIcon,
-		SelectLanguage
+		SelectLanguage,
+		FloatingVoucher
 	},
 	data() {
 		return {
@@ -414,11 +384,13 @@ export default {
 			listApp: [],
 			isCheckSite: '',
 			eligibleVouchers: [],
+			otpCountdownInterval: null,
 		};
 	},
 	mounted() {
 		this.email = localStorage.getItem('login_email');
-		setInterval(() => {
+		
+		this.otpCountdownInterval = setInterval(() => {
 			if (this.otpResendCountdown > 0) {
 				this.otpResendCountdown -= 1;
 			}
@@ -428,6 +400,12 @@ export default {
 		const urlParams = new URLSearchParams(window.location.search);
 		if (urlParams.get('product')) {
 			this.$resources.getEligibleVouchers.submit();
+		}
+	},
+	beforeUnmount() {
+		if (this.otpCountdownInterval) {
+			clearInterval(this.otpCountdownInterval);
+			this.otpCountdownInterval = null;
 		}
 	},
 	watch: {
@@ -886,6 +864,11 @@ export default {
 				day: '2-digit'
 			});
 		},
+		
+		stripHtml(html) {
+			if (!html) return '';
+			return html.replace(/<[^>]*>/g, '');
+		},
 	},
 	computed: {
 		error() {
@@ -978,3 +961,4 @@ export default {
 	},
 };
 </script>
+
