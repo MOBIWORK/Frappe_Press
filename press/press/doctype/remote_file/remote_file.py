@@ -13,6 +13,33 @@ from frappe.model.document import Document
 from frappe.utils.password import get_decrypted_password
 
 
+def s3_endpoint(bucket):
+	"""Endpoint of the S3-compatible store (MinIO…) holding `bucket`; None means AWS.
+
+	Offsite backup buckets: Backup Bucket.endpoint_url. Remote uploads bucket (restore from uploaded files):
+	Press Settings.remote_uploads_endpoint_url."""
+	if not bucket:
+		return None
+	if bucket == frappe.db.get_single_value("Press Settings", "remote_uploads_bucket"):
+		return frappe.db.get_single_value("Press Settings", "remote_uploads_endpoint_url") or None
+	return frappe.db.get_value("Backup Bucket", bucket, "endpoint_url") or None
+
+
+def s3_client_kwargs(bucket, region=None):
+	"""Extra boto3 client/resource kwargs for `bucket`: endpoint + path-style addressing when it lives on an
+	S3-compatible store (MinIO serves buckets by path unless a virtual-host domain is configured)."""
+	from botocore.config import Config
+
+	kwargs = {}
+	if region:
+		kwargs["region_name"] = region
+	endpoint = s3_endpoint(bucket)
+	if endpoint:
+		kwargs["endpoint_url"] = endpoint
+		kwargs["config"] = Config(signature_version="s3v4", s3={"addressing_style": "path"})
+	return kwargs
+
+
 def get_remote_key(file):
 	from hashlib import sha1
 	from os.path import join
@@ -45,7 +72,8 @@ def poll_file_statuses():
 			"secret_access_key": aws_secret_key,
 		},
 		frappe.db.get_single_value("Press Settings", "remote_uploads_bucket"): {
-			"region": default_region,
+			"region": frappe.db.get_single_value("Press Settings", "remote_uploads_region")
+			or default_region,
 			"access_key_id": frappe.db.get_single_value(
 				"Press Settings", "remote_access_key_id"
 			),
@@ -75,7 +103,7 @@ def poll_file_statuses():
 			"s3",
 			aws_access_key_id=current_bucket["access_key_id"],
 			aws_secret_access_key=current_bucket["secret_access_key"],
-			region_name=current_bucket["region"],
+			**s3_client_kwargs(bucket_name, current_bucket["region"]),
 		)
 
 		for s3_object in s3.Bucket(bucket_name).objects.all():
@@ -142,8 +170,7 @@ def delete_remote_backup_objects(remote_files):
 			aws_secret_access_key=press_settings.get_password(
 				"offsite_backups_secret_access_key", raise_exception=False
 			),
-			endpoint_url=frappe.db.get_value("Backup Bucket", bucket_name, "endpoint_url")
-			or "https://s3.amazonaws.com",
+			**(s3_client_kwargs(bucket_name) or {"endpoint_url": "https://s3.amazonaws.com"}),
 		)
 		bucket = s3.Bucket(bucket_name)
 		for objects in chunk([{"Key": x} for x in buckets[bucket_name]], 1000):
@@ -185,12 +212,17 @@ class RemoteFile(Document):
 		else:
 			return None
 
+		if self.bucket == frappe.db.get_single_value("Press Settings", "remote_uploads_bucket"):
+			region = frappe.db.get_single_value("Press Settings", "remote_uploads_region")
+		else:
+			region = frappe.db.get_value("Backup Bucket", self.bucket, "region")
 		return client(
 			"s3",
 			aws_access_key_id=access_key_id,
 			aws_secret_access_key=secret_access_key,
-			region_name=frappe.db.get_value("Backup Bucket", self.bucket, "region")
-			or frappe.db.get_single_value("Press Settings", "backup_region"),
+			**s3_client_kwargs(
+				self.bucket, region or frappe.db.get_single_value("Press Settings", "backup_region")
+			),
 		)
 
 	@property

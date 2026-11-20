@@ -23,7 +23,7 @@ from press.press.doctype.agent_job.agent_job import job_detail
 from press.press.doctype.press_user_permission.press_user_permission import (
     has_user_permission,
 )
-from press.press.doctype.remote_file.remote_file import get_remote_key
+from press.press.doctype.remote_file.remote_file import get_remote_key, s3_client_kwargs
 from press.press.doctype.site_update.site_update import benches_with_available_update
 from press.utils import (
     get_current_team,
@@ -1601,7 +1601,11 @@ def get_upload_link(file, parts=1):
         aws_secret_access_key=get_decrypted_password(
             "Press Settings", "Press Settings", "remote_secret_access_key"
         ),
-        region_name="ap-south-1",
+        **s3_client_kwargs(
+            bucket_name,
+            frappe.db.get_single_value("Press Settings", "remote_uploads_region")
+            or "ap-south-1",
+        ),
     )
     try:
         # The response contains the presigned URL and required fields
@@ -1636,6 +1640,8 @@ def get_upload_link(file, parts=1):
 
 @frappe.whitelist()
 def multipart_exit(file, id, action, parts=None):
+    bucket_name = frappe.db.get_single_value(
+        "Press Settings", "remote_uploads_bucket")
     s3_client = client(
         "s3",
         aws_access_key_id=frappe.db.get_single_value(
@@ -1647,17 +1653,21 @@ def multipart_exit(file, id, action, parts=None):
             "remote_secret_access_key",
             raise_exception=False,
         ),
-        region_name="ap-south-1",
+        **s3_client_kwargs(
+            bucket_name,
+            frappe.db.get_single_value("Press Settings", "remote_uploads_region")
+            or "ap-south-1",
+        ),
     )
     if action == "abort":
         response = s3_client.abort_multipart_upload(
-            Bucket="uploads.frappe.cloud", Key=file, UploadId=id
+            Bucket=bucket_name, Key=file, UploadId=id
         )
     elif action == "complete":
         parts = json.loads(parts)
         # After completing for all parts, you will use complete_multipart_upload api which requires that parts list
         response = s3_client.complete_multipart_upload(
-            Bucket="uploads.frappe.cloud",
+            Bucket=bucket_name,
             Key=file,
             UploadId=id,
             MultipartUpload={"Parts": parts},
