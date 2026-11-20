@@ -40,6 +40,12 @@ def s3_client_kwargs(bucket, region=None):
 	return kwargs
 
 
+# Restore uploads live under one fixed folder of the remote uploads bucket, so the bucket can be shared
+# (e.g. with site files on MinIO): a lifecycle rule and a key scoped to this prefix cover exactly them,
+# and polling lists only this folder instead of the whole bucket.
+REMOTE_UPLOADS_PREFIX = "press-restore-upload"
+
+
 def get_remote_key(file):
 	from hashlib import sha1
 	from os.path import join
@@ -50,7 +56,20 @@ def get_remote_key(file):
 	team = sha1(get_current_team().encode()).hexdigest()
 	time = str(time()).replace(".", "_")
 
-	return join(team, time, file)
+	return join(REMOTE_UPLOADS_PREFIX, team, time, file)
+
+
+def _polled_objects(s3, bucket_name):
+	"""Objects to compare with Remote Files: only the restore uploads folder when the bucket holds nothing
+	else of Press (remote uploads bucket that is not also a backup bucket)."""
+	uploads = frappe.db.get_single_value("Press Settings", "remote_uploads_bucket")
+	backup_buckets = set(frappe.get_all("Backup Bucket", pluck="name")) | {
+		frappe.db.get_single_value("Press Settings", "aws_s3_bucket")
+	}
+	bucket = s3.Bucket(bucket_name)
+	if bucket_name == uploads and bucket_name not in backup_buckets:
+		return bucket.objects.filter(Prefix=f"{REMOTE_UPLOADS_PREFIX}/")
+	return bucket.objects.all()
 
 
 def poll_file_statuses():
@@ -106,7 +125,7 @@ def poll_file_statuses():
 			**s3_client_kwargs(bucket_name, current_bucket["region"]),
 		)
 
-		for s3_object in s3.Bucket(bucket_name).objects.all():
+		for s3_object in _polled_objects(s3, bucket_name):
 			available_files[bucket_name].append(s3_object.key)
 
 		all_files = set(available_files[bucket_name])
