@@ -101,6 +101,8 @@
   "column_break_51",
   "remote_access_key_id",
   "remote_secret_access_key",
+  "remote_uploads_endpoint_url",
+  "remote_uploads_region",
   "product_documentation_section",
   "publish_docs",
   "storage_and_disk_limits_section",
@@ -590,6 +592,18 @@
    "fieldname": "remote_secret_access_key",
    "fieldtype": "Password",
    "label": "Remote Secret Access Key"
+  },
+  {
+   "description": "S3-compatible store (MinIO...) for uploaded restore files. Empty = AWS S3",
+   "fieldname": "remote_uploads_endpoint_url",
+   "fieldtype": "Data",
+   "label": "Remote Uploads Endpoint URL"
+  },
+  {
+   "description": "Signing region of the remote uploads store. Empty = ap-south-1",
+   "fieldname": "remote_uploads_region",
+   "fieldtype": "Data",
+   "label": "Remote Uploads Region"
   },
   {
    "collapsible": 1,
@@ -1246,7 +1260,7 @@
  ],
  "issingle": 1,
  "links": [],
- "modified": "2025-03-25 09:54:20.474864",
+ "modified": "2026-11-20 10:30:00.000000",
  "modified_by": "Administrator",
  "module": "Press",
  "name": "Press Settings",

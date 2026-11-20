@@ -226,7 +226,15 @@ class OffsiteBackupCheck(Audit):
 	def _get_all_files_in_s3(self) -> List[str]:
 		all_files = []
 		settings = frappe.get_single("Press Settings")
-		s3 = settings.boto3_offsite_backup_session.resource("s3")
+		from press.press.doctype.remote_file.remote_file import s3_client_kwargs
+
+		s3 = settings.boto3_offsite_backup_session.resource(
+			"s3",
+			**s3_client_kwargs(
+				settings.aws_s3_bucket,
+				frappe.db.get_value("Backup Bucket", settings.aws_s3_bucket, "region"),
+			),
+		)
 		for s3_object in s3.Bucket(settings.aws_s3_bucket).objects.all():
 			all_files.append(s3_object.key)
 		return all_files
